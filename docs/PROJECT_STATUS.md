@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-10-31 (NFC DeviceInfo JNI calls)
+
+`NFC::isPad`, `getWidth`, and `getHeight` now use the original Android
+JNI environment, `DeviceInfo` class, method names and signatures, and
+exception check/clear path. Their previous source used a null
+environment pointer and empty strings. Windows and ARM64 static
+builds pass; ARMv7 compiles 209/209 units. Full corpus compares
+**4,323/4,524** originals over 4,751 pairs: **95.23% source-shape /
+84.94% strict fuzzy**, **2,686 linked-exact / 1,091 byte-exact**,
+zero skipped and 201 missing. Complete exact sets have no losses.
+Live JNI behavior is unverified while device work is deferred; desktop
+methods currently return zero/false. Next offline priority: recover
+the remaining `NFC` methods' Java names and environment handling in a
+separate bounded packet. See [DeviceInfo JNI evidence](NFC_DEVICE_INFO_JNI_ARM_2026-10-31.md).
+
 Last reviewed: 2026-10-31 (station equality in orbit gates)
 
 `Status::inAlienOrbit` now calls `Station::equals` as the original ARM

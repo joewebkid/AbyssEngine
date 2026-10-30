@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## NFC DeviceInfo JNI calls (2026-10-31)
+
+The original ARM library calls static methods in
+`net/fishlabs/ow_utils/DeviceInfo` via `g_pEnv`; the recovered
+`isPad`, `getWidth`, and `getHeight` paths now use those methods and
+the original exception check/clear behavior. Windows and ARM64
+static builds pass; ARMv7 compiles 209/209 units. Focused source-shape
+rises from about 0.5% to 71–72% for each method. Full corpus compares
+**4,323/4,524** originals over 4,751 pairs, **95.23% / 84.94%**,
+**2,686 linked-exact / 1,091 byte-exact**, zero skipped and 201
+missing; complete exact sets have no losses. See
+[evidence and limits](NFC_DEVICE_INFO_JNI_ARM_2026-10-31.md).
+
 ## Station equality in orbit gates (2026-10-31)
 
 Original ARM `Status::inAlienOrbit` tail-calls `Station::equals` on the

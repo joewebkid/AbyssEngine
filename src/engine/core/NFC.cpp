@@ -1,6 +1,11 @@
 #include "engine/core/NFC.h"
 #include "engine/input/VirtualInput.h"
 
+#if defined(__ANDROID__)
+#include <jni.h>
+extern JNIEnv *g_pEnv;
+#endif
+
 static void **nfc_env;
 static int *nfc_purchase_flag;
 static void **nfc_class_slot;
@@ -222,30 +227,45 @@ void NFC::openPrivacyPolicy() {
 }
 
 bool NFC::isPad() {
-    void *env = *nfc_env;
-    void *cls = nfc_find_class(env, nfc_class_name);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    int value = NFC_CallStaticBooleanMethod(env, cls, method);
-    NFC_DeleteLocalRef(env);
-    return value != 0;
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
+    jclass cls = env->FindClass("net/fishlabs/ow_utils/DeviceInfo");
+    jmethodID method = env->GetStaticMethodID(cls, "isPad", "()Z");
+    jboolean value = env->CallStaticBooleanMethod(cls, method);
+    if (env->ExceptionCheck())
+        env->ExceptionClear();
+    return value != JNI_FALSE;
+#else
+    return false;
+#endif
 }
 
 int NFC::getWidth() {
-    void *env = *nfc_env;
-    void *cls = nfc_find_class(env, nfc_class_name);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    int value = NFC_CallStaticIntMethod(env, cls, method);
-    NFC_DeleteLocalRef(env);
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
+    jclass cls = env->FindClass("net/fishlabs/ow_utils/DeviceInfo");
+    jmethodID method = env->GetStaticMethodID(cls, "getDisplayWidth", "()I");
+    jint value = env->CallStaticIntMethod(cls, method);
+    if (env->ExceptionCheck())
+        env->ExceptionClear();
     return value;
+#else
+    return 0;
+#endif
 }
 
 int NFC::getHeight() {
-    void *env = *nfc_env;
-    void *cls = nfc_find_class(env, nfc_class_name);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    int value = NFC_CallStaticIntMethod(env, cls, method);
-    NFC_DeleteLocalRef(env);
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
+    jclass cls = env->FindClass("net/fishlabs/ow_utils/DeviceInfo");
+    jmethodID method = env->GetStaticMethodID(cls, "getDisplayHeight", "()I");
+    jint value = env->CallStaticIntMethod(cls, method);
+    if (env->ExceptionCheck())
+        env->ExceptionClear();
     return value;
+#else
+    return 0;
+#endif
 }
 
 static int is_dialogue_window_visible;
