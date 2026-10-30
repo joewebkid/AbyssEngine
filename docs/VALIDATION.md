@@ -15,7 +15,7 @@ fuzzy**, all six linked-exact. A strict ARM64 shared library keeps the
 same 53 JNI exports, and a signed APK is prepared for parallel install
 on Poco X3. The full corpus remains **4,323/4,524**, **94.86% /
 84.43%**, **2,638 linked-exact / 1,086 byte-exact** with zero exact-set
-losses. The Poco install was rejected by Play Protect, so this shader
+losses. The Poco install was blocked by Play Protect, so this shader
 still lacks a device-runtime gate. See
 [evidence and limits](ARM64_VERTEX_COLOR_SHADER_2026-10-30.md).
 

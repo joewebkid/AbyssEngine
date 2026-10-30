@@ -11,8 +11,8 @@ ARMv7 compiles 209/209 units, and all six focused functions remain
 remains **4,323/4,524** originals over 4,745 pairs, **94.86% /
 84.43%**, **2,638 linked-exact / 1,086 byte-exact**, with unchanged
 exact-symbol sets. An ARM64 APK is signed for parallel installation
-on the Poco X3, but phone-side Play Protect rejected the first clone
-install; runtime visual behavior is still unverified. Next, obtain a
+on the Poco X3, but phone-side Play Protect blocked both clone install
+attempts; runtime visual behavior is still unverified. Next, obtain a
 permitted device run, then work on the remaining shader failures.
 See [VertexColorShader evidence](ARM64_VERTEX_COLOR_SHADER_2026-10-30.md).
 

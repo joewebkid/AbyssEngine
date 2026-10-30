@@ -42,8 +42,12 @@ with this library is signed and verified outside Git at
 The original GOF2 package and OBB remain installed on the Poco X3.
 The first parallel-install attempt, using the preceding SetTextures
 build, was rejected by phone-side Play Protect verification with
-`INSTALL_FAILED_VERIFICATION_FAILURE`; this newer APK has not been
-installed or run. No runtime shader compilation or visual improvement
-is claimed for this package. Next, complete a permitted device install
-and check the live shader status, GL errors, and frame output; then
-prioritize the remaining original-source shader gaps.
+`INSTALL_FAILED_VERIFICATION_FAILURE`. A second regular install with
+this VertexColorShader APK displayed the same Play Protect block:
+"Suspicious app blocked" because the app targets an older Android
+version. The pending install was cancelled and its temporary uploaded
+APK removed from the phone. No clone package was installed or run.
+No runtime shader compilation or visual improvement is claimed for
+this package. Next, complete a user-permitted device install and check
+the live shader status, GL errors, and frame output; then prioritize
+the remaining original-source shader gaps.
