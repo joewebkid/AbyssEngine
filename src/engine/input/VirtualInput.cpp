@@ -18,6 +18,7 @@
 using AbyssEngine::AEMath::VectorSignedToFloat;
 
 extern int g_mouseCaptured __attribute__((visibility("hidden")));
+extern int g_useJoystick __attribute__((visibility("hidden")));
 
 bool g_virtualInputSlowMotion;
 bool g_virtualInputSpeedUp;
@@ -751,12 +752,13 @@ void simulateTouch(AbyssEngine::Engine *engine) {
         if (ey > 1.0f) g_stick.easedY = 1.0f;
     }
 
-    if (g_stick.useJoystick != 0) {
+    if (g_useJoystick != 0) {
         g_stick.easedX = g_stick.savedX;
         g_stick.easedY = g_stick.savedY;
     }
 
-    if (reinterpret_cast<std::intptr_t>(ApplicationManager::gAppManager->GetCurrentApplicationModule()) == 2) {
+    if (static_cast<ApplicationManager *>(Globals::appManager)
+                ->GetCurrentApplicationModule() == reinterpret_cast<void *>(2)) {
         const float dim = VectorSignedToFloat(Globals::smallButton_dim, 0);
         const float cy = VectorSignedToFloat(Globals::touch_stick_y, 0);
         const float cx = VectorSignedToFloat(Globals::touch_stick_x, 0);

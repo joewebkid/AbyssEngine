@@ -294,7 +294,7 @@ bool IsInPrimaryMenu(int) {
 }
 
 int g_mouseCaptured __attribute__((visibility("hidden")));
-static int g_useJoystick;
+int g_useJoystick __attribute__((visibility("hidden")));
 
 int HideMouse() {
     return g_mouseCaptured;

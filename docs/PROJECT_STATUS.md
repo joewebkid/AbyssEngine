@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-10-31 (touch module and joystick override)
+
+`simulateTouch` now reads the flag controlled by `UseJoystick` for the
+saved-stick override and checks the active module through
+`Globals::appManager`, matching the original Android ARM body.
+The existing two-coordinate `OnTouchEnd` condition was confirmed by
+ARM instructions and retained despite an incomplete pseudocode view.
+Focused `simulateTouch` improves **83.3% / 38.2% → 83.7% / 38.7%**
+source-shape / strict fuzzy. Native Windows and ARM64 static builds
+pass; ARMv7 compiles 209/209 units. Full corpus remains **4,323/4,524**
+originals over 4,749 pairs, **95.12% source-shape / 84.82% strict
+fuzzy**, **2,677 linked-exact / 1,091 byte-exact**, zero skipped and
+201 missing. Complete exact-symbol sets have no losses. Live touch
+dispatch remains unverified while device work is deferred. Next
+offline priority: reconcile the remaining stick smoothing and touch
+dispatch paths in `simulateTouch` with primary ARM evidence. See
+[touch-module evidence](VIRTUALINPUT_TOUCH_MODULE_ARM_2026-10-31.md).
+
 Last reviewed: 2026-10-31 (virtual input pointer state)
 
 `MouseInput`, `HideMouse`, `CaptureMouse`, `SwitchToOtherMouseConifguration`
