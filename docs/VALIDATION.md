@@ -4,6 +4,24 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Main BumpShader GLSL and ARM globals gate (2026-10-30)
+
+The original ARM embedded GLSL, three attribute names and 22 uniform
+names replace placeholders; both C++ GLSL arrays were verified
+byte-identical to original ELF ranges. Original GOT relocations confirm
+`Engine::lodBiasDiffuse`, `Engine::lodBiasNormal`, and
+`Engine::fogEnabled`; original code also calls the Vector conversion
+for `fogColor`. Native and ARM64 builds pass, ARMv7 compiles 209/209
+units, and the strict ARM64 shared library retains 53 JNI exports.
+Focused `UpdateMeshData` reaches **99.4% source-shape / 91.4% strict
+fuzzy**, up from **95.4% / 82.1%**. `Init` stays linked-exact, as it
+was with incorrect referenced strings; linked-exact alone does not
+validate their bytes. The full corpus compares **4,323/4,524**,
+**94.86% / 84.44%**, **2,641 linked-exact / 1,086 byte-exact**, with
+zero skipped and no exact-set changes. The signed APK has not been run
+on Poco due to its Play Protect block; see
+[evidence and limits](BUMP_SHADER_MAIN_ARM_2026-10-30.md).
+
 ## BumpShaderV2/V3/V4 ARM GLSL and ABI gate (2026-10-30)
 
 Six embedded GLSL strings are byte-identical to original ARM ELF ranges.

@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (main BumpShader GLSL and ARM globals)
+
+The original ARM `BumpShader` vertex and fragment GLSL and all 25
+queried input names replace file-name and generic-name placeholders.
+Its texture biases and fog flag now read the original Engine globals;
+fog-color upload uses the original Vector conversion. Both GLSL strings
+were compared byte-for-byte with the original ELF. `Init` remains
+linked-exact; the earlier placeholder version also scored linked-exact,
+showing that this metric alone does not validate string contents.
+`UpdateMeshData` improves **95.4% → 99.4% source-shape** and **82.1% →
+91.4% strict fuzzy**. Native and ARM64 builds pass; ARMv7 compiles
+209/209 units. The full corpus remains **4,323/4,524** originals across
+4,745 pairs, **94.86% / 84.44%**, **2,641 linked-exact / 1,086
+byte-exact**, with unchanged exact-symbol sets. A signed parallel
+ARM64 APK is prepared, but its device run is still blocked by Poco's
+Play Protect. See [main BumpShader evidence](BUMP_SHADER_MAIN_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (BumpShaderV2/V3/V4 ARM sources and ABI)
 
 Six original ARM GLSL strings and the queried input names replace
