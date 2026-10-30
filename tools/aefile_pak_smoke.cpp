@@ -51,6 +51,8 @@ int main(int argc, char **argv) {
            AEFile::crc32_ccitt(String("/assets/beta.bin")));
     AEFile::RegisterPakFile(String("pak/fixture.pak"));
     assert(interface.opens() == 1 && interface.closes() == 1);
+    assert(AEFile::FileExist(String("pak/fixture.pak")) == 1);
+    assert(AEFile::FileExist(String("assets/missing.bin")) == 0);
 
     auto *entry = static_cast<AEPakFile *>(AEFile::findPakFile(String("/assets/alpha.bin")));
     assert(entry != nullptr && entry->sizeLimit == 5 && entry->rawSize == 0xffffffffu);

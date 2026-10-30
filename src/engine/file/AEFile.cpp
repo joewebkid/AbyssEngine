@@ -497,17 +497,15 @@ uint32_t AEFile::FileExist(const String &path) {
         return 0;
     }
 
-    String nativePath;
-    nativePath.Set((const_cast<String *>(&path))->data);
-    if (fileInterface->FileExist(nativePath) != 0) {
+    if (fileInterface->FileExist(String(path, false)) != 0) {
         return 1;
     }
 
-    String pakPath;
-    pakPath.Set((const_cast<String *>(&path))->data);
+    String pakPath(path, false);
     if (*AEStr_index(pakPath, 0) != '/') {
         String prefix("/");
-        pakPath = prefix + path;
+        String pathCopy(path, false);
+        pakPath = prefix + pathCopy;
     }
 
     return findPakFile(pakPath) != nullptr;

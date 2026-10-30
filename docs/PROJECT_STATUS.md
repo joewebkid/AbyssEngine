@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (AEFile existence check)
+
+`AEFile::FileExist` now passes a directly constructed temporary string
+to the native file interface, then preserves the original copied-path
+archive fallback. Focused ARM source-shape / strict fuzzy improves
+**87.0% / 67.6% → 99.5% / 86.8%**; it remains nonexact. The synthetic
+production-code PAK test passes at `-O0/-O2`, including native existence
+and missing archive path. Native and ARM64 static builds pass; ARMv7
+compiles 209/209 units. The full corpus compares **4,323/4,524**
+originals over 4,748 pairs: **95.00% source-shape / 84.67% strict
+fuzzy**, **2,664 linked-exact / 1,088 byte-exact**, zero skipped and 201
+missing. Both exact-symbol sets are unchanged. The original does not
+visibly free a positive archive-lookup result in this function; its
+lifetime and live Android behavior remain unverified. Device testing
+stays deferred. Next offline priority: another bounded missing-behavior
+or ABI gap. See [existence-check evidence](AEFILE_FILE_EXIST_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (AEFile open and archive fallback)
 
 `AEFile::Open` now converts the path through the original `String`
