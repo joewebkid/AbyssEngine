@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-10-31 (virtual input wheel)
+
+`LowerMouseWheel` now decays the three game-visible `Globals` wheel
+fields by the original ARM coefficient 0.95 instead of decaying private
+accumulators by 0.78. `MouseWheel` now checks the module through
+`Globals::appManager`, sets `Globals::keyboard_swipe`, and updates the
+exported `wheelStack` shared with `simulateTouch` in the original
+addition order. Both functions improve to **100% source-shape / 100%
+strict fuzzy** in the focused ARM comparison; `MouseWheel` becomes
+linked-exact. Native Windows and ARM64 static builds pass; ARMv7
+compiles 209/209 units. Full corpus: **4,323/4,524** originals over
+4,749 pairs, **95.08% source-shape / 84.76% strict fuzzy**, **2,674
+linked-exact / 1,091 byte-exact**, zero skipped and 201 missing. The
+complete exact sets lose no matches. Live input behavior and the
+remaining private `g_zoomRequest` reset are unverified; device work
+stays deferred. Next offline priority: inspect that reset and the
+bounded `simulateTouch` wheel path without assuming their purpose.
+See [wheel evidence](VIRTUALINPUT_WHEEL_ARM_2026-10-31.md).
+
 Last reviewed: 2026-10-31 (AENormalFile stream release)
 
 `AENormalFile::Release` now calls the owned interface's virtual `Close`

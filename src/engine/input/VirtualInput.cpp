@@ -19,6 +19,7 @@ using AbyssEngine::AEMath::VectorSignedToFloat;
 
 bool g_virtualInputSlowMotion;
 bool g_virtualInputSpeedUp;
+int wheelStack;
 SoftwareStick g_stick = {1, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
 
 static_assert(sizeof(SoftwareStick) == 28, "Android software-stick layout");
@@ -129,17 +130,7 @@ namespace {
     int g_delayedKeys[kDelayedKeyMax];
     int g_delayedKeyCount;
 
-    constexpr double kWheelDecay = 0.78;
-
-    int g_wheelAccumA;
-    int g_wheelAccumB;
-    int g_wheelAccumC;
-
     int g_zoomRequest;
-
-    inline bool inFlightModule() {
-        return ApplicationManager::gAppManager->currentModuleId == 2;
-    }
 
     int g_pointerEmulationEnabled;
     int g_pointerCaptured;
@@ -201,25 +192,46 @@ void MouseInput(int dx, int dy) {
 }
 
 void LowerMouseWheel() {
-    for (int *accum: {&g_wheelAccumA, &g_wheelAccumB, &g_wheelAccumC}) {
-        if (*accum > 0) {
-            int scaled = static_cast<int>(static_cast<double>(*accum) * kWheelDecay);
-            *accum = scaled < 0 ? 0 : scaled;
-        } else if (*accum < 0) {
-            int scaled = static_cast<int>(static_cast<double>(*accum) * kWheelDecay);
-            *accum = scaled > 0 ? 0 : scaled;
-        }
+    int value = Globals::mouse_wheel;
+    if (value > 0) {
+        int scaled = static_cast<int>(static_cast<double>(value) * 0.95);
+        Globals::mouse_wheel = scaled < 0 ? 0 : scaled;
+    } else if (value < 0) {
+        int scaled = static_cast<int>(static_cast<double>(value) * 0.95);
+        Globals::mouse_wheel = scaled > 0 ? 0 : scaled;
+    }
+
+    value = Globals::mouse_wheelX;
+    if (value > 0) {
+        int scaled = static_cast<int>(static_cast<double>(value) * 0.95);
+        Globals::mouse_wheelX = scaled < 0 ? 0 : scaled;
+    } else if (value < 0) {
+        int scaled = static_cast<int>(static_cast<double>(value) * 0.95);
+        Globals::mouse_wheelX = scaled > 0 ? 0 : scaled;
+    }
+
+    value = Globals::mouse_wheelY;
+    if (value > 0) {
+        int scaled = static_cast<int>(static_cast<double>(value) * 0.95);
+        Globals::mouse_wheelY = scaled < 0 ? 0 : scaled;
+    } else if (value < 0) {
+        int scaled = static_cast<int>(static_cast<double>(value) * 0.95);
+        Globals::mouse_wheelY = scaled > 0 ? 0 : scaled;
     }
 }
 
 void MouseWheel(float delta, float residual) {
-    if (delta < -4.0f && inFlightModule())
-        g_zoomRequest = 1;
+    if (delta < -4.0f &&
+        static_cast<ApplicationManager *>(Globals::appManager)
+                ->GetCurrentApplicationModule() == reinterpret_cast<void *>(2))
+        Globals::keyboard_swipe = 1;
 
-    if (delta > 4.0f && inFlightModule())
-        g_zoomRequest = -1;
+    if (delta > 4.0f &&
+        static_cast<ApplicationManager *>(Globals::appManager)
+                ->GetCurrentApplicationModule() == reinterpret_cast<void *>(2))
+        Globals::keyboard_swipe = -1;
 
-    g_wheelAccumA = static_cast<int>(static_cast<float>(g_wheelAccumA) + delta + residual);
+    wheelStack = static_cast<int>((delta + residual) + static_cast<float>(wheelStack));
 }
 
 void keyReleasedWithDelay(AbyssEngine::Engine * /*engine*/, int key) {
@@ -645,15 +657,15 @@ void simulateTouch(AbyssEngine::Engine *engine) {
     if ((Globals::is_choice_window_visible | Globals::is_menu_visible |
          Globals::is_dialogue_window_visible) == 0) {
         float steer = bitsToFloat(Globals::rotateShipInStation) +
-                      VectorSignedToFloat(g_wheelAccumA, 0);
-        g_wheelAccumA = static_cast<int>(VectorSignedToFloat(g_wheelAccumA, 0) * 0.9f);
+                      VectorSignedToFloat(wheelStack, 0);
+        wheelStack = static_cast<int>(VectorSignedToFloat(wheelStack, 0) * 0.9f);
         if (steer > 40.0f)
             steer = 40.0f;
         else if (steer < -40.0f)
             steer = -40.0f;
         Globals::rotateShipInStation = floatToBits(steer);
     } else {
-        g_wheelAccumA = 0;
+        wheelStack = 0;
         Globals::rotateShipInStation = floatToBits(0.0f);
     }
 

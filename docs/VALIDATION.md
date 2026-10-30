@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Virtual-input wheel gate (2026-10-31)
+
+Native `gof2` and ARM64 static builds pass; ARMv7 compiles 209/209
+units. Focused `MouseWheel` and `LowerMouseWheel` reach **100.0%
+source-shape / 100.0% strict fuzzy**; `MouseWheel` is linked-exact.
+The 20-symbol focused unit rises to **81.6% / 68.5%**, with nine
+linked-exact and two byte-exact matches. Full corpus: **4,323/4,524**
+originals over 4,749 pairs, **95.08% / 84.76%**, **2,674 linked-exact /
+1,091 byte-exact**, zero skipped and 201 missing. Exact-set comparison
+finds one linked-exact gain and no loss. Live input behavior remains
+unverified; see [evidence and limits](VIRTUALINPUT_WHEEL_ARM_2026-10-31.md).
+
 ## AENormalFile stream-release gate (2026-10-31)
 
 The production file test passes at `-O0/-O2`, counting the explicit
