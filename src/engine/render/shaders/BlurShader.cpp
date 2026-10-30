@@ -4,8 +4,8 @@
 #include "engine/render/Mesh.h"
 #include "engine/render/PaintCanvas.h"
 #include "engine/core/ApplicationManager.h"
-#if defined(__ANDROID__)
 #include "engine/render/shaders/EmbeddedBlurShader.h"
+#if defined(__ANDROID__)
 #include <arm_neon.h>
 #endif
 #include <GLES2/gl2.h>
@@ -25,7 +25,6 @@ namespace AbyssEngine {
     }
 
     void BlurShader::Init(Engine *) {
-#if defined(__ANDROID__)
         const char *vertex = EmbeddedBlurShader::vertex;
         const char *fragment = EmbeddedBlurShader::fragment;
         const char *matrixName = "u_WorldMatrix";
@@ -34,16 +33,6 @@ namespace AbyssEngine {
         const char *centerName = "u_radial_origin";
         const char *amountName = "u_blur_strength";
         const char *strengthName = "u_radial_bright";
-#else
-        const char *vertex = "BlurShader.vsh";
-        const char *fragment = "BlurShader.fsh";
-        const char *matrixName = "u_mvpMatrix";
-        const char *samplerName = "s_texture";
-        const char *texelName = "u_texelSize";
-        const char *centerName = "u_center";
-        const char *amountName = "u_blurAmount";
-        const char *strengthName = "u_strength";
-#endif
         this->blurProgram = this->ES2LoadProgram(vertex, fragment);
 #if !defined(__ANDROID__)
         this->program = this->blurProgram;
@@ -73,14 +62,13 @@ namespace AbyssEngine {
         vst1q_f32(&engine->projMatrix[8], zero);
         vst1q_f32(&engine->projMatrix[4], zero);
         vst1q_f32(&engine->projMatrix[0], zero);
+#else
+        for (float &entry : engine->projMatrix)
+            entry = 0.0f;
 #endif
         engine->projMatrix[0] = 2.0f / (float) (int) engine->GetDisplayWidth();
         engine->projMatrix[5] = -(2.0f / (float) (int) engine->GetDisplayHeight());
-#if defined(__ANDROID__)
         engine->projMatrix[10] = -0.05f;
-#else
-        engine->projMatrix[10] = -1.0f;
-#endif
         engine->projMatrix[12] = -1.0f;
         engine->projMatrix[13] = 1.0f;
         engine->projMatrix[15] = 1.0f;
@@ -196,11 +184,11 @@ namespace AbyssEngine {
             float width;
             float height;
             if (engine->appManager->paintCanvas->gameOrientation == 2) {
-                width = (float) engine->GetDisplayWidth();
-                height = (float) engine->GetDisplayHeight();
+                width = (float) (int) engine->GetDisplayWidth();
+                height = (float) (int) engine->GetDisplayHeight();
             } else {
-                width = (float) engine->GetDisplayHeight();
-                height = (float) engine->GetDisplayWidth();
+                width = (float) (int) engine->GetDisplayHeight();
+                height = (float) (int) engine->GetDisplayWidth();
             }
             glUniform2f(texelLocation, 1.0f / width, 1.0f / height);
         }

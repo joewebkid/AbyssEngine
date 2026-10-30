@@ -4,6 +4,20 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## BlurShader platform and dimension gate (2026-10-30)
+
+The Windows path uses ELF-verified GLSL and GL names, zeroes the
+projection matrix, and uses the Android Z value. UpdateMeshData
+converts display sizes through signed int. Native gof2 and ARM64
+static builds pass; ARMv7 compiles 209/209 units. Focused BlurShader
+retains **6/10 linked-exact**; UpdateMeshData source-shape rises from
+**96.4% to 96.9%**. The full corpus compares **4,323/4,524**
+originals across 4,745 pairs: **94.88% / 84.49%**,
+**2,656 linked-exact / 1,087 byte-exact**, zero skipped, 201 missing,
+and unchanged exact-symbol sets. Long RenderEffect semantics and
+live blur remain unverified; see
+[evidence and limits](BLUR_PLATFORM_AND_DIMENSIONS_ARM_2026-10-30.md).
+
 ## TextureLightShader platform gate (2026-10-30)
 
 The Windows path uses original Android GLSL and GL query names, and

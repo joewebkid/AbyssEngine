@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (BlurShader platform and dimensions)
+
+BlurShader now uses ELF-verified GLSL and query names on Windows,
+clears its projection matrix there, and applies the Android Z value.
+UpdateMeshData converts dimensions through signed int as in the ARM
+code. Native and ARM64 static builds pass; ARMv7 compiles 209/209
+units. Focused UpdateMeshData source-shape rises from **96.4% to
+96.9%**; the family retains **6/10 linked-exact**. The full corpus
+compares **4,323/4,524** originals across 4,745 pairs: **94.88% /
+84.49%**, **2,656 linked-exact / 1,087 byte-exact**, zero skipped,
+201 missing, and unchanged exact sets. The long RenderEffect and
+live blur output remain unverified. Next, investigate that long
+overload's GL-state and matrix flow; see
+[BlurShader evidence](BLUR_PLATFORM_AND_DIMENSIONS_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (TextureLightShader platform recovery)
 
 TextureLightShader now uses the ELF-verified GLSL and original query
