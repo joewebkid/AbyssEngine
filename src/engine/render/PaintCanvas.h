@@ -63,10 +63,18 @@ namespace AbyssEngine {
         // real offsets (meshCount 0x24, meshes 0x28, engine 0x34).
         ::Array<AbyssEngine::AELoadedTexture *> cubeTextures;  // 0x10 (count/data/capacity)
         unsigned char field_0x1c;                              // 0x1c
-        int field_0x20;                                        // 0x20
-        unsigned int meshCount;                                // 0x24
-        char **meshes;                                         // 0x28
-        char *mask2dImage;                                     // 0x2c (Ghidra gap)
+#if __SIZEOF_POINTER__ == 4
+        char *mask2dImage;                                     // ARM +0x20
+#else
+        int field_0x20;                                        // keep the ARM64 host layout
+#endif
+        unsigned int meshCount;                                // ARM +0x24
+        char **meshes;                                         // ARM +0x28
+#if __SIZEOF_POINTER__ == 4
+        uint32_t field_0x2c;                                   // untouched ARM slot
+#else
+        char *mask2dImage;                                     // keep the ARM64 host layout
+#endif
         int gameOrientation;                                   // 0x30 (orientation)
         Engine *engine;                                        // 0x34
         CanvasMatrix4 projMatrix3d;
@@ -466,6 +474,7 @@ namespace AbyssEngine {
     static_assert(__builtin_offsetof(PaintCanvas, initialized) == 0x0, "PaintCanvas::initialized offset");
     static_assert(__builtin_offsetof(PaintCanvas, culledCount) == 0x4, "PaintCanvas::culledCount offset");
     static_assert(__builtin_offsetof(PaintCanvas, cubeTextures) == 0x10, "PaintCanvas::cubeTextures @0x10");
+    static_assert(__builtin_offsetof(PaintCanvas, mask2dImage) == 0x20, "PaintCanvas::mask2dImage @0x20");
     static_assert(__builtin_offsetof(PaintCanvas, meshCount) == 0x24, "PaintCanvas::meshCount @0x24");
     static_assert(__builtin_offsetof(PaintCanvas, meshes) == 0x28, "PaintCanvas::meshes @0x28");
     static_assert(__builtin_offsetof(PaintCanvas, engine) == 0x34, "PaintCanvas::engine @0x34");

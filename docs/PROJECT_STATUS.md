@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (MaskShader and canvas mask state)
+
+Original embedded GLSL and seven ordered query names replace
+`MaskShader` placeholders. The active mask image is read through
+`ApplicationManager::paintCanvas`; direct ARM stores put the mask
+pointer at canvas `+0x20`, correcting the old field classification.
+Native and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+Focused `MaskShader` verification rises from 5/6 to **6/6
+linked-exact**; `PaintCanvas::MeshClear2DMask` becomes byte-exact.
+The full corpus compares **4,323/4,524** originals across 4,745
+pairs: **94.87% / 84.47%**, **2,654 linked-exact / 1,087 byte-exact**,
+zero skipped, 201 missing, and no exact losses. ARM64 host field
+order was preserved; Poco mask rendering remains untested. Next,
+inspect `BumpRimCubeShader` and later perform an allowed phone run.
+See [mask evidence](MASK_SHADER_CANVAS_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (GreenShader ARM embedded sources)
 
 Original embedded GLSL and 14 ordered query names replace

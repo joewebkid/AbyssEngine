@@ -98,19 +98,24 @@ Dozens of structs drift (offdrift delta histogram: -8:14, +4:12, +8:11, +32:9, .
 ## GROUND-TRUTH unblock: Ghidra has the original loaded
 
 The original (android_2.0.16_libgof2hdaa.so, 8096 fns, image_base 0x10000) is OPEN in Ghidra (MCP).
-`get_struct_layout <Struct>` returns the real field offsets; `decompile_function <addr>` shows real
-field usage. This is the authoritative source for the byte-exactness campaign — reconstruct each
-struct from Ghidra's layout, not from guesses. The verify byte_exact/linked_exact count remains the
-no-degradation gate when applying.
+`get_struct_layout <Struct>` proposes field offsets and types; `decompile_function <addr>`
+shows inferred field usage. Direct ARM loads and stores take precedence where those inferred
+types conflict. The verify byte_exact/linked_exact count remains the no-degradation gate
+when applying a layout change.
 
-### PaintCanvas — definitive layout (Ghidra get_struct_layout, size 524):
+### PaintCanvas — layout corrected by direct ARM stores (size 524):
 0x0 gravityRotationEnabled(=initialized), 0x4 culledCount, 0x8 field_0x8(=quad2dMesh), 0xc field_0xc,
-0x10 field_0x10, 0x14 field_0x14, [0x18 gap], 0x1c field_0x1c, 0x20 field_0x20(int), 0x24
-field_0x24(=meshCount), 0x28 field_0x28(=meshes), [0x2c gap=mask2dImage], 0x30 orientation
+0x10 field_0x10, 0x14 field_0x14, [0x18 gap], 0x1c field_0x1c, 0x20 mask2dImage(pointer), 0x24
+field_0x24(=meshCount), 0x28 field_0x28(=meshes), [0x2c unresolved], 0x30 orientation
 (=gameOrientation), 0x34 engine, 0x38.. matrices, ... 0x150 images, 0x164 cameras, ...
+The old Ghidra field classification at `+0x20` was an untyped `int` guess. Original ARM
+`MeshSet2DMask` at `0x78b5c` stores an image pointer at `+0x20`,
+`MeshClear2DMask` at `0x78b62` clears it, and `MaskShader::UpdateMeshData`
+at `0x916b6` reads it. See [mask evidence](MASK_SHADER_CANVAS_ARM_2026-10-30.md).
 DECOMP BUG: `ChangeCubeTexture` (decompiled) reads cube count@field_0x10 / data@field_0x14 -> the
 cube-texture Array IS field_0x10/0x14/0x18 (count/data/capacity @ 0x10). Our decomp instead made a
 SEPARATE `cubeTextures` Array at 0x20, displacing field_0x20/meshCount/meshes by +0xc (root of the
 ~10 PaintCanvas near-misses, e.g. engine 0x3c-should-be-0x34). FIX: map `cubeTextures`->0x10 (merge
-with field_0x10/0x14/0x18 uses), add the standalone `field_0x20` int, shift meshCount/meshes/
-gameOrientation/engine back by 0xc. Verify-gate each step.
+with field_0x10/0x14/0x18 uses), place the mask pointer at `+0x20`, reserve the
+unresolved `+0x2c` slot, and keep meshCount/meshes/gameOrientation/engine at
+the verified offsets. Verify-gate each step.

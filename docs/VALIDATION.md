@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## MaskShader and canvas mask ARM gate (2026-10-30)
+
+Original GLSL, seven query names, and the canvas `+0x20` mask pointer
+are restored. GLSL arrays are byte-identical to the ARM ELF. Native
+`gof2` and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+Focused `MaskShader` verification is **6/6 linked-exact** (from 5/6);
+`PaintCanvas::MeshClear2DMask` becomes byte-exact. The full corpus
+compares **4,323/4,524** originals across 4,745 pairs: **94.87% /
+84.47%**, **2,654 linked-exact / 1,087 byte-exact**, zero skipped,
+201 missing, and no exact losses. ARM64 host field order is unchanged;
+Poco mask rendering remains unverified. See
+[evidence and limits](MASK_SHADER_CANVAS_ARM_2026-10-30.md).
+
 ## GreenShader ARM source gate (2026-10-30)
 
 Two original embedded GLSL strings and 14 ordered query names replace

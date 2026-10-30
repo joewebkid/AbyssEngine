@@ -19,12 +19,12 @@ namespace AbyssEngine {
     class MaskShader : public ShaderBaseStruct {
     public:
         int a_position;
-        int a_texCoord;
-        int a_color;
-        int u_mvpMatrix;
-        int u_texture0;
-        int u_texture1;
-        int u_color;
+        int a_texCoord0;
+        int a_texCoord1;
+        int uWorldMatrix;
+        int sTexture0;
+        int sTexture1;
+        int glColorLoc;
 
         static int ShaderIndex;
 
