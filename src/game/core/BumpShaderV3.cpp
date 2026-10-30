@@ -1,13 +1,9 @@
 #include "game/core/BumpShaderV3.h"
+#include "game/core/EmbeddedBumpShaderVariants.h"
 #include "engine/render/Engine.h"
 #include "engine/render/Material.h"
 #include "engine/render/Mesh.h"
 #include <GLES2/gl2.h>
-
-namespace {
-    float *g_bsv3_floatA;
-    float *g_bsv3_floatB;
-}
 
 namespace AbyssEngine {
     int BumpShaderV3::ShaderIndex;
@@ -19,40 +15,40 @@ namespace AbyssEngine {
     }
 
     void BumpShaderV3::Init(Engine *) {
-        this->program = this->ES2LoadProgram("BumpShaderV3.vsh", "BumpShaderV3.fsh");
+        this->program = this->ES2LoadProgram(EmbeddedBumpShaderV3::vertex,
+                                             EmbeddedBumpShaderV3::fragment);
 
-        this->aPosition = glGetAttribLocation(this->program, "a0");
-        this->aTexCoord = glGetAttribLocation(this->program, "a1");
-        this->aNormal = glGetAttribLocation(this->program, "a2");
-        this->aTangent = glGetAttribLocation(this->program, "a3");
-        this->aBitangent = glGetAttribLocation(this->program, "a4");
+        this->aPosition = glGetAttribLocation(this->program, "a_position");
+        this->aTexCoord = glGetAttribLocation(this->program, "a_texCoord");
+        this->aNormal = glGetAttribLocation(this->program, "a_normal");
+        this->aTangent = glGetAttribLocation(this->program, "a_tangent");
+        this->aBitangent = glGetAttribLocation(this->program, "a_bitangent");
 
-        this->uModelViewProjectionMatrix = glGetUniformLocation(this->program, "u0");
-        this->uModelMatrix = glGetUniformLocation(this->program, "u1");
-        this->uLightDirModel0 = glGetUniformLocation(this->program, "u2");
-        this->uLightDirModel1 = glGetUniformLocation(this->program, "u3");
-        this->uEyePosModel = glGetUniformLocation(this->program, "u4");
-        this->uTexDiffuse = glGetUniformLocation(this->program, "u5");
-        this->uTexNormal = glGetUniformLocation(this->program, "u6");
-        this->uTexSpecular = glGetUniformLocation(this->program, "u7");
-        this->uGlColor = glGetUniformLocation(this->program, "u8");
-        this->uAmbientColor0 = glGetUniformLocation(this->program, "u9");
-        this->uAmbientColor1 = glGetUniformLocation(this->program, "u10");
-        this->uDiffuseColor1 = glGetUniformLocation(this->program, "u11");
-        this->uDiffuseColor0 = glGetUniformLocation(this->program, "u12");
-        this->uSpecularColor0 = glGetUniformLocation(this->program, "u13");
-        this->uSpecularColor1 = glGetUniformLocation(this->program, "u14");
-        this->uSpecularPower = glGetUniformLocation(this->program, "u15");
-        this->uRimColor = glGetUniformLocation(this->program, "u16");
-        this->uTexBiasDiffuse = glGetUniformLocation(this->program, "u17");
-        this->uTexBiasNormal = glGetUniformLocation(this->program, "u18");
-        this->uIsGlowMat = glGetUniformLocation(this->program, "u19");
+        this->uModelViewProjectionMatrix = glGetUniformLocation(this->program, "u_ModelViewProjectionMatrix");
+        this->uModelMatrix = glGetUniformLocation(this->program, "u_ModelMatrix");
+        this->uLightDirModel0 = glGetUniformLocation(this->program, "u_lightdirmodel[0]");
+        this->uLightDirModel1 = glGetUniformLocation(this->program, "u_lightdirmodel[1]");
+        this->uEyePosModel = glGetUniformLocation(this->program, "u_eyeposmodel");
+        this->uTexDiffuse = glGetUniformLocation(this->program, "s_texture[0]");
+        this->uTexNormal = glGetUniformLocation(this->program, "s_texture[1]");
+        this->uTexSpecular = glGetUniformLocation(this->program, "s_texture[2]");
+        this->uGlColor = glGetUniformLocation(this->program, "glColor");
+        this->uAmbientColor0 = glGetUniformLocation(this->program, "u_AmbientColor[0]");
+        this->uAmbientColor1 = glGetUniformLocation(this->program, "u_DiffuseColor[0]");
+        this->uDiffuseColor1 = glGetUniformLocation(this->program, "u_SpecularColor[0]");
+        this->uDiffuseColor0 = glGetUniformLocation(this->program, "u_AmbientColor[1]");
+        this->uSpecularColor0 = glGetUniformLocation(this->program, "u_DiffuseColor[1]");
+        this->uSpecularColor1 = glGetUniformLocation(this->program, "u_SpecularColor[1]");
+        this->uSpecularPower = glGetUniformLocation(this->program, "u_SpecularPower");
+        this->uRimColor = glGetUniformLocation(this->program, "u_RimColor");
+        this->uTexBiasDiffuse = glGetUniformLocation(this->program, "u_TexBiasDiffuse");
+        this->uTexBiasNormal = glGetUniformLocation(this->program, "u_TexBiasNormal");
+        this->uIsGlowMat = glGetUniformLocation(this->program, "u_IsGlowMat");
 
         glUseProgram(this->program);
 
-        int textureUniforms[3] = {this->uTexDiffuse, this->uTexNormal, this->uTexSpecular};
         for (int i = 0; i != 3; i++) {
-            int loc = textureUniforms[i];
+            int loc = (&this->uTexDiffuse)[i];
             if (loc >= 0)
                 glUniform1i(loc, i);
         }
@@ -77,9 +73,9 @@ namespace AbyssEngine {
         if (this->uModelMatrix >= 0)
             glUniformMatrix3fv(this->uModelMatrix, 1, 0, engine->normalMatrix);
         if (this->uTexBiasDiffuse >= 0)
-            glUniform1f(this->uTexBiasDiffuse, *g_bsv3_floatA);
+            glUniform1f(this->uTexBiasDiffuse, Engine::lodBiasDiffuse);
         if (this->uTexBiasNormal >= 0)
-            glUniform1f(this->uTexBiasNormal, *g_bsv3_floatB);
+            glUniform1f(this->uTexBiasNormal, Engine::lodBiasNormal);
 
         if (this->dirty != 0) {
             glUniform3f(this->uLightDirModel0, engine->lightDir.x, engine->lightDir.y,

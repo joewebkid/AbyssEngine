@@ -25,6 +25,7 @@ namespace AbyssEngine {
         int aTexCoord;
         int aTangent;
         int aBinormal;
+        int unusedAttribSlot;
         int uMvpMatrix;
         int uNormalMatrix;
         int uLightDir;

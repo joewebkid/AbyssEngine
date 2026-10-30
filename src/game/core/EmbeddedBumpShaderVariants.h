@@ -1,0 +1,210 @@
+#pragma once
+// Exact GLSL from original Android ARM libgof2hdaa.so.
+// Binary SHA-256: 6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58
+namespace AbyssEngine {
+
+namespace EmbeddedBumpShaderV2 {
+
+// ELF address 0x1f1e50; 1071 bytes; SHA-256 94ac153a52c402263fe4df930dfe8a887d30b76db5dfab51fa4c197deb68cafe
+static constexpr const char vertex[] =
+    "attribute highp vec4 \ta_position;   \t  \n"
+    "attribute mediump vec2  a_texCoord;  \n"
+    "attribute highp vec3  \ta_normal; \t  \n"
+    "attribute lowp \tvec3 \ta_tangent;\t  \n"
+    "attribute lowp \tvec3 \ta_bitangent;  \n"
+    "varying mediump vec2 v_texCoord;  \n"
+    "varying mediump vec3 v_light_dir;  \n"
+    "varying mediump vec3 v_eye_dir;  \n"
+    "varying mediump vec3 v_lightvec;  \n"
+    "varying mediump vec3 v_normal;  \n"
+    "varying mediump vec3 v_specular_dir;  \n"
+    "uniform highp mat4 u_ModelViewProjectionMatrix;  \n"
+    "uniform highp vec3 u_lightdirmodel;  \n"
+    "uniform highp vec3 u_eyeposmodel;  \n"
+    "void main()  \n"
+    "{  \n"
+    "\tgl_Position = u_ModelViewProjectionMatrix * a_position;  \n"
+    "\tv_texCoord  = a_texCoord;    \n"
+    "\tv_normal \t= a_normal;  \n"
+    "\thighp mat3 tangentSpaceXform = mat3(a_tangent.x, a_bitangent.x, a_normal.x,  \n"
+    "\t\t\t\t\t\t\t\t\t\ta_tangent.y, a_bitangent.y, a_normal.y,  \n"
+    "\t\t\t\t\t\t\t\t\t\ta_tangent.z, a_bitangent.z, a_normal.z  \n"
+    "\t\t\t\t\t\t\t\t\t\t);  \n"
+    "\tvec3 shininesDirection = normalize(normalize(u_eyeposmodel - a_position.xyz) + u_lightdirmodel) ;  \n"
+    "\tv_specular_dir = tangentSpaceXform * shininesDirection;  \n"
+    "\tv_lightvec = tangentSpaceXform * u_lightdirmodel;  \n"
+    "}  \n";
+
+// ELF address 0x1f2280; 886 bytes; SHA-256 2521ea985025093ed032f446d6823f5d065692fa5763653e1e4704056b814498
+static constexpr const char fragment[] =
+    "precision lowp float;  \n"
+    "varying mediump vec2 v_texCoord;  \n"
+    "varying mediump vec3 v_light_dir;  \n"
+    "varying mediump vec3 v_eye_dir;  \n"
+    "varying mediump vec3 v_lightvec;  \n"
+    "varying mediump vec3 v_normal;  \n"
+    "varying mediump vec3 v_specular_dir;  \n"
+    "uniform sampler2D  s_texture[2];  \n"
+    "uniform lowp vec4  u_AmbientColor;  \n"
+    "void main()  \n"
+    "{  \n"
+    "\tlowp vec4 colorTex   = texture2D( s_texture[0], v_texCoord, -1.0 );  \n"
+    "\tlowp vec4 normalTex  = texture2D( s_texture[1], v_texCoord, -1.0 );  \n"
+    "\tlowp vec3 normalTexX = normalTex.rgb*2.0 - 1.0;  \n"
+    "\tlowp vec4 specTex = vec4(vec3(normalTex.a), 0.0);\t//vec4(normalTex.a)  \n"
+    "   mediump float powExp = 10.0; \n"
+    "\tfloat specularIntensity = pow( dot( v_specular_dir,normalTexX ), powExp );  \n"
+    "\tfloat diffuseIntensity  = max( dot( normalTexX    ,v_lightvec ), 0.5 );// + 0.28;  \n"
+    "\tgl_FragColor = diffuseIntensity * colorTex * u_AmbientColor + specularIntensity * specTex;  \n"
+    "}  \n";
+
+} // namespace EmbeddedBumpShaderV2
+
+namespace EmbeddedBumpShaderV3 {
+
+// ELF address 0x1efe80; 1346 bytes; SHA-256 78f777e73827bdfeb4a8f44e89136d8c35b57510a8cc66dbd26e14aa7a8244c8
+static constexpr const char vertex[] =
+    "attribute highp vec4 \ta_position;  \n"
+    "attribute mediump vec2  a_texCoord;    \n"
+    "attribute highp vec3  \ta_normal; \t  \n"
+    "attribute lowp \tvec3 \ta_tangent;\t\t  \n"
+    "attribute lowp \tvec3 \ta_bitangent;\t  \n"
+    "varying mediump vec2 v_texCoord;  \n"
+    "varying lowp vec3 v_eye_dir;  \n"
+    "varying mediump vec3 v_normal;  \n"
+    "varying lowp vec3 v_specular_dir[2];  \n"
+    "varying lowp vec3 v_lightvec[2];  \n"
+    "uniform highp mat4 u_ModelViewProjectionMatrix;  \n"
+    "uniform highp vec3 u_lightdirmodel[2];  \n"
+    "uniform highp vec3 u_eyeposmodel;  \n"
+    "void main()  \n"
+    "{  \n"
+    "\tgl_Position = u_ModelViewProjectionMatrix * a_position;  \n"
+    "\tv_texCoord  = a_texCoord;    \n"
+    "\tv_normal \t= a_normal;  \n"
+    "\thighp mat3 tangentSpaceXform = mat3(a_tangent.x, a_bitangent.x, a_normal.x,  \n"
+    "\t\t\t\t\t\t\t\t\t\ta_tangent.y, a_bitangent.y, a_normal.y,  \n"
+    "\t\t\t\t\t\t\t\t\t\ta_tangent.z, a_bitangent.z, a_normal.z  \n"
+    "\t\t\t\t\t\t\t\t\t\t);  \n"
+    "   v_eye_dir = normalize(tangentSpaceXform*(u_eyeposmodel - a_position.xyz)); \n"
+    "\tvec3 shininesDirection = normalize(normalize(u_eyeposmodel - a_position.xyz) + u_lightdirmodel[0]) ;  \n"
+    "\tv_specular_dir[0] = tangentSpaceXform * shininesDirection;  \n"
+    "\tv_lightvec[0] = tangentSpaceXform * u_lightdirmodel[0];  \n"
+    "\tshininesDirection = normalize(normalize(u_eyeposmodel - a_position.xyz) + u_lightdirmodel[1]) ;  \n"
+    "\tv_specular_dir[1] = tangentSpaceXform * shininesDirection;  \n"
+    "\tv_lightvec[1] = tangentSpaceXform * u_lightdirmodel[1];  \n"
+    "}  \n";
+
+// ELF address 0x1f03c3; 2000 bytes; SHA-256 1c2503175d9b422d7c2f768e90105ae1ce611ecdb5f8db0647e54829937a20ee
+static constexpr const char fragment[] =
+    "precision lowp float;  \n"
+    "varying mediump vec2 v_texCoord;  \n"
+    "varying lowp vec3 v_eye_dir;  \n"
+    "varying mediump vec3 v_normal;  \n"
+    "varying lowp vec3 v_specular_dir[2];  \n"
+    "varying lowp vec3 v_lightvec[2];  \n"
+    "uniform sampler2D  s_texture[3];  \n"
+    "uniform lowp vec3  u_AmbientColor[2];  \n"
+    "uniform lowp vec3 u_DiffuseColor[2];\n"
+    "uniform lowp vec3 u_SpecularColor[2];\n"
+    "uniform mediump float u_SpecularPower;\n"
+    "uniform lowp vec3 u_RimColor;\n"
+    "uniform highp float u_TexBiasDiffuse; \n"
+    "uniform highp float u_TexBiasNormal; \n"
+    "uniform lowp float u_IsGlowMat;\n"
+    "void main()  \n"
+    "{  \n"
+    "\tlowp vec4 colorTex   = texture2D( s_texture[0], v_texCoord, u_TexBiasDiffuse );  \n"
+    "\tlowp vec4 normalTex  = texture2D( s_texture[1], v_texCoord, u_TexBiasNormal );  \n"
+    "\tlowp vec3 normalTexX = normalTex.rgb*2.0 -1.0;  \n"
+    "\tlowp vec4 specTex = vec4(vec3(normalTex.a), 0.0);\t \n"
+    "\tfloat specularIntensity1 = pow( clamp(dot( v_specular_dir[0],normalTexX ), 0.0, 1.0), u_SpecularPower );  \n"
+    "\tfloat specularIntensity2 = pow( clamp(dot( v_specular_dir[1],normalTexX ), 0.0, 1.0), u_SpecularPower );  \n"
+    "\t//lowp vec4 specular1 = texture2D( s_texture[2], vec2(abs(dot( v_specular_dir[0],normalTexX )),normalTex.a) );  \n"
+    "\tlowp float diffuseIntensity1  = clamp( dot( normalTexX    ,v_lightvec[0] ), 0.0, 1.0 );  \n"
+    "\t//lowp vec4 specular2 = texture2D( s_texture[2], vec2(abs(dot( v_specular_dir[1],normalTexX )),normalTex.a) );  \n"
+    "\tlowp float diffuseIntensity2  = clamp( dot( normalTexX    ,v_lightvec[1] ), 0.0, 1.0 );  \n"
+    "\t//lowp vec3 rim_effect = (smoothstep(0.7, 1.0, 1.0 - dot( v_eye_dir,normalTexX )))* normalTex.a* u_RimColor;  \n"
+    "   if ( (u_IsGlowMat + colorTex.a) > 1.1) {\n"
+    "       gl_FragColor.rgb = colorTex.rgb;\t\n"
+    "\t} else {\t\n"
+    "\t\tgl_FragColor.rgb = (u_AmbientColor[0] + u_AmbientColor[1] + diffuseIntensity1*u_DiffuseColor[0] + diffuseIntensity2*u_DiffuseColor[1]) * colorTex.rgb  + (specularIntensity1 * u_SpecularColor[0] + specularIntensity2 * u_SpecularColor[1]) * specTex.rgb;  \n"
+    "\t\tgl_FragColor.a = colorTex.a; \n"
+    "\t\t//gl_FragColor.rgb = vec3( -0.5 * u_TexBias, 0.0, 0.0); \n"
+    "}  \n"
+    "}  \n";
+
+} // namespace EmbeddedBumpShaderV3
+
+namespace EmbeddedBumpShaderV4 {
+
+// ELF address 0x1ed820; 1470 bytes; SHA-256 213f5e4e7d1097767f7278ae7b77a3fd3a3b46953442a3da52216c2042daf852
+static constexpr const char vertex[] =
+    "attribute highp vec4 \ta_position;\t\t\n"
+    "attribute mediump vec2  a_texCoord;   \t\n"
+    "attribute highp vec3  \ta_normal; \t\t\n"
+    "attribute lowp vec3 \ta_tangent;\t\t\n"
+    "attribute lowp vec3 \ta_bitangent;\t\n"
+    "varying mediump vec2 v_texCoord;\t\t\n"
+    "varying mediump vec3 v_light_dir;\t\t\n"
+    "varying mediump vec3 v_eye_dir;\t\t\n"
+    "varying mediump vec3 v_lightvec;\t\t\n"
+    "varying mediump vec3 v_normal;\t\t\t\n"
+    "varying mediump vec3 v_specular_dir;\t\n"
+    "uniform highp mat4 u_ModelViewProjectionMatrix;\t\n"
+    "uniform highp vec3 u_lightdirmodel;\t\n"
+    "uniform highp vec3 u_eyeposmodel;\t\t\n"
+    "//uniform highp mat3 u_ModelMatrix;\t\n"
+    "void main()\t\t\t\t\t\t\t\n"
+    "{\t\t\t\t\t\t\t\t\t\t\n"
+    "\tgl_Position = u_ModelViewProjectionMatrix * a_position;\t\n"
+    "\tv_texCoord  = a_texCoord;\t\t\t\n"
+    "\tv_normal = a_normal;\t\t\t\t\n"
+    "\t//mediump vec3 bitangent = normalize(cross(a_normal, a_tangent)); \n"
+    "\thighp mat3 tangentSpaceXform = mat3(a_tangent.x, a_bitangent.x, a_normal.x,\t\n"
+    "\t\t\t\t\t\t\t\t\t\ta_tangent.y, a_bitangent.y, a_normal.y,\t\n"
+    "\t\t\t\t\t\t\t\t\t\ta_tangent.z, a_bitangent.z, a_normal.z\t\n"
+    "\t\t\t\t\t\t\t\t\t\t); \n"
+    "\t//v_eye_dir   = tangentSpaceXform * normalize(u_eyeposmodel - a_position.xyz); \n"
+    "\t//v_light_dir = tangentSpaceXform * u_lightdirmodel; \n"
+    "\tvec3 shininesDirection = normalize(normalize(u_eyeposmodel - a_position.xyz) + u_lightdirmodel) ; \n"
+    "\tv_specular_dir = tangentSpaceXform * shininesDirection; \n"
+    "\tv_lightvec = tangentSpaceXform * u_lightdirmodel; //tangentSpaceXform * shininesDirection; \n"
+    "\t//u_lightposmodel \n"
+    "\t//v_DiffuseLight.rgb = vec3(max(dot(a_normal, u_LightDirection), 0.0)); \n"
+    "\t//v_DiffuseLight.a = 1.0; \n"
+    "} \n";
+
+// ELF address 0x1edddf; 1098 bytes; SHA-256 bf88eb014508165716cb387d9e881b501cec56f5328f951c8b17012a9bf247d6
+static constexpr const char fragment[] =
+    "precision lowp float;\t\n"
+    "varying mediump vec2 v_texCoord;\t\n"
+    "varying mediump vec3 v_light_dir;\t\n"
+    "varying mediump vec3 v_eye_dir;\t\n"
+    "varying mediump vec3 v_lightvec;\t\n"
+    "varying mediump vec3 v_normal;\t\n"
+    "varying mediump vec3 v_specular_dir;\t\n"
+    "uniform sampler2D  s_texture[2];\t\n"
+    "void main()\t\n"
+    "{\t\n"
+    "\tlowp vec4 colorTex   = texture2D( s_texture[0], v_texCoord );\t\n"
+    "\tlowp vec4 normalTex  = texture2D( s_texture[1], v_texCoord );\t\n"
+    "\tlowp vec3 normalTexX = normalTex.rgb*2.0 - 1.0;\t\n"
+    "\tlowp vec4 specTex = vec4(vec3(normalTex.a), 0.0);\t\n"
+    "\tfloat specularIntensity = dot( v_specular_dir,normalTexX );\t\n"
+    "\tfloat diffuseIntensity  = max( dot( normalTexX    ,v_lightvec ), 0.22 );\t\n"
+    "\tlowp vec4 color;\t\n"
+    "\tif (specularIntensity > 0.99)\t\n"
+    "\t\tcolor = vec4(0.9, 0.9, 1.0, 1.0);\t\n"
+    "\telse if (specularIntensity > 0.95)\t\n"
+    "\t\tcolor = vec4(0.7, 0.7, 1.0, 1.0);\t\n"
+    "\telse if (specularIntensity > 0.5)\t\n"
+    "\t\tcolor = vec4(0.3, 0.3, 0.6, 1.0);\t\n"
+    "\telse if (specularIntensity > 0.25)\t\n"
+    "\t\tcolor = vec4(0.2, 0.2, 0.4, 1.0);\t\n"
+    "\telse \tcolor = vec4(0.1, 0.1, 0.2, 1.0);\t\n"
+    "\tgl_FragColor = colorTex*0.5+color; //diffuseIntensity * colorTex + specularIntensity * specTex;\t\n"
+    "}\t\n";
+
+} // namespace EmbeddedBumpShaderV4
+}

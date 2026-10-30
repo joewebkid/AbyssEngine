@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (BumpShaderV2/V3/V4 ARM sources and ABI)
+
+Six original ARM GLSL strings and the queried input names replace
+placeholders for BumpShaderV2/V3/V4. V2's missing 4-byte class slot
+restores the original uniform offsets; V3 now reads the real
+`Engine::lodBiasDiffuse/Normal` values instead of null pointers.
+Native and ARM64 builds pass; ARMv7 compiles 209/209 units. Focused
+V2 gains two linked-exact functions and V3 gains one. The full corpus
+compares **4,323/4,524** originals over 4,745 pairs, **94.86%
+source-shape / 84.44% strict fuzzy**, **2,641 linked-exact / 1,086
+byte-exact**, with no exact-set losses. A signed ARM64 test APK is
+prepared, but Play Protect blocked the preceding clone install on
+Poco X3; current shader rendering is unverified on device. Next,
+verify the permitted phone run and continue the remaining shader
+source gaps. See [BumpShader variant evidence](BUMP_SHADER_VARIANTS_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (VertexColorShader original source recovery)
 
 Original ARM supplies the 721-byte vertex and 583-byte fragment GLSL

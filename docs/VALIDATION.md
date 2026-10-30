@@ -4,6 +4,21 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## BumpShaderV2/V3/V4 ARM GLSL and ABI gate (2026-10-30)
+
+Six embedded GLSL strings are byte-identical to original ARM ELF ranges.
+V2's missing class slot restores the original `+0x38` first uniform
+offset; V3's texture-bias reads now use the original GOT-relocated
+`Engine::lodBiasDiffuse/Normal` globals. Native `gof2` and ARM64 builds
+pass, ARMv7 compiles 209/209 units, and a strict ARM64 shared library
+retains 53 JNI exports. Focused V2 has **6/6 linked-exact** (+2), V3
+**5/6** (+1), and V4 **6/6** (unchanged). The full ARM corpus compares
+**4,323/4,524**, **94.86% source-shape / 84.44% strict fuzzy**,
+**2,641 linked-exact / 1,086 byte-exact**, with zero skipped units and
+no exact-set losses. The signed APK has not been installed on Poco due
+to its Play Protect block; see
+[evidence and limits](BUMP_SHADER_VARIANTS_ARM_2026-10-30.md).
+
 ## VertexColorShader original GLSL and ARM gate (2026-10-30)
 
 The original ARM `VertexColorShader::Init` supplies two GLSL strings and

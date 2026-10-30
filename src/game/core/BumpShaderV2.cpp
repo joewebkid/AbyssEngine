@@ -1,4 +1,5 @@
 #include "game/core/BumpShaderV2.h"
+#include "game/core/EmbeddedBumpShaderVariants.h"
 #include <GLES2/gl2.h>
 #include "engine/render/Engine.h"
 #include "engine/render/Mesh.h"
@@ -13,24 +14,25 @@ namespace AbyssEngine {
     }
 
     void BumpShaderV2::Init(Engine *) {
-        this->program = this->ES2LoadProgram("BumpShaderV2.vsh", "BumpShaderV2.fsh");
+        this->program = this->ES2LoadProgram(EmbeddedBumpShaderV2::vertex,
+                                             EmbeddedBumpShaderV2::fragment);
 
         this->aPosition = glGetAttribLocation(this->program, "a_position");
-        this->aNormal = glGetAttribLocation(this->program, "a_normal");
-        this->aTexCoord = glGetAttribLocation(this->program, "a_texCoord");
+        this->aNormal = glGetAttribLocation(this->program, "a_texCoord");
+        this->aTexCoord = glGetAttribLocation(this->program, "a_normal");
         this->aTangent = glGetAttribLocation(this->program, "a_tangent");
-        this->aBinormal = glGetAttribLocation(this->program, "a_binormal");
+        this->aBinormal = glGetAttribLocation(this->program, "a_bitangent");
 
-        this->uMvpMatrix = glGetUniformLocation(this->program, "u_mvpMatrix");
-        this->uNormalMatrix = glGetUniformLocation(this->program, "u_normalMatrix");
-        this->uLightDir = glGetUniformLocation(this->program, "u_lightDir");
-        this->uEyePos = glGetUniformLocation(this->program, "u_eyePos");
-        this->uTexture0 = glGetUniformLocation(this->program, "u_texture0");
-        this->uTexture1 = glGetUniformLocation(this->program, "u_texture1");
-        this->uAmbient = glGetUniformLocation(this->program, "u_ambient");
-        this->uDiffuse = glGetUniformLocation(this->program, "u_diffuse");
-        this->uSpecular = glGetUniformLocation(this->program, "u_specular");
-        this->uEmissive = glGetUniformLocation(this->program, "u_emissive");
+        this->uMvpMatrix = glGetUniformLocation(this->program, "u_ModelViewProjectionMatrix");
+        this->uNormalMatrix = glGetUniformLocation(this->program, "u_ModelMatrix");
+        this->uLightDir = glGetUniformLocation(this->program, "u_lightdirmodel");
+        this->uEyePos = glGetUniformLocation(this->program, "u_eyeposmodel");
+        this->uTexture0 = glGetUniformLocation(this->program, "s_texture[0]");
+        this->uTexture1 = glGetUniformLocation(this->program, "s_texture[1]");
+        this->uAmbient = glGetUniformLocation(this->program, "glColor");
+        this->uDiffuse = glGetUniformLocation(this->program, "u_AmbientColor");
+        this->uSpecular = glGetUniformLocation(this->program, "u_DiffuseColor");
+        this->uEmissive = glGetUniformLocation(this->program, "u_SpecularColor");
 
         glUseProgram(this->program);
         for (int i = 0; i != 2; i++) {
