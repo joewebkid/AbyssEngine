@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (BlurShader RenderEffect matrix)
+
+The long BlurShader::RenderEffect now passes the 15-element Matrix
+observed in Android ARM, replacing a 16-float array with three
+incorrect trailing values and an unused final element. Native and
+ARM64 static builds pass; ARMv7 compiles 209/209 units. Focused long
+RenderEffect source-shape rises from **95.3% to 95.9%**, strict fuzzy
+from **53.6% to 57.8%**, and the family retains **6/10 linked-exact**.
+The full corpus compares **4,323/4,524** originals across 4,745
+pairs: **94.88% / 84.49%**, **2,656 linked-exact / 1,087 byte-exact**,
+zero skipped, 201 missing, and unchanged exact sets. The current
+SetWorldViewMatrix path reads only the first 12 values, so visual
+impact is unproven; long RenderEffect semantics and Poco output
+remain unverified. Next, investigate its remaining GL-state flow.
+See [matrix evidence](BLUR_RENDEREFFECT_MATRIX_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (BlurShader platform and dimensions)
 
 BlurShader now uses ELF-verified GLSL and query names on Windows,

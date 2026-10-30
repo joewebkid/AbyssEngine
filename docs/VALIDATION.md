@@ -4,6 +4,19 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## BlurShader RenderEffect matrix gate (2026-10-30)
+
+The long overload passes the original 15-element Matrix instead of
+a misclassified 16-float array. Native gof2 and ARM64 static builds
+pass; ARMv7 compiles 209/209 units. Focused long RenderEffect rises
+to **95.9% source-shape / 57.8% strict fuzzy**, remains nonexact,
+and the family retains **6/10 linked-exact**. Full corpus:
+**4,323/4,524** originals across 4,745 pairs, **94.88% / 84.49%**,
+**2,656 linked-exact / 1,087 byte-exact**, zero skipped, 201 missing,
+and unchanged exact-symbol sets. Visual effect and complete long
+RenderEffect semantics are unverified; see
+[evidence and limits](BLUR_RENDEREFFECT_MATRIX_ARM_2026-10-30.md).
+
 ## BlurShader platform and dimension gate (2026-10-30)
 
 The Windows path uses ELF-verified GLSL and GL names, zeroes the

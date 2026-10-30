@@ -72,12 +72,11 @@ namespace AbyssEngine {
         engine->projMatrix[12] = -1.0f;
         engine->projMatrix[13] = 1.0f;
         engine->projMatrix[15] = 1.0f;
-        float matrix[16] = {};
-        matrix[0] = 1.0f;
-        matrix[5] = 1.0f;
-        matrix[10] = 1.0f;
-        matrix[15] = 1.0f;
-        engine->SetWorldViewMatrix(*reinterpret_cast<const Matrix *>(matrix));
+        Matrix matrix(1.0f, 0.0f, 0.0f, 0.0f,
+                      0.0f, 1.0f, 0.0f, 0.0f,
+                      0.0f, 0.0f, 1.0f, 0.0f,
+                      1.0f, 1.0f, 1.0f);
+        engine->SetWorldViewMatrix(matrix);
 
         glDisable(0xb71);
         glDepthMask(0);
