@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-30 (BoundingVolume projection vector)
+
+`BoundingVolume::getProjectionVector` now reads the center directly
+from its Vector-shaped fields and follows the original subtraction,
+normalization, and assignment calls. Focused ARM source-shape improves
+**85.2% → 100%**, strict fuzzy **66.7% → 100%**; the function becomes
+linked-exact but remains non-byte-exact. Native and ARM64 static builds
+pass; ARMv7 compiles 209/209 units. The full corpus compares
+**4,323/4,524** originals across 4,745 pairs: **94.91% source-shape /
+84.56% strict fuzzy**, **2,661 linked-exact / 1,088 byte-exact**,
+zero skipped and 201 missing, with no exact-set losses. Live projection
+behavior remains unverified while phone testing is deferred. Next,
+recover `BoundingVolume` child ownership and destruction from its ARM
+helper calls; the current path mixes `new[]` storage with `realloc`.
+See [projection evidence](BOUNDING_VOLUME_PROJECTION_ARM_2026-10-30.md).
+
 Last reviewed: 2026-10-30 (BoundingVolume collide)
 
 `BoundingVolume::collide` now reloads its child array and count after

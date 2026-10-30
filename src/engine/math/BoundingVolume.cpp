@@ -83,9 +83,7 @@ void BoundingVolume::update(float x, float y, float z) {
 }
 
 Vector BoundingVolume::getProjectionVector(const Vector &v) {
-    Vector center;
-    center.x = centerX;
-    center.y = centerY;
-    center.z = centerZ;
-    return AEMath::VectorNormalize(v - center);
+    Vector result = v - *reinterpret_cast<const Vector *>(&centerX);
+    result = AEMath::VectorNormalize(result);
+    return result;
 }

@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## BoundingVolume projection-vector gate (2026-10-30)
+
+The center is read directly from its Vector-shaped fields, followed by
+the original subtract, normalize, and assign calls. Native `gof2` and
+ARM64 static builds pass; ARMv7 compiles 209/209 units. Focused
+`getProjectionVector` reaches **100% source-shape / 100% strict fuzzy**
+and becomes linked-exact, but remains non-byte-exact. Full corpus:
+**4,323/4,524** originals over 4,745 pairs, **94.91% / 84.56%**,
+**2,661 linked-exact / 1,088 byte-exact**, zero skipped and 201 missing.
+Both exact-symbol sets have no losses. Live behavior remains unverified;
+see [evidence and limits](BOUNDING_VOLUME_PROJECTION_ARM_2026-10-30.md).
+
 ## BoundingVolume collide gate (2026-10-30)
 
 The child loop reloads its array and count after each unsuccessful
