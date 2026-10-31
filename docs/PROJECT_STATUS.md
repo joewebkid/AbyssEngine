@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-10-31 (NFC menu-link JNI calls)
+
+`NFC::interface_path` now points to the original
+`NativeFunctionCalls` Java class, and four menu actions use their
+confirmed static method names and `()V` signatures. Windows and
+ARM64 static builds pass; ARMv7 compiles 209/209 units. Full corpus
+compares **4,323/4,524** originals over 4,752 pairs: **95.29%
+source-shape / 84.99% strict fuzzy**, **2,687 linked-exact / 1,091
+byte-exact**, zero skipped and 201 missing. Complete exact sets have
+no losses. Live menu behavior remains unverified while device work is
+deferred. Next offline priority: recover purchase and free-credit
+`NFC` wrappers in bounded groups, starting with their shared JNI
+environment and purchase flag. See
+[menu-link JNI evidence](NFC_MENU_LINKS_JNI_ARM_2026-10-31.md).
+
 Last reviewed: 2026-10-31 (NFC DeviceInfo JNI calls)
 
 `NFC::isPad`, `getWidth`, and `getHeight` now use the original Android

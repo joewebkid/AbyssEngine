@@ -79,7 +79,7 @@ public:
     int getHeight();
 
     // Static data members present in the original binary (defined for symbol parity).
-    static void *interface_path;
+    static const char *interface_path;
 };
 
 // The original exports this as a plain global (symbol `g_android_back_button_pressed`),

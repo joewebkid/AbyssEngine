@@ -187,43 +187,47 @@ void NFC::free_credits_followOnTwitter() {
 }
 
 void NFC::showMoreGames() {
-    void *env = *nfc_env;
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
     if (env == nullptr)
         return;
-
-    void *cls = nfc_find_class(env, *nfc_class_slot);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    NFC_CallStaticVoidMethod(env, cls, method);
+    jclass cls = env->FindClass(interface_path);
+    jmethodID method = env->GetStaticMethodID(cls, "showMoreGames", "()V");
+    env->CallStaticVoidMethod(cls, method);
+#endif
 }
 
 void NFC::rateGame() {
-    void *env = *nfc_env;
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
     if (env == nullptr)
         return;
-
-    void *cls = nfc_find_class(env, *nfc_class_slot);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    NFC_CallStaticVoidMethod(env, cls, method);
+    jclass cls = env->FindClass(interface_path);
+    jmethodID method = env->GetStaticMethodID(cls, "rateGame", "()V");
+    env->CallStaticVoidMethod(cls, method);
+#endif
 }
 
 void NFC::openTermsOfService() {
-    void *env = *nfc_env;
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
     if (env == nullptr)
         return;
-
-    void *cls = nfc_find_class(env, *nfc_class_slot);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    NFC_CallStaticVoidMethod(env, cls, method);
+    jclass cls = env->FindClass(interface_path);
+    jmethodID method = env->GetStaticMethodID(cls, "openTermsOfService", "()V");
+    env->CallStaticVoidMethod(cls, method);
+#endif
 }
 
 void NFC::openPrivacyPolicy() {
-    void *env = *nfc_env;
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
     if (env == nullptr)
         return;
-
-    void *cls = nfc_find_class(env, *nfc_class_slot);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    NFC_CallStaticVoidMethod(env, cls, method);
+    jclass cls = env->FindClass(interface_path);
+    jmethodID method = env->GetStaticMethodID(cls, "openPrivacyPolicy", "()V");
+    env->CallStaticVoidMethod(cls, method);
+#endif
 }
 
 bool NFC::isPad() {
@@ -342,4 +346,4 @@ extern "C" void Java_net_fishlabs_gof2hdallandroid2012_ToJNI_BackButtonPressed()
 }
 
 // Static data members present in the original binary (defined for symbol parity).
-void *NFC::interface_path;
+const char *NFC::interface_path = "net/fishlabs/gof2hdallandroid2012/NativeFunctionCalls";
