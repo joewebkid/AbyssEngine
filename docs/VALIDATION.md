@@ -4,6 +4,17 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## Hangar social-credit reward table (2026-10-31)
+
+The six 32-bit words in the recovered ARMv7 `.rodata` table match all
+24 bytes at original ELF address `0x202844`. Slot 4 is **5,000**
+credits, used for both the offer text and reward; it was previously
+**7,500**. Windows and ARM64 static builds pass; ARMv7 compiles
+209/209 units. Full corpus compares **4,323/4,524** originals over
+4,752 pairs, **95.55% / 85.16%**, **2,687 linked-exact / 1,091
+byte-exact**, zero skipped and 201 missing; complete exact sets have
+no losses. See [evidence and limits](HANGAR_SOCIAL_REWARD_TABLE_ARM_2026-10-31.md).
+
 ## NFC restore and free-credit actions (2026-10-31)
 
 Six original ARM functions check `g_pEnv` and call matching static

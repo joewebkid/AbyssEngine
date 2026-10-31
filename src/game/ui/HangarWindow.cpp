@@ -129,8 +129,9 @@ static uint8_t g_hangarStoreBuyHintShown = 0;
 static uint8_t g_hangarStoreSellHintShown = 0;
 static uint8_t g_hangarSlotHintShown = 0;
 // Android dword_202844 at 0x202844. Slot zero is the record-store action;
-// slots 1..4 are the four visible social-credit offers.
-static constexpr int kHangarSocialCreditReward[5] = {0, 7500, 5000, 5000, 7500};
+// slots 1..4 are the four visible social-credit offers; slot 5 is retained
+// in the original table even though the touch loop stops before it.
+static constexpr int kHangarSocialCreditReward[6] = {0, 7500, 5000, 5000, 5000, 7500};
 
 // Android stores a reserved byte followed by five offer flags. The fifth
 // flag is read by the credit-menu gate and persisted by RecordHandler, but

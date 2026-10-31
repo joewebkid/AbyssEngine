@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-10-31 (hangar social-credit reward table)
+
+The hangar social-credit table now matches all six original Android
+ARM words. The fourth visible offer displays and awards **5,000**
+credits rather than **7,500**. Direct comparison confirms all 24
+ARMv7 object bytes match the original table. Windows and ARM64 static
+builds pass; ARMv7 compiles 209/209 units. Full corpus remains
+**4,323/4,524** originals over 4,752 pairs, **95.55% source-shape /
+85.16% strict fuzzy**, **2,687 linked-exact / 1,091 byte-exact**,
+zero skipped and 201 missing. Complete exact sets have no losses.
+The offerwall credit callback is already linked-exact. Live reward
+persistence remains unverified while device work is deferred. Next
+offline priority: compare hangar claim flags and their saved options
+mapping with original ARM evidence. See
+[reward-table evidence](HANGAR_SOCIAL_REWARD_TABLE_ARM_2026-10-31.md).
+
 Last reviewed: 2026-10-31 (NFC restore and free-credit actions)
 
 `NFC::iap_restore_purchases` and five `free_credits_*` actions now use
