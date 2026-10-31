@@ -36,7 +36,7 @@ int setBaughtCredits(int amount) {
     int *packFlag;
     if (amount == 10000000) {
         Globals::status->changeCredits(amount);
-        packFlag = &gi_iap_buy_credit_pack1_pressed;
+        packFlag = &gi_iap_buy_credit_pack5_pressed;
     } else if (amount == 300000) {
         Globals::status->changeCredits(amount);
         packFlag = &gi_iap_buy_credit_pack2_pressed;
@@ -48,7 +48,7 @@ int setBaughtCredits(int amount) {
         packFlag = &gi_iap_buy_credit_pack4_pressed;
     } else if (amount == 100000) {
         Globals::status->changeCredits(amount);
-        packFlag = &gi_iap_buy_credit_pack5_pressed;
+        packFlag = &gi_iap_buy_credit_pack1_pressed;
     } else {
         return 0;
     }

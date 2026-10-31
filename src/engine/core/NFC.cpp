@@ -9,6 +9,11 @@ extern int gi_iap_buy_dlc2_pressed;
 extern int gi_iap_buy_dlc3_pressed;
 extern int gi_iap_buy_dlc4_pressed;
 extern int gi_iap_buy_dlc5_pressed;
+extern int gi_iap_buy_credit_pack1_pressed;
+extern int gi_iap_buy_credit_pack2_pressed;
+extern int gi_iap_buy_credit_pack3_pressed;
+extern int gi_iap_buy_credit_pack4_pressed;
+extern int gi_iap_buy_credit_pack5_pressed;
 #endif
 
 static void **nfc_env;
@@ -82,58 +87,63 @@ void NFC::iap_buy_dlc_valkyrie() {
 }
 
 void NFC::iap_buy_credits_100_000() {
-    void *env = *nfc_env;
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
     if (env == nullptr)
         return;
-
-    *nfc_purchase_flag = 1;
-    void *cls = nfc_find_class(env, *nfc_class_slot);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    NFC_CallStaticVoidMethod(env, cls, method);
+    gi_iap_buy_credit_pack1_pressed = 1;
+    jclass cls = env->FindClass(interface_path);
+    jmethodID method = env->GetStaticMethodID(cls, "iap_buy_credits_100_000", "()V");
+    env->CallStaticVoidMethod(cls, method);
+#endif
 }
 
 void NFC::iap_buy_credits_300_000() {
-    void *env = *nfc_env;
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
     if (env == nullptr)
         return;
-
-    *nfc_purchase_flag = 1;
-    void *cls = nfc_find_class(env, *nfc_class_slot);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    NFC_CallStaticVoidMethod(env, cls, method);
+    gi_iap_buy_credit_pack2_pressed = 1;
+    jclass cls = env->FindClass(interface_path);
+    jmethodID method = env->GetStaticMethodID(cls, "iap_buy_credits_300_000", "()V");
+    env->CallStaticVoidMethod(cls, method);
+#endif
 }
 
 void NFC::iap_buy_credits_1_000_000() {
-    void *env = *nfc_env;
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
     if (env == nullptr)
         return;
-
-    *nfc_purchase_flag = 1;
-    void *cls = nfc_find_class(env, *nfc_class_slot);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    NFC_CallStaticVoidMethod(env, cls, method);
+    gi_iap_buy_credit_pack3_pressed = 1;
+    jclass cls = env->FindClass(interface_path);
+    jmethodID method = env->GetStaticMethodID(cls, "iap_buy_credits_1_000_000", "()V");
+    env->CallStaticVoidMethod(cls, method);
+#endif
 }
 
 void NFC::iap_buy_credits_3_000_000() {
-    void *env = *nfc_env;
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
     if (env == nullptr)
         return;
-
-    *nfc_purchase_flag = 1;
-    void *cls = nfc_find_class(env, *nfc_class_slot);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    NFC_CallStaticVoidMethod(env, cls, method);
+    gi_iap_buy_credit_pack4_pressed = 1;
+    jclass cls = env->FindClass(interface_path);
+    jmethodID method = env->GetStaticMethodID(cls, "iap_buy_credits_3_000_000", "()V");
+    env->CallStaticVoidMethod(cls, method);
+#endif
 }
 
 void NFC::iap_buy_credits_10_000_000() {
-    void *env = *nfc_env;
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
     if (env == nullptr)
         return;
-
-    *nfc_purchase_flag = 1;
-    void *cls = nfc_find_class(env, *nfc_class_slot);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    NFC_CallStaticVoidMethod(env, cls, method);
+    gi_iap_buy_credit_pack5_pressed = 1;
+    jclass cls = env->FindClass(interface_path);
+    jmethodID method = env->GetStaticMethodID(cls, "iap_buy_credits_10_000_000", "()V");
+    env->CallStaticVoidMethod(cls, method);
+#endif
 }
 
 void NFC::iap_restore_purchases() {

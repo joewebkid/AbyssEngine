@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-10-31 (NFC credit-pack requests and callback)
+
+Five `NFC` credit-pack wrappers now use the original JNI environment,
+per-pack request flags, and Java method names. The corresponding
+`setBaughtCredits` callback now maps 100,000 credits to `pack1` and
+10,000,000 to `pack5` as the original ARM does. Windows and ARM64
+static builds pass; ARMv7 compiles 209/209 units. Full corpus compares
+**4,323/4,524** originals over 4,752 pairs: **95.45% source-shape /
+85.09% strict fuzzy**, **2,687 linked-exact / 1,091 byte-exact**,
+zero skipped and 201 missing. Complete exact sets have no losses.
+Live store requests and callback timing remain unverified while device
+work is deferred. Next offline priority: recover restore-purchases and
+free-credit `NFC` wrappers in separate bounded packets. See
+[credit purchase evidence](NFC_CREDIT_PURCHASE_ARM_2026-10-31.md).
+
 Last reviewed: 2026-10-31 (NFC DLC purchase requests)
 
 Five `NFC` DLC wrappers now use the original `g_pEnv`, their distinct
