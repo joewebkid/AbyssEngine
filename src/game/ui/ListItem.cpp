@@ -231,16 +231,8 @@ ListItem::ListItem(AbyssEngine::String *src, bool b, int v) {
     this->selectable = b;
 }
 
-void *ListItem::init() {
-    this->lines = 0;
-    this->agent = 0;
-    this->bluePrint = 0;
-    this->ship = 0;
-    this->item = 0;
-    this->mission = 0;
-    this->pendingProduct = 0;
-    this->name = 0;
-    this->name2 = 0;
+// The original ARM constructors call this helper rather than inlining it.
+__attribute__((noinline)) void *ListItem::init() {
     this->selectable = 0;
     this->slot = -1;
     this->itemId = -1;
@@ -249,7 +241,16 @@ void *ListItem::init() {
     this->textButton = 0;
     this->inTabIndex = -1;
     this->subTabIndex = -1;
+    this->mission = 0;
+    this->pendingProduct = 0;
+    this->name = 0;
+    this->name2 = 0;
     this->text = 0;
+    this->craftable = 0;
+    this->agent = 0;
+    this->bluePrint = 0;
+    this->ship = 0;
+    this->item = 0;
     return &this->agent;
 }
 
