@@ -7,6 +7,8 @@ The original Android `libgof2hdaa.so` (SHA-256
 exports `Globals::options` as a 100-byte object at `0x2181e8`. The six social
 offer bytes at `0x218230..0x218235` are therefore offsets `0x48..0x4d` of this
 object. The credit-menu viewed byte `byte_218236` is offset `0x4e`.
+That same byte gates the first hangar dialog; its source binding was completed
+in `HANGAR_HINT_FLAGS_PERSISTENCE_ARM_2026-10-31.md`.
 
 REA/IDA pseudocode for `HangarWindow::render` (`0x1490d8`) reads the five
 offer flags and the viewed byte. `HangarWindow::OnTouchEnd` (`0x14c740`)

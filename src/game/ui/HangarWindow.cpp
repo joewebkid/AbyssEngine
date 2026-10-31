@@ -120,14 +120,12 @@ static const char hw_buy2_yes[1] = "", hw_buy2_no[1] = "", hw_buy2_icon[1] = "";
 static float hw_buy_heightScale;
 static const char hw_init_buy[1] = "", hw_init_sell[1] = "", hw_init_lbl[1] = "",
         hw_init_more[1] = "", hw_init_back[1] = "", hw_init_help[1] = "";
-static uint8_t g_hangarIntroShown = 0;
-// Android keeps these one-shot Store explanations in standalone globals
-// (HIBYTE(word_218268) and byte_21826A). Their owning options record has not
-// been typed yet, but the flags must remain valid host storage rather than
-// dereferencing the retired g_hw_itemFlags shim.
-static uint8_t g_hangarStoreBuyHintShown = 0;
-static uint8_t g_hangarStoreSellHintShown = 0;
-static uint8_t g_hangarSlotHintShown = 0;
+// Android 0x218269..0x21826b are bytes 0x1d..0x1f of Globals::hints.
+// RecordHandler saves them with the game record; GameRecord::load restores
+// them as part of the 0x18..0x27 hint block.
+static uint8_t &g_hangarStoreBuyHintShown = Globals::hints[0x1d];
+static uint8_t &g_hangarStoreSellHintShown = Globals::hints[0x1e];
+static uint8_t &g_hangarSlotHintShown = Globals::hints[0x1f];
 // Android dword_202844 at 0x202844. Slot zero is the record-store action;
 // slots 1..4 are the four visible social-credit offers; slot 5 is retained
 // in the original table even though the touch loop stops before it.
@@ -135,7 +133,8 @@ static constexpr int kHangarSocialCreditReward[6] = {0, 7500, 5000, 5000, 5000, 
 
 // Android addresses 0x218230..0x218236 belong to Globals::options at
 // 0x2181e8. RecordHandler loads and saves these exact bytes. Slot zero of the
-// offer flags is reserved; slots 1..5 are the five social offers.
+// offer flags is reserved; slots 1..5 are the five social offers. The viewed
+// byte also gates the first hangar introduction dialog.
 static uint8_t &g_hangarCreditOfferShown = Globals::options[0x4e];
 static uint8_t *const g_hangarSocialCreditClaimed = Globals::options + 0x48;
 
@@ -3536,9 +3535,9 @@ void HangarWindow::initialize() {
     self->scrollOffsetBackup = 0;
     self->scrollDelta = 0;
 
-    if (Globals::status->getCurrentCampaignMission() >= 14 && g_hangarIntroShown == 0) {
+    if (Globals::status->getCurrentCampaignMission() >= 14 && g_hangarCreditOfferShown == 0) {
         self->dialog->set(*Globals::gameText->getText(109));
-        g_hangarIntroShown = 1;
+        g_hangarCreditOfferShown = 1;
         static_cast<RecordHandler *>(Globals::recordHandler)->saveOptions();
         self->dialogActive = 1;
     }
