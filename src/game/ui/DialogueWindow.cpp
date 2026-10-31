@@ -18,11 +18,6 @@
 #include "game/ui/TouchButton.h"
 
 
-struct EngineSoundConfig {
-    char field_0x0[0xe];
-    uint8_t autoAdvanceEnabled;
-};
-
 int DialogueWindow::OnTouchBegin(int x, int y) {
     if (this->choiceActive != 0) {
         this->choiceWindow->OnTouchBegin(x, y);
@@ -297,12 +292,6 @@ DialogueWindow::DialogueWindow() {
 }
 
 
-static EngineSoundConfig g_dw_soundConfig_storage;
-static EngineSoundConfig *g_dw_soundConfig = &g_dw_soundConfig_storage;
-
-static FModSound *g_dw_fmodSound_storage = nullptr;
-static FModSound **g_dw_fmodSound = &g_dw_fmodSound_storage;
-
 void DialogueWindow::update(int dt) {
     if (this->scrollWindow != 0) {
         this->scrollWindow->update(dt);
@@ -310,10 +299,9 @@ void DialogueWindow::update(int dt) {
     if (this->choiceActive != 0) {
         this->choiceWindow->update(dt);
     }
-    if (g_dw_soundConfig->autoAdvanceEnabled != 0 && this->voiceSound != -1) {
-        FModSound *sound = *g_dw_fmodSound;
-        sound->getPlayingProgress(this->voiceSound);
-        if (sound->isPlaying(this->voiceSound) == 0 && this->isLastPage() == 0) {
+    if (Globals::options[0x0e] != 0 && this->voiceSound != -1) {
+        Globals::sound->getPlayingProgress(this->voiceSound);
+        if (Globals::sound->isPlaying(this->voiceSound) == 0 && this->isLastPage() == 0) {
             if (this->autoAdvanceTimer >= this->pauseLength) {
                 this->nextPage();
             }
