@@ -326,11 +326,10 @@ The following forms are deliberately not present in the recovered source:
 The Android `render` gate reads bytes 1, 2 and 3 of `dword_218230` plus both
 bytes of `word_218234` (five offers after a reserved byte). `OnTouchEnd`
 uses the same five-offer completion condition, and `RecordHandler` reads and
-writes the fifth flag. The local stand-in array now has six slots and checks
-indices 1..5 rather than 0..4. Its persistence binding to the recovered
-options record is still missing; the fifth local slot remains zero until that
-shared data owner is typed. This is an evidence-backed bound correction, not
-a claim of restored option persistence or an ARM match gain.
+writes the fifth flag. The six-slot boundary correction was made here first.
+The later options-record binding, including the credit-menu flag at
+`byte_218236`, is documented in
+`HANGAR_CREDIT_FLAGS_PERSISTENCE_ARM_2026-10-31.md`.
 
 ## Item Row Ordering
 

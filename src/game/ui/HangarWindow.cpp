@@ -133,11 +133,11 @@ static uint8_t g_hangarSlotHintShown = 0;
 // in the original table even though the touch loop stops before it.
 static constexpr int kHangarSocialCreditReward[6] = {0, 7500, 5000, 5000, 5000, 7500};
 
-// Android stores a reserved byte followed by five offer flags. The fifth
-// flag is read by the credit-menu gate and persisted by RecordHandler, but
-// the local options-record binding is not typed yet.
-static uint8_t g_hangarCreditOfferShown = 0;
-static uint8_t g_hangarSocialCreditClaimed[6] = {};
+// Android addresses 0x218230..0x218236 belong to Globals::options at
+// 0x2181e8. RecordHandler loads and saves these exact bytes. Slot zero of the
+// offer flags is reserved; slots 1..5 are the five social offers.
+static uint8_t &g_hangarCreditOfferShown = Globals::options[0x4e];
+static uint8_t *const g_hangarSocialCreditClaimed = Globals::options + 0x48;
 
 bool HangarWindow::isInSpecialMode() {
     if (this->specialMode != 0) return true;
