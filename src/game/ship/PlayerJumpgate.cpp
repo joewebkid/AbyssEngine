@@ -60,8 +60,7 @@ void PlayerJumpgate::setPosition(float x, float y, float z) {
     this->positionX = (int) x;
     this->positionY = (int) y;
     this->positionZ = (int) z;
-    Vector pos = {x, y, z};
-    this->geometry->setPosition(pos);
+    this->geometry->setPosition(x, y, z);
 }
 
 PlayerJumpgate::PlayerJumpgate(int playerId, AEGeometry *geometry, float x, float y, float z,
