@@ -1,7 +1,11 @@
 #include "game/world/SpacePoint.h"
 
 SpacePoint::SpacePoint(int type, const Vector &position, const Vector &direction, int param)
-    : position(position), direction(direction), type(type), free(1), param(param) {
+    : position{}, direction{}, type(type) {
+    this->position = position;
+    this->direction = direction;
+    this->free = 1;
+    this->param = param;
 }
 
 void SpacePoint::giveFree() {
