@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-10-31 (NFC DLC purchase requests)
+
+Five `NFC` DLC wrappers now use the original `g_pEnv`, their distinct
+`gi_iap_buy_dlcN_pressed` flags, and their confirmed Java method names.
+The Android bridge already consumes and clears those flags. Windows
+and ARM64 static builds pass; ARMv7 compiles 209/209 units. Full corpus
+compares **4,323/4,524** originals over 4,752 pairs: **95.37%
+source-shape / 85.04% strict fuzzy**, **2,687 linked-exact / 1,091
+byte-exact**, zero skipped and 201 missing. Complete exact sets have
+no losses. Actual purchase UI and callbacks remain unverified while
+device work is deferred. Next offline priority: recover credit-pack
+`NFC` wrappers and their matching per-pack request flags. See
+[DLC JNI evidence](NFC_DLC_PURCHASE_JNI_ARM_2026-10-31.md).
+
 Last reviewed: 2026-10-31 (NFC menu-link JNI calls)
 
 `NFC::interface_path` now points to the original

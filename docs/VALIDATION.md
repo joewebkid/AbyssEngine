@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## NFC DLC purchase requests (2026-10-31)
+
+The five original ARM wrappers set separate `gi_iap_buy_dlcN_pressed`
+flags after checking `g_pEnv`, then call matching static Java methods.
+The recovered wrappers now follow that path. Windows and ARM64 static
+builds pass; ARMv7 compiles 209/209 units. Focused source-shape rises
+**20.5% → 96.1%** for each wrapper. Full corpus compares
+**4,323/4,524** originals over 4,752 pairs, **95.37% / 85.04%**,
+**2,687 linked-exact / 1,091 byte-exact**, zero skipped and 201
+missing; complete exact sets have no losses. See
+[evidence and limits](NFC_DLC_PURCHASE_JNI_ARM_2026-10-31.md).
+
 ## NFC menu-link JNI calls (2026-10-31)
 
 The original ARM `NFC::interface_path` data relocation points to
