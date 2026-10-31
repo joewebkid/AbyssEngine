@@ -80,7 +80,7 @@ int ListItem::checkSlot() {
 
 ListItem::ListItem(AbyssEngine::String *src, int v) {
     this->init();
-    this->name = new AbyssEngine::String(*src);
+    this->name = new AbyssEngine::String(*src, false);
     this->buttonKind = v;
     this->selectable = 0;
 }
@@ -93,8 +93,8 @@ ListItem::ListItem(int v) {
 
 ListItem::ListItem(AbyssEngine::String *p1, AbyssEngine::String *p2) {
     this->init();
-    this->name = new AbyssEngine::String(*p1);
-    this->name2 = new AbyssEngine::String(*p2);
+    this->name = new AbyssEngine::String(*p1, false);
+    this->name2 = new AbyssEngine::String(*p2, false);
     this->selectable = 0;
 }
 
@@ -105,7 +105,7 @@ bool ListItem::isImage() {
 ListItem::ListItem(int a, int b, AbyssEngine::String *src) {
     this->init();
     this->imageIndex = a;
-    this->name = new AbyssEngine::String(*src);
+    this->name = new AbyssEngine::String(*src, false);
     this->slot = b;
     this->selectable = 1;
 }
@@ -162,7 +162,7 @@ bool ListItem::checkCredits() {
 
 ListItem::ListItem(AbyssEngine::String *p1, bool b) {
     this->init();
-    this->name = new AbyssEngine::String(*p1);
+    this->name = new AbyssEngine::String(*p1, false);
     this->text = b;
     this->selectable = 0;
 }
@@ -207,7 +207,7 @@ bool ListItem::isSellButton() {
 
 ListItem::ListItem(AbyssEngine::String *src) {
     this->init();
-    this->name = new AbyssEngine::String(*src);
+    this->name = new AbyssEngine::String(*src, false);
     this->selectable = 0;
 }
 
@@ -225,7 +225,7 @@ ListItem::ListItem(Agent *a) {
 
 ListItem::ListItem(AbyssEngine::String *src, bool b, int v) {
     this->init();
-    this->name = new AbyssEngine::String(*src);
+    this->name = new AbyssEngine::String(*src, false);
     this->textButton = 1;
     this->buttonKind = v;
     this->selectable = b;
@@ -263,8 +263,8 @@ ListItem::ListItem(ListItem *src) {
     this->mission = src->mission;
     this->selectable = src->selectable;
 
-    this->name = src->name ? new AbyssEngine::String(*src->name) : 0;
-    this->name2 = src->name2 ? new AbyssEngine::String(*src->name2) : 0;
+    this->name = src->name ? new AbyssEngine::String(*src->name, false) : 0;
+    this->name2 = src->name2 ? new AbyssEngine::String(*src->name2, false) : 0;
 
     this->slot = src->slot;
     this->itemId = src->itemId;
