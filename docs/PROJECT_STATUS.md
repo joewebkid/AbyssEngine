@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-10-31 (NFC restore and free-credit actions)
+
+`NFC::iap_restore_purchases` and five `free_credits_*` actions now use
+their ARM-confirmed Java methods through `g_pEnv` and
+`NFC::interface_path`. Unused null JNI placeholders were removed.
+Windows and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+Full corpus compares **4,323/4,524** originals over 4,752 pairs:
+**95.55% source-shape / 85.16% strict fuzzy**, **2,687 linked-exact /
+1,091 byte-exact**, zero skipped and 201 missing. Complete exact sets
+have no losses. Live Java actions and reward callbacks remain
+unverified while device work is deferred. Next offline priority:
+compare the offerwall reward callback and `HangarWindow` handoff with
+the original ARM and APK Java evidence. See
+[restore/free-credit JNI evidence](NFC_RESTORE_FREE_CREDIT_JNI_ARM_2026-10-31.md).
+
 Last reviewed: 2026-10-31 (NFC credit-pack requests and callback)
 
 Five `NFC` credit-pack wrappers now use the original JNI environment,

@@ -16,13 +16,6 @@ extern int gi_iap_buy_credit_pack4_pressed;
 extern int gi_iap_buy_credit_pack5_pressed;
 #endif
 
-static void **nfc_env;
-static int *nfc_purchase_flag;
-static void **nfc_class_slot;
-static char nfc_class_name[1];
-static const char nfc_method_name[1] = {0};
-static const char nfc_method_sig[1] = {0};
-
 NFC::NFC() {
 }
 
@@ -147,63 +140,69 @@ void NFC::iap_buy_credits_10_000_000() {
 }
 
 void NFC::iap_restore_purchases() {
-    void *env = *nfc_env;
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
     if (env == nullptr)
         return;
-
-    void *cls = nfc_find_class(env, *nfc_class_slot);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    NFC_CallStaticVoidMethod(env, cls, method);
+    jclass cls = env->FindClass(interface_path);
+    jmethodID method = env->GetStaticMethodID(cls, "iap_restore_purchases", "()V");
+    env->CallStaticVoidMethod(cls, method);
+#endif
 }
 
 void NFC::free_credits_rateGame() {
-    void *env = *nfc_env;
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
     if (env == nullptr)
         return;
-
-    void *cls = nfc_find_class(env, *nfc_class_slot);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    NFC_CallStaticVoidMethod(env, cls, method);
+    jclass cls = env->FindClass(interface_path);
+    jmethodID method = env->GetStaticMethodID(cls, "free_credits_rateGame", "()V");
+    env->CallStaticVoidMethod(cls, method);
+#endif
 }
 
 void NFC::free_credits_subscribeToYoutubeChannel() {
-    void *env = *nfc_env;
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
     if (env == nullptr)
         return;
-
-    void *cls = nfc_find_class(env, *nfc_class_slot);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    NFC_CallStaticVoidMethod(env, cls, method);
+    jclass cls = env->FindClass(interface_path);
+    jmethodID method = env->GetStaticMethodID(cls, "free_credits_subscribeToYoutubeChannel", "()V");
+    env->CallStaticVoidMethod(cls, method);
+#endif
 }
 
 void NFC::free_credits_likeGOF2OnFacebook() {
-    void *env = *nfc_env;
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
     if (env == nullptr)
         return;
-
-    void *cls = nfc_find_class(env, *nfc_class_slot);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    NFC_CallStaticVoidMethod(env, cls, method);
+    jclass cls = env->FindClass(interface_path);
+    jmethodID method = env->GetStaticMethodID(cls, "free_credits_likeGOF2OnFacebook", "()V");
+    env->CallStaticVoidMethod(cls, method);
+#endif
 }
 
 void NFC::free_credits_likeFishlabsOnFacebook() {
-    void *env = *nfc_env;
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
     if (env == nullptr)
         return;
-
-    void *cls = nfc_find_class(env, *nfc_class_slot);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    NFC_CallStaticVoidMethod(env, cls, method);
+    jclass cls = env->FindClass(interface_path);
+    jmethodID method = env->GetStaticMethodID(cls, "free_credits_likeFishlabsOnFacebook", "()V");
+    env->CallStaticVoidMethod(cls, method);
+#endif
 }
 
 void NFC::free_credits_followOnTwitter() {
-    void *env = *nfc_env;
+#if defined(__ANDROID__)
+    JNIEnv *env = g_pEnv;
     if (env == nullptr)
         return;
-
-    void *cls = nfc_find_class(env, *nfc_class_slot);
-    void *method = nfc_get_static_method(env, cls, nfc_method_name, nfc_method_sig);
-    NFC_CallStaticVoidMethod(env, cls, method);
+    jclass cls = env->FindClass(interface_path);
+    jmethodID method = env->GetStaticMethodID(cls, "free_credits_followOnTwitter", "()V");
+    env->CallStaticVoidMethod(cls, method);
+#endif
 }
 
 void NFC::showMoreGames() {

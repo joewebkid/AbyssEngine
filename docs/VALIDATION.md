@@ -4,6 +4,18 @@
 > metric. `report.json` is a dated snapshot; a fresh local verifier run is the
 > authoritative result for the revision and environment being inspected.
 
+## NFC restore and free-credit actions (2026-10-31)
+
+Six original ARM functions check `g_pEnv` and call matching static
+Java methods through `NFC::interface_path`. The recovered functions
+now do the same; unused null JNI placeholders were removed. Windows
+and ARM64 static builds pass; ARMv7 compiles 209/209 units. Focused
+source-shape rises **20.6% → 96.0%** for each method. Full corpus
+compares **4,323/4,524** originals over 4,752 pairs,
+**95.55% / 85.16%**, **2,687 linked-exact / 1,091 byte-exact**,
+zero skipped and 201 missing; complete exact sets have no losses.
+See [evidence and limits](NFC_RESTORE_FREE_CREDIT_JNI_ARM_2026-10-31.md).
+
 ## NFC credit-pack requests and callback (2026-10-31)
 
 The five original ARM request wrappers set separate credit-pack flags
