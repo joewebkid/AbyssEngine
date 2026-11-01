@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge::OnTouchEnd` early paths)
+
+The ARM-backed touch-end handler now uses the real layout and game-text
+globals for back/help actions, with help IDs **643** and **627**. Its
+intro-skip path sets the current camera from the confirmed race
+position/yaw tables and collapses the camera ease to that matrix,
+replacing unbound slots and invalid camera arguments. Focused strict
+fuzzy rose **9.9% → 13.5%**, while source-shape fell **17.2% → 16.1%**
+because most of the 2,630-instruction original function remains absent.
+Windows and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+The full corpus remains at **4,323/4,524** originals over 4,762 pairs,
+**96.10% source-shape / 85.86% strict fuzzy**, **2,733 linked-exact /
+1,091 byte-exact**, zero skipped and 201 missing; exact-match sets
+have no losses. Live touch/camera behavior is unverified while device
+work is deferred. Next offline priority: recover `OnTouchEnd` offer,
+mission and dialogue actions in bounded parts. See
+[touch-end evidence](SPACELOUNGE_TOUCH_END_EARLY_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` touch begin/move)
 
 `OnTouchBegin` and `OnTouchMove` now forward normal lounge touches to

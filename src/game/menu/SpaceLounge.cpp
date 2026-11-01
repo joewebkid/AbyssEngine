@@ -40,16 +40,6 @@ namespace AbyssEngine {
     }
 }
 
-void MatrixSetTranslation(void *matrix, float x, float y, float z);
-
-void MatrixSetRotation(void *matrix, float x, float y, float z);
-
-static void *SpaceLounge_touch_layout_slot;
-static void *SpaceLounge_touch_help_text_slot;
-static void *SpaceLounge_touch_list_help_text_slot;
-static void *SpaceLounge_touch_camera_slot;
-static int SpaceLounge_touch_race_vectors[64];
-
 // Android .bss at 0x2183d4: five zero-initialized words passed to loadChar.
 static int SpaceLounge_defaultAgentParts[5] = {};
 
@@ -286,10 +276,6 @@ static inline bool hit_agent(SpaceLounge *self, int x, int y, int i) {
 }
 
 int SpaceLounge::OnTouchEnd(int x, int y) {
-    String helpBig;
-    String helpSmall;
-    char matrix[60];
-
     this->touchDown = 0;
 
     if (this->choiceVisible != 0 || this->chatActive != 0) {
@@ -310,11 +296,10 @@ int SpaceLounge::OnTouchEnd(int x, int y) {
         return 0;
     }
 
-    void *layoutSlot = *(void **) &SpaceLounge_touch_layout_slot;
-    void *layout = *(void **) layoutSlot;
-    if (((Layout *) (layout))->OnTouchEnd(x, y) != 0) {
+    Layout *layout = Globals::layout;
+    if (layout->OnTouchEnd(x, y) != 0) {
         if (this->listVisible != 0) {
-            ((Layout *) (layout))->resetWindowDimensions();
+            layout->resetWindowDimensions();
             this->listVisible = 0;
             return 0;
         } else if (this->mode != 0) {
@@ -333,11 +318,8 @@ int SpaceLounge::OnTouchEnd(int x, int y) {
 
     if (this->listVisible != 0) {
         this->listWindow->OnTouchEnd(x, y);
-        if (((Layout *) (layout))->helpPressed() != 0) {
-            void *texts = *(void **) &SpaceLounge_touch_list_help_text_slot;
-            void *text = ((GameText *) (*(void **) texts))->getText(0x283);
-            helpSmall.Set(((String *) text)->data);
-            ((Layout *) (layout))->initHelpWindow(helpSmall);
+        if (layout->helpPressed() != 0) {
+            layout->initHelpWindow(String(*Globals::gameText->getText(643), false));
         }
         return 0;
     }
@@ -345,18 +327,23 @@ int SpaceLounge::OnTouchEnd(int x, int y) {
     switch (this->mode) {
         case 0:
             if (this->introDone == 0) {
-                void *system = Status::gStatus->getSystem();
-                int race = ((SolarSystem *) (system))->getRace();
-                int *v = &SpaceLounge_touch_race_vectors[race * 3];
-                MatrixSetTranslation(matrix, (float) v[2], (float) v[0], (float) v[1]);
-                MatrixSetRotation(matrix, 0.0f, 0.0f, 0.0f);
-                void *cameraSlot = *(void **) &SpaceLounge_touch_camera_slot;
-                void *camera = *(void **) cameraSlot;
-                void *current = (void *) (long) ((PaintCanvas *) camera)->CameraGetCurrent();
-                ((PaintCanvas *) camera)->CameraSetLocal((unsigned int) (long) camera,
-                                                         *(const AbyssEngine::AEMath::Matrix *) current);
+                // Android ARM camera tables at 0x206794 and 0x1fb8d8.
+                static const int cameraPosition[4][3] = {
+                    {-1800, 620, 1805}, {607, 610, 2362},
+                    {136, 444, 1122}, {2222, 450, 1227},
+                };
+                static const float cameraYaw[4] = {0.04f, 0.43f, 0.60f, 0.46f};
+                const int race = Globals::status->getSystem()->getRace();
+                Matrix matrix;
+                AbyssEngine::AEMath::MatrixSetTranslation(matrix,
+                    static_cast<float>(cameraPosition[race][0]),
+                    static_cast<float>(cameraPosition[race][1]),
+                    static_cast<float>(cameraPosition[race][2]));
+                AbyssEngine::AEMath::MatrixSetRotation(matrix, 0.0f, cameraYaw[race], 0.0f);
+                PaintCanvas *canvas = Globals::Canvas;
+                canvas->CameraSetLocal(canvas->CameraGetCurrent(), matrix);
                 if (this->cameraEase != 0) {
-                    this->cameraEase->SetRange(*(AbyssEngine::AEMath::Matrix *) matrix, *(AbyssEngine::AEMath::Matrix *) matrix);
+                    this->cameraEase->SetRange(matrix, matrix);
                 }
                 this->introDone = 1;
                 this->headBobPhase = 0;
@@ -399,11 +386,8 @@ int SpaceLounge::OnTouchEnd(int x, int y) {
     }
 
     this->scrollWindow->OnTouchEnd(x, y);
-    if (((Layout *) (layout))->helpPressed() != 0) {
-        void *texts = *(void **) &SpaceLounge_touch_help_text_slot;
-        void *text = ((GameText *) (*(void **) texts))->getText(0x273);
-        helpBig.Set(((String *) text)->data);
-        ((Layout *) (layout))->initHelpWindow(helpBig);
+    if (layout->helpPressed() != 0) {
+        layout->initHelpWindow(String(*Globals::gameText->getText(627), false));
     }
     return 0;
 }
