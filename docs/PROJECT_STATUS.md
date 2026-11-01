@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (dialogue construction and drawing)
+
+`DialogueWindow` now reads the Android ARM-confirmed shared text,
+sound, layout, image-factory, canvas, and UI-position globals in its
+loading, initialization, constructor, touch, and drawing paths. Two
+campaign count tables were restored from the original ARM library.
+Windows and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+Full corpus compares **4,323/4,524** original functions over 4,752
+pairs: **95.98% source-shape / 85.78% strict fuzzy**,
+**2,724 linked-exact / 1,091 byte-exact**, zero skipped and 201
+missing. Exact-set comparison shows no losses. Runtime rendering and
+remaining `loadContent()` mission branches are not yet verified;
+device work remains deferred. Next offline priority: recover the
+missing mission-specific `loadContent()` behavior from original ARM
+evidence. See [drawing and constructor evidence](DIALOGUEWINDOW_DRAW_CTOR_GLOBALS_ARM_2026-11-01.md)
+and [campaign table evidence](DIALOGUEWINDOW_CAMPAIGN_COUNTS_ARM_2026-11-01.md).
+
 Last reviewed: 2026-10-31 (hangar social-credit reward table)
 
 The hangar social-credit table now matches all six original Android

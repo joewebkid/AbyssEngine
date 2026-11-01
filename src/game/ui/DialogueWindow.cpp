@@ -446,15 +446,6 @@ int DialogueWindow::init() {
 
 static const char g_dw_emptyString[] = "";
 
-static ImageFactory *g_dw_imageFactoryCtor_storage = nullptr;
-static ImageFactory **g_dw_imageFactoryCtor = &g_dw_imageFactoryCtor_storage;
-
-static GameText *g_dw_gameTextCtor_storage = nullptr;
-static GameText **g_dw_gameTextCtor = &g_dw_gameTextCtor_storage;
-
-static void *g_dw_layoutCtor_storage = nullptr;
-static void **g_dw_layoutCtor = &g_dw_layoutCtor_storage;
-
 DialogueWindow::DialogueWindow(String *text, String *agentName, int *parts) {
     { if (this->bodyText.data) delete[] this->bodyText.data; this->bodyText.data = nullptr; this->bodyText.length = 0; }
     { if (this->agentName.data) delete[] this->agentName.data; this->agentName.data = nullptr; this->agentName.length = 0; }
@@ -468,12 +459,12 @@ DialogueWindow::DialogueWindow(String *text, String *agentName, int *parts) {
     this->moreButton->setVisible(false);
     this->prevButton->setVisible(false);
 
-    this->faceParts = (*g_dw_imageFactoryCtor)->loadChar(parts);
+    this->faceParts = ((ImageFactory *) Globals::imageFactory)->loadChar(parts);
     delete this->nextButton;
     this->nextButton = 0;
 
-    GameText *gameText = *g_dw_gameTextCtor;
-    Layout *layout = (Layout *) *g_dw_layoutCtor;
+    GameText *gameText = Globals::gameText;
+    Layout *layout = Globals::layout;
     int margin = layout->field_0x4c;
     int x = this->frameX + this->frameWidth / 2;
     int y = this->frameY + this->frameHeight - margin;
@@ -542,49 +533,20 @@ int DialogueWindow::pickGermanGenericTextBecauseWeSaved100EurosWithThat(int kind
 }
 
 
-static int g_dw_drawGuard_storage = 0;
-static int *g_dw_drawGuard = &g_dw_drawGuard_storage;
-
-static Layout *g_dw_layoutDraw_storage = nullptr;
-static Layout **g_dw_layoutDraw = &g_dw_layoutDraw_storage;
-
-static ImageFactory *g_dw_imageFactoryDraw_storage = nullptr;
-static ImageFactory **g_dw_imageFactoryDraw = &g_dw_imageFactoryDraw_storage;
-
-static int g_dw_drawPositionsReady_storage = 0;
-static int *g_dw_drawPositionsReady = &g_dw_drawPositionsReady_storage;
-
-static int g_dw_moreButtonX_storage[4];
-static int *g_dw_moreButtonX = g_dw_moreButtonX_storage;
-
-static int g_dw_moreButtonY_storage[4];
-static int *g_dw_moreButtonY = g_dw_moreButtonY_storage;
-
-static int g_dw_nextButtonX_storage[4];
-static int *g_dw_nextButtonX = g_dw_nextButtonX_storage;
-
-static int g_dw_nextButtonY_storage[4];
-static int *g_dw_nextButtonY = g_dw_nextButtonY_storage;
-
-static int g_dw_drawReadyFlag_storage = 0;
-static int *g_dw_drawReadyFlag = &g_dw_drawReadyFlag_storage;
-
 void DialogueWindow::draw() {
-    PaintCanvas::gCanvas->SetColor((unsigned int) -1);
-    Layout *layout = *g_dw_layoutDraw;
+    Globals::Canvas->SetColor((unsigned int) -1);
+    Layout *layout = Globals::layout;
     layout->drawMask();
-    String title;
-    title.Set((this->agentName).data);
-    layout->drawBox(7, this->frameX, this->frameY, this->frameWidth, this->frameHeight, title, 1);
-    { if (title.data) delete[] title.data; title.data = nullptr; title.length = 0; }
+    String title(this->agentName, false);
+    layout->drawBox(7, this->frameX, this->frameY, this->frameWidth, this->frameHeight, title);
 
     this->scrollWindow->draw();
 
-    layout = *g_dw_layoutDraw;
+    layout = Globals::layout;
     int margin = layout->field_0x4c;
-    (*g_dw_imageFactoryDraw)->drawChar(this->faceParts,
-                                       this->frameX + margin, this->frameY + margin + layout->field_0x8,
-                                       this->mirrorFace);
+    ((ImageFactory *) Globals::imageFactory)->drawChar(this->faceParts,
+                                                       this->frameX + margin, this->frameY + margin + layout->field_0x8,
+                                                       this->mirrorFace);
 
     this->prevButton->draw();
     this->nextButton->draw();
@@ -594,21 +556,21 @@ void DialogueWindow::draw() {
         this->choiceWindow->draw();
     }
 
-    if (*g_dw_drawPositionsReady == 0) {
+    if (Globals::is_choice_window_visible == 0) {
         Vector pos;
         if (this->moreButton != 0) {
             pos = this->moreButton->getPosition();
-            g_dw_moreButtonX[2] = (int) pos.x;
+            Globals::other_buttons_x[2] = (int) pos.x;
             pos = this->moreButton->getPosition();
-            g_dw_moreButtonY[2] = (int) pos.y;
+            Globals::other_buttons_y[2] = (int) pos.y;
         }
         if (this->nextButton != 0) {
             pos = this->nextButton->getPosition();
-            g_dw_nextButtonX[3] = (int) pos.x;
+            Globals::other_buttons_x[3] = (int) pos.x;
             pos = this->nextButton->getPosition();
-            g_dw_nextButtonY[3] = (int) pos.y;
+            Globals::other_buttons_y[3] = (int) pos.y;
         }
-        *g_dw_drawReadyFlag = 1;
+        Globals::is_dialogue_window_visible = 1;
     }
 }
 
