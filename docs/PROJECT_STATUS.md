@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (campaign success mission 1)
+
+`DialogueWindow::loadContent()` now selects all 19 ARM-confirmed success
+pages of campaign mission 1, including their portrait, name, text and
+the helper call for text 1718. Its source-shape rose from 90.6% to
+92.6%; strict fuzzy rose from 36.5% to 37.0%. Windows and ARM64 static
+builds pass, and ARMv7 compiles 209/209 units. The full corpus covers
+**4,323/4,524** originals over 4,752 pairs at **95.99% source-shape /
+85.78% strict fuzzy**, with **2,724 linked-exact / 1,091 byte-exact**,
+zero skipped, 201 missing, and no exact-set losses. Live dialogue is
+unverified while device work is deferred. Other campaign-success
+missions still use a placeholder table; the next offline priority is
+to recover their complete page groups and portrait mappings. See
+[mission-1 success evidence](DIALOGUEWINDOW_CAMPAIGN_SUCCESS_MISSION1_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (campaign briefing binding-helper calls)
 
 `DialogueWindow::loadContent()` now makes the ARM-confirmed helper call

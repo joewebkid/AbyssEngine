@@ -229,6 +229,14 @@ static const int g_dw_campaignBriefingRows[120] = {
     49, 2879, 0, 2880, 49, 2881, 0, 2882
 };
 
+static const int g_dw_campaignSuccessMission1Rows[38] = {
+    0, 1700, 2, 1701, 0, 1702, 2, 1703,
+    0, 1704, 2, 1705, 0, 1706, 2, 1707,
+    2, 1708, 0, 1709, 2, 1710, 2, 1711,
+    0, 1712, 2, 1713, 0, 1714, 2, 1715,
+    2, 1716, 0, 1717, 16, 1718
+};
+
 static int g_dw_campaignSuccessTextIds[0x1000];
 
 static int g_dw_defaultClientImage[5];
@@ -299,10 +307,22 @@ void DialogueWindow::loadContent() {
             }
         } else if (kind == 1) {
             base = this->successOffsets[this->campaignMission];
-            textId = g_dw_campaignSuccessTextIds[base + page * 2 + 1];
-            this->clientImage = g_dw_defaultClientImage;
-            this->agentName = *gameText->getText(0x63d + (textId & 0xff));
+            if (this->campaignMission == 1) {
+                int row = page * 2;
+                int portraitId = g_dw_campaignSuccessMission1Rows[row];
+                textId = g_dw_campaignSuccessMission1Rows[row + 1];
+                this->clientImage = g_dw_stationPortraits[portraitId];
+                this->agentName = *gameText->getText(0x63d + portraitId);
+                this->mirrorFace = portraitId == 0;
+            } else {
+                textId = g_dw_campaignSuccessTextIds[base + page * 2 + 1];
+                this->clientImage = g_dw_defaultClientImage;
+                this->agentName = *gameText->getText(0x63d + (textId & 0xff));
+            }
             this->bodyText = *gameText->getText(textId);
+            if (this->campaignMission == 1 && textId == 1718) {
+                this->bodyText = static_cast<Globals *>(Globals::globals)->replaceKeyBindingTokens(this->bodyText);
+            }
         } else {
             this->clientImage = g_dw_stationPortraits[16];
             this->agentName = *gameText->getText(0x63d + 16);
