@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (campaign briefing rows and portraits)
+
+`DialogueWindow::loadContent()` now selects campaign briefing text,
+portrait and name from 60 ARM-confirmed page pairs instead of a
+zero-filled placeholder. All 120 table words and the relevant portrait
+descriptors were checked against the original ELF. Its source-shape rose
+from 81.0% to 81.7%; strict fuzzy fell from 22.1% to 20.3%. Windows
+and ARM64 static builds pass, and ARMv7 compiles 209/209 units. The full
+corpus covers **4,323/4,524** originals over 4,752 pairs at **95.99%
+source-shape / 85.78% strict fuzzy**, with **2,724 linked-exact /
+1,091 byte-exact**, zero skipped, 201 missing, and no exact-set losses.
+Live dialogue is unverified while device work is deferred. Next offline
+priority: restore campaign briefing key-binding substitution and special
+narration. See
+[campaign briefing evidence](DIALOGUEWINDOW_CAMPAIGN_BRIEFING_ROWS_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (generic successful dialogue suffix)
 
 `DialogueWindow::loadContent()` now appends the ARM-confirmed story-agent

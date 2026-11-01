@@ -211,21 +211,51 @@ static const int g_dw_specialStationDefault[12] = {
     4, 479, 0, 480, 4, 481, 0, 482, 4, 483, 0, 484
 };
 
-static int g_dw_campaignBriefingTextIds[0x1000];
+static const int g_dw_campaignBriefingRows[120] = {
+    16, 1677, 16, 1680, 0, 1721, 2, 1722,
+    0, 1723, 2, 1724, 16, 1725, 2, 1738,
+    2, 1748, 16, 1749, 16, 1750, 16, 1753,
+    0, 1795, 0, 1819, 1, 1836, 0, 1837,
+    1, 1877, 16, 1878, 5, 1897, 6, 1913,
+    0, 1914, 6, 1915, 0, 1916, 6, 1928,
+    0, 1929, 6, 1930, 0, 1947, 0, 1970,
+    7, 2016, 0, 2017, 0, 2028, 0, 2049,
+    7, 2050, 0, 2051, 0, 2105, 24, 2106,
+    0, 2107, 24, 2108, 0, 2109, 24, 2110,
+    0, 2111, 0, 2240, 20, 2241, 0, 2242,
+    20, 2243, 0, 2244, 20, 2245, 0, 2246,
+    26, 2247, 0, 2248, 26, 2249, 0, 2250,
+    31, 2283, 0, 2284, 31, 2285, 0, 2286,
+    49, 2879, 0, 2880, 49, 2881, 0, 2882
+};
 
 static int g_dw_campaignSuccessTextIds[0x1000];
 
 static int g_dw_defaultClientImage[5];
+static int g_dw_stationPortrait1[5] = {0, 8, 8, 1, 8};
+static int g_dw_stationPortrait2[5] = {2, 1, 1, 1, 1};
+static int g_dw_stationPortrait5[5] = {0, 2, 3, 3, 10};
+static int g_dw_stationPortrait6[5] = {10, 0, 0, 1, 0};
+static int g_dw_stationPortrait7[5] = {1, 1, 0, 4, 0};
+static int g_dw_stationPortrait20[5] = {7, 1, 1, 0, 0};
+static int g_dw_stationPortrait24[5] = {1, 2, 4, 3, 1};
+static int g_dw_stationPortrait26[5] = {10, 3, 3, 4, 6};
+static int g_dw_stationPortrait31[5] = {0, 2, 10, 9, 2};
+static int g_dw_stationPortrait49[5] = {2, 1, 0, 4, 0};
 static int g_dw_stationPortrait4[5] = {4, 2, 0, 2, 2};
 static int g_dw_stationPortrait16[5] = {11, 1, 0, 0, 2};
-// The station page tables only use portrait indices 0, 4, and 16.
-static int *const g_dw_stationPortraits[17] = {
-    g_dw_defaultClientImage,
-    nullptr, nullptr, nullptr,
-    g_dw_stationPortrait4,
-    nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+// Portrait indices used by the station and campaign briefing tables.
+static int *const g_dw_stationPortraits[50] = {
+    g_dw_defaultClientImage, g_dw_stationPortrait1, g_dw_stationPortrait2, nullptr, g_dw_stationPortrait4,
+    g_dw_stationPortrait5, g_dw_stationPortrait6, g_dw_stationPortrait7, nullptr, nullptr,
     nullptr, nullptr, nullptr, nullptr, nullptr,
-    g_dw_stationPortrait16
+    nullptr, g_dw_stationPortrait16, nullptr, nullptr, nullptr,
+    g_dw_stationPortrait20, nullptr, nullptr, nullptr, g_dw_stationPortrait24,
+    nullptr, g_dw_stationPortrait26, nullptr, nullptr, nullptr,
+    nullptr, g_dw_stationPortrait31, nullptr, nullptr, nullptr,
+    nullptr, nullptr, nullptr, nullptr, nullptr,
+    nullptr, nullptr, nullptr, nullptr, nullptr,
+    nullptr, nullptr, nullptr, nullptr, g_dw_stationPortrait49
 };
 
 void DialogueWindow::loadContent() {
@@ -253,17 +283,24 @@ void DialogueWindow::loadContent() {
 
     if (mission != 0 && mission->isCampaignMission() != 0) {
         int base;
-        if (kind == 1) {
+        if (kind == 0) {
+            base = this->briefingOffsets[this->campaignMission];
+            int row = base + page * 2;
+            int portraitId = g_dw_campaignBriefingRows[row];
+            textId = g_dw_campaignBriefingRows[row + 1];
+            this->clientImage = g_dw_stationPortraits[portraitId];
+            this->agentName = *gameText->getText(0x63d + portraitId);
+            this->mirrorFace = portraitId == 0;
+        } else if (kind == 1) {
             base = this->successOffsets[this->campaignMission];
             textId = g_dw_campaignSuccessTextIds[base + page * 2 + 1];
-        } else if (kind == 0) {
-            base = this->briefingOffsets[this->campaignMission];
-            textId = g_dw_campaignBriefingTextIds[base + page * 2 + 1];
         } else {
             textId = 0x10 + 0x63d;
         }
-        this->clientImage = g_dw_defaultClientImage;
-        this->agentName = *(gameText->getText(0x63d + (textId & 0xff)));
+        if (kind != 0) {
+            this->clientImage = g_dw_defaultClientImage;
+            this->agentName = *gameText->getText(0x63d + (textId & 0xff));
+        }
         this->bodyText = *(gameText->getText(textId));
     } else if (mission != 0) {
         if ((page & 1) != 0) {
