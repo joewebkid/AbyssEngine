@@ -349,18 +349,6 @@ static int g_dw_successPartCounts[0xa2];
 
 static const char g_dw_defaultAgentName[] = "";
 
-static int g_dw_screenWidth_storage = 0;
-static int *g_dw_screenWidth = &g_dw_screenWidth_storage;
-
-static void *g_dw_layoutInit_storage = nullptr;
-static void **g_dw_layoutInit = &g_dw_layoutInit_storage;
-
-static int g_dw_screenHeight_storage = 0;
-static int *g_dw_screenHeight = &g_dw_screenHeight_storage;
-
-static GameText *g_dw_gameTextInit_storage = nullptr;
-static GameText **g_dw_gameTextInit = &g_dw_gameTextInit_storage;
-
 static inline int half_round_to_zero(int v) {
     return (v + ((unsigned) v >> 31)) >> 1;
 }
@@ -391,13 +379,13 @@ int DialogueWindow::init() {
     this->autoAdvanceTimer = 0;
     this->mirrorFace = 0;
 
-    Layout *layout = (Layout *) *g_dw_layoutInit;
+    Layout *layout = Globals::layout;
     int frameW = layout->field_0x54;
     int frameH = layout->field_0x58;
     this->frameWidth = frameW;
     this->frameHeight = frameH;
-    this->frameX = half_round_to_zero(*g_dw_screenWidth) - half_round_to_zero(frameW);
-    this->frameY = half_round_to_zero(*g_dw_screenHeight) - half_round_to_zero(frameH);
+    this->frameX = half_round_to_zero(Globals::w) - half_round_to_zero(frameW);
+    this->frameY = half_round_to_zero(Globals::h) - half_round_to_zero(frameH);
 
     int margin = layout->field_0x4c;
     this->scrollWindow = new ScrollTouchWindow(
@@ -409,21 +397,21 @@ int DialogueWindow::init() {
 
     this->choiceWindow = new ChoiceWindow();
 
-    GameText *gameText = *g_dw_gameTextInit;
-    layout = (Layout *) *g_dw_layoutInit;
+    GameText *gameText = Globals::gameText;
+    layout = Globals::layout;
     margin = layout->field_0x4c;
     this->prevButton = new TouchButton(*gameText->getText(0xb3), 5,
                                        this->frameX + margin, this->frameY - margin + this->frameHeight,
                                        layout->field_0x50, 0x21, 4);
 
-    layout = (Layout *) *g_dw_layoutInit;
+    layout = Globals::layout;
     margin = layout->field_0x4c;
     this->nextButton = new TouchButton(*gameText->getText(0xb4), 6,
                                        this->frameX + this->frameWidth - margin,
                                        this->frameY - margin + this->frameHeight,
                                        layout->field_0x50, 0x22, 4);
 
-    layout = (Layout *) *g_dw_layoutInit;
+    layout = Globals::layout;
     margin = layout->field_0x4c;
     this->moreButton = new TouchButton(*gameText->getText(0x18b), 0,
                                        this->frameX + half_round_to_zero(this->frameWidth),
