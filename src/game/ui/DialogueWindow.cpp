@@ -229,7 +229,7 @@ static const int g_dw_campaignBriefingRows[120] = {
     49, 2879, 0, 2880, 49, 2881, 0, 2882
 };
 
-static const int g_dw_campaignSuccessRows1To23[332] = {
+static const int g_dw_campaignSuccessRows1To33[436] = {
     0, 1700, 2, 1701, 0, 1702, 2, 1703,
     0, 1704, 2, 1705, 0, 1706, 2, 1707,
     2, 1708, 0, 1709, 2, 1710, 2, 1711,
@@ -276,7 +276,24 @@ static const int g_dw_campaignSuccessRows1To23[332] = {
     6, 1898, 0, 1899, 6, 1900, 0, 1901,
     6, 1902, 0, 1903, 6, 1904, 0, 1905,
     6, 1906, 0, 1907, 6, 1908, 0, 1909,
-    16, 191, 16, 192
+    16, 191, 16, 192,
+    6, 1922, 0, 1923, 6, 1924,
+    6, 1931, 0, 1932,
+    6, 1933, 0, 1934, 17, 1935, 6, 1936,
+    0, 1937, 6, 1938, 0, 1939, 6, 1940,
+    0, 1941, 6, 1942, 0, 1943,
+    0, 1954,
+    0, 1955, 6, 1956, 0, 1957, 6, 1958,
+    0, 1959,
+    1, 1960, 0, 1961, 1, 1962, 0, 1963,
+    1, 1964, 0, 1965, 1, 1966, 0, 1967,
+    1, 1968, 0, 1969,
+    20, 1971, 0, 1972, 20, 1973, 0, 1974,
+    20, 1975, 0, 1976, 20, 1977, 0, 1978,
+    20, 1979, 20, 1980, 0, 1981,
+    20, 1982, 0, 1983, 0, 1984, 6, 1985,
+    0, 1986, 6, 1987, 0, 1988, 6, 1989,
+    0, 1990
 };
 
 static int g_dw_campaignSuccessTextIds[0x1000];
@@ -353,10 +370,10 @@ void DialogueWindow::loadContent() {
             }
         } else if (kind == 1) {
             base = this->successOffsets[this->campaignMission];
-            if (this->campaignMission >= 1 && this->campaignMission <= 23) {
+            if (this->campaignMission >= 1 && this->campaignMission <= 33) {
                 int row = base + page * 2;
-                int portraitId = g_dw_campaignSuccessRows1To23[row];
-                textId = g_dw_campaignSuccessRows1To23[row + 1];
+                int portraitId = g_dw_campaignSuccessRows1To33[row];
+                textId = g_dw_campaignSuccessRows1To33[row + 1];
                 this->clientImage = g_dw_stationPortraits[portraitId];
                 this->agentName = *gameText->getText(0x63d + portraitId);
                 this->mirrorFace = portraitId == 0;
