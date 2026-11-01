@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (ordinary generic dialogue IDs)
+
+`DialogueWindow::loadContent()` now uses the ARM-confirmed five-ID
+tables for ordinary non-German dialogue kinds 0, 1, and 2, together
+with `Globals::rnd`. Windows and ARM64 static builds pass; ARMv7
+compiles 209/209 units. Full corpus remains **4,323/4,524** originals
+over 4,752 pairs, **95.98% source-shape / 85.78% strict fuzzy**,
+**2,724 linked-exact / 1,091 byte-exact**, zero skipped and 201
+missing, with no exact-set losses. Special mission and campaign text
+paths in `loadContent()` remain incomplete; live dialogue is
+unverified while device work is deferred. Next offline priority:
+recover the special mission-type branches from original ARM evidence.
+See [ordinary text-ID evidence](DIALOGUEWINDOW_GENERIC_TEXT_IDS_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (German generic dialogue text)
 
 `DialogueWindow` now selects German generic text IDs from 62 ARM-confirmed

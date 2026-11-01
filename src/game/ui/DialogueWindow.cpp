@@ -195,6 +195,12 @@ void DialogueWindow::set(Mission *mission, int kind, int campaign) {
 
 static const char g_dw_emptyLoad[] = "";
 
+static const int g_dw_genericTextIds[15] = {
+    379, 380, 381, 382, 383,
+    373, 374, 375, 376, 377,
+    384, 385, 386, 387, 388
+};
+
 static int g_dw_campaignBriefingTextIds[0x1000];
 
 static int g_dw_campaignSuccessTextIds[0x1000];
@@ -254,7 +260,10 @@ void DialogueWindow::loadContent() {
             if (GameText::getLanguage() == 1 && agent != 0) {
                 textId = this->pickGermanGenericTextBecauseWeSaved100EurosWithThat(kind, agent);
             } else {
-                textId = 0x188 + AERandom::gRandom->nextInt(5);
+                int variant = static_cast<AERandom *>(Globals::rnd)->nextInt(5);
+                if (kind == 0) textId = g_dw_genericTextIds[variant];
+                else if (kind == 1) textId = g_dw_genericTextIds[5 + variant];
+                else textId = g_dw_genericTextIds[10 + variant];
             }
         } else {
             textId = 0x20f;
