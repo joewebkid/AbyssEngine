@@ -307,7 +307,15 @@ void DialogueWindow::loadContent() {
                 first, String(this->level->killCountA), String("#Q2", false));
             failureQuantityText = true;
         }
-        if (!fixedIntroText && !specialStation && !failureQuantityText &&
+        bool successStationText = false;
+        if (kind == 1 && (mission->getType() == 5 || mission->getType() == 3)) {
+            textId = 389;
+            this->bodyText = Globals::status->replaceHash(
+                String(*gameText->getText(textId), false),
+                mission->getTargetStationName(), String("#S", false));
+            successStationText = true;
+        }
+        if (!fixedIntroText && !specialStation && !failureQuantityText && !successStationText &&
             (kind == 1 || kind == 0 || kind == 2)) {
             Agent *agent = mission->getAgent();
             if (GameText::getLanguage() == 1 && agent != 0) {
@@ -318,14 +326,19 @@ void DialogueWindow::loadContent() {
                 else if (kind == 1) textId = g_dw_genericTextIds[5 + variant];
                 else textId = g_dw_genericTextIds[10 + variant];
             }
-        } else if (!fixedIntroText && !specialStation && !failureQuantityText) {
+        } else if (!fixedIntroText && !specialStation && !failureQuantityText && !successStationText) {
             textId = 0x20f;
         }
-        if (!specialStation && !failureQuantityText) this->bodyText = *gameText->getText(textId);
+        if (!specialStation && !failureQuantityText && !successStationText)
+            this->bodyText = *gameText->getText(textId);
 
         if (kind == 1) {
             Standing *standing = Status::gStatus->getStanding();
             standing->applyMissionCompleted(mission->getClientRace());
+            if (mission->getTargetStation() == 0x6c) {
+                textId = 458;
+                this->bodyText = *gameText->getText(textId);
+            }
         }
     } else {
         this->clientImage = g_dw_defaultClientImage;

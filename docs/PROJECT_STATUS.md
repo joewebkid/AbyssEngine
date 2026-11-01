@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (successful station-mission dialogue)
+
+`DialogueWindow::loadContent()` now uses the ARM-confirmed text ID 389
+with station-name substitution for successful mission types 3 and 5,
+and text ID 458 when a successful mission targets station 108. Its
+source-shape rose from 45.0% to 51.2%; Windows and ARM64 static builds
+pass, and ARMv7 compiles 209/209 units. The full corpus remains
+**4,323/4,524** originals over 4,752 pairs, **95.98% source-shape /
+85.78% strict fuzzy**, **2,724 linked-exact / 1,091 byte-exact**, zero
+skipped and 201 missing, with no exact-set losses. Live dialogue is
+unverified while device work is deferred. Next offline priority: recover
+the type-12 success branch. See
+[successful station evidence](DIALOGUEWINDOW_SUCCESS_STATION_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (mission failure quantities)
 
 `DialogueWindow::loadContent()` now follows the ARM-confirmed mission
