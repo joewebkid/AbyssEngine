@@ -44,8 +44,6 @@ static_assert(offsetof(CampaignMissionFlags, campaignVisibleFlagB) == 0x37,
 // These per-screen globals appear only in this translation unit. The original
 // build shared them via extern decls; here they are file-static definitions.
 // Parity loss accepted (criterion 7: drive extern toward 0).
-static GameText *g_mw_gameText = nullptr;
-
 static Layout **g_mw_m_layout = nullptr;
 static Layout **g_mw_b_layout = nullptr;
 
@@ -231,13 +229,13 @@ int MissionsWindow::init() {
     ArraySetLength(2, *tabs);
 
 #if __SIZEOF_POINTER__ == 8
-    String *t0 = g_mw_gameText->getText(3219);
+    String *t0 = Globals::gameText->getText(3219);
     int helpOff = L->getHelpButtonOffset();
     TouchButton *tab1 = new TouchButton(*t0, 3, (this->m_width + this->m_x) - helpOff,
                                          this->m_y, 0x12);
     (*tabs)[1] = tab1;
 
-    String *t1 = g_mw_gameText->getText(129);
+    String *t1 = Globals::gameText->getText(129);
     int helpOff2 = L->getHelpButtonOffset();
     TouchButton *tab0 = new TouchButton(*t1, 3,
                                          (((this->m_width + this->m_x) - helpOff2) - tab1->getWidth())
@@ -247,13 +245,13 @@ int MissionsWindow::init() {
     tab0->setAlwaysPressed(true);
 #else
     TouchButton *tab1 = (TouchButton *) ::operator new(sizeof(TouchButton));
-    String *t0 = g_mw_gameText->getText(titleId);
+    String *t0 = Globals::gameText->getText(titleId);
     int helpOff = L->getHelpButtonOffset();
     TouchButton_ctorTab(tab1, t0, 3, (this->m_width + this->m_x) - helpOff, this->m_y, 0x12);
     (*tabs)[1] = tab1;
 
     TouchButton *tab0 = (TouchButton *) ::operator new(sizeof(TouchButton));
-    String *t1 = g_mw_gameText->getText(titleId);
+    String *t1 = Globals::gameText->getText(titleId);
     int helpOff2 = L->getHelpButtonOffset();
     int w1 = tab0->getWidth();
     TouchButton_ctorTab(tab0, t1, 3,
@@ -300,7 +298,7 @@ int MissionsWindow::init() {
     if (campShow) {
         String text("", false);
         if (Status::gStatus->getCurrentCampaignMission() < 0xa4) {
-            String *t = g_mw_gameText->getText(titleId);
+            String *t = Globals::gameText->getText(titleId);
             text = *t;
         }
         void *key = Status::gStatus;
@@ -331,7 +329,7 @@ int MissionsWindow::init() {
         bool useGold = Achievements::gAchievements->gotAllGoldMedals() != 0 &&
                        ((Ship *) (Status::gStatus->getShip()))->getIndex() != 8;
         String a("", false);
-        String *t = g_mw_gameText->getText(titleId);
+        String *t = Globals::gameText->getText(titleId);
         String b(*t);
         this->m_pCampaignWindow->setText(a, b);
         (void) useGold;
@@ -371,7 +369,7 @@ int MissionsWindow::init() {
             rx, topY, (half - pad) - L->buttonInsetX,
             ((this->m_height + (this->m_y - (topY + pad * 2))) - L->field_0x10) - L->field_0x24, false);
         String a("", false);
-        String *t = g_mw_gameText->getText(titleId);
+        String *t = Globals::gameText->getText(titleId);
         String b(*t);
         this->m_pFreelanceWindow->setText(a, b);
     }
@@ -379,21 +377,21 @@ int MissionsWindow::init() {
     if (Status::gStatus->inAlienOrbit() == 0) {
         int btnY = ((this->m_width >> 1) >> 1) - L->buttonInsetX;
         if (Status::gStatus->gameWon() == 0) {
-            String *t = g_mw_gameText->getText(titleId);
+            String *t = Globals::gameText->getText(titleId);
             this->m_pAcceptButton = new TouchButton(
                 *t, 0, L->buttonInsetX + this->m_x,
                 (((this->m_y + this->m_height) - L->field_0x10) - L->field_0x24) - L->field_0x2c,
                 btnY, '!', 4);
         }
         if (Status::gStatus->getFreelanceMission()->isEmpty() == 0) {
-            String *t = g_mw_gameText->getText(titleId);
+            String *t = Globals::gameText->getText(titleId);
             this->m_pRejectButton = new TouchButton(
                 *t, 0, this->m_x + (this->m_width >> 1) + L->field_0x2c,
                 (((this->m_y - L->field_0x2c) + this->m_height) - L->field_0x10) - L->field_0x24,
                 btnY, '!', 4);
 
             if (ApplicationManager_GetCurrentApplicationModule(ApplicationManager::gAppManager) == 5) {
-                String *t2 = g_mw_gameText->getText(titleId);
+                String *t2 = Globals::gameText->getText(titleId);
                 this->m_pMapButton = new TouchButton(
                     *t2, 0, this->m_x + btnY + (this->m_width >> 1) + L->field_0x2c * 2,
                     (((this->m_y - L->field_0x2c) + this->m_height) - L->field_0x10) - L->field_0x24,
@@ -436,7 +434,7 @@ void MissionsWindow::draw() {
     ((PaintCanvas *) canvas)->SetColor((unsigned int) (uintptr_t) color);
 
     {
-        String *ht = g_mw_gameText->getText(titleId);
+        String *ht = Globals::gameText->getText(titleId);
         String header(*ht);
         L->drawHeader(header);
     }
@@ -451,7 +449,7 @@ void MissionsWindow::draw() {
     int ow = this->m_width, oh = this->m_height;
 
     {
-        String *t = g_mw_gameText->getText(titleId);
+        String *t = Globals::gameText->getText(titleId);
         String box(*t);
         int c = L->field_0xc, p20 = L->field_0x20;
         int p28 = L->buttonInsetX, p2c = L->field_0x2c;
@@ -472,7 +470,7 @@ void MissionsWindow::draw() {
     if (this->m_pAcceptButton) this->m_pAcceptButton->draw();
 
     {
-        String *t = g_mw_gameText->getText(titleId);
+        String *t = Globals::gameText->getText(titleId);
         String box(*t);
         int c = L->field_0xc, p20 = L->field_0x20;
         int p28 = L->buttonInsetX, p2c = L->field_0x2c;
@@ -504,7 +502,7 @@ void MissionsWindow::draw() {
         String station = ((Agent *) (fm->getAgent()))->getStationName();
         ((PaintCanvas *) canvas)->DrawString((unsigned int) (uintptr_t) font, station, detailX, detailY, false);
 
-        String *typeTxt = g_mw_gameText->getText(
+        String *typeTxt = Globals::gameText->getText(
             ((Agent *) (fm->getAgent()))->getMission()->getType() + 0x162);
         ((PaintCanvas *) canvas)->DrawString((unsigned int) (uintptr_t) font, *typeTxt, detailX, detailY, false);
     }
@@ -607,7 +605,7 @@ int MissionsWindow::OnTouchEnd(int y, int z) {
             (*g_mwt_resetLayout)->resetWindowDimensions();
         } else {
             if (this->m_pMapButton && this->m_pMapButton->OnTouchEnd(y, z) != 0) {
-                String *t = g_mw_gameText->getText(0x1a2);
+                String *t = Globals::gameText->getText(0x1a2);
                 this->m_pChoiceWindow->set(*t, true);
                 this->m_choiceActive = 1;
             }
@@ -636,7 +634,7 @@ int MissionsWindow::OnTouchEnd(int y, int z) {
                 return 1;
             }
             if (layout->helpPressed() != 0) {
-                String *t = g_mw_gameText->getText(0x27b);
+                String *t = Globals::gameText->getText(0x27b);
                 String title(*t);
                 layout->initHelpWindow(title);
             }

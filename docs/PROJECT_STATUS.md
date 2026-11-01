@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (`MissionsWindow` game-text binding)
+
+All 16 remaining `MissionsWindow` uses of an uninitialized local
+`GameText` pointer now use the ARM-confirmed `Globals::gameText`; the
+dead placeholder is removed. Windows and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. Focused `init()` source-shape rose from
+8.8% to 9.2%, `draw()` from 33.2% to 34.3%, and `OnTouchEnd()` from
+86.4% to 87.5%. The full corpus remains **4,323/4,524** originals
+over 4,752 pairs at **96.00% source-shape / 85.79% strict fuzzy**,
+with **2,724 linked-exact / 1,091 byte-exact**, zero skipped, 201
+missing, and no exact-set losses. Other unbound pointers in
+`MissionsWindow::init()` remain the next offline priority; live screen
+behavior is unverified while device work is deferred. See [game-text
+evidence](MISSIONSWINDOW_GAMETEXT_BINDING_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (`MissionsWindow::update` production mission text)
 
 The ARM-confirmed update path now forwards elapsed time to the wanted
