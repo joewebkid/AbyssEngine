@@ -291,17 +291,25 @@ void DialogueWindow::loadContent() {
             this->clientImage = g_dw_stationPortraits[portraitId];
             this->agentName = *gameText->getText(0x63d + portraitId);
             this->mirrorFace = portraitId == 0;
+            this->bodyText = *gameText->getText(textId);
         } else if (kind == 1) {
             base = this->successOffsets[this->campaignMission];
             textId = g_dw_campaignSuccessTextIds[base + page * 2 + 1];
-        } else {
-            textId = 0x10 + 0x63d;
-        }
-        if (kind != 0) {
             this->clientImage = g_dw_defaultClientImage;
             this->agentName = *gameText->getText(0x63d + (textId & 0xff));
+            this->bodyText = *gameText->getText(textId);
+        } else {
+            this->clientImage = g_dw_stationPortraits[16];
+            this->agentName = *gameText->getText(0x63d + 16);
+            String extra("");
+            if (this->campaignMission >= 38 && this->campaignMission <= 41 &&
+                this->campaignMission != 39) {
+                extra = *gameText->getText(527);
+            }
+            this->bodyText = *gameText->getText(392) + String("\n", false) +
+                             extra + String("\n\n", false) + *gameText->getText(319);
+            textId = -1;
         }
-        this->bodyText = *(gameText->getText(textId));
     } else if (mission != 0) {
         if ((page & 1) != 0) {
             this->clientImage = g_dw_defaultClientImage;

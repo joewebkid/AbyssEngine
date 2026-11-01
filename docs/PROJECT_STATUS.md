@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (campaign narration dialogue)
+
+`DialogueWindow::loadContent()` now constructs the ARM-confirmed
+campaign narration for kinds other than briefing or success, with
+portrait 16, conditional text 527, and sound text ID `-1`. Its
+source-shape rose from 81.7% to 89.0%; strict fuzzy rose from 20.3%
+to 36.9%. Windows and ARM64 static builds pass, and ARMv7 compiles
+209/209 units. The full corpus covers **4,323/4,524** originals over
+4,752 pairs at **95.99% source-shape / 85.78% strict fuzzy**, with
+**2,724 linked-exact / 1,091 byte-exact**, zero skipped, 201 missing,
+and no exact-set losses. Live dialogue is unverified while device work
+is deferred. Next offline priorities: reconstruct the campaign success
+table and the `replaceKeyBindingTokens()` implementation before wiring
+up briefing key-binding substitution. See
+[campaign narration evidence](DIALOGUEWINDOW_CAMPAIGN_NARRATION_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (campaign briefing rows and portraits)
 
 `DialogueWindow::loadContent()` now selects campaign briefing text,
