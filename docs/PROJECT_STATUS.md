@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (`SpaceLounge::init` bindings)
+
+The ARM-backed initialization now reads station agents, layout and text
+through their actual game globals, creates the five original touch buttons,
+and sets the race-specific camera matrix. Focused `init()` source-shape rose
+from **12.6% to 60.1%** (strict fuzzy **6.0% to 24.6%**). Windows and ARM64
+static builds pass; ARMv7 compiles 209/209 units. The full corpus covers
+**4,323/4,524** originals over 4,754 pairs at **96.04% source-shape /
+85.81% strict fuzzy**, with **2,727 linked-exact / 1,091 byte-exact**, zero
+skipped, 201 missing, and no exact-set losses. Silhouette allocation, iPad
+layout, scene-light setup, mission-specific auto-chat, and the large
+`startChat()` path still need reconstruction; live behavior remains
+unverified while device work is deferred. See [initialization evidence](
+SPACELOUNGE_INIT_BINDINGS_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (`MissionsWindow` touch and map return)
 
 Touch begin/move now call `Globals::layout`; touch end uses the typed

@@ -1,6 +1,7 @@
 
 #include "game/menu/SpaceLounge.h"
 #include "game/world/SolarSystem.h"
+#include "game/world/Station.h"
 #include "engine/render/AEGeometry.h"
 #include "game/ui/ChoiceWindow.h"
 #include "game/core/CutScene.h"
@@ -93,12 +94,6 @@ static void *SpaceLounge_lounge_layout_slot;
 static void *SpaceLounge_lounge_image_factory_slot;
 static void *SpaceLounge_lounge_text_slot;
 static void *SpaceLounge_lounge_font_slot;
-
-void *Station_getAgents(void *station);
-
-static void *SpaceLounge_init_layout_slot;
-static void *SpaceLounge_init_text_slot;
-static void *SpaceLounge_init_camera_slot;
 
 void ArrayRemove_AgentPtr(void *agent, void *array);
 
@@ -906,12 +901,10 @@ void SpaceLounge::drawLounge() {
 }
 
 int SpaceLounge::init() {
-    char matrix[60];
-
     this->touchDown = 0;
     this->initialized = 0;
     this->cameraAnimating = 0;
-    this->agents = (Array<Agent *> *) Station_getAgents(Status::gStatus->getStation());
+    this->agents = Status::gStatus->getStation()->getAgents();
 
     if (this->choiceWindow != 0) {
         delete this->choiceWindow;
@@ -930,10 +923,9 @@ int SpaceLounge::init() {
         this->agentVisited[i] = 0;
     }
 
-    void *layoutSlot = *(void **) &SpaceLounge_init_layout_slot;
-    Layout *layout = (Layout *) *(void **) layoutSlot;
+    Layout *layout = Globals::layout;
     int panelW = layoutMetric(layout, 0x68);
-    this->panelX = panelW / 2;
+    this->panelX = Globals::w / 2 - panelW / 2;
     this->panelY = layout->field_0x20 + layout->field_0xc;
     this->panelWidth = panelW - layout->field_0x4c * 3 - layout->field_0x2d4;
 
@@ -947,42 +939,55 @@ int SpaceLounge::init() {
 
     if (this->buttons != 0) {
         Array<TouchButton *> *oldButtons = this->buttons;
-        ArrayRemoveAll(*oldButtons);
+        ArrayReleaseClasses(*oldButtons);
         delete oldButtons;
     }
     Array<TouchButton *> *buttons = new Array<TouchButton *>();
     this->buttons = buttons;
     ArraySetLength(5, *buttons);
 
-    void *textsSlot = *(void **) &SpaceLounge_init_text_slot;
-    void *text = ((GameText *) (*(void **) textsSlot))->getText(0);
     int baseY = this->buttonPanelY + layout->field_0x4c;
     this->buttonX = this->panelX + layoutMetric(layout, 0x68) - layout->field_0x4c - this->panelWidth;
     this->buttonY1 = (baseY + layout->field_0x2d8 / 2) - layout->field_0x30 / 2;
     this->buttonY0 = baseY;
 
-    for (unsigned i = 0; i < 5; ++i) {
-        TouchButton *button = new TouchButton(*static_cast<String *>(text), 0, this->buttonX,
-                                              baseY + (int) i * (layout->field_0x30 + layout->field_0x34),
-                                              this->panelWidth, 0x11, 4);
-        (*buttons)[i] = button;
-        button->setTextColor(-1);
-    }
+    (*buttons)[0] = new TouchButton(*Globals::gameText->getText(860), 0,
+                                    this->buttonX, baseY,
+                                    this->panelWidth / 2 - layout->field_0x4c / 2, 0x11, 4);
+    (*buttons)[0]->setTextColor(15532287);
+    (*buttons)[1] = new TouchButton(*Globals::gameText->getText(861), 0,
+                                    this->panelX + panelW - layout->field_0x4c, baseY,
+                                    this->panelWidth / 2 - layout->field_0x4c, 0x12, 4);
+    (*buttons)[1]->setTextColor(-14024449);
+    int secondY = baseY + layout->field_0x30 + layout->field_0x34;
+    (*buttons)[2] = new TouchButton(*Globals::gameText->getText(776), 0,
+                                    this->buttonX, secondY, this->panelWidth, 0x11, 4);
+    (*buttons)[3] = new TouchButton(*Globals::gameText->getText(804), 0,
+                                    this->buttonX, secondY, this->panelWidth, 0x11, 4);
+    (*buttons)[4] = new TouchButton(*Globals::gameText->getText(807), 0,
+                                    this->buttonX, secondY + layout->field_0x30 + layout->field_0x34,
+                                    this->panelWidth, 0x11, 4);
 
     this->hoverAgent = -1;
-    MatrixSetTranslation(matrix, 0.0f, 0.0f, 0.0f);
-    MatrixSetRotation(matrix, 0.0f, 0.0f, 0.0f);
-    void *cameraSlot = *(void **) &SpaceLounge_init_camera_slot;
-    void *camera = *(void **) cameraSlot;
-    void *current = (void *) (long) ((PaintCanvas *) camera)->CameraGetCurrent();
-    ((PaintCanvas *) camera)->CameraSetLocal((unsigned int) (long) camera,
-                                             *(const AbyssEngine::AEMath::Matrix *) current);
+    // ARM tables at 0x206794 and 0x1fb8d8: camera position and yaw by race.
+    static const int cameraPosition[4][3] = {
+        {-1800, 620, 1805}, {607, 610, 2362},
+        {136, 444, 1122}, {2222, 450, 1227},
+    };
+    static const float cameraYaw[4] = {0.04f, 0.43f, 0.60f, 0.46f};
+    int race = Status::gStatus->getSystem()->getRace();
+    Matrix matrix;
+    AbyssEngine::AEMath::MatrixSetTranslation(matrix,
+        static_cast<float>(cameraPosition[race][0]),
+        static_cast<float>(cameraPosition[race][1]),
+        static_cast<float>(cameraPosition[race][2]));
+    AbyssEngine::AEMath::MatrixSetRotation(matrix, 0.0f, cameraYaw[race], 0.0f);
+    Globals::Canvas->CameraSetLocal(Globals::Canvas->CameraGetCurrent(), matrix);
     if (this->cameraEase != 0) {
-        this->cameraEase->SetRange(*(AbyssEngine::AEMath::Matrix *) matrix, *(AbyssEngine::AEMath::Matrix *) matrix);
+        this->cameraEase->SetRange(matrix, matrix);
     }
     this->introDone = 1;
     this->headBobPhase = 0;
-    ((SpaceLounge *) (this))->updateScreenPositions();
     return 0;
 }
 
