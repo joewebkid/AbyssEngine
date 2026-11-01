@@ -229,7 +229,7 @@ static const int g_dw_campaignBriefingRows[120] = {
     49, 2879, 0, 2880, 49, 2881, 0, 2882
 };
 
-static const int g_dw_campaignSuccessRows1To113[1426] = {
+static const int g_dw_campaignSuccessRows1To123[1562] = {
     0, 1700, 2, 1701, 0, 1702, 2, 1703,
     0, 1704, 2, 1705, 0, 1706, 2, 1707,
     2, 1708, 0, 1709, 2, 1710, 2, 1711,
@@ -425,7 +425,24 @@ static const int g_dw_campaignSuccessRows1To113[1426] = {
     0, 2694, 0, 2695, 41, 2696, 0, 2697,
     41, 2698, 0, 2699, 0, 2700, 41, 2701,
     0, 2702, 0, 2703, 62, 2704, 0, 2705,
-    62, 2706, 0, 2707
+    62, 2706, 0, 2707,
+    0, 2711, 0, 2712, 62, 2713, 0, 2714,
+    0, 2715, 38, 2720, 0, 2721, 38, 2722,
+    0, 2723, 40, 2724, 0, 2725, 4, 2726,
+    0, 2727, 4, 2728, 0, 2729, 4, 2730,
+    0, 2731, 4, 2732, 0, 2733, 4, 2734,
+    0, 2735, 4, 2736, 0, 2737, 0, 2738,
+    43, 2739, 0, 2740, 43, 2741, 0, 2742,
+    0, 2743, 0, 2744, 6, 2746, 20, 2747,
+    6, 2748, 20, 2749, 6, 2750, 20, 2751,
+    6, 2752, 20, 2753, 6, 2754, 20, 2755,
+    6, 2756, 0, 2758, 4, 2759, 38, 2760,
+    0, 2761, 38, 2762, 40, 2763, 0, 2764,
+    4, 2765, 0, 2766, 6, 2767, 38, 2768,
+    6, 2769, 38, 2770, 0, 2771, 38, 2772,
+    0, 2773, 38, 2774, 20, 2775, 38, 2776,
+    38, 2777, 6, 2778, 38, 2779, 0, 2780,
+    38, 2781, 6, 2782, 38, 2783, 0, 2784
 };
 
 static int g_dw_campaignSuccessTextIds[0x1000];
@@ -551,10 +568,10 @@ void DialogueWindow::loadContent() {
             }
         } else if (kind == 1) {
             base = this->successOffsets[this->campaignMission];
-            if (this->campaignMission >= 1 && this->campaignMission <= 113) {
+            if (this->campaignMission >= 1 && this->campaignMission <= 123) {
                 int row = base + page * 2;
-                int portraitId = g_dw_campaignSuccessRows1To113[row];
-                textId = g_dw_campaignSuccessRows1To113[row + 1];
+                int portraitId = g_dw_campaignSuccessRows1To123[row];
+                textId = g_dw_campaignSuccessRows1To123[row + 1];
                 this->clientImage = g_dw_stationPortraits[portraitId];
                 this->agentName = *gameText->getText(0x63d + portraitId);
                 this->mirrorFace = portraitId == 0;
@@ -571,6 +588,10 @@ void DialogueWindow::loadContent() {
                 sound->stop(sound->currentMusicEvent);
                 sound->play(0x88, 0, 0, 0.0f);
                 sound->play(0xA2, 0, 0, 0.0f);
+            }
+            if (textId == 2782 && GameText::getLanguage() == 1) {
+                this->clientImage = g_dw_defaultClientImage;
+                this->agentName = *gameText->getText(0x63d);
             }
             if ((textId == 2193 || textId == 2194) && mission->getStatusValue() == 1) {
                 textId -= 2;
