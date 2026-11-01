@@ -7,6 +7,7 @@
 #include "game/core/CutScene.h"
 #include "engine/math/EaseInOut.h"
 #include "engine/math/EaseInOutMatrix.h"
+#include "engine/core/AERandom.h"
 #include "game/world/Level.h"
 #include "game/ship/KIPlayer.h"
 #include "game/ui/ListItemWindow.h"
@@ -55,27 +56,6 @@ static void *SpaceLounge_touch_list_help_text_slot;
 static void *SpaceLounge_touch_camera_slot;
 static int SpaceLounge_touch_race_vectors[64];
 
-namespace AbyssEngine {
-    namespace AERandom {
-        int nextInt(void *random, int limit);
-    }
-}
-
-static int *SpaceLounge_getSoundId_missionText;
-static void *SpaceLounge_getSoundId_offerText;
-static void *SpaceLounge_getSoundId_offer2358910;
-static void *SpaceLounge_getSoundId_offer5;
-static void *SpaceLounge_getSoundId_offer7;
-static void *SpaceLounge_getSoundId_offer4;
-static void *SpaceLounge_getSoundId_offer6;
-static void *SpaceLounge_getSoundId_offer0_11;
-static void *SpaceLounge_getSoundId_offer0_else;
-static void *SpaceLounge_getSoundId_chance;
-static void *SpaceLounge_getSoundId_offer1;
-static void *SpaceLounge_getSoundId_accepted;
-static void *SpaceLounge_getSoundId_specialText;
-static void *SpaceLounge_getSoundId_specialRandom;
-
 // Android .bss at 0x2183d4: five zero-initialized words passed to loadChar.
 static int SpaceLounge_defaultAgentParts[5] = {};
 
@@ -83,20 +63,6 @@ static void *SpaceLounge_start_text_slot;
 static void *SpaceLounge_draw_layout_slot;
 static void *SpaceLounge_draw_canvas_slot;
 static void *SpaceLounge_draw_text_slot;
-
-#if __SIZEOF_POINTER__ == 8
-static inline float Sinf(float value) { return AbyssEngine::AEMath::Sinf(value); }
-#else
-float Sinf(float value);
-#endif
-
-static void *SpaceLounge_update_camera_slot_a;
-static void *SpaceLounge_update_camera_slot_b;
-static void *SpaceLounge_update_camera_slot_c;
-static void *SpaceLounge_update_random_slot;
-static int *SpaceLounge_update_width_slot;
-static int *SpaceLounge_update_height_slot;
-static int *SpaceLounge_update_top_slot;
 
 int SpaceLounge::OnTouchMove(int x, int y) {
     this->touchX = x;
@@ -456,6 +422,7 @@ int SpaceLounge::OnTouchEnd(int x, int y) {
 
 int SpaceLounge::getSoundId(Agent *agent) {
     String missionText;
+    AbyssEngine::AERandom *random = static_cast<AbyssEngine::AERandom *>(Globals::rnd);
 
     int race = ((Agent *) (agent))->getRace();
     bool male = ((Agent *) (agent))->isMale();
@@ -481,40 +448,39 @@ int SpaceLounge::getSoundId(Agent *agent) {
     switch (offer) {
         case 0:
             if (missionType == 0 || missionType == 0xb) {
-                soundId = AbyssEngine::AERandom::nextInt(*(void **) &SpaceLounge_getSoundId_offer0_11, 4) + 0x301;
+                soundId = random->nextInt(4) + 0x301;
             } else if (missionType == 0xc) {
-                soundId = AbyssEngine::AERandom::nextInt(*(void **) &SpaceLounge_getSoundId_offer0_else, 4) + 0x2fa;
+                soundId = random->nextInt(4) + 0x2fa;
             } else {
-                void *random = *(void **) &SpaceLounge_getSoundId_offer0_else;
-                int first = AbyssEngine::AERandom::nextInt(random, 2);
+                int first = random->nextInt(2);
                 if (first == 0) {
-                    soundId = AbyssEngine::AERandom::nextInt(random, 4) + 0x31f;
+                    soundId = random->nextInt(4) + 0x31f;
                 } else {
-                    soundId = AbyssEngine::AERandom::nextInt(random, 4) + 0x309;
+                    soundId = random->nextInt(4) + 0x309;
                 }
             }
             break;
         case 1:
-            soundId = AbyssEngine::AERandom::nextInt(*(void **) &SpaceLounge_getSoundId_offer1, 2) + 0x30d;
+            soundId = random->nextInt(2) + 0x30d;
             break;
         case 2:
         case 3:
         case 8:
         case 9:
         case 10:
-            soundId = AbyssEngine::AERandom::nextInt(*(void **) &SpaceLounge_getSoundId_offer2358910, 2) + 0x2f7;
+            soundId = random->nextInt(2) + 0x2f7;
             break;
         case 4:
-            soundId = AbyssEngine::AERandom::nextInt(*(void **) &SpaceLounge_getSoundId_offer4, 2) + 0x2fe;
+            soundId = random->nextInt(2) + 0x2fe;
             break;
         case 5:
-            soundId = AbyssEngine::AERandom::nextInt(*(void **) &SpaceLounge_getSoundId_offer5, 4) + 0x31b;
+            soundId = random->nextInt(4) + 0x31b;
             break;
         case 6:
-            soundId = AbyssEngine::AERandom::nextInt(*(void **) &SpaceLounge_getSoundId_offer6, 4) + 0x323;
+            soundId = random->nextInt(4) + 0x323;
             break;
         case 7:
-            soundId = AbyssEngine::AERandom::nextInt(*(void **) &SpaceLounge_getSoundId_offer7, 4) + 0x305;
+            soundId = random->nextInt(4) + 0x305;
             break;
         default:
             soundId = -1;
@@ -523,27 +489,27 @@ int SpaceLounge::getSoundId(Agent *agent) {
 
     if (offer != 1) {
         checkSpecialText = false;
-        if (AbyssEngine::AERandom::nextInt(*(void **) &SpaceLounge_getSoundId_chance, 100) < 30) {
-            soundId = AbyssEngine::AERandom::nextInt(*(void **) &SpaceLounge_getSoundId_offer1, 2) + 0x30d;
+        if (random->nextInt(100) < 30) {
+            soundId = random->nextInt(2) + 0x30d;
             checkSpecialText = true;
         }
     }
 
     int dummy = 0;
     if (((Agent *) (agent))->hasAcceptedOffer() != 0) {
-        dummy = AbyssEngine::AERandom::nextInt(*(void **) &SpaceLounge_getSoundId_accepted, 2);
+        dummy = random->nextInt(2);
         soundId = dummy + 0x30d;
     }
 
     if (checkSpecialText) {
-        void *texts = *(void **) &SpaceLounge_getSoundId_specialText;
-        void *text = ((GameText *) (*(void **) texts))->getText(0x334);
+        GameText *texts = Globals::gameText;
+        void *text = texts->getText(0x334);
         if (missionText.Compare_str((String *) text) != 0) {
-            text = ((GameText *) (*(void **) texts))->getText(0x338);
+            text = texts->getText(0x338);
             if (missionText.Compare_str((String *) text) != 0) {
-                text = ((GameText *) (*(void **) texts))->getText(0x33b);
+                text = texts->getText(0x33b);
                 if (missionText.Compare_str((String *) text) != 0) {
-                    text = ((GameText *) (*(void **) texts))->getText(0x341);
+                    text = texts->getText(0x341);
                     dummy = missionText.Compare_str((String *) text);
                     if (dummy != 0) {
                         goto special_done;
@@ -551,7 +517,7 @@ int SpaceLounge::getSoundId(Agent *agent) {
                 }
             }
         }
-        dummy = AbyssEngine::AERandom::nextInt(*(void **) &SpaceLounge_getSoundId_specialRandom, 2);
+        dummy = random->nextInt(2);
         soundId = dummy + 0x314;
     }
 
@@ -1254,145 +1220,113 @@ void SpaceLounge::draw() {
 }
 
 void SpaceLounge::update(int dt) {
-    char maxMatrix[60];
-    char valueMatrix[60];
-
     if (dt > 50) {
         dt = 50;
     }
-    if (this->initialized == 0) {
+    if (!this->initialized) {
         return;
     }
-
-    if (this->mapVisible != 0) {
+    if (this->mapVisible) {
         this->starMap->update(dt);
         return;
     }
-    if (this->listVisible != 0) {
+    if (this->listVisible) {
         this->listWindow->update(dt);
         return;
     }
 
-    if (this->cameraAnimating == 0) {
-        this->cameraEase->Increase((float) dt);
+    AbyssEngine::AERandom *random = static_cast<AbyssEngine::AERandom *>(Globals::rnd);
+    if (!this->cameraAnimating) {
+        this->cameraEase->Increase(static_cast<float>(dt));
     }
 
-    void *cameraSlot;
-    void *camera;
-    void *current;
-    if (this->introDone == 0) {
-        ((AbyssEngine::EaseInOutMatrix *) (maxMatrix))->GetMaxValue();
-        ((AbyssEngine::EaseInOutMatrix *) (valueMatrix))->GetValue();
-        if ((memcmp((maxMatrix), (valueMatrix), sizeof(float) * 16) == 0) == 0) {
-            this->cameraAnimating = 0;
-            cameraSlot = *(void **) &SpaceLounge_update_camera_slot_c;
-            camera = *(void **) cameraSlot;
-            current = (void *) (long) ((PaintCanvas *) camera)->CameraGetCurrent();
-            ((AbyssEngine::EaseInOutMatrix *) (valueMatrix))->GetValue();
-            ((PaintCanvas *) camera)->CameraSetLocal((unsigned int) (long) camera,
-                                                     *(const AbyssEngine::AEMath::Matrix *) valueMatrix);
-        } else {
-            goto idle_camera;
-        }
-    } else {
-    idle_camera:
-        float step = (float) dt * 0.001f;
-        if (step > 1.0f) {
-            step = 1.0f;
-        }
-        if (step < 0.0f) {
-            step = 0.0f;
-        }
+    Matrix camera;
+    if (this->introDone || this->cameraEase->GetMaxValue() == this->cameraEase->GetValue()) {
+        float step = static_cast<float>(dt) * 0.0025f;
+        if (step > 0.12f) step = 0.12f;
+        if (step < 0.05f) step = 0.05f;
         this->introDone = 1;
-        this->headBobPhase = this->headBobPhase + step;
-        float wave = Sinf(this->headBobPhase);
-        float maxRot = (float) this->headBobSteps * 0.5f;
+        this->headBobPhase += step;
+        const float wave = AbyssEngine::AEMath::Sinf(this->headBobPhase);
+        float amplitude = static_cast<float>(this->headBobSteps) * 0.85f;
+        if (amplitude > 3.5f) amplitude = 3.5f;
 
-        if (this->cameraAnimating == 0) {
-            cameraSlot = *(void **) &SpaceLounge_update_camera_slot_a;
-            camera = *(void **) cameraSlot;
-            current = ((PaintCanvas *) camera)->CameraGetLocal((unsigned int) (long) camera);
-            (void) current;
-            this->cameraAnimating = 1;
-            int amount = AbyssEngine::AERandom::nextInt(*(void **) &SpaceLounge_update_random_slot, 10);
-            this->headBobReverse = 0;
-            if (this->headEase == 0) {
-                this->headEase = new AbyssEngine::EaseInOut(0.0f, (float) amount);
-            } else {
-                this->headEase->SetRange(0.0f, (float) amount);
-            }
-            this->headBobSteps = 2;
-        } else {
-            float value = this->headEase->GetValue();
-            float maxValue = this->headEase->GetMaxValue();
+        if (this->cameraAnimating) {
+            const float value = this->headEase->GetValue();
+            const float maxValue = this->headEase->GetMaxValue();
             float distance = value - maxValue;
-            if (distance < 0.0f) {
-                distance = -distance;
-            }
+            if (distance < 0.0f) distance = -distance;
             int amount = this->headBobSteps;
             if (distance < 0.25f) {
-                void *random = *(void **) &SpaceLounge_update_random_slot;
-                amount = AbyssEngine::AERandom::nextInt(random, 10);
-                float next = (float) (5 - amount);
+                const float next = static_cast<float>(
+                    5 - random->nextInt(10));
                 this->headBobReverse = value > next;
                 this->headEase->SetRange(value, next);
-                this->headBobSteps = AbyssEngine::AERandom::nextInt(random, 4) + 1;
-                amount = this->headBobSteps;
+                amount = random->nextInt(4) + 1;
+                this->headBobSteps = amount;
             }
-            if (this->headBobReverse != 0) {
-                amount = -amount;
+            if (this->headBobReverse) amount = -amount;
+            this->headEase->Increase(static_cast<float>(amount * dt));
+        } else {
+            PaintCanvas *canvas = Globals::Canvas;
+            this->baseMatrix = *static_cast<const Matrix *>(
+                canvas->CameraGetLocal(canvas->CameraGetCurrent()));
+            this->cameraAnimating = 1;
+            (void) random->nextInt(10);
+            this->headBobReverse = 0;
+            if (this->headEase) {
+                this->headEase->SetRange(0.0f, 5.0f);
+            } else {
+                this->headEase = new AbyssEngine::EaseInOut(0.0f, 5.0f);
             }
-            this->headEase->Increase((float) (dt * amount));
+            this->headBobSteps = 2;
         }
 
-        float value = this->headEase->GetValue();
-        MatrixSetRotation(valueMatrix, value / 90.0f, 0.0f, value);
-        MatrixSetTranslation(maxMatrix, 0.0f, 0.0f, wave * maxRot);
-        *(Matrix *) valueMatrix *= this->baseMatrix;
-        cameraSlot = *(void **) &SpaceLounge_update_camera_slot_b;
-        camera = *(void **) cameraSlot;
-        current = (void *) (long) ((PaintCanvas *) camera)->CameraGetCurrent();
-        ((PaintCanvas *) camera)->CameraSetLocal((unsigned int) (long) camera,
-                                                 *(const AbyssEngine::AEMath::Matrix *) valueMatrix);
+        camera = Matrix();
+        AbyssEngine::AEMath::MatrixSetRotation(
+            camera, 0.0f, this->headEase->GetValue() / 35.0f, 0.0f);
+        AbyssEngine::AEMath::MatrixSetTranslation(
+            camera, 0.0f, wave * amplitude, 0.0f);
+        camera *= this->baseMatrix;
+    } else {
+        this->cameraAnimating = 0;
+        camera = this->cameraEase->GetValue();
     }
 
-    ((SpaceLounge *) (this))->updateScreenPositions();
+    Globals::Canvas->CameraSetLocal(Globals::Canvas->CameraGetCurrent(), camera);
+    this->updateScreenPositions();
     if (this->mode != 0) {
         this->scrollWindow->update(dt);
     }
     this->cutScene->update();
 
-    if (this->touchDown != 0) {
-        int x = this->touchX;
-        int y = this->touchY;
-        int top = *(int *) SpaceLounge_update_top_slot;
-        int height = *(int *) SpaceLounge_update_height_slot;
-        int width = *(int *) SpaceLounge_update_width_slot;
-        CutScene *cutscene = this->cutScene;
-        if (y < top) {
-            if (x < 150) {
-                cutscene->vec8.y -= 10.0f;
-            } else if (x > width - 150) {
-                cutscene->vec8.y += 10.0f;
-            }
-        } else if (y < height - top * 2) {
-            if (x < 70) {
-                cutscene->cameraRotX -= 7.5f;
-            } else if (x > width - 70) {
-                cutscene->cameraRotX += 7.5f;
-            } else if (x > 100 && x < width - 100) {
-                if (y < height / 2) {
-                    cutscene->vec8.z -= (float) dt;
-                } else {
-                    cutscene->vec8.z += (float) dt;
-                }
-            }
+    if (!this->touchDown) {
+        return;
+    }
+    const int x = this->touchX;
+    const int y = this->touchY;
+    CutScene *cutScene = this->cutScene;
+    if (y < Globals::layout->field_0xc) {
+        if (x <= 149) {
+            cutScene->vec8.y -= 10.0f;
+        } else if (x > Globals::w - 150) {
+            cutScene->vec8.y += 10.0f;
+        }
+    } else if (y >= Globals::h - 2 * Globals::layout->field_0x10) {
+        if (x <= 69) {
+            cutScene->vec8.x -= static_cast<float>(dt);
+        } else if (x > Globals::w - 70) {
+            cutScene->vec8.x += static_cast<float>(dt);
+        }
+    } else if (x <= 69) {
+        cutScene->cameraRotX += 0.01f;
+    } else if (x > Globals::w - 70) {
+        cutScene->cameraRotX -= 0.01f;
+    } else if (x >= 101 && x < Globals::w - 100) {
+        if (y < Globals::h / 2) {
+            cutScene->vec8.z -= static_cast<float>(dt);
         } else {
-            if (x < 70) {
-                cutscene->vec8.x -= (float) dt;
-            } else if (x > width - 70) {
-                cutscene->vec8.x += (float) dt;
-            }
+            cutScene->vec8.z += static_cast<float>(dt);
         }
     }
 }

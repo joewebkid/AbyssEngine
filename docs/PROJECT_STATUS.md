@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` update and random binding)
+
+The ARM-backed update now compares complete typed camera matrices,
+advances the intro-to-idle transition with the original phase and
+amplitude limits, sets the current camera through `Globals::Canvas`,
+and uses the original screen-layout bounds for touch-held movement.
+`getSoundId()` and `update()` now use the real `AERandom` class through
+`Globals::rnd`; special sound text uses `Globals::gameText`. Focused
+`update()` source-shape rose from **70.8% to 92.1%** (strict fuzzy
+**9.5% to 55.7%**); `getSoundId()` rose from **83.2% to 84.9%** while
+its strict fuzzy fell from **50.3% to 48.4%**. Windows and ARM64 static
+builds pass; ARMv7 compiles 209/209 units. The full corpus covers
+**4,323/4,524** originals over 4,762 pairs at **96.09% source-shape /
+85.84% strict fuzzy**, with **2,733 linked-exact / 1,091 byte-exact**,
+zero skipped, 201 missing, and no exact-set losses. Live camera/input
+behavior remains unverified; first-idle-frame `headBobSteps` state
+needs review. Next offline priority: `SpaceLounge::draw()` and touch/key
+actions. See [update evidence](SPACELOUNGE_UPDATE_RANDOM_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-01 (`SpaceLounge` constructor)
 
 The ARM-backed constructor now orients paired agent scene objects,
