@@ -229,12 +229,18 @@ static const int g_dw_campaignBriefingRows[120] = {
     49, 2879, 0, 2880, 49, 2881, 0, 2882
 };
 
-static const int g_dw_campaignSuccessMission1Rows[38] = {
+static const int g_dw_campaignSuccessRows1To7[82] = {
     0, 1700, 2, 1701, 0, 1702, 2, 1703,
     0, 1704, 2, 1705, 0, 1706, 2, 1707,
     2, 1708, 0, 1709, 2, 1710, 2, 1711,
     0, 1712, 2, 1713, 0, 1714, 2, 1715,
-    2, 1716, 0, 1717, 16, 1718
+    2, 1716, 0, 1717, 16, 1718, 2, 1728,
+    0, 1729, 16, 1730, 2, 1733, 0, 1734,
+    2, 1735, 0, 1736, 2, 1737, 0, 1739,
+    2, 1740, 2, 1741, 0, 1742, 2, 1743,
+    0, 1744, 2, 1745, 16, 1746, 2, 1747,
+    2, 1758, 0, 1759, 2, 1760, 0, 1761,
+    2, 1762
 };
 
 static int g_dw_campaignSuccessTextIds[0x1000];
@@ -307,10 +313,10 @@ void DialogueWindow::loadContent() {
             }
         } else if (kind == 1) {
             base = this->successOffsets[this->campaignMission];
-            if (this->campaignMission == 1) {
-                int row = page * 2;
-                int portraitId = g_dw_campaignSuccessMission1Rows[row];
-                textId = g_dw_campaignSuccessMission1Rows[row + 1];
+            if (this->campaignMission >= 1 && this->campaignMission <= 7) {
+                int row = base + page * 2;
+                int portraitId = g_dw_campaignSuccessRows1To7[row];
+                textId = g_dw_campaignSuccessRows1To7[row + 1];
                 this->clientImage = g_dw_stationPortraits[portraitId];
                 this->agentName = *gameText->getText(0x63d + portraitId);
                 this->mirrorFace = portraitId == 0;
@@ -320,7 +326,7 @@ void DialogueWindow::loadContent() {
                 this->agentName = *gameText->getText(0x63d + (textId & 0xff));
             }
             this->bodyText = *gameText->getText(textId);
-            if (this->campaignMission == 1 && textId == 1718) {
+            if (textId == 1718 || textId == 1730) {
                 this->bodyText = static_cast<Globals *>(Globals::globals)->replaceKeyBindingTokens(this->bodyText);
             }
         } else {

@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (campaign success missions 2–7)
+
+`DialogueWindow::loadContent()` now selects all 41 ARM-confirmed success
+pages for campaign missions 1–7, using an 82-word table and the
+original offsets. The newly restored missions 2–7 account for 22
+pages; text ID 1730 takes the original binding-helper path. Its
+source-shape rose from 92.6% to 92.7%; strict fuzzy rose from 37.0%
+to 37.8%. Windows and ARM64 static builds pass, and ARMv7 compiles
+209/209 units. The full corpus covers **4,323/4,524** originals over
+4,752 pairs at **95.99% source-shape / 85.78% strict fuzzy**, with
+**2,724 linked-exact / 1,091 byte-exact**, zero skipped, 201 missing,
+and no exact-set losses. Live dialogue is unverified while device work
+is deferred. Next offline priority: recover campaign-success missions
+8–13 and their two additional portrait descriptors. See
+[missions 2–7 evidence](DIALOGUEWINDOW_CAMPAIGN_SUCCESS_MISSIONS2TO7_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (campaign success mission 1)
 
 `DialogueWindow::loadContent()` now selects all 19 ARM-confirmed success
