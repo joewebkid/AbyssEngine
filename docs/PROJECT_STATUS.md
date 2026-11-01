@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (type-12 successful dialogue)
+
+`DialogueWindow::loadContent()` now builds the ARM-confirmed type-12
+success text from ID 370, an optional story-agent station line, and
+the two level counters. Its source-shape rose from 51.2% to 66.9%; its
+strict fuzzy score fell from 23.7% to 22.9%. Windows and ARM64 static
+builds pass, and ARMv7 compiles 209/209 units. The full corpus remains
+**4,323/4,524** originals over 4,752 pairs, **95.98% source-shape /
+85.78% strict fuzzy**, **2,724 linked-exact / 1,091 byte-exact**, zero
+skipped and 201 missing, with no exact-set losses. Live dialogue is
+unverified while device work is deferred. Next offline priority: recover
+the remaining success and campaign text branches. See
+[type-12 success evidence](DIALOGUEWINDOW_SUCCESS_TYPE12_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (successful station-mission dialogue)
 
 `DialogueWindow::loadContent()` now uses the ARM-confirmed text ID 389

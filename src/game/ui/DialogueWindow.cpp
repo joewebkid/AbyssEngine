@@ -307,15 +307,33 @@ void DialogueWindow::loadContent() {
                 first, String(this->level->killCountA), String("#Q2", false));
             failureQuantityText = true;
         }
-        bool successStationText = false;
-        if (kind == 1 && (mission->getType() == 5 || mission->getType() == 3)) {
-            textId = 389;
-            this->bodyText = Globals::status->replaceHash(
-                String(*gameText->getText(textId), false),
-                mission->getTargetStationName(), String("#S", false));
-            successStationText = true;
+        bool fixedSuccessText = false;
+        if (kind == 1) {
+            int missionType = mission->getType();
+            if (missionType == 5 || missionType == 3) {
+                textId = 389;
+                this->bodyText = Globals::status->replaceHash(
+                    String(*gameText->getText(textId), false),
+                    mission->getTargetStationName(), String("#S", false));
+                fixedSuccessText = true;
+            } else if (missionType == 12) {
+                textId = 370;
+                String suffix("");
+                Agent *agent = mission->getAgent();
+                if (agent != 0 && agent->isStoryAgent()) {
+                    suffix = String("\n\n", false) + Globals::status->replaceHash(
+                        String(*gameText->getText(389), false),
+                        agent->getStationName(), String("#S", false));
+                }
+                String body = String(*gameText->getText(textId), false) + suffix;
+                String first = Globals::status->replaceHash(
+                    body, String(this->level->killCountB), String("#Q1", false));
+                this->bodyText = Globals::status->replaceHash(
+                    first, String(this->level->killCountA), String("#Q2", false));
+                fixedSuccessText = true;
+            }
         }
-        if (!fixedIntroText && !specialStation && !failureQuantityText && !successStationText &&
+        if (!fixedIntroText && !specialStation && !failureQuantityText && !fixedSuccessText &&
             (kind == 1 || kind == 0 || kind == 2)) {
             Agent *agent = mission->getAgent();
             if (GameText::getLanguage() == 1 && agent != 0) {
@@ -326,10 +344,10 @@ void DialogueWindow::loadContent() {
                 else if (kind == 1) textId = g_dw_genericTextIds[5 + variant];
                 else textId = g_dw_genericTextIds[10 + variant];
             }
-        } else if (!fixedIntroText && !specialStation && !failureQuantityText && !successStationText) {
+        } else if (!fixedIntroText && !specialStation && !failureQuantityText && !fixedSuccessText) {
             textId = 0x20f;
         }
-        if (!specialStation && !failureQuantityText && !successStationText)
+        if (!specialStation && !failureQuantityText && !fixedSuccessText)
             this->bodyText = *gameText->getText(textId);
 
         if (kind == 1) {
