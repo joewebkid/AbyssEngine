@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` item-offer confirmation)
+
+The ARM-backed mode-2 acceptance handler now formats affordable
+offers **2 and 9** with game text **868**, substituting quantity
+`#Q`, item text `#P`, and the multiplier-adjusted price `#C` in
+the observed order. It opens the confirmation window and marks
+`chatActive`. Focused `OnTouchEnd` source-shape rose **39.4% →
+47.6%** and strict fuzzy **18.7% → 21.0%**. Windows and ARM64
+static builds pass; ARMv7 compiles 209/209 units. The full corpus
+remains **4,323/4,524** originals over 4,762 pairs at **96.12%
+source-shape / 85.93% strict fuzzy**, with **2,741 linked-exact /
+1,096 byte-exact**, zero skipped, 201 missing, and no exact-set
+losses. Runtime purchase behavior is unverified while device testing
+is deferred. Next offline priority: affordable confirmation paths
+for offers 3 and 4. See
+[item-offer evidence](SPACELOUNGE_TRADE_ITEM_CONFIRM_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` trade-offer shortfall)
 
 The ARM-backed mode-2 acceptance handler now checks the price for
