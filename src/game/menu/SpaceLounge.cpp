@@ -401,6 +401,25 @@ int SpaceLounge::OnTouchEnd(int x, int y) {
                             this->mode = 0;
                             return 0;
                         }
+                        if (offer == 2 || offer == 3 || offer == 4 ||
+                            offer == 8 || offer == 9 || offer == 10) {
+                            const float priceFactor =
+                                offer >= 8 && Globals::options[0x38] == 0 ? 2.0f : 1.0f;
+                            const int credits = Globals::status->getCredits();
+                            if (priceFactor * static_cast<float>(agent->getSellItemPrice()) >
+                                static_cast<float>(credits)) {
+                                const int shortfall = static_cast<int>(
+                                    priceFactor * static_cast<float>(agent->getSellItemPrice()) -
+                                    static_cast<float>(Globals::status->getCredits()));
+                                String prompt = Globals::status->replaceHash(
+                                    String(*Globals::gameText->getText(203), false),
+                                    Globals::layout->formatCredits(shortfall),
+                                    String("#C", false));
+                                this->choiceWindow->set(prompt, false);
+                                this->choiceVisible = 1;
+                                return 0;
+                            }
+                        }
                         if (offer == 7) {
                             const int cost = agent->getCosts();
                             const int credits = Globals::status->getCredits();

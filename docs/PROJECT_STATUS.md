@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` trade-offer shortfall)
+
+The ARM-backed mode-2 acceptance handler now checks the price for
+offers **2, 3, 4, 8, 9, 10**, including the observed double-price
+condition for offers 8–10 when `Globals::options+0x38` is zero.
+When the player lacks credits, it displays game text **203** with
+the calculated shortfall and marks `choiceVisible`. Focused
+`OnTouchEnd` source-shape rose **35.7% → 39.4%** and strict fuzzy
+**17.4% → 18.7%**. Windows and ARM64 static builds pass; ARMv7
+compiles 209/209 units. The full corpus remains **4,323/4,524**
+originals over 4,762 pairs at **96.12% source-shape / 85.93% strict
+fuzzy**, with **2,741 linked-exact / 1,096 byte-exact**, zero skipped,
+201 missing, and no exact-set losses. Runtime purchase behavior is
+unverified while device testing is deferred. Next offline priority:
+the affordable offer-specific confirmation messages. See
+[shortfall evidence](SPACELOUNGE_TRADE_SHORTFALL_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` offer acceptance variants 1/7)
 
 The ARM-backed mode-2 button at index 0 now handles offer 1 by
