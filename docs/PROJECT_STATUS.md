@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (`MissionsWindow::init` bindings)
+
+The ARM-confirmed initialization path now uses `Globals` for device
+dimensions, layout, campaign visibility, text and character images;
+restores all button text IDs and the `#Q`, `#*`, `#C` substitutions;
+and removes the unbound `g_mwi_*` pointers and local call shims.
+The iPad HD height is now the original truncated 703.12 float.
+Windows and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+Focused `init()` rose from 9.2% to **92.2% source-shape** and from
+5.3% to **35.7% strict fuzzy**. The full corpus covers **4,323/4,524**
+originals over 4,752 pairs at **96.02% source-shape / 85.80% strict
+fuzzy**, with **2,726 linked-exact / 1,091 byte-exact**, zero skipped,
+201 missing and no exact-set losses. The two constructor variants
+gained linked-exact. `draw()` and touch handling still use unbound
+translation-unit pointers; live behavior remains unverified while
+device work is deferred. Next offline priority: restore `draw()`.
+See [initialization evidence](MISSIONSWINDOW_INIT_BINDINGS_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (`MissionsWindow` game-text binding)
 
 All 16 remaining `MissionsWindow` uses of an uninitialized local
