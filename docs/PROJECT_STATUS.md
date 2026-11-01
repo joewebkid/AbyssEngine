@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (campaign briefing binding-helper calls)
+
+`DialogueWindow::loadContent()` now makes the ARM-confirmed helper call
+for six campaign briefing entries. The original Android
+`Globals::replaceKeyBindingTokens()` returns a copy of its input; the
+existing source already matches that behavior. This corrects the earlier
+claim that an unimplemented substitution routine was blocking the call.
+`loadContent()` source-shape rose from 89.0% to 90.6%; strict fuzzy fell
+from 36.9% to 36.5%. Windows and ARM64 static builds pass, and ARMv7
+compiles 209/209 units. The full corpus covers **4,323/4,524** originals
+over 4,752 pairs at **95.99% source-shape / 85.78% strict fuzzy**, with
+**2,724 linked-exact / 1,091 byte-exact**, zero skipped, 201 missing,
+and no exact-set losses. Live dialogue is unverified while device work
+is deferred. Next offline priority: reconstruct the campaign success
+page table and its portrait mapping in bounded, verified portions. See
+[binding-call evidence](DIALOGUEWINDOW_CAMPAIGN_BINDING_CALL_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (campaign narration dialogue)
 
 `DialogueWindow::loadContent()` now constructs the ARM-confirmed

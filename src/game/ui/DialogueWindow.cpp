@@ -292,6 +292,11 @@ void DialogueWindow::loadContent() {
             this->agentName = *gameText->getText(0x63d + portraitId);
             this->mirrorFace = portraitId == 0;
             this->bodyText = *gameText->getText(textId);
+            unsigned textIndex = static_cast<unsigned>(row + 1);
+            // ARM 0x16759c: only these briefing entries pass through the binding helper.
+            if ((textIndex <= 23 && (0xA0200Au & (1u << textIndex)) != 0) || textIndex == 35) {
+                this->bodyText = static_cast<Globals *>(Globals::globals)->replaceKeyBindingTokens(this->bodyText);
+            }
         } else if (kind == 1) {
             base = this->successOffsets[this->campaignMission];
             textId = g_dw_campaignSuccessTextIds[base + page * 2 + 1];
