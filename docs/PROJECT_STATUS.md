@@ -1,5 +1,26 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (complete campaign success row table)
+
+`DialogueWindow::loadContent()` now selects all 1028 ARM-confirmed
+success pages for campaign missions 0–161 from the complete 2056-word
+original row table. Missions 124–161 add the final 247 pages. The
+temporary zero-filled table and mission-range split are removed. The
+63-entry portrait pointer table and its 62 file-backed descriptors
+were completed in the previous package. Windows and ARM64 static builds
+pass, and ARMv7 compiles 209/209 units. Focused `loadContent()` changed
+from 95.1% to **93.5% source-shape** and from 36.5% to **36.4% strict
+fuzzy** after removal of the placeholder branch; the ARM-backed direct
+row selection is retained. The full corpus covers **4,323/4,524**
+originals over 4,752 pairs at **95.99% source-shape / 85.78% strict
+fuzzy**, with **2,724 linked-exact / 1,091 byte-exact**, zero skipped,
+201 missing, and no exact-set losses. This completes the campaign
+success row data, not the whole dialogue implementation. Live rendering
+and sound remain unverified while device work is deferred. Next offline:
+review the remaining `DialogueWindow::loadContent()` control flow,
+starting with non-campaign missions. See [complete campaign success
+evidence](DIALOGUEWINDOW_CAMPAIGN_SUCCESS_COMPLETE_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (campaign success missions 114–123)
 
 `DialogueWindow::loadContent()` now selects 781 ARM-confirmed success
