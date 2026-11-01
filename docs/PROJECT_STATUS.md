@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (`SpaceLounge` constructor)
+
+The ARM-backed constructor now orients paired agent scene objects,
+places their silhouettes, restores the two race-specific camera
+matrices and 3,000 ms ease, and removes an accepted type-12 offer
+through the typed array operation. The previously unbound camera
+pointer and agent-removal shim are gone. Focused source-shape for both
+constructor variants rose from **70.0% to 92.8%** (strict fuzzy
+**29.5% to 50.6%**). Windows and ARM64 static builds pass; ARMv7
+compiles 209/209 units. The full corpus covers **4,323/4,524**
+originals over 4,762 pairs at **96.09% source-shape / 85.83% strict
+fuzzy**, with **2,733 linked-exact / 1,091 byte-exact**, zero skipped,
+201 missing, and no exact-set losses. Live scene and camera behavior
+is unverified while device work is deferred. Next offline priority:
+repair `SpaceLounge::update()` camera interpolation and touch bounds.
+See [constructor evidence](SPACELOUNGE_CONSTRUCTOR_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (`SpaceLounge::drawLounge`)
 
 The ARM-backed lounge draw path now uses the actual game globals,

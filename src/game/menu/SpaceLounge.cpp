@@ -79,9 +79,6 @@ static void *SpaceLounge_getSoundId_specialRandom;
 // Android .bss at 0x2183d4: five zero-initialized words passed to loadChar.
 static int SpaceLounge_defaultAgentParts[5] = {};
 
-void ArrayRemove_AgentPtr(void *agent, void *array);
-
-static void *SpaceLounge_ctor_camera_slot;
 static void *SpaceLounge_start_text_slot;
 static void *SpaceLounge_draw_layout_slot;
 static void *SpaceLounge_draw_canvas_slot;
@@ -975,9 +972,6 @@ int SpaceLounge::init() {
 }
 
 SpaceLounge::SpaceLounge() {
-    char from[60];
-    char to[60];
-
     this->field_0x8c = 0;
     this->field_0x90 = 0;
     this->field_0x94 = 0;
@@ -1016,12 +1010,12 @@ SpaceLounge::SpaceLounge() {
     Array<Agent *> *agents = this->agents;
     if (agents != 0) {
         for (unsigned i = 0; i < agents->size(); ++i) {
-            void *agent = (*agents)[i];
-            int offer = ((Agent *) (agent))->getOffer();
-            if ((offer == 6 || offer == 0) && ((Agent *) (agent))->getMission() != 0) {
-                void *mission = ((Agent *) (agent))->getMission();
-                if (((Mission *) (mission))->getType() == 0xc && ((Agent *) (agent))->hasAcceptedOffer() != 0) {
-                    ArrayRemove_AgentPtr(agent, this->agents);
+            Agent *agent = (*agents)[i];
+            int offer = agent->getOffer();
+            if ((offer == 6 || offer == 0) && agent->getMission() != nullptr) {
+                Mission *mission = agent->getMission();
+                if (mission->getType() == 12 && agent->hasAcceptedOffer()) {
+                    ArrayRemove(agent, *this->agents);
                     this->init();
                     break;
                 }
@@ -1037,18 +1031,55 @@ SpaceLounge::SpaceLounge() {
         this->cutScene->initialize();
     }
 
-    int race = Status::gStatus->getSystem()->getRace();
-    MatrixSetTranslation(from, (float) race, 0.0f, 0.0f);
-    MatrixSetRotation(from, 0.0f, 0.0f, 0.0f);
-    MatrixSetTranslation(to, (float) race, 0.0f, 0.0f);
-    MatrixSetRotation(to, 0.0f, 0.0f, 0.0f);
-    this->cameraEase = new AbyssEngine::EaseInOutMatrix(*(Matrix *) from, *(Matrix *) to, 3000);
+    Array<KIPlayer *> *enemies = this->cutScene->level->getEnemies();
+    if (this->agents != nullptr) {
+        for (unsigned i = 0; i < this->agents->size(); ++i) {
+            KIPlayer *agentObject = (*enemies)[i];
+            Vector position = agentObject->getPosition();
+            PaintCanvas *canvas = Globals::Canvas;
+            const Matrix *local = static_cast<const Matrix *>(
+                canvas->CameraGetLocal(canvas->CameraGetCurrent()));
+            Matrix facing = AbyssEngine::AEMath::MatrixGetLookAt(
+                AbyssEngine::AEMath::MatrixGetPosition(*local), position,
+                AbyssEngine::AEMath::MatrixGetUp(*local));
+            agentObject->geometry->setMatrix(facing);
+            agentObject->setPosition(position);
 
-    void *cameraSlot = *(void **) &SpaceLounge_ctor_camera_slot;
-    void *camera = *(void **) cameraSlot;
-    void *current = (void *) (long) ((PaintCanvas *) camera)->CameraGetCurrent();
-    ((PaintCanvas *) camera)->CameraSetLocal((unsigned int) (long) camera,
-                                             *(const AbyssEngine::AEMath::Matrix *) current);
+            KIPlayer *silhouetteObject = (*enemies)[this->agents->size() + i];
+            silhouetteObject->geometry->setMatrix(facing);
+            const Vector direction = AbyssEngine::AEMath::MatrixGetDir(facing);
+            position.x -= direction.x * 100.0f;
+            position.z -= direction.z * 100.0f;
+            silhouetteObject->setPosition(position);
+        }
+    }
+
+    // ARM camera position/yaw tables at 0x206764/0x1fb8c8 and 0x206794/0x1fb8d8.
+    static const int startPosition[4][3] = {
+        {-1315, 1160, -2728}, {1484, 2980, -1626},
+        {-2472, 734, -3000}, {-2598, 400, 1813},
+    };
+    static const float startYaw[4] = {0.03f, 0.03f, 0.21f, 1.87f};
+    static const int endPosition[4][3] = {
+        {-1800, 620, 1805}, {607, 610, 2362},
+        {136, 444, 1122}, {2222, 450, 1227},
+    };
+    static const float endYaw[4] = {0.04f, 0.43f, 0.60f, 0.46f};
+    const int race = Status::gStatus->getSystem()->getRace();
+    Matrix from;
+    AbyssEngine::AEMath::MatrixSetTranslation(from,
+        static_cast<float>(startPosition[race][0]),
+        static_cast<float>(startPosition[race][1]),
+        static_cast<float>(startPosition[race][2]));
+    AbyssEngine::AEMath::MatrixSetRotation(from, 0.0f, startYaw[race], 0.0f);
+    Matrix to;
+    AbyssEngine::AEMath::MatrixSetTranslation(to,
+        static_cast<float>(endPosition[race][0]),
+        static_cast<float>(endPosition[race][1]),
+        static_cast<float>(endPosition[race][2]));
+    AbyssEngine::AEMath::MatrixSetRotation(to, 0.0f, endYaw[race], 0.0f);
+    this->cameraEase = new AbyssEngine::EaseInOutMatrix(from, to, 3000);
+    Globals::Canvas->CameraSetLocal(Globals::Canvas->CameraGetCurrent(), from);
     this->initialized = 1;
     this->introDone = 0;
 }
