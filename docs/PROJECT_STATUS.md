@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (special-station dialogue pages)
+
+`DialogueWindow::loadContent()` now uses the ARM-confirmed 18-page
+and 6-page special-station tables, selects text and portrait together,
+and bypasses ordinary random text on that path. The three portrait
+indices used by these tables point to restored descriptors; the
+zero-initialized descriptor's runtime mutation remains unverified.
+Windows and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+Full corpus remains **4,323/4,524** originals over 4,752 pairs,
+**95.98% source-shape / 85.78% strict fuzzy**,
+**2,724 linked-exact / 1,091 byte-exact**, zero skipped and 201
+missing, with no exact-set losses. Device execution is deferred.
+Next offline priority: recover remaining mission-specific and campaign
+text branches in `loadContent()`. See
+[special-station evidence](DIALOGUEWINDOW_SPECIAL_STATION_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (mission intro types 12 and 7)
 
 `DialogueWindow::loadContent()` now selects the ARM-confirmed

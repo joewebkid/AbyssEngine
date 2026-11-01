@@ -84,7 +84,7 @@ int DialogueWindow::length() {
     if (this->kind == 0 && this->mission != 0 &&
         this->mission->getTargetStation() == 0x6c) {
         int result = 6;
-        if (Status::gStatus->field_114 == 2) result = 0x12;
+        if (Globals::status->field_114 == 2) result = 0x12;
         return result;
     }
     return 1;
@@ -201,11 +201,32 @@ static const int g_dw_genericTextIds[15] = {
     384, 385, 386, 387, 388
 };
 
+static const int g_dw_specialStationStatus2[36] = {
+    4, 459, 0, 460, 4, 461, 0, 462, 4, 463, 0, 464,
+    4, 465, 0, 466, 4, 467, 0, 468, 4, 469, 0, 470,
+    4, 471, 0, 472, 4, 473, 0, 474, 4, 475, 16, 476
+};
+
+static const int g_dw_specialStationDefault[12] = {
+    4, 479, 0, 480, 4, 481, 0, 482, 4, 483, 0, 484
+};
+
 static int g_dw_campaignBriefingTextIds[0x1000];
 
 static int g_dw_campaignSuccessTextIds[0x1000];
 
-static void *g_dw_defaultClientImage = nullptr;
+static int g_dw_defaultClientImage[5];
+static int g_dw_stationPortrait4[5] = {4, 2, 0, 2, 2};
+static int g_dw_stationPortrait16[5] = {11, 1, 0, 0, 2};
+// The station page tables only use portrait indices 0, 4, and 16.
+static int *const g_dw_stationPortraits[17] = {
+    g_dw_defaultClientImage,
+    nullptr, nullptr, nullptr,
+    g_dw_stationPortrait4,
+    nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+    nullptr, nullptr, nullptr, nullptr, nullptr,
+    g_dw_stationPortrait16
+};
 
 void DialogueWindow::loadContent() {
     GameText *gameText = Globals::gameText;
@@ -265,7 +286,18 @@ void DialogueWindow::loadContent() {
                 fixedIntroText = true;
             }
         }
-        if (!fixedIntroText && (kind == 1 || kind == 0 || kind == 2)) {
+        bool specialStation = false;
+        if (!fixedIntroText && kind == 0 && mission->getTargetStation() == 0x6c) {
+            const int *rows = Globals::status->field_114 == 2
+                                  ? g_dw_specialStationStatus2 : g_dw_specialStationDefault;
+            int portraitId = rows[page * 2];
+            textId = rows[page * 2 + 1];
+            this->bodyText = *gameText->getText(textId);
+            this->clientImage = g_dw_stationPortraits[portraitId];
+            this->agentName = *gameText->getText(0x63d + portraitId);
+            specialStation = true;
+        }
+        if (!fixedIntroText && !specialStation && (kind == 1 || kind == 0 || kind == 2)) {
             Agent *agent = mission->getAgent();
             if (GameText::getLanguage() == 1 && agent != 0) {
                 textId = this->pickGermanGenericTextBecauseWeSaved100EurosWithThat(kind, agent);
@@ -275,18 +307,14 @@ void DialogueWindow::loadContent() {
                 else if (kind == 1) textId = g_dw_genericTextIds[5 + variant];
                 else textId = g_dw_genericTextIds[10 + variant];
             }
-        } else if (!fixedIntroText) {
+        } else if (!fixedIntroText && !specialStation) {
             textId = 0x20f;
         }
-        this->bodyText = *(gameText->getText(textId));
+        if (!specialStation) this->bodyText = *gameText->getText(textId);
 
         if (kind == 1) {
             Standing *standing = Status::gStatus->getStanding();
             standing->applyMissionCompleted(mission->getClientRace());
-        }
-        if (!fixedIntroText && kind == 0 && mission->getTargetStation() == 0x6c) {
-            textId = 0x1ca;
-            this->bodyText = *(gameText->getText(textId));
         }
     } else {
         this->clientImage = g_dw_defaultClientImage;
