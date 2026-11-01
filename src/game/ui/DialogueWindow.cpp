@@ -31,9 +31,39 @@ int DialogueWindow::OnTouchBegin(int x, int y) {
 }
 
 
-static int g_dw_briefingCounts[0xa2];
+static const int g_dw_briefingCounts[0xa2] = {
+    4, 0, 10, 0, 2, 0, 0, 8, 0, 0, 0, 2,
+    0, 0, 2, 0, 4, 0, 0, 0, 0, 4, 0, 2,
+    8, 0, 6, 0, 0, 2, 0, 0, 2, 0, 0, 0,
+    4, 0, 2, 0, 0, 6, 0, 0, 0, 0, 0, 0,
+    14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 22, 0, 8, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0
+};
 
-static int g_dw_successCounts[0xa2];
+static const int g_dw_successCounts[0xa2] = {
+    0, 38, 6, 10, 4, 12, 2, 10, 18, 22, 24, 26,
+    16, 4, 0, 22, 6, 34, 16, 10, 2, 2, 20, 28,
+    0, 6, 4, 22, 0, 2, 10, 20, 22, 18, 30, 20,
+    4, 16, 4, 20, 0, 10, 8, 4, 8, 0, 20, 32,
+    16, 0, 0, 0, 0, 0, 16, 28, 4, 20, 24, 2,
+    16, 16, 26, 4, 10, 34, 24, 16, 20, 0, 2, 14,
+    30, 18, 4, 26, 20, 40, 0, 0, 12, 0, 16, 18,
+    0, 4, 8, 0, 16, 0, 18, 0, 14, 22, 14, 32,
+    20, 6, 24, 24, 0, 20, 12, 20, 14, 0, 0, 0,
+    30, 8, 6, 10, 6, 10, 2, 8, 36, 12, 2, 22,
+    0, 18, 36, 0, 30, 12, 12, 22, 8, 0, 18, 0,
+    14, 6, 16, 4, 12, 0, 48, 2, 24, 20, 10, 12,
+    0, 2, 24, 16, 12, 10, 6, 16, 16, 22, 32, 8,
+    10, 0, 10, 22, 6, 12
+};
 
 int DialogueWindow::getMode() {
     return this->kind;
@@ -42,7 +72,7 @@ int DialogueWindow::getMode() {
 int DialogueWindow::length() {
     Mission *mission = this->mission;
     if (mission != 0 && mission->isCampaignMission() != 0) {
-        int *counts;
+        const int *counts;
         if (this->kind == 1) {
             counts = g_dw_successCounts;
         } else {
@@ -129,19 +159,15 @@ bool DialogueWindow::isLastPage() {
 }
 
 
-static int g_dw_briefingDialogueIds[0xa2];
-
 bool DialogueWindow::hasBriefingDialogue(int id) {
     if (id > 0xa1) return false;
-    return g_dw_briefingDialogueIds[id] > 0;
+    return g_dw_briefingCounts[id] > 0;
 }
 
 
-static int g_dw_successDialogueIds[0xa2];
-
 bool DialogueWindow::hasSuccessDialogue(int id) {
     if (id > 0xa1) return false;
-    return g_dw_successDialogueIds[id] > 0;
+    return g_dw_successCounts[id] > 0;
 }
 
 void DialogueWindow::set(Mission *mission, int kind, int campaign) {
@@ -343,10 +369,6 @@ int DialogueWindow::OnTouchEnd(int x, int y) {
 }
 
 
-static int g_dw_briefingPartCounts[0xa2];
-
-static int g_dw_successPartCounts[0xa2];
-
 static const char g_dw_defaultAgentName[] = "";
 
 static inline int half_round_to_zero(int v) {
@@ -360,12 +382,12 @@ int DialogueWindow::init() {
     int briefingSum = 0;
     int successSum = 0;
     for (int i = 0; i != 0xa2; ++i) {
-        int briefingCount = g_dw_briefingPartCounts[i];
-        int successCount = g_dw_successPartCounts[i];
+        int briefingCount = g_dw_briefingCounts[i];
+        int successCount = g_dw_successCounts[i];
         this->briefingOffsets[i] = briefingSum;
         this->successOffsets[i] = successSum;
-        successSum += briefingCount;
-        briefingSum += successCount;
+        briefingSum += briefingCount;
+        successSum += successCount;
     }
 
     this->agentName = String(g_dw_defaultAgentName, false);
