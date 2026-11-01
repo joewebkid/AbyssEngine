@@ -1,5 +1,18 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (German generic dialogue text)
+
+`DialogueWindow` now selects German generic text IDs from 62 ARM-confirmed
+table values, using the original three table offsets and shared random
+generator. Windows and ARM64 static builds pass; ARMv7 compiles
+209/209 units. Full corpus remains **4,323/4,524** originals over
+4,752 pairs, **95.98% source-shape / 85.78% strict fuzzy**,
+**2,724 linked-exact / 1,091 byte-exact**, zero skipped and 201
+missing; exact sets have no losses. Live German dialogue is unverified.
+Next offline priority: restore the ordinary non-German text-ID tables
+and mission-specific `loadContent()` branches. See
+[German text evidence](DIALOGUEWINDOW_GERMAN_TEXT_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (dialogue construction and drawing)
 
 `DialogueWindow` now reads the Android ARM-confirmed shared text,

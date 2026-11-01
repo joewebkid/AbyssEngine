@@ -486,11 +486,15 @@ DialogueWindow::DialogueWindow(Mission *mission, Level *level, int kind) {
 }
 
 
-static int g_dw_germanBriefingTexts[64];
-
-static int g_dw_germanSuccessTexts[64];
-
-static int g_dw_germanOtherTexts[64];
+static const int g_dw_germanTexts[62] = {
+    379, 380, 379, 380, 380, 383, 380, 383, 379, 380,
+    379, 380, 379, 381, 380, 382, 379, 380, 379, 380,
+    387, 388, 384, 385, 384, 385, 384, 385, 385, 387,
+    384, 385, 384, 386, 385, 386, 384, 385, 384, 385,
+    373, 376, 373, 374, 374, 376, 374, 376, 373, 374,
+    373, 374, 373, 375, 373, 375, 373, 374, 373, 374,
+    2376, 2377
+};
 
 int DialogueWindow::pickGermanGenericTextBecauseWeSaved100EurosWithThat(int kind, Agent *agent) {
     int race = agent->getRace();
@@ -513,21 +517,21 @@ int DialogueWindow::pickGermanGenericTextBecauseWeSaved100EurosWithThat(int kind
     }
 
     int index;
-    DialogueWindowGermanTextTable *texts;
+    const int *texts;
     if (kind == 2) {
-        index = AERandom::gRandom->nextInt(2);
-        texts = (DialogueWindowGermanTextTable *) g_dw_germanSuccessTexts;
+        index = static_cast<AERandom *>(Globals::rnd)->nextInt(2);
+        texts = g_dw_germanTexts + 20;
     } else if (kind != 0) {
-        index = AERandom::gRandom->nextInt(2);
-        texts = (DialogueWindowGermanTextTable *) g_dw_germanOtherTexts;
+        index = static_cast<AERandom *>(Globals::rnd)->nextInt(2);
+        texts = g_dw_germanTexts + 40;
     } else {
-        index = AERandom::gRandom->nextInt(2);
-        texts = (DialogueWindowGermanTextTable *) g_dw_germanBriefingTexts;
+        index = static_cast<AERandom *>(Globals::rnd)->nextInt(2);
+        texts = g_dw_germanTexts;
     }
 
-    int *picked = &(&texts->femaleVariantBase)[index];
+    const int *picked = &texts[18 + index];
     if (male != 0) {
-        picked = &(&texts->maleRaceRow)[race * 2 + index];
+        picked = &texts[race * 2 + index];
     }
     return *picked;
 }
