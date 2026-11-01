@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge::OnTouchEnd` second button)
+
+The ARM-backed mode-2 handler now responds to button index 1 by
+showing the selected agent's name with a random text from IDs 845–849,
+clearing chat scroll, returning to mode 0, and incrementing the
+32-bit Status field at `0xe0`. A consumed button also sets event 1
+for a generic agent; the previous `index >= 5` guard could not run
+for this five-button array. Focused `OnTouchEnd()` source-shape rose
+**16.1% → 18.9%** and strict fuzzy **13.5% → 14.7%**. Windows and
+ARM64 static builds pass; ARMv7 compiles 209/209 units. The full
+corpus remains **4,323/4,524** originals over 4,762 pairs at
+**96.10% source-shape / 85.86% strict fuzzy**, with **2,733
+linked-exact / 1,091 byte-exact**, zero skipped, 201 missing, and no
+exact-set losses. Runtime behavior is unverified while device testing
+is deferred. Next offline priority: the other mode-2 button actions,
+starting with the mission-difficulty reply. See
+[button evidence](SPACELOUNGE_TOUCH_END_BUTTON1_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge::OnTouchEnd` early paths)
 
 The ARM-backed touch-end handler now uses the real layout and game-text

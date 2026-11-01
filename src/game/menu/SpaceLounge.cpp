@@ -370,9 +370,18 @@ int SpaceLounge::OnTouchEnd(int x, int y) {
             for (unsigned i = 0; i < buttons->size(); ++i) {
                 TouchButton *button = (*buttons)[i];
                 if (button->OnTouchEnd(x, y) != 0) {
-                    void *agent = selected_agent(this);
-                    if (i >= 5 && ((Agent *) (agent))->isGenericAgent() != 0) {
-                        ((Agent *) (agent))->setEvent(1);
+                    Agent *agent = static_cast<Agent *>(selected_agent(this));
+                    if (i == 1) {
+                        AbyssEngine::AERandom *random =
+                            static_cast<AbyssEngine::AERandom *>(Globals::rnd);
+                        this->scrollWindow->setText(agent->getName(),
+                            String(*Globals::gameText->getText(random->nextInt(5) + 845), false));
+                        this->chatScroll = 0;
+                        this->mode = 0;
+                        ++Globals::status->field_e0;
+                    }
+                    if (agent->isGenericAgent() != 0) {
+                        agent->setEvent(1);
                     }
                 }
             }
