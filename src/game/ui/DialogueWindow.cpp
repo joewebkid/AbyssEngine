@@ -331,6 +331,14 @@ void DialogueWindow::loadContent() {
                 this->bodyText = Globals::status->replaceHash(
                     first, String(this->level->killCountA), String("#Q2", false));
                 fixedSuccessText = true;
+            } else if (missionType == 0xb7) {
+                int variant = static_cast<AERandom *>(Globals::rnd)->nextInt(5);
+                textId = g_dw_genericTextIds[5 + variant];
+                this->bodyText = *gameText->getText(textId);
+                String suffix = String("\n\n", false) + *gameText->getText(176) +
+                                String(": ", false) + String(this->level->killCountB);
+                this->bodyText = this->bodyText + suffix;
+                fixedSuccessText = true;
             }
         }
         if (!fixedIntroText && !specialStation && !failureQuantityText && !fixedSuccessText &&

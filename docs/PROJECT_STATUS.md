@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (type-183 successful dialogue)
+
+`DialogueWindow::loadContent()` now follows the ARM-confirmed type-183
+success path: it selects one of five original text IDs with the shared
+random generator and appends the level quantity. Its source-shape rose
+from 66.9% to 73.6%; Windows and ARM64 static builds pass, and ARMv7
+compiles 209/209 units. The full corpus covers **4,323/4,524** originals
+over 4,752 pairs at **95.99% source-shape / 85.78% strict fuzzy**, with
+**2,724 linked-exact / 1,091 byte-exact**, zero skipped, 201 missing,
+and no exact-set losses. Live dialogue is unverified while device work
+is deferred. Next offline priority: restore the generic success suffix
+for story and ordinary agents. See
+[type-183 success evidence](DIALOGUEWINDOW_SUCCESS_TYPE183_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (type-12 successful dialogue)
 
 `DialogueWindow::loadContent()` now builds the ARM-confirmed type-12
