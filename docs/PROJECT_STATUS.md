@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (`SpaceLounge` agent images and cleanup)
+
+`SpaceLounge::init()` now loads character image arrays and allocates the
+two selection vectors per station agent; the destructor releases owned
+image, button, text and vector objects and no longer exits early.
+Focused `init()` source-shape rose from **60.1% to 70.4%**; both destructor
+variants rose from **84.9% to 90.3%**. Windows and ARM64 static builds
+pass; ARMv7 compiles 209/209 units. The full corpus covers **4,323/4,524**
+originals over 4,761 pairs at **96.05% source-shape / 85.82% strict
+fuzzy**, with **2,733 linked-exact / 1,091 byte-exact**, zero skipped,
+201 missing, and no exact-set losses. Selection geometry remains dependent
+on the incomplete `updateScreenPositions()`; iPad layout, scene lighting,
+post effects and chat paths still need restoration. Live behavior remains
+unverified while device work is deferred. See [agent-image evidence](
+SPACELOUNGE_AGENT_IMAGES_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (`SpaceLounge::init` bindings)
 
 The ARM-backed initialization now reads station agents, layout and text

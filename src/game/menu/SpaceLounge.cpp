@@ -95,6 +95,9 @@ static void *SpaceLounge_lounge_image_factory_slot;
 static void *SpaceLounge_lounge_text_slot;
 static void *SpaceLounge_lounge_font_slot;
 
+// Android .bss at 0x2183d4: five zero-initialized words passed to loadChar.
+static int SpaceLounge_defaultAgentParts[5] = {};
+
 void ArrayRemove_AgentPtr(void *agent, void *array);
 
 static void *SpaceLounge_ctor_camera_slot;
@@ -906,6 +909,21 @@ int SpaceLounge::init() {
     this->cameraAnimating = 0;
     this->agents = Status::gStatus->getStation()->getAgents();
 
+    if (this->silhouetteGrid == nullptr && this->agents != nullptr && this->agentRects == nullptr) {
+        const unsigned count = this->agents->size();
+        this->silhouetteGrid = new Array<Array<ImagePart *> *>();
+        ArraySetLength(count, *this->silhouetteGrid);
+        this->agentRects = new Array<Vector *>();
+        ArraySetLength(count * 2, *this->agentRects);
+        ImageFactory *factory = static_cast<ImageFactory *>(Globals::imageFactory);
+        for (unsigned i = 0; i < count; ++i) {
+            (*this->silhouetteGrid)[i] = factory->loadChar((*this->agents)[i]->getImageParts());
+            (*this->agentRects)[i] = new Vector{0.0f, 0.0f, 0.0f};
+            (*this->agentRects)[count + i] = new Vector{0.0f, 0.0f, 0.0f};
+        }
+        this->agentImageParts = factory->loadChar(SpaceLounge_defaultAgentParts);
+    }
+
     if (this->choiceWindow != 0) {
         delete this->choiceWindow;
         this->choiceWindow = 0;
@@ -1139,7 +1157,7 @@ SpaceLounge::~SpaceLounge() {
     {
         Array<String *> *strings = this->agentTexts;
         if (strings != 0) {
-            ArrayRemoveAll(*strings);
+            ArrayReleaseClasses(*strings);
             delete strings;
         }
     }
@@ -1148,14 +1166,15 @@ SpaceLounge::~SpaceLounge() {
     {
         Array<TouchButton *> *buttons = this->buttons;
         if (buttons != 0) {
-            ArrayRemoveAll(*buttons);
+            ArrayReleaseClasses(*buttons);
             delete buttons;
         }
     }
     this->buttons = 0;
 
-    if (this->agentImageParts != 0) {
-        return;
+    if (this->agentImageParts != nullptr) {
+        ArrayReleaseClasses(*this->agentImageParts);
+        delete this->agentImageParts;
     }
     this->agentImageParts = 0;
 
@@ -1165,12 +1184,12 @@ SpaceLounge::~SpaceLounge() {
             for (unsigned i = 0; i < grid->size(); ++i) {
                 Array<ImagePart *> *inner = (*grid)[i];
                 if (inner != 0) {
-                    ArrayRemoveAll(*inner);
+                    ArrayReleaseClasses(*inner);
                     delete inner;
                 }
                 (*grid)[i] = 0;
             }
-            ArrayRemoveAll(*grid);
+            ArrayReleaseClasses(*grid);
             delete grid;
         }
     }
@@ -1179,7 +1198,7 @@ SpaceLounge::~SpaceLounge() {
     {
         Array<Vector *> *rects = this->agentRects;
         if (rects != 0) {
-            ArrayRemoveAll(*rects);
+            ArrayReleaseClasses(*rects);
             delete rects;
         }
     }
