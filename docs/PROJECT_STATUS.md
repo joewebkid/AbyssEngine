@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge::draw`)
+
+The ARM-backed draw path now clears the complete canvas in opaque black
+before drawing a 3D-ship item list, restores opaque white, and uses the
+real game globals for the header text, layout, and footers. It removes
+three unbound pointer slots and fixes the former rectangle/color call
+arguments. Focused `draw()` source-shape rose from **75.4% to 99.2%**
+(strict fuzzy **45.7% to 95.1%**). Windows and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. The full corpus covers **4,323/4,524**
+originals over 4,762 pairs at **96.10% source-shape / 85.85% strict
+fuzzy**, with **2,733 linked-exact / 1,091 byte-exact**, zero skipped,
+201 missing, and no exact-set losses. Live drawing remains unverified
+while device work is deferred. Next offline priority: restore
+`SpaceLounge` touch/key actions and dialogue state in bounded parts.
+See [draw evidence](SPACELOUNGE_DRAW_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` update and random binding)
 
 The ARM-backed update now compares complete typed camera matrices,

@@ -25,9 +25,6 @@
 
 #include "engine/render/PaintCanvas.h"
 
-static inline int pc_GetWidth(PaintCanvas *self) { return self->GetWidth(); }
-static inline int pc_GetHeight(PaintCanvas *self) { return self->GetHeight(); }
-
 static inline int &layoutMetric(Layout *layout, int off) {
     return *(int *) ((char *) layout + off);
 }
@@ -60,9 +57,6 @@ static int SpaceLounge_touch_race_vectors[64];
 static int SpaceLounge_defaultAgentParts[5] = {};
 
 static void *SpaceLounge_start_text_slot;
-static void *SpaceLounge_draw_layout_slot;
-static void *SpaceLounge_draw_canvas_slot;
-static void *SpaceLounge_draw_text_slot;
 
 int SpaceLounge::OnTouchMove(int x, int y) {
     this->touchX = x;
@@ -1174,22 +1168,17 @@ SpaceLounge::~SpaceLounge() {
 }
 
 void SpaceLounge::draw() {
-    String title;
-
     if (this->listVisible != 0) {
         if (this->listWindow->shows3DShip() != 0) {
-            void *canvasSlot = *(void **) &SpaceLounge_draw_canvas_slot;
-            void *canvas = *(void **) canvasSlot;
-            ((PaintCanvas *) canvas)->SetColor((unsigned char) (long) canvas, 0, 0, 0);
-            int width = pc_GetWidth((PaintCanvas *) canvas);
-            int height = pc_GetHeight((PaintCanvas *) canvas);
-            (void) height;
-            ((PaintCanvas *) canvas)->FillRectangle((int) (long) canvas, 0, 0, width);
-            ((PaintCanvas *) canvas)->SetColor((unsigned int) (long) canvas);
+            Globals::Canvas->SetColor(0, 0, 0, 255);
+            PaintCanvas *canvas = Globals::Canvas;
+            int width = canvas->GetWidth();
+            int height = canvas->GetHeight();
+            canvas->FillRectangle(0, 0, width, height);
+            Globals::Canvas->SetColor(0xffffffffu);
         }
         this->listWindow->draw();
-        void *layout = *(void **) (*(void **) &SpaceLounge_draw_layout_slot);
-        ((Layout *) layout)->drawFooter();
+        Globals::layout->drawFooter();
         return;
     }
 
@@ -1198,20 +1187,13 @@ void SpaceLounge::draw() {
         return;
     }
 
-    void *layoutSlot = *(void **) &SpaceLounge_draw_layout_slot;
-    void *layout = *(void **) layoutSlot;
-    void *textsSlot = *(void **) &SpaceLounge_draw_text_slot;
-    void *text = ((GameText *) (*(void **) textsSlot))->getText(0x18e);
-    title.Set(((String *) text)->data);
-    ((Layout *) (layout))->drawHeader(title, false);
+    Globals::layout->drawHeader(String(*Globals::gameText->getText(398), false));
+    drawLounge();
 
-    ((SpaceLounge *) (this))->drawLounge();
-
-    layout = *(void **) layoutSlot;
     if ((this->mode & 0xfffffffe) == 2) {
-        ((Layout *) layout)->drawFooterNoBackButton();
+        Globals::layout->drawFooterNoBackButton();
     } else {
-        ((Layout *) layout)->drawFooter();
+        Globals::layout->drawFooter();
     }
 
     if (this->chatActive != 0 || this->popupActive != 0 || this->choiceVisible != 0) {
