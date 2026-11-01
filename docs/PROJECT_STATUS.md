@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` mission location button)
+
+The ARM-backed mode-2 button at index 3 now marks that the agent was
+asked for the mission location, replies with text ID **805** for the
+current station or **806** for another station in the same system, and
+opens a shared `StarMap` for a station elsewhere. The map pointer is
+reused or created in application module 5 at offset `0x10`, consistent
+with the existing `MGame` ownership path. Focused `OnTouchEnd`
+source-shape rose **27.5% → 31.9%** and strict fuzzy **17.1% → 18.1%**.
+Windows and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+The full corpus remains **4,323/4,524** originals over 4,762 pairs at
+**96.12% source-shape / 85.93% strict fuzzy**, with **2,741
+linked-exact / 1,096 byte-exact**, zero skipped, 201 missing, and no
+exact-set losses. Live map behavior is unverified while device testing
+is deferred. Next offline priority: the mode-2 index-0 offer actions
+in bounded variants. See [location evidence](SPACELOUNGE_TOUCH_LOCATION_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` ARM32 layout and preview)
 
 The original ARM32 class places mode at `0x14`, title at `0xa4`,

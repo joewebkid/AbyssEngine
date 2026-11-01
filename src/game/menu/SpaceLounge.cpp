@@ -39,6 +39,16 @@ static_assert(offsetof(SpaceLounge, touchDown) == 0xb2, "SpaceLounge touch offse
 static_assert(offsetof(SpaceLounge, touchX) == 0xb4, "SpaceLounge touch-X offset");
 #endif
 
+// Application module 5 owns the StarMap pointer at ARM offset 0x10.
+struct SpaceLoungeStarMapModule {
+    char padding[0x10];
+    StarMap *starMap;
+};
+#if __SIZEOF_POINTER__ == 4
+static_assert(offsetof(SpaceLoungeStarMapModule, starMap) == 0x10,
+              "StarMap module pointer offset");
+#endif
+
 static inline int &layoutMetric(Layout *layout, int off) {
     return *(int *) ((char *) layout + off);
 }
@@ -424,6 +434,36 @@ int SpaceLounge::OnTouchEnd(int x, int y) {
                             }
                         }
                         this->listVisible = 1;
+                    } else if (i == 3) {
+                        agent->wasAskedForLocation = 1;
+                        Mission *mission = agent->getMission();
+                        const int targetStation = mission->getTargetStation();
+                        int textId = 0;
+                        if (targetStation == Globals::status->getStation()->getIndex()) {
+                            textId = 805;
+                        } else if (Globals::status->getSystem()->stationIsInSystem(
+                                       targetStation)) {
+                            textId = 806;
+                        }
+                        if (textId != 0) {
+                            this->scrollWindow->setText(agent->getName(),
+                                String(*Globals::gameText->getText(textId), false));
+                            this->chatScroll = 0;
+                            this->mode = 2;
+                        } else {
+                            auto *manager = static_cast<AbyssEngine::ApplicationManager *>(
+                                Globals::appManager);
+                            auto *module = static_cast<SpaceLoungeStarMapModule *>(
+                                manager->GetApplicationModule(5));
+                            this->starMap = module->starMap;
+                            if (this->starMap != nullptr) {
+                                this->starMap->init(true, mission, false, -1);
+                            } else {
+                                module->starMap = new StarMap(true, mission, false, -1);
+                                this->starMap = module->starMap;
+                            }
+                            this->mapVisible = 1;
+                        }
                     } else if (i == 4) {
                         agent->wasAskedForDifficulty = 1;
                         const int difficulty = agent->getMission()->getDifficulty();
