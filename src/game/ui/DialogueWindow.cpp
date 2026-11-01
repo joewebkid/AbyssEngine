@@ -167,15 +167,6 @@ void DialogueWindow::set(Mission *mission, int kind, int campaign) {
 }
 
 
-static GameText *g_dw_gameTextLoad_storage = nullptr;
-static GameText **g_dw_gameTextLoad = &g_dw_gameTextLoad_storage;
-
-static FModSound *g_dw_soundLoad_storage = nullptr;
-static FModSound **g_dw_soundLoad = &g_dw_soundLoad_storage;
-
-static ImageFactory *g_dw_imageFactoryLoad_storage = nullptr;
-static ImageFactory **g_dw_imageFactoryLoad = &g_dw_imageFactoryLoad_storage;
-
 static const char g_dw_emptyLoad[] = "";
 
 static int g_dw_campaignBriefingTextIds[0x1000];
@@ -185,8 +176,8 @@ static int g_dw_campaignSuccessTextIds[0x1000];
 static void *g_dw_defaultClientImage = nullptr;
 
 void DialogueWindow::loadContent() {
-    GameText *gameText = *g_dw_gameTextLoad;
-    FModSound *sound = *g_dw_soundLoad;
+    GameText *gameText = Globals::gameText;
+    FModSound *sound = Globals::sound;
 
     this->nextButton->replaceTextKeepSize(*gameText->getText(0xb4));
     this->mirrorFace = 0;
@@ -270,7 +261,7 @@ void DialogueWindow::loadContent() {
 
     this->prevButton->setVisible(this->page != 0);
     this->moreButton->setVisible(this->length() > 1);
-    this->faceParts = (*g_dw_imageFactoryLoad)->loadChar((int *) this->clientImage);
+    this->faceParts = ((ImageFactory *) Globals::imageFactory)->loadChar((int *) this->clientImage);
 
     if (this->isLastPage() != 0) {
         this->nextButton->replaceTextKeepSize(*gameText->getText(0xb5));
