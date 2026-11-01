@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (`MissionsWindow` touch and map return)
+
+Touch begin/move now call `Globals::layout`; touch end uses the typed
+`StarMap::OnTouchEnd`, restores screen dimensions from the original
+device globals, resets `Globals::layout`, and installs `Mission::empty`
+when rejecting a freelance mission. Windows and ARM64 static builds
+pass; ARMv7 compiles 209/209 units. Focused source-shape is **98.3%**
+for begin/move and rose from 89.3% to **95.6%** for touch end. The full
+corpus remains **4,323/4,524** originals over 4,752 pairs at
+**96.03% source-shape / 85.80% strict fuzzy**, with **2,726 linked-exact
+/ 1,091 byte-exact**, zero skipped, 201 missing, and no exact-set
+losses. Live input remains unverified while device work is deferred.
+Next offline priority: investigate the low-shape `SpaceLounge` chat
+path. See [touch evidence](MISSIONSWINDOW_TOUCH_BINDINGS_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (`MissionsWindow::draw` bindings)
 
 The ARM-confirmed draw path now uses `Globals::Canvas`, `layout`,

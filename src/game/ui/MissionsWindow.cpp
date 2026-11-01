@@ -24,17 +24,6 @@
 // These per-screen globals appear only in this translation unit. The original
 // build shared them via extern decls; here they are file-static definitions.
 // Parity loss accepted (criterion 7: drive extern toward 0).
-static Layout **g_mw_m_layout = nullptr;
-static Layout **g_mw_b_layout = nullptr;
-
-static char *g_mwt_flagA = nullptr;
-static char *g_mwt_flagB = nullptr;
-static char *g_mwt_flagC = nullptr;
-static int *g_mwt_screenW = nullptr;
-static int *g_mwt_screenH = nullptr;
-static Layout **g_mwt_layout = nullptr;
-static Layout **g_mwt_resetLayout = nullptr;
-
 static void *g_mw_campaign = nullptr;
 static int *g_mw_textBase = nullptr;
 
@@ -53,10 +42,6 @@ static const int g_mw_titleTable[164] = {
     748,748,748,0,
 };
 
-#if __SIZEOF_POINTER__ == 4
-int StarMap_OnTouchEnd(StarMap *map, int x, int y);
-#endif
-
 int MissionsWindow::OnTouchMove(int p1, int p2) {
     if (this->m_mode == 1)
         return this->m_pWantedWindow->OnTouchMove(p1, p2);
@@ -70,7 +55,7 @@ int MissionsWindow::OnTouchMove(int p1, int p2) {
             for (unsigned i = 0; i < arr->size(); i++)
                 (*arr)[i]->OnTouchMove(p1, p2);
         }
-        (*g_mw_m_layout)->OnTouchMove(p1, p2);
+        Globals::layout->OnTouchMove(p1, p2);
         this->m_pCampaignWindow->OnTouchMove(p1, p2);
         this->m_pFreelanceWindow->OnTouchMove(p1, p2);
         if (this->m_pAcceptButton) this->m_pAcceptButton->OnTouchMove(p1, p2);
@@ -93,7 +78,7 @@ int MissionsWindow::OnTouchBegin(int p1, int p2) {
             for (unsigned i = 0; i < arr->size(); i++)
                 (*arr)[i]->OnTouchBegin(p1, p2);
         }
-        (*g_mw_b_layout)->OnTouchBegin(p1, p2);
+        Globals::layout->OnTouchBegin(p1, p2);
         this->m_pCampaignWindow->OnTouchBegin(p1, p2);
         this->m_pFreelanceWindow->OnTouchBegin(p1, p2);
         if (this->m_pAcceptButton) this->m_pAcceptButton->OnTouchBegin(p1, p2);
@@ -482,7 +467,7 @@ int MissionsWindow::OnTouchEnd(int y, int z) {
             Agent *agent = fm->getAgent();
             if (agent->isGenericAgent() == 0)
                 fm->getAgent()->setOfferAccepted(false);
-            st->setFreelanceMission(nullptr);
+            st->setFreelanceMission(static_cast<Mission *>(Mission::empty));
 
             unsigned char savedFlag = this->m_hangarNeedsUpdate;
             this->init();
@@ -521,7 +506,7 @@ int MissionsWindow::OnTouchEnd(int y, int z) {
                                        false, -1);
             }
             this->m_starMapActive = 1;
-            (*g_mwt_resetLayout)->resetWindowDimensions();
+            Globals::layout->resetWindowDimensions();
         } else {
             if (this->m_pMapButton && this->m_pMapButton->OnTouchEnd(y, z) != 0) {
                 String *t = Globals::gameText->getText(0x1a2);
@@ -544,10 +529,10 @@ int MissionsWindow::OnTouchEnd(int y, int z) {
                                            Status::gStatus->getFreelanceMission(), false, -1);
                 }
                 this->m_starMapActive = 1;
-                (*g_mwt_resetLayout)->resetWindowDimensions();
+                Globals::layout->resetWindowDimensions();
                 return 0;
             }
-            Layout *layout = *g_mwt_layout;
+            Layout *layout = Globals::layout;
             if (layout->OnTouchEnd(y, z) != 0) {
                 layout->resetWindowDimensions();
                 return 1;
@@ -559,22 +544,18 @@ int MissionsWindow::OnTouchEnd(int y, int z) {
             }
         }
     } else {
-#if __SIZEOF_POINTER__ == 8
         if (this->m_pStarMap->OnTouchEnd(y, z) != 0) {
-#else
-        if (StarMap_OnTouchEnd(this->m_pStarMap, y, z) != 0) {
-#endif
             int wantW, wantH, posX;
-            if (*g_mwt_flagA == 0) {
+            if (Globals::iPad == 0) {
                 this->m_x = 0;
                 this->m_y = 0;
-                wantW = 0;
-                wantH = 0;
+                wantW = Globals::h;
+                wantH = Globals::w;
                 posX = 0;
             } else {
-                if (*g_mwt_flagB == 0) {
+                if (Globals::iPadHD == 0) {
                     int w = 1000, h = 0x514;
-                    if (*g_mwt_flagC == 0) {
+                    if (Globals::iPadLarge == 0) {
                         w = 500;
                         h = 0x28a;
                     }
@@ -586,8 +567,8 @@ int MissionsWindow::OnTouchEnd(int y, int z) {
                     posX = 0x1c9;
                     wantH = 0x392;
                 }
-                this->m_x = (*g_mwt_screenW >> 1) - posX;
-                this->m_y = (*g_mwt_screenH >> 1) - (wantW >> 1);
+                this->m_x = (Globals::w >> 1) - posX;
+                this->m_y = (Globals::h >> 1) - (wantW >> 1);
             }
             this->m_width = wantH;
             this->m_height = wantW;
