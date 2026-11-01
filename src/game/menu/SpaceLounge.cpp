@@ -76,12 +76,6 @@ static void *SpaceLounge_getSoundId_accepted;
 static void *SpaceLounge_getSoundId_specialText;
 static void *SpaceLounge_getSoundId_specialRandom;
 
-static void *SpaceLounge_lounge_canvas_slot;
-static void *SpaceLounge_lounge_layout_slot;
-static void *SpaceLounge_lounge_image_factory_slot;
-static void *SpaceLounge_lounge_text_slot;
-static void *SpaceLounge_lounge_font_slot;
-
 // Android .bss at 0x2183d4: five zero-initialized words passed to loadChar.
 static int SpaceLounge_defaultAgentParts[5] = {};
 
@@ -716,125 +710,119 @@ void SpaceLounge::updateScreenPositions() {
     }
 }
 
-static inline void *button_at(SpaceLounge *self, unsigned i) {
-    return (*self->buttons)[i];
-}
-
 void SpaceLounge::drawLounge() {
-    String s0, s1, s2, s3, s4, s5, s6;
-
-    void *canvasSlot = *(void **) &SpaceLounge_lounge_canvas_slot;
-    void *canvas = *(void **) canvasSlot;
-    void *layoutSlot = *(void **) &SpaceLounge_lounge_layout_slot;
-    Layout *layout = (Layout *) *(void **) layoutSlot;
-    void *factorySlot = *(void **) &SpaceLounge_lounge_image_factory_slot;
-    void *factory = *(void **) factorySlot;
+    PaintCanvas *canvas = Globals::Canvas;
+    Layout *layout = Globals::layout;
+    ImageFactory *factory = static_cast<ImageFactory *>(Globals::imageFactory);
 
     if (this->mode == 0) {
-        int hover = this->hoverAgent;
+        const int hover = this->hoverAgent;
         if (hover >= 0) {
-            void *agent = (*this->agents)[hover];
-            Array<Vector *> *rects = this->agentRects;
-            float *left = (float *) (*rects)[hover * 2];
-            float *right = (float *) (*rects)[hover * 2 + 1];
-            int pad = layoutMetric(layout, 0x94);
-            int cx = (int) (left[0] + (right[0] - left[0]) * 0.5f);
-            int y = (int) (right[1] - (float) (pad * 2));
+            Agent *agent = (*this->agents)[hover];
+            const Vector &left = *(*this->agentRects)[2 * hover];
+            const Vector &right = *(*this->agentRects)[2 * hover + 1];
+            const int pad = layout->field_0x94;
+            const int centerX = static_cast<int>(left.x + (right.x - left.x) * 0.5f);
+            const int textY = static_cast<int>(right.y - static_cast<float>(2 * pad));
 
-            ((PaintCanvas *) canvas)->SetColor((unsigned int) (long) canvas);
-            if (((Agent *) (agent))->isKnown() != 0 || ((Agent *) (agent))->isStoryAgent() != 0) {
-                s0 = ((Agent *) (agent))->getName();
+            canvas->SetColor(0xFFFFFFFF);
+            String name = (agent->isKnown() || agent->isStoryAgent())
+                ? agent->getName() : *Globals::gameText->getText(agent->getRace() + 406);
+            String offerText;
+            if (Mission *mission = agent->getMission()) {
+                offerText = *Globals::gameText->getText(mission->getType() + 354);
+            } else if (agent->getOffer() == 6) {
+                offerText = *Globals::gameText->getText(306);
+            } else if (agent->getOffer() == 2) {
+                offerText = *Globals::gameText->getText(305);
+            } else if (agent->getOffer() == 7) {
+                offerText = *Globals::gameText->getText(884);
             } else {
-                void *texts = *(void **) &SpaceLounge_lounge_text_slot;
-                void *text = ((GameText *) (*(void **) texts))->getText(((Agent *) (agent))->getRace() + 0x196);
-                s0.Set(((String *) text)->data);
+                offerText = "";
             }
 
-            void *mission = ((Agent *) (agent))->getMission();
-            if (mission != 0) {
-                void *texts = *(void **) &SpaceLounge_lounge_text_slot;
-                void *text = ((GameText *) (*(void **) texts))->getText(((Mission *) (mission))->getType() + 0x162);
-                s1.Set(((String *) text)->data);
-            } else {
-                int offer = ((Agent *) (agent))->getOffer();
-                void *texts = *(void **) &SpaceLounge_lounge_text_slot;
-                int id = 0;
-                if (offer == 6) {
-                    id = 0x132;
-                } else if (offer == 2) {
-                    id = 0x131;
-                } else if (offer == 7) {
-                    id = 0x130;
-                }
-                if (id != 0) {
-                    s1.Set(((String *) ((GameText *) (*(void **) texts))->getText(id))->data);
-                } else {
-                    s1 = "";
-                }
+            int textWidth = canvas->GetTextWidth(Globals::font, name);
+            if (agent->isKnown()) {
+                textWidth += canvas->GetTextWidth(Globals::font, offerText + String("  "));
             }
-
-            void *font = *(void **) *(void **) &SpaceLounge_lounge_font_slot;
-            int textWidth = ((PaintCanvas *) canvas)->GetTextWidth((unsigned int) (long) canvas, *(String *) font);
-            int boxX = cx - pad;
-            int boxY = y - pad;
-            int width = pad * 2 + textWidth;
-            s2 = "";
-            layout->drawBox(2, boxX, boxY, width, layout->field_0x30, s2, 1u);
-            ((PaintCanvas *) canvas)->DrawRectangle(boxX, boxY, width, layout->field_0x30);
-
-            s3 = ((Agent *) (agent))->isKnown() == 0 ? "?" : "";
-            s4 = s3 + s0;
-            ((PaintCanvas *) canvas)->DrawString((unsigned int) (long) font, s4, cx, y + layoutMetric(layout, 0x2c0),
-                                                 false);
-
-            if (((Agent *) (agent))->isKnown() != 0) {
-                s5 = " ";
-                s6 = s5 + s0;
-                int nameWidth = ((PaintCanvas *) canvas)->GetTextWidth((unsigned int) (long) canvas, *(String *) font);
-                ((PaintCanvas *) canvas)->DrawString((unsigned int) (long) font, s1, cx + nameWidth,
-                                                     y + layoutMetric(layout, 0x2c0), false);
+            int textX = centerX;
+            const int edge = layout->field_0x28;
+            if (centerX - pad < edge) {
+                textX = edge + pad;
+            } else if (centerX + pad + textWidth > Globals::w - edge) {
+                textX = Globals::w - edge - textWidth - 2 * pad;
+            }
+            const int boxX = textX - pad;
+            const int boxY = textY - pad;
+            const int boxWidth = textWidth + 2 * pad;
+            layout->drawBox(2, boxX, boxY, boxWidth, layout->field_0x30, String(""));
+            canvas->SetColor(0x193043FF);
+            canvas->DrawRectangle(boxX, boxY, boxWidth, layout->field_0x30);
+            canvas->SetColor(0xFFFFFFFF);
+            const String spacer(agent->isKnown() ? "  " : "");
+            canvas->DrawString(Globals::font, name + spacer,
+                               textX, textY + layout->field_0x2c0, false);
+            if (agent->isKnown()) {
+                canvas->SetColor(0xFF8000FF);
+                const int nameWidth = canvas->GetTextWidth(Globals::font, name + String("  "));
+                canvas->DrawString(Globals::font, offerText,
+                                   textX + nameWidth, textY + layout->field_0x2c0, false);
             }
         }
         return;
     }
 
-    ((PaintCanvas *) canvas)->SetColor((unsigned int) (long) canvas);
-    s0 = "";
-    layout->drawBox(2, this->panelX, this->panelY, layoutMetric(layout, 0x68), layoutMetric(layout, 0x6c), s0, 1u);
-    ((PaintCanvas *) canvas)->DrawRectangle(this->panelX, this->panelY, layoutMetric(layout, 0x68),
-                                            layoutMetric(layout, 0x6c));
-    ((ImageFactory *) (factory))->drawChar((*this->silhouetteGrid)[this->selectedAgent],
-                                           layout->field_0x4c + this->panelX, layout->field_0x4c + this->panelY, false);
+    canvas->SetColor(0xFFFFFFFF);
+    layout->drawBox(2, this->panelX, this->panelY,
+                    layout->field_0x68, layout->field_0x6c, String(""));
+    canvas->SetColor(0x193043FF);
+    canvas->DrawRectangle(this->panelX, this->panelY,
+                          layout->field_0x68, layout->field_0x6c);
+    canvas->SetColor(0xFFFFFFFF);
+    factory->drawChar((*this->silhouetteGrid)[this->selectedAgent],
+                      layout->field_0x4c + this->panelX,
+                      layout->field_0x4c + this->panelY, false);
     this->scrollWindow->draw();
 
     if ((this->mode & 0xfffffffe) != 2) {
         return;
     }
 
-    ((TouchButton *) (button_at(this, 0)))->setTextColor(-1);
-    int offer = ((Agent *) ((*this->agents)[this->selectedAgent]))->getOffer();
+    TouchButton *first = (*this->buttons)[0];
+    TouchButton *second = (*this->buttons)[1];
+    first->setTextColor(15532287);
+    Agent *agent = (*this->agents)[this->selectedAgent];
+    const unsigned offer = agent->getOffer();
     if (this->mode == 2) {
-        ((TouchButton *) (button_at(this, 0)))->setPosition(this->buttonX, this->buttonY0);
-        ((TouchButton *) (button_at(this, 1)))->setPosition(this->panelWidth + this->buttonX, this->buttonY0, 0x12);
+        first->setPosition(this->buttonX, this->buttonY0);
+        second->setPosition(this->panelWidth + this->buttonX, this->buttonY0, 0x12);
         this->visibleButtonCount = 0;
-        if (offer < 11 && ((1 << (offer & 0xff)) & 0x60c) != 0) {
+        if (offer <= 10 && ((1 << offer) & 0x60c) != 0) {
             this->visibleButtonCount = 3;
+        } else if (offer == 0 && agent->getMission() != nullptr &&
+                   agent->getMission()->isOutsideMission() &&
+                   agent->getMission()->getType() != 12) {
+            this->visibleButtonCount = this->singleOffer ? 1 : 4;
+            if (this->singleOffer) {
+                first->setTextColor(-1);
+                first->setPosition(this->buttonX, this->buttonY1);
+            }
         } else if (offer == 1) {
             this->visibleButtonCount = 1;
-            ((TouchButton *) (button_at(this, 0)))->setPosition(this->buttonX, this->buttonY1);
+            first->setPosition(this->buttonX, this->buttonY1);
         } else {
             this->visibleButtonCount = 2;
-            ((TouchButton *) (button_at(this, 0)))->setPosition(this->buttonX, this->buttonY1);
-            ((TouchButton *) (button_at(this, 1)))->setPosition(this->panelWidth + this->buttonX, this->buttonY1, 0x12);
+            first->setPosition(this->buttonX, this->buttonY1);
+            second->setPosition(this->panelWidth + this->buttonX, this->buttonY1, 0x12);
         }
     } else {
         this->visibleButtonCount = 1;
-        ((TouchButton *) (button_at(this, 0)))->setTextColor(-1);
-        ((TouchButton *) (button_at(this, 0)))->setPosition(this->buttonX, this->buttonY1);
+        first->setTextColor(-1);
+        first->setPosition(this->buttonX, this->buttonY1);
     }
 
     for (unsigned i = 0; i < this->buttons->size(); ++i) {
-        ((TouchButton *) (button_at(this, i)))->setVisible(false);
+        (*this->buttons)[i]->setVisible(false);
     }
 
     int buttonHeight = layout->field_0x2d8;
@@ -846,22 +834,38 @@ void SpaceLounge::drawLounge() {
         }
     }
     int panelHeight = layout->field_0x4c * 2 + buttonHeight;
-    s0 = "";
-    layout->drawBox(2, this->panelX, this->buttonPanelY, layoutMetric(layout, 0x68), panelHeight, s0, 1u);
-    ((PaintCanvas *) canvas)->DrawRectangle(this->panelX, this->buttonPanelY, layoutMetric(layout, 0x68), panelHeight);
-    ((ImageFactory *) (factory))->drawChar(this->agentImageParts, layout->field_0x4c + this->panelX,
-                                           this->buttonPanelY + layout->field_0x4c, true);
+    layout->drawBox(2, this->panelX, this->buttonPanelY,
+                    layout->field_0x68, panelHeight, String(""));
+    canvas->SetColor(0x193043FF);
+    canvas->DrawRectangle(this->panelX, this->buttonPanelY,
+                          layout->field_0x68, panelHeight);
+    canvas->SetColor(0xFFFFFFFF);
+    factory->drawChar(this->agentImageParts,
+                      layout->field_0x4c + this->panelX,
+                      this->buttonPanelY + layout->field_0x4c, true);
 
-    ((TouchButton *) (button_at(this, 0)))->setVisible(true);
-    if (!(offer == 1 || this->singleOffer != 0 || this->mode == 3)) {
-        ((TouchButton *) (button_at(this, 1)))->setVisible(true);
-        ((TouchButton *) (button_at(this, 0)))->draw();
-        ((TouchButton *) (button_at(this, 1)))->draw();
-        if (offer <= 10 && ((1 << (offer & 0xff)) & 0x60c) != 0) {
-            ((TouchButton *) (button_at(this, 2)))->setVisible(true);
-        }
+    first->setVisible(true);
+    if (offer == 1 || this->singleOffer || this->mode == 3) {
+        first->draw();
+        return;
     }
-    ((TouchButton *) (button_at(this, 0)))->draw();
+    second->setVisible(true);
+    first->draw();
+    second->draw();
+    if (offer <= 10 && ((1 << offer) & 0x60c) != 0) {
+        TouchButton *third = (*this->buttons)[2];
+        third->setVisible(true);
+        third->draw();
+    } else if (offer == 0 && agent->getMission() != nullptr &&
+               agent->getMission()->isOutsideMission() &&
+               agent->getMission()->getType() != 12) {
+        TouchButton *third = (*this->buttons)[3];
+        TouchButton *fourth = (*this->buttons)[4];
+        third->setVisible(true);
+        fourth->setVisible(true);
+        third->draw();
+        fourth->draw();
+    }
 }
 
 int SpaceLounge::init() {

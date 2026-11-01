@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (`SpaceLounge::drawLounge`)
+
+The ARM-backed lounge draw path now uses the actual game globals,
+draws the agent tooltip with the original text IDs, widths, colors
+and screen-edge placement, and restores the offer/mission button
+visibility and drawing branches. Focused `drawLounge()` source-shape
+rose from **19.3% to 91.1%** (strict fuzzy **6.6% to 27.0%**).
+Windows and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+The full corpus covers **4,323/4,524** originals over 4,761 pairs at
+**96.08% source-shape / 85.82% strict fuzzy**, with **2,733 linked-exact /
+1,091 byte-exact**, zero skipped, 201 missing, and no exact-set losses.
+Live rendering and input behavior remains unverified while device work
+is deferred. The `SpaceLounge` constructor, update, touch-end, key
+handling and chat paths remain incomplete. See [draw evidence](
+SPACELOUNGE_DRAW_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (`SpaceLounge::updateScreenPositions`)
 
 The ARM-backed screen-position path now projects the two agent hit-area
