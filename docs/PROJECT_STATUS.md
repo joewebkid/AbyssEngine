@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (`SpaceLounge::updateScreenPositions`)
+
+The ARM-backed screen-position path now projects the two agent hit-area
+vertices using the current camera and the original 150/450 world-unit
+geometry, then orients the scene objects and offsets the silhouette by
+100 units. It reads enemies through `cutScene->level` and writes the
+existing `agentRects` directly. Focused source-shape rose from **32.1%
+to 86.5%** (strict fuzzy **13.5% to 19.7%**). Windows and ARM64 static
+builds pass; ARMv7 compiles 209/209 units. The full corpus covers
+**4,323/4,524** originals over 4,761 pairs at **96.06% source-shape /
+85.82% strict fuzzy**, with **2,733 linked-exact / 1,091 byte-exact**,
+zero skipped, 201 missing, and no exact-set losses. Live touch and
+rendering behavior remains unverified while device work is deferred.
+Next offline priority: restore the low-shape `drawLounge()` path and its
+game-global bindings. See [screen-position evidence](
+SPACELOUNGE_SCREEN_POSITIONS_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (`SpaceLounge` agent images and cleanup)
 
 `SpaceLounge::init()` now loads character image arrays and allocates the
