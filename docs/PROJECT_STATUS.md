@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (mission intro types 12 and 7)
+
+`DialogueWindow::loadContent()` now selects the ARM-confirmed
+introductory text IDs 372 and 378 for mission types 12 and 7 before
+ordinary random text and the special-station path. Windows and ARM64
+static builds pass; ARMv7 compiles 209/209 units. Full corpus remains
+**4,323/4,524** originals over 4,752 pairs,
+**95.98% source-shape / 85.78% strict fuzzy**,
+**2,724 linked-exact / 1,091 byte-exact**, zero skipped and 201
+missing, with no exact-set losses. Special-station and other mission
+branches remain incomplete; device execution is deferred. Next
+offline priority: restore special-station page text and portrait
+mapping from original ARM evidence. See
+[mission intro evidence](DIALOGUEWINDOW_INTRO_MISSION_TYPES_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (ordinary generic dialogue IDs)
 
 `DialogueWindow::loadContent()` now uses the ARM-confirmed five-ID

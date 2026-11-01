@@ -255,7 +255,17 @@ void DialogueWindow::loadContent() {
             this->mirrorFace = 0;
         }
 
-        if (kind == 1 || kind == 0 || kind == 2) {
+        bool fixedIntroText = false;
+        if (kind == 0) {
+            if (mission->getType() == 12) {
+                textId = 372;
+                fixedIntroText = true;
+            } else if (mission->getType() == 7) {
+                textId = 378;
+                fixedIntroText = true;
+            }
+        }
+        if (!fixedIntroText && (kind == 1 || kind == 0 || kind == 2)) {
             Agent *agent = mission->getAgent();
             if (GameText::getLanguage() == 1 && agent != 0) {
                 textId = this->pickGermanGenericTextBecauseWeSaved100EurosWithThat(kind, agent);
@@ -265,7 +275,7 @@ void DialogueWindow::loadContent() {
                 else if (kind == 1) textId = g_dw_genericTextIds[5 + variant];
                 else textId = g_dw_genericTextIds[10 + variant];
             }
-        } else {
+        } else if (!fixedIntroText) {
             textId = 0x20f;
         }
         this->bodyText = *(gameText->getText(textId));
@@ -274,12 +284,8 @@ void DialogueWindow::loadContent() {
             Standing *standing = Status::gStatus->getStanding();
             standing->applyMissionCompleted(mission->getClientRace());
         }
-        if (mission->getTargetStation() == 0x6c && kind == 0) {
+        if (!fixedIntroText && kind == 0 && mission->getTargetStation() == 0x6c) {
             textId = 0x1ca;
-            this->bodyText = *(gameText->getText(textId));
-        }
-        if (mission->getType() == 0x0c && kind == 0) {
-            textId = 0x174;
             this->bodyText = *(gameText->getText(textId));
         }
     } else {
