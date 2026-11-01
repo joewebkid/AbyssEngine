@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (mission failure quantities)
+
+`DialogueWindow::loadContent()` now follows the ARM-confirmed mission
+type-12 failure path: text ID 371 has `#Q1` and `#Q2` replaced with the
+corresponding level counters without consuming a generic random choice.
+Its source-shape rose from 36.0% to 45.0%; Windows and ARM64 static builds
+pass, and ARMv7 compiles 209/209 units. The full corpus remains
+**4,323/4,524** originals over 4,752 pairs, **95.98% source-shape /
+85.78% strict fuzzy**, **2,724 linked-exact / 1,091 byte-exact**, zero
+skipped and 201 missing, with no exact-set losses. Live dialogue is
+unverified while device work is deferred. Next offline priority: recover
+remaining mission-specific `loadContent()` branches. See
+[failure-quantity evidence](DIALOGUEWINDOW_FAILURE_QUANTITY_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (special-station dialogue pages)
 
 `DialogueWindow::loadContent()` now uses the ARM-confirmed 18-page

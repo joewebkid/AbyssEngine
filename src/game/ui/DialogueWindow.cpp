@@ -297,7 +297,18 @@ void DialogueWindow::loadContent() {
             this->agentName = *gameText->getText(0x63d + portraitId);
             specialStation = true;
         }
-        if (!fixedIntroText && !specialStation && (kind == 1 || kind == 0 || kind == 2)) {
+        bool failureQuantityText = false;
+        if (kind != 0 && kind != 1 && mission->getType() == 12) {
+            textId = 371;
+            String first = Globals::status->replaceHash(
+                String(*gameText->getText(textId), false),
+                String(this->level->killCountB), String("#Q1", false));
+            this->bodyText = Globals::status->replaceHash(
+                first, String(this->level->killCountA), String("#Q2", false));
+            failureQuantityText = true;
+        }
+        if (!fixedIntroText && !specialStation && !failureQuantityText &&
+            (kind == 1 || kind == 0 || kind == 2)) {
             Agent *agent = mission->getAgent();
             if (GameText::getLanguage() == 1 && agent != 0) {
                 textId = this->pickGermanGenericTextBecauseWeSaved100EurosWithThat(kind, agent);
@@ -307,10 +318,10 @@ void DialogueWindow::loadContent() {
                 else if (kind == 1) textId = g_dw_genericTextIds[5 + variant];
                 else textId = g_dw_genericTextIds[10 + variant];
             }
-        } else if (!fixedIntroText && !specialStation) {
+        } else if (!fixedIntroText && !specialStation && !failureQuantityText) {
             textId = 0x20f;
         }
-        if (!specialStation) this->bodyText = *gameText->getText(textId);
+        if (!specialStation && !failureQuantityText) this->bodyText = *gameText->getText(textId);
 
         if (kind == 1) {
             Standing *standing = Status::gStatus->getStanding();
