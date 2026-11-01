@@ -359,6 +359,18 @@ void DialogueWindow::loadContent() {
             this->bodyText = *gameText->getText(textId);
 
         if (kind == 1) {
+            if (!fixedSuccessText) {
+                String suffix("\n\n", false);
+                Agent *agent = mission->getAgent();
+                if (agent != 0 && agent->isStoryAgent()) {
+                    suffix = suffix + Globals::status->replaceHash(
+                        String(*gameText->getText(389), false),
+                        agent->getStationName(), String("#S", false));
+                } else {
+                    suffix = suffix + *gameText->getText(216);
+                }
+                this->bodyText = this->bodyText + suffix;
+            }
             Standing *standing = Status::gStatus->getStanding();
             standing->applyMissionCompleted(mission->getClientRace());
             if (mission->getTargetStation() == 0x6c) {

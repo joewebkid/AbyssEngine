@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (generic successful dialogue suffix)
+
+`DialogueWindow::loadContent()` now appends the ARM-confirmed story-agent
+station line or ordinary text ID 216 to generic successful dialogue.
+Its source-shape rose from 73.6% to 81.0%; its strict fuzzy score fell
+from 25.5% to 22.1%. Windows and ARM64 static builds pass, and ARMv7
+compiles 209/209 units. The full corpus covers **4,323/4,524** originals
+over 4,752 pairs at **95.99% source-shape / 85.78% strict fuzzy**, with
+**2,724 linked-exact / 1,091 byte-exact**, zero skipped, 201 missing,
+and no exact-set losses. Live dialogue is unverified while device work
+is deferred. Next offline priority: audit campaign and other remaining
+`loadContent()` paths against the Android ARM original. See
+[generic success evidence](DIALOGUEWINDOW_GENERIC_SUCCESS_SUFFIX_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (type-183 successful dialogue)
 
 `DialogueWindow::loadContent()` now follows the ARM-confirmed type-183
