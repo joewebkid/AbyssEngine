@@ -40,9 +40,6 @@ namespace AbyssEngine {
     }
 }
 
-static void *SpaceLounge_layout_move;
-static void *SpaceLounge_layout_begin;
-
 void MatrixSetTranslation(void *matrix, float x, float y, float z);
 
 void MatrixSetRotation(void *matrix, float x, float y, float z);
@@ -102,7 +99,7 @@ int SpaceLounge::OnTouchMove(int x, int y) {
         }
     }
 
-    ((Layout *) (*(void **) SpaceLounge_layout_move))->OnTouchMove(x, y);
+    Globals::layout->OnTouchMove(x, y);
     if (this->listVisible != 0) {
         this->listWindow->OnTouchMove(x, y);
     } else {
@@ -186,43 +183,40 @@ int SpaceLounge::OnTouchBegin(int x, int y) {
 
     if (this->listVisible != 0) {
         this->listWindow->OnTouchBegin(x, y);
-        ((Layout *) (*(void **) SpaceLounge_layout_begin))->OnTouchBegin(x, y);
-        this->scrollWindow->OnTouchBegin(x, y);
-        return 0;
-    }
-
-    int mode = this->mode;
-    if (mode == 0) {
-        if (this->introDone == 0) {
-            return 0;
-        }
-        Array<Agent *> *agents = this->agents;
-        if (agents != 0) {
-            Array<Vector *> *rects = this->agentRects;
-            float fy = (float) y;
-            float fx = (float) x;
-            int count = (int) agents->size();
-            for (int i = 0; count != i; ++i) {
-                float *a = (float *) (*rects)[i * 2];
-                if (a[0] < fx) {
-                    float *b = (float *) (*rects)[i * 2 + 1];
-                    if (fx < b[0] && fy < a[1] && b[1] < fy) {
-                        this->hoverAgent = i;
+    } else {
+        int mode = this->mode;
+        if (mode == 0) {
+            if (this->introDone == 0) {
+                return 0;
+            }
+            Array<Agent *> *agents = this->agents;
+            if (agents != 0) {
+                Array<Vector *> *rects = this->agentRects;
+                float fy = (float) y;
+                float fx = (float) x;
+                int count = (int) agents->size();
+                for (int i = 0; count != i; ++i) {
+                    float *a = (float *) (*rects)[i * 2];
+                    if (a[0] < fx) {
+                        float *b = (float *) (*rects)[i * 2 + 1];
+                        if (fx < b[0] && fy < a[1] && b[1] < fy) {
+                            this->hoverAgent = i;
+                        }
                     }
                 }
             }
-        }
-    } else if (mode == 3) {
-        Array<TouchButton *> *buttons = this->buttons;
-        (*buttons)[0]->OnTouchBegin(x, y);
-    } else if (mode == 2) {
-        Array<TouchButton *> *buttons = this->buttons;
-        for (unsigned i = 0; i < buttons->size(); ++i) {
-            (*buttons)[i]->OnTouchBegin(x, y);
+        } else if (mode == 3) {
+            Array<TouchButton *> *buttons = this->buttons;
+            (*buttons)[0]->OnTouchBegin(x, y);
+        } else if (mode == 2) {
+            Array<TouchButton *> *buttons = this->buttons;
+            for (unsigned i = 0; i < buttons->size(); ++i) {
+                (*buttons)[i]->OnTouchBegin(x, y);
+            }
         }
     }
 
-    ((Layout *) (*(void **) SpaceLounge_layout_begin))->OnTouchBegin(x, y);
+    Globals::layout->OnTouchBegin(x, y);
     this->scrollWindow->OnTouchBegin(x, y);
     return 0;
 }

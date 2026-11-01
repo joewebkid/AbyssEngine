@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` touch begin/move)
+
+`OnTouchBegin` and `OnTouchMove` now forward normal lounge touches to
+the actual `Globals::layout`; the former zero-initialized local slots
+would fail on that path. The begin handler also shares its layout and
+scroll forwarding across list and non-list modes as in the original.
+Focused source-shape rose from **92.5% to 94.4%** for begin and from
+**92.3% to 94.3%** for move; strict fuzzy rose to **58.1%** and
+**48.9%**. Windows and ARM64 static builds pass; ARMv7 compiles
+209/209 units. The full corpus covers **4,323/4,524** originals over
+4,762 pairs at **96.10% source-shape / 85.86% strict fuzzy**, with
+**2,733 linked-exact / 1,091 byte-exact**, zero skipped, 201 missing,
+and no exact-set losses. Runtime input remains unverified while device
+work is deferred. Next offline priority: `SpaceLounge::OnTouchEnd`
+and its mode-specific actions. See [touch evidence](SPACELOUNGE_TOUCH_BEGIN_MOVE_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge::draw`)
 
 The ARM-backed draw path now clears the complete canvas in opaque black
