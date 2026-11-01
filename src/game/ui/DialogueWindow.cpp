@@ -229,7 +229,7 @@ static const int g_dw_campaignBriefingRows[120] = {
     49, 2879, 0, 2880, 49, 2881, 0, 2882
 };
 
-static const int g_dw_campaignSuccessRows1To83[1088] = {
+static const int g_dw_campaignSuccessRows1To103[1342] = {
     0, 1700, 2, 1701, 0, 1702, 2, 1703,
     0, 1704, 2, 1705, 0, 1706, 2, 1707,
     2, 1708, 0, 1709, 2, 1710, 2, 1711,
@@ -382,7 +382,39 @@ static const int g_dw_campaignSuccessRows1To83[1088] = {
     0, 2437, 6, 2438, 0, 2439, 6, 2440,
     0, 2441, 6, 2442, 0, 2443, 0, 2444,
     0, 2445, 0, 2446, 0, 2447, 0, 2448,
-    20, 2449, 0, 2450, 20, 2451, 0, 2452
+    20, 2449, 0, 2450, 20, 2451, 0, 2452,
+    6, 2474, 0, 2475, 6, 2476, 0, 2477,
+    6, 2478, 0, 2479, 17, 2486, 0, 2487,
+    6, 2488, 0, 2489, 6, 2490, 0, 2491,
+    6, 2492, 0, 2493, 2, 2495, 0, 2496,
+    2, 2497, 0, 2498, 2, 2499, 0, 2500,
+    2, 2501, 0, 2502, 2, 2503, 0, 2523,
+    2, 2524, 0, 2525, 2, 2526, 0, 2527,
+    2, 2528, 0, 2529, 37, 2530, 0, 2531,
+    0, 2532, 37, 2533, 0, 2534, 37, 2535,
+    37, 2536, 0, 2537, 37, 2538, 37, 2539,
+    0, 2540, 0, 2548, 37, 2549, 0, 2550,
+    37, 2551, 0, 2552, 37, 2553, 0, 2554,
+    6, 2556, 15, 2557, 6, 2558, 38, 2559,
+    6, 2560, 38, 2561, 6, 2562, 38, 2563,
+    40, 2564, 6, 2565, 20, 2566, 38, 2567,
+    20, 2568, 38, 2569, 40, 2570, 6, 2571,
+    0, 2572, 1, 2573, 0, 2574, 1, 2575,
+    0, 2576, 1, 2577, 0, 2578, 1, 2579,
+    0, 2580, 1, 2581, 0, 2585, 22, 2586,
+    0, 2587, 39, 2588, 0, 2589, 39, 2590,
+    0, 2591, 39, 2592, 0, 2593, 39, 2594,
+    0, 2595, 39, 2596, 0, 2597, 39, 2598,
+    0, 2599, 38, 2601, 6, 2602, 38, 2603,
+    6, 2604, 38, 2605, 6, 2606, 38, 2607,
+    6, 2608, 38, 2609, 6, 2610, 38, 2611,
+    6, 2612, 1, 2615, 0, 2616, 1, 2617,
+    0, 2618, 1, 2619, 0, 2620, 1, 2621,
+    0, 2622, 1, 2623, 0, 2624, 6, 2634,
+    0, 2635, 6, 2636, 0, 2637, 6, 2638,
+    0, 2639, 6, 2640, 20, 2641, 20, 2642,
+    20, 2643, 0, 2644, 20, 2645, 20, 2646,
+    0, 2647, 20, 2648, 0, 2649
 };
 
 static int g_dw_campaignSuccessTextIds[0x1000];
@@ -412,17 +444,22 @@ static int g_dw_stationPortrait27[5] = {0, 0, 5, 8, 6};
 static int g_dw_stationPortrait28[5] = {0, 8, 8, 8, 0};
 static int g_dw_stationPortrait32[5] = {7, 0, 0, 2, 1};
 static int g_dw_stationPortrait33[5] = {0, 5, 4, 8, 3};
+static int g_dw_stationPortrait22[5] = {2, 0, 0, 0, 0};
+static int g_dw_stationPortrait37[5] = {2, 4, 1, 4, 1};
+static int g_dw_stationPortrait38[5] = {0, 8, 3, 8, 3};
+static int g_dw_stationPortrait39[5] = {2, 2, 1, 3, 2};
+static int g_dw_stationPortrait40[5] = {6, 0, 0, 2, 0};
 // Portrait indices used by the station and campaign dialogue tables.
 static int *const g_dw_stationPortraits[50] = {
     g_dw_defaultClientImage, g_dw_stationPortrait1, g_dw_stationPortrait2, g_dw_stationPortrait3, g_dw_stationPortrait4,
     g_dw_stationPortrait5, g_dw_stationPortrait6, g_dw_stationPortrait7, nullptr, nullptr,
     nullptr, nullptr, g_dw_stationPortrait12, g_dw_stationPortrait13, nullptr,
     g_dw_stationPortrait15, g_dw_stationPortrait16, g_dw_stationPortrait17, nullptr, nullptr,
-    g_dw_stationPortrait20, nullptr, nullptr, g_dw_stationPortrait23, g_dw_stationPortrait24,
+    g_dw_stationPortrait20, nullptr, g_dw_stationPortrait22, g_dw_stationPortrait23, g_dw_stationPortrait24,
     g_dw_stationPortrait25, g_dw_stationPortrait26, g_dw_stationPortrait27, g_dw_stationPortrait28, nullptr,
     nullptr, g_dw_stationPortrait31, g_dw_stationPortrait32, g_dw_stationPortrait33, nullptr,
-    nullptr, g_dw_stationPortrait36, nullptr, nullptr, nullptr,
-    nullptr, nullptr, nullptr, nullptr, nullptr,
+    nullptr, g_dw_stationPortrait36, g_dw_stationPortrait37, g_dw_stationPortrait38, g_dw_stationPortrait39,
+    g_dw_stationPortrait40, nullptr, nullptr, nullptr, nullptr,
     nullptr, nullptr, nullptr, nullptr, g_dw_stationPortrait49
 };
 
@@ -467,10 +504,10 @@ void DialogueWindow::loadContent() {
             }
         } else if (kind == 1) {
             base = this->successOffsets[this->campaignMission];
-            if (this->campaignMission >= 1 && this->campaignMission <= 83) {
+            if (this->campaignMission >= 1 && this->campaignMission <= 103) {
                 int row = base + page * 2;
-                int portraitId = g_dw_campaignSuccessRows1To83[row];
-                textId = g_dw_campaignSuccessRows1To83[row + 1];
+                int portraitId = g_dw_campaignSuccessRows1To103[row];
+                textId = g_dw_campaignSuccessRows1To103[row + 1];
                 this->clientImage = g_dw_stationPortraits[portraitId];
                 this->agentName = *gameText->getText(0x63d + portraitId);
                 this->mirrorFace = portraitId == 0;
