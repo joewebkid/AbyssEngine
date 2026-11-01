@@ -38,11 +38,17 @@ public:
     StarMap *starMap;
     ChoiceWindow *choiceWindow;
     ListItemWindow *listWindow;
+    int field_0x10;
     int mode;
-    int field_0x18;
-    uint8_t chatActive;
-    uint8_t popupActive;
-    uint8_t choiceVisible;
+    union {
+        int field_0x18;
+        struct {
+            uint8_t field_0x18_byte;
+            uint8_t chatActive;
+            uint8_t popupActive;
+            uint8_t choiceVisible;
+        };
+    };
     uint8_t listVisible;
     int selectedAgent;
     Array<Agent *> *agents;
@@ -79,6 +85,7 @@ public:
     int field_0xa0;
     String title;
     uint8_t initialized;
+    uint8_t savedPostEffect;
     uint8_t touchDown;
     int touchX;
     int touchY;

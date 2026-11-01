@@ -8,6 +8,8 @@
 #include "engine/math/EaseInOut.h"
 #include "engine/math/EaseInOutMatrix.h"
 #include "engine/core/AERandom.h"
+#include "engine/core/ApplicationManager.h"
+#include "engine/render/Engine.h"
 #include "game/world/Level.h"
 #include "game/ship/KIPlayer.h"
 #include "game/ui/ListItemWindow.h"
@@ -24,6 +26,18 @@
 #include "game/ui/TouchButton.h"
 
 #include "engine/render/PaintCanvas.h"
+#include <cstddef>
+
+#if __SIZEOF_POINTER__ == 4
+static_assert(offsetof(SpaceLounge, mode) == 0x14, "SpaceLounge mode offset");
+static_assert(offsetof(SpaceLounge, chatActive) == 0x19, "SpaceLounge chat offset");
+static_assert(offsetof(SpaceLounge, listVisible) == 0x1c, "SpaceLounge list offset");
+static_assert(offsetof(SpaceLounge, title) == 0xa4, "SpaceLounge title offset");
+static_assert(offsetof(SpaceLounge, initialized) == 0xb0, "SpaceLounge initialized offset");
+static_assert(offsetof(SpaceLounge, savedPostEffect) == 0xb1, "SpaceLounge post-effect offset");
+static_assert(offsetof(SpaceLounge, touchDown) == 0xb2, "SpaceLounge touch offset");
+static_assert(offsetof(SpaceLounge, touchX) == 0xb4, "SpaceLounge touch-X offset");
+#endif
 
 static inline int &layoutMetric(Layout *layout, int off) {
     return *(int *) ((char *) layout + off);
@@ -379,6 +393,37 @@ int SpaceLounge::OnTouchEnd(int x, int y) {
                         this->chatScroll = 0;
                         this->mode = 0;
                         ++Globals::status->field_e0;
+                    } else if (i == 2) {
+                        if (this->listWindow == nullptr) {
+                            this->listWindow = new ListItemWindow();
+                        }
+                        const int offer = agent->getOffer();
+                        if (offer == 2 || offer == 9) {
+                            Item *item = (*static_cast<Array<Item *> *>(Globals::items))[
+                                agent->getSellItemIndex()];
+                            this->listWindow->set(new ListItem(item), 0, 0, 0, 0, false);
+                        } else if (offer == 10) {
+                            AbyssEngine::Engine *engine = static_cast<AbyssEngine::Engine *>(
+                                static_cast<AbyssEngine::ApplicationManager *>(
+                                    Globals::appManager)->GetEngine());
+                            this->savedPostEffect = engine->IsPostEffectActivated();
+                            engine->SetPostEffect(0x1400000u, false);
+                            Ship *ship = (*static_cast<Array<Ship *> *>(Globals::ships))[
+                                agent->getSellItemIndex()];
+                            this->listWindow->set(new ListItem(ship), 0, 0, 0, 0, false);
+                        } else {
+                            Array<BluePrint *> *blueprints = Globals::status->getBluePrints();
+                            for (unsigned j = 0; j < blueprints->size(); ++j) {
+                                BluePrint *blueprint = (*blueprints)[j];
+                                if (blueprint->getIndex() == agent->getSellBlueprintIndex()) {
+                                    Item *item = (*static_cast<Array<Item *> *>(Globals::items))[
+                                        blueprint->getIndex()];
+                                    this->listWindow->set(new ListItem(item), 0, 0, 0, 0, false);
+                                    break;
+                                }
+                            }
+                        }
+                        this->listVisible = 1;
                     } else if (i == 4) {
                         agent->wasAskedForDifficulty = 1;
                         const int difficulty = agent->getMission()->getDifficulty();
@@ -925,6 +970,10 @@ int SpaceLounge::init() {
     }
     this->introDone = 1;
     this->headBobPhase = 0;
+    this->savedPostEffect = static_cast<AbyssEngine::Engine *>(
+        static_cast<AbyssEngine::ApplicationManager *>(
+            Globals::appManager)->GetEngine())->IsPostEffectActivated();
+    this->initialized = 1;
     return 0;
 }
 

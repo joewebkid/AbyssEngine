@@ -1,5 +1,25 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` ARM32 layout and preview)
+
+The original ARM32 class places mode at `0x14`, title at `0xa4`,
+initialization at `0xb0`, saved post-effect state at `0xb1`, and touch
+state at `0xb2`; the former C++ layout was four bytes short from mode
+onward. The corrected word/flag overlap and post-effect byte are now
+locked by ARM32 offset assertions. `init()` saves the effect state and
+marks initialization complete. Mode-2 button index 2 now opens the
+original item, ship, or blueprint preview path. Focused `OnTouchEnd`
+source-shape rose **21.7% → 27.5%** and strict fuzzy **15.5% → 17.1%**;
+other `SpaceLounge` functions also improved through the ABI correction.
+Windows and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+The full corpus covers **4,323/4,524** originals over 4,762 pairs at
+**96.12% source-shape / 85.93% strict fuzzy**, with **2,741
+linked-exact / 1,096 byte-exact**, zero skipped, 201 missing, and no
+exact-set losses. Eight linked-exact and five byte-exact matches were
+added. Device preview and post-effect restoration remain unverified.
+Next offline priority: `SpaceLounge` mission-location button and
+remaining offer actions. See [layout and preview evidence](SPACELOUNGE_PREVIEW_LAYOUT_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge::OnTouchEnd` difficulty button)
 
 The ARM-backed mode-2 handler now responds to button index 4 by
