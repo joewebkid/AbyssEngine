@@ -1,6 +1,7 @@
 
 #include "game/menu/SpaceLounge.h"
 #include "game/world/SolarSystem.h"
+#include "game/world/Galaxy.h"
 #include "game/world/Station.h"
 #include "engine/render/AEGeometry.h"
 #include "game/ui/ChoiceWindow.h"
@@ -22,6 +23,7 @@
 #include "engine/render/ImageFactory.h"
 #include "game/ui/Layout.h"
 #include "game/mission/Mission.h"
+#include "game/mission/Item.h"
 #include "game/mission/Status.h"
 #include "game/ui/TouchButton.h"
 
@@ -433,6 +435,32 @@ int SpaceLounge::OnTouchEnd(int x, int y) {
                                     priceFactor * static_cast<float>(agent->getSellItemPrice()));
                                 prompt = Globals::status->replaceHash(
                                     prompt, Globals::layout->formatCredits(cost),
+                                    String("#C", false));
+                                this->choiceWindow->set(prompt, true);
+                                this->chatActive = 1;
+                            } else if (offer == 3) {
+                                String prompt(*Globals::gameText->getText(869), false);
+                                Item *item = (*static_cast<Array<Item *> *>(Globals::items))[
+                                    agent->getSellBlueprintIndex()];
+                                prompt = Globals::status->replaceHash(
+                                    prompt,
+                                    String(*Globals::gameText->getText(
+                                        item->getIndex() + 1274), false),
+                                    String("#P", false));
+                                prompt = Globals::status->replaceHash(
+                                    prompt, Globals::layout->formatCredits(agent->getSellItemPrice()),
+                                    String("#C", false));
+                                this->choiceWindow->set(prompt, true);
+                                this->chatActive = 1;
+                            } else if (offer == 4) {
+                                String prompt(*Globals::gameText->getText(870), false);
+                                auto *galaxy = static_cast<Galaxy *>(Globals::galaxy);
+                                SolarSystem *system = galaxy->getSystem(
+                                    agent->getSellSystemIndex());
+                                prompt = Globals::status->replaceHash(
+                                    prompt, system->getName(), String("#S", false));
+                                prompt = Globals::status->replaceHash(
+                                    prompt, Globals::layout->formatCredits(agent->getSellItemPrice()),
                                     String("#C", false));
                                 this->choiceWindow->set(prompt, true);
                                 this->chatActive = 1;

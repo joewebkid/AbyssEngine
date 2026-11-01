@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` blueprint/system confirmation)
+
+The ARM-backed mode-2 acceptance handler now formats affordable
+offer **3** with game text **869**, substituting the item text found
+through `getSellBlueprintIndex()` and `Item::getIndex()` for `#P`,
+then price for `#C`. Offer **4** uses game text **870**, substituting
+the target solar-system name for `#S`, then price for `#C`. Both open
+the confirmation window and mark `chatActive`. Focused `OnTouchEnd`
+source-shape rose **47.6% → 58.1%** and strict fuzzy **21.0% →
+24.3%**. Windows and ARM64 static builds pass; ARMv7 compiles
+209/209 units. The full corpus remains **4,323/4,524** originals
+over 4,762 pairs at **96.12% source-shape / 85.93% strict fuzzy**,
+with **2,741 linked-exact / 1,096 byte-exact**, zero skipped,
+201 missing, and no exact-set losses. Runtime purchase behavior is
+unverified while device testing is deferred. Next offline priority:
+affordable confirmation paths for offers 8 and 10. See
+[blueprint/system evidence](SPACELOUNGE_BLUEPRINT_SYSTEM_CONFIRM_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` item-offer confirmation)
 
 The ARM-backed mode-2 acceptance handler now formats affordable
