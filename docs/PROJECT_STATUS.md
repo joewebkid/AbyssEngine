@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` offers 8/10 confirmation)
+
+The ARM-backed mode-2 acceptance handler now formats affordable
+offers **8 and 10** with distinct game texts **871** and **873**,
+respectively. Both substitute the multiplier-adjusted price for
+`#C`, open the confirmation window, and mark `chatActive`. Separate
+source branches follow the original ARM control flow. Focused
+`OnTouchEnd` source-shape rose **58.1% → 63.4%** and strict fuzzy
+**24.3% → 27.0%**. Windows and ARM64 static builds pass; ARMv7
+compiles 209/209 units. The full corpus remains **4,323/4,524**
+originals over 4,762 pairs at **96.12% source-shape / 85.93% strict
+fuzzy**, with **2,741 linked-exact / 1,096 byte-exact**, zero skipped,
+201 missing, and no exact-set losses. Runtime purchase behavior is
+unverified while device testing is deferred. Next offline priority:
+offer 6 wingman/credit gates. See
+[offers 8/10 evidence](SPACELOUNGE_OFFER_8_10_CONFIRM_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` blueprint/system confirmation)
 
 The ARM-backed mode-2 acceptance handler now formats affordable

@@ -464,6 +464,24 @@ int SpaceLounge::OnTouchEnd(int x, int y) {
                                     String("#C", false));
                                 this->choiceWindow->set(prompt, true);
                                 this->chatActive = 1;
+                            } else if (offer == 8) {
+                                String prompt(*Globals::gameText->getText(871), false);
+                                const int cost = static_cast<int>(
+                                    priceFactor * static_cast<float>(agent->getSellItemPrice()));
+                                prompt = Globals::status->replaceHash(
+                                    prompt, Globals::layout->formatCredits(cost),
+                                    String("#C", false));
+                                this->choiceWindow->set(prompt, true);
+                                this->chatActive = 1;
+                            } else if (offer == 10) {
+                                String prompt(*Globals::gameText->getText(873), false);
+                                const int cost = static_cast<int>(
+                                    priceFactor * static_cast<float>(agent->getSellItemPrice()));
+                                prompt = Globals::status->replaceHash(
+                                    prompt, Globals::layout->formatCredits(cost),
+                                    String("#C", false));
+                                this->choiceWindow->set(prompt, true);
+                                this->chatActive = 1;
                             }
                         }
                         if (offer == 7) {
