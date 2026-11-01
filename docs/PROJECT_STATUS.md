@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (`MissionsWindow::update` production mission text)
+
+The ARM-confirmed update path now forwards elapsed time to the wanted
+board and star map, reads campaign visibility from `Globals::options`,
+uses the original 164-entry title table and `Globals::gameText`, and
+replaces the `#Q` production amount through `Status::replaceHash`.
+All 164 table words match the original ELF. Windows and ARM64 static
+builds pass; ARMv7 compiles 209/209 units. Focused `update()` rose from
+53.0% to **87.1% source-shape** and 41.6% to **61.8% strict fuzzy**.
+The full corpus covers **4,323/4,524** originals over 4,752 pairs at
+**96.00% source-shape / 85.79% strict fuzzy**, with **2,724 linked-exact
+/ 1,091 byte-exact**, zero skipped, 201 missing, and no exact-set
+losses. `MissionsWindow::init()` and other paths still use unbound
+translation-unit pointers; live screen behavior remains unverified
+while device work is deferred. Next offline priority: restore the
+window's initialization bindings. See [update evidence](MISSIONSWINDOW_UPDATE_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (`DialogueWindow::loadContent` failure 42 and font)
 
 The ARM-confirmed non-campaign failure with `campaignMission == 42`

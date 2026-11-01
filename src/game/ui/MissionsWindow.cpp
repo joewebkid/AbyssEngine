@@ -76,7 +76,21 @@ static Layout **g_mwt_resetLayout = nullptr;
 
 static void *g_mw_campaign = nullptr;
 static int *g_mw_textBase = nullptr;
-static int *g_mw_titleTable = nullptr;
+
+// Android ARM libgof2hdaa.so, dword_20285C: campaign title text IDs 0..163.
+static const int g_mw_titleTable[164] = {
+    749,749,749,749,749,749,749,749,749,749,652,653,654,655,656,749,
+    657,749,658,749,659,659,749,660,661,749,749,749,662,749,749,749,
+    663,664,665,666,667,749,668,749,669,749,749,749,670,670,671,749,
+    672,672,672,672,672,672,672,673,674,749,675,676,749,677,678,679,
+    680,749,681,682,683,684,684,685,686,687,688,749,749,689,690,690,
+    691,691,749,749,692,692,693,694,694,694,694,695,696,697,698,698,
+    699,700,701,701,702,702,703,704,705,706,707,708,709,710,710,711,
+    712,713,714,715,716,717,718,718,719,719,720,721,721,722,722,723,
+    724,724,725,726,726,726,727,728,729,730,731,732,733,734,735,736,
+    736,737,738,739,740,740,740,740,741,742,743,743,744,745,746,747,
+    748,748,748,0,
+};
 
 // Our own C-ified shims; demoted from extern "C" to plain C++ decls
 // (mangling change accepted).
@@ -668,12 +682,12 @@ int MissionsWindow::OnTouchEnd(int y, int z) {
 
 void MissionsWindow::update(int dt) {
     if (this->m_mode == 1) {
-        this->m_pWantedWindow->update(0);
+        this->m_pWantedWindow->update(dt);
         return;
     }
 
     if (this->m_starMapActive != 0) {
-        this->m_pStarMap->update(0);
+        this->m_pStarMap->update(dt);
         return;
     }
 
@@ -685,26 +699,21 @@ void MissionsWindow::update(int dt) {
     bool relevant = (type == 0xa7) || (cm->getType() == 0xae);
 
     if (relevant) {
-        CampaignMissionFlags *camp = *(CampaignMissionFlags **) g_mw_campaign;
         bool show = (Status::gStatus->gameWon() == 0) ||
-                    (camp->campaignVisibleFlagB != 0 || camp->campaignVisibleFlagA != 0);
+                    (Globals::options[0x37] != 0 || Globals::options[0x35] != 0);
         if (show) {
             String text("", false);
             if (Status::gStatus->getCurrentCampaignMission() < 0xa4) {
-                String *titleTxt = g_mw_gameText->getText(
+                String *titleTxt = Globals::gameText->getText(
                     g_mw_titleTable[Status::gStatus->getCurrentCampaignMission()]);
                 text = *titleTxt;
 
-                void *key = Status::gStatus;
                 String hdr(text);
                 int need = cm->getProductionGoodAmount();
                 int have = cm->getStatusValue();
                 String amount;
                 amount.Set((long long) (need - have));
-                String suffix("", false);
-                String merged;
-                Status_replaceHash(&merged, key, &hdr, &amount, &suffix);
-                text = merged;
+                text = Status::gStatus->replaceHash(hdr, amount, String("#Q", false));
 
                 String a("", false);
                 String b(text);
