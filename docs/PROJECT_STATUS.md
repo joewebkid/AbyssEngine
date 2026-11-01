@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (`DialogueWindow::loadContent` failure 42 and font)
+
+The ARM-confirmed non-campaign failure with `campaignMission == 42`
+now follows the campaign failure template, and dialogue text selects
+`fontAlien` for portrait indices 19 and 56 rather than passing font
+zero. Five restored campaign-success pages use portrait 56. Windows
+and ARM64 static builds pass, and ARMv7 compiles 209/209 units. Focused
+`loadContent()` rose to **94.9% source-shape** while strict fuzzy fell
+to **29.4%**; the source-backed behavior is retained. The full corpus
+covers **4,323/4,524** originals over 4,752 pairs at **95.99%
+source-shape / 85.78% strict fuzzy**, with **2,724 linked-exact / 1,091
+byte-exact**, zero skipped, 201 missing, and no exact-set losses. Live
+rendering and failure dialogue remain unverified while device work is
+deferred. Next offline: inspect the remaining ordinary-mission success
+and failure control flow. See [failure/font evidence](DIALOGUEWINDOW_LOADCONTENT_FONT_CAMPAIGN42_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (complete campaign success row table)
 
 `DialogueWindow::loadContent()` now selects all 1028 ARM-confirmed

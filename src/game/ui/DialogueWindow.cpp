@@ -609,13 +609,16 @@ void DialogueWindow::loadContent() {
     int kind = this->kind;
     int page = this->page;
     int textId = -1;
+    int portraitIdForFont = -1;
 
-    if (mission != 0 && mission->isCampaignMission() != 0) {
+    if (mission != 0 && (mission->isCampaignMission() != 0 ||
+                         (kind == 2 && this->campaignMission == 42))) {
         int base;
         if (kind == 0) {
             base = this->briefingOffsets[this->campaignMission];
             int row = base + page * 2;
             int portraitId = g_dw_campaignBriefingRows[row];
+            portraitIdForFont = portraitId;
             textId = g_dw_campaignBriefingRows[row + 1];
             this->clientImage = g_dw_stationPortraits[portraitId];
             this->agentName = *gameText->getText(0x63d + portraitId);
@@ -630,6 +633,7 @@ void DialogueWindow::loadContent() {
             base = this->successOffsets[this->campaignMission];
             int row = base + page * 2;
             int portraitId = g_dw_campaignSuccessRows[row];
+            portraitIdForFont = portraitId;
             textId = g_dw_campaignSuccessRows[row + 1];
             this->clientImage = g_dw_stationPortraits[portraitId];
             this->agentName = *gameText->getText(0x63d + portraitId);
@@ -652,6 +656,7 @@ void DialogueWindow::loadContent() {
                 this->bodyText = *gameText->getText(textId);
             }
         } else {
+            portraitIdForFont = 16;
             this->clientImage = g_dw_stationPortraits[16];
             this->agentName = *gameText->getText(0x63d + 16);
             String extra("");
@@ -786,7 +791,10 @@ void DialogueWindow::loadContent() {
     String style(g_dw_emptyLoad, false);
     String body;
     body.Set((this->bodyText).data);
-    this->scrollWindow->setText(style, body, 0);
+    int font = portraitIdForFont == 19 || portraitIdForFont == 56
+                   ? static_cast<int>(reinterpret_cast<intptr_t>(Globals::fontAlien))
+                   : static_cast<int>(Globals::font);
+    this->scrollWindow->setText(style, body, font);
 
     this->prevButton->setVisible(this->page != 0);
     this->moreButton->setVisible(this->length() > 1);
