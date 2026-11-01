@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` offer acceptance variants 1/7)
+
+The ARM-backed mode-2 button at index 0 now handles offer 1 by
+returning to mode 0 and offer 7 by opening the original confirmation
+or insufficient-credit message. Offer 7 substitutes the full cost
+when affordable and the shortfall when unaffordable; the two paths
+set different window flags (`chatActive` versus `choiceVisible`).
+Focused `OnTouchEnd` source-shape rose **31.9% → 35.7%**, while strict
+fuzzy moved **18.1% → 17.4%**. Windows and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. The full corpus remains **4,323/4,524**
+originals over 4,762 pairs at **96.12% source-shape / 85.93% strict
+fuzzy**, with **2,741 linked-exact / 1,096 byte-exact**, zero skipped,
+201 missing, and no exact-set losses. Live purchase behavior is
+unverified while device testing is deferred. Next offline priority:
+the shared mode-2 item and ship offer actions. See
+[acceptance evidence](SPACELOUNGE_TOUCH_ACCEPT_1_7_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` mission location button)
 
 The ARM-backed mode-2 button at index 3 now marks that the agent was

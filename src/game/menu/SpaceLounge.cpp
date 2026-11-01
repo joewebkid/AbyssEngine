@@ -395,7 +395,30 @@ int SpaceLounge::OnTouchEnd(int x, int y) {
                 TouchButton *button = (*buttons)[i];
                 if (button->OnTouchEnd(x, y) != 0) {
                     Agent *agent = static_cast<Agent *>(selected_agent(this));
-                    if (i == 1) {
+                    if (i == 0) {
+                        const int offer = agent->getOffer();
+                        if (offer == 1) {
+                            this->mode = 0;
+                            return 0;
+                        }
+                        if (offer == 7) {
+                            const int cost = agent->getCosts();
+                            const int credits = Globals::status->getCredits();
+                            const bool canAfford = credits >= cost;
+                            const int textId = canAfford ? 885 : 203;
+                            const int shownCredits = canAfford ? cost : cost - credits;
+                            String prompt = Globals::status->replaceHash(
+                                String(*Globals::gameText->getText(textId), false),
+                                Globals::layout->formatCredits(shownCredits),
+                                String("#C", false));
+                            this->choiceWindow->set(prompt, canAfford);
+                            if (!canAfford) {
+                                this->choiceVisible = 1;
+                                return 0;
+                            }
+                            this->chatActive = 1;
+                        }
+                    } else if (i == 1) {
                         AbyssEngine::AERandom *random =
                             static_cast<AbyssEngine::AERandom *>(Globals::rnd);
                         this->scrollWindow->setText(agent->getName(),
