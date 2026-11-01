@@ -229,7 +229,7 @@ static const int g_dw_campaignBriefingRows[120] = {
     49, 2879, 0, 2880, 49, 2881, 0, 2882
 };
 
-static const int g_dw_campaignSuccessRows1To13[192] = {
+static const int g_dw_campaignSuccessRows1To23[332] = {
     0, 1700, 2, 1701, 0, 1702, 2, 1703,
     0, 1704, 2, 1705, 0, 1706, 2, 1707,
     2, 1708, 0, 1709, 2, 1710, 2, 1711,
@@ -254,7 +254,29 @@ static const int g_dw_campaignSuccessRows1To13[192] = {
     4, 1804, 0, 1805, 0, 1806, 4, 1807,
     0, 1808, 3, 1809, 0, 1810, 3, 1811,
     0, 1812, 3, 1813, 0, 1814, 3, 1815,
-    16, 1816, 3, 1817, 0, 1818
+    16, 1816, 3, 1817, 0, 1818,
+    17, 1825, 1, 1826, 0, 1827, 1, 1828,
+    0, 1829, 1, 1830, 0, 1831, 1, 1832,
+    12, 1833, 0, 1834, 1, 1835,
+    1, 1843, 0, 1844, 1, 1845,
+    1, 1846, 0, 1847, 1, 1848, 0, 1849,
+    1, 1850, 0, 1851, 1, 1852, 1, 1853,
+    0, 1854, 1, 1855, 0, 1856, 1, 1857,
+    0, 1858, 1, 1859, 0, 1860, 1, 1861,
+    16, 1862,
+    0, 1863, 13, 1864, 0, 1865, 13, 1866,
+    0, 1867, 1, 1868, 0, 1869, 1, 1870,
+    1, 1871, 0, 1872, 1, 1873, 0, 1874,
+    1, 1875,
+    0, 1876,
+    1, 1886,
+    5, 1887, 0, 1888, 5, 1889, 5, 1890,
+    0, 1891, 5, 1892, 0, 1893, 0, 1894,
+    5, 1895, 16, 1896,
+    6, 1898, 0, 1899, 6, 1900, 0, 1901,
+    6, 1902, 0, 1903, 6, 1904, 0, 1905,
+    6, 1906, 0, 1907, 6, 1908, 0, 1909,
+    16, 191, 16, 192
 };
 
 static int g_dw_campaignSuccessTextIds[0x1000];
@@ -274,11 +296,13 @@ static int g_dw_stationPortrait49[5] = {2, 1, 0, 4, 0};
 static int g_dw_stationPortrait4[5] = {4, 2, 0, 2, 2};
 static int g_dw_stationPortrait16[5] = {11, 1, 0, 0, 2};
 static int g_dw_stationPortrait17[5] = {11, 1, 0, 0, 3};
+static int g_dw_stationPortrait12[5] = {0, 5, 4, 2, 7};
+static int g_dw_stationPortrait13[5] = {10, 1, 1, 2, 4};
 // Portrait indices used by the station and campaign briefing tables.
 static int *const g_dw_stationPortraits[50] = {
     g_dw_defaultClientImage, g_dw_stationPortrait1, g_dw_stationPortrait2, g_dw_stationPortrait3, g_dw_stationPortrait4,
     g_dw_stationPortrait5, g_dw_stationPortrait6, g_dw_stationPortrait7, nullptr, nullptr,
-    nullptr, nullptr, nullptr, nullptr, nullptr,
+    nullptr, nullptr, g_dw_stationPortrait12, g_dw_stationPortrait13, nullptr,
     nullptr, g_dw_stationPortrait16, g_dw_stationPortrait17, nullptr, nullptr,
     g_dw_stationPortrait20, nullptr, nullptr, nullptr, g_dw_stationPortrait24,
     nullptr, g_dw_stationPortrait26, nullptr, nullptr, nullptr,
@@ -329,10 +353,10 @@ void DialogueWindow::loadContent() {
             }
         } else if (kind == 1) {
             base = this->successOffsets[this->campaignMission];
-            if (this->campaignMission >= 1 && this->campaignMission <= 13) {
+            if (this->campaignMission >= 1 && this->campaignMission <= 23) {
                 int row = base + page * 2;
-                int portraitId = g_dw_campaignSuccessRows1To13[row];
-                textId = g_dw_campaignSuccessRows1To13[row + 1];
+                int portraitId = g_dw_campaignSuccessRows1To23[row];
+                textId = g_dw_campaignSuccessRows1To23[row + 1];
                 this->clientImage = g_dw_stationPortraits[portraitId];
                 this->agentName = *gameText->getText(0x63d + portraitId);
                 this->mirrorFace = portraitId == 0;
@@ -344,6 +368,11 @@ void DialogueWindow::loadContent() {
             this->bodyText = *gameText->getText(textId);
             if (textId == 1718 || textId == 1730) {
                 this->bodyText = static_cast<Globals *>(Globals::globals)->replaceKeyBindingTokens(this->bodyText);
+            }
+            if (textId == 1833) {
+                sound->stop(sound->currentMusicEvent);
+                sound->play(0x88, 0, 0, 0.0f);
+                sound->play(0xA2, 0, 0, 0.0f);
             }
         } else {
             this->clientImage = g_dw_stationPortraits[16];

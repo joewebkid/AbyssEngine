@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (campaign success missions 14–23)
+
+`DialogueWindow::loadContent()` now selects all 166 ARM-confirmed success
+pages for campaign missions 1–23 from the 332-word original table prefix.
+Missions 14–23 add 70 pages, two confirmed portrait descriptors and the
+original sound sequence on text 1833. Mission 14 has no success pages.
+Focused `loadContent()` rose to **93.5% source-shape / 36.7% strict
+fuzzy**. Windows and ARM64 static builds pass, and ARMv7 compiles 209/209
+units. The full corpus covers **4,323/4,524** originals over 4,752
+pairs at **95.99% source-shape / 85.78% strict fuzzy**, with **2,724
+linked-exact / 1,091 byte-exact**, zero skipped, 201 missing, and no
+exact-set losses. Live behavior remains unverified while device work is
+deferred. The next offline block is campaign-success missions 24–33.
+See [missions 14–23 evidence](DIALOGUEWINDOW_CAMPAIGN_SUCCESS_MISSIONS14TO23_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (campaign success missions 8–13)
 
 `DialogueWindow::loadContent()` now selects all 96 ARM-confirmed success
