@@ -311,56 +311,41 @@ void DialogueWindow::update(int dt) {
 }
 
 
-static FModSound *g_dw_soundChoice_storage = nullptr;
-static FModSound **g_dw_soundChoice = &g_dw_soundChoice_storage;
-
-static FModSound *g_dw_soundVoice_storage = nullptr;
-static FModSound **g_dw_soundVoice = &g_dw_soundVoice_storage;
-
-static FModSound *g_dw_soundPrev_storage = nullptr;
-static FModSound **g_dw_soundPrev = &g_dw_soundPrev_storage;
-
-static FModSound *g_dw_soundNext_storage = nullptr;
-static FModSound **g_dw_soundNext = &g_dw_soundNext_storage;
-
-static GameText *g_dw_gameTextTouchEnd_storage = nullptr;
-static GameText **g_dw_gameTextTouchEnd = &g_dw_gameTextTouchEnd_storage;
-
 int DialogueWindow::OnTouchEnd(int x, int y) {
     if (this->choiceActive != 0) {
         int r = this->choiceWindow->OnTouchEnd(x, y);
-        if (r == 1) {
+        if (r != 1) {
+            if (r != 0) return 0;
             this->choiceActive = 0;
-            return 0;
+            if (Status::gStatus->getCurrentCampaignMission() == 0x0f) {
+                Globals::sound->play(0xa2, 0, 0, 0);
+                Globals::sound->stop(Globals::sound->currentMusicEvent);
+                Globals::sound->play(0x88, 0, 0, 0);
+            }
+            if (this->voiceSound != -1) {
+                Globals::sound->stop(this->voiceSound);
+            }
+            return 1;
         }
-        if (r != 0) return 0;
         this->choiceActive = 0;
-        if (Status::gStatus->getCurrentCampaignMission() == 0x0f) {
-            FModSound *sound = *g_dw_soundChoice;
-            sound->play(0xa2, 0, 0, 0);
-            sound->stop(sound->currentMusicEvent);
-            sound->play(0x88, 0, 0, 0);
-        }
-        if (this->voiceSound != -1) {
-            (*g_dw_soundVoice)->stop(this->voiceSound);
-        }
-        return 1;
+        return 0;
     }
 
     this->scrollWindow->OnTouchEnd(x, y);
     if (this->prevButton->OnTouchEnd(x, y) != 0) {
-        (*g_dw_soundPrev)->stop(this->voiceSound);
+        Globals::sound->stop(this->voiceSound);
         this->previousPage();
     }
     if (this->nextButton->OnTouchEnd(x, y) != 0) {
-        (*g_dw_soundNext)->stop(this->voiceSound);
+        Globals::sound->stop(this->voiceSound);
         if (this->nextPage() == 0) {
             return 1;
         }
     }
     if (this->moreButton->OnTouchEnd(x, y) != 0) {
-        String *text = (*g_dw_gameTextTouchEnd)->getText(0x18c);
-        this->choiceWindow->set(*text, true);
+        ChoiceWindow *choiceWindow = this->choiceWindow;
+        String *text = Globals::gameText->getText(0x18c);
+        choiceWindow->set(*text, true);
         this->choiceActive = 1;
     }
     return 0;
