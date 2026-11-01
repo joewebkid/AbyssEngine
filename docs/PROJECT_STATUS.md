@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge::OnTouchEnd` difficulty button)
+
+The ARM-backed mode-2 handler now responds to button index 4 by
+marking `Agent::wasAskedForDifficulty`, deriving the game-text ID from
+mission difficulty with the observed float operations, showing that
+text with the agent's name, and updating `singleOffer`, mode and chat
+scroll. Focused `OnTouchEnd()` source-shape rose **18.9% → 21.7%**
+and strict fuzzy **14.7% → 15.5%**. Windows and ARM64 static builds
+pass; ARMv7 compiles 209/209 units. The full corpus remains
+**4,323/4,524** originals over 4,762 pairs at **96.10% source-shape /
+85.86% strict fuzzy**, with **2,733 linked-exact / 1,091 byte-exact**,
+zero skipped, 201 missing, and no exact-set losses. Runtime behavior
+is unverified while device testing is deferred. Next offline priority:
+the mode-2 item preview and mission-location buttons. See
+[difficulty evidence](SPACELOUNGE_TOUCH_END_BUTTON4_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge::OnTouchEnd` second button)
 
 The ARM-backed mode-2 handler now responds to button index 1 by

@@ -379,6 +379,16 @@ int SpaceLounge::OnTouchEnd(int x, int y) {
                         this->chatScroll = 0;
                         this->mode = 0;
                         ++Globals::status->field_e0;
+                    } else if (i == 4) {
+                        agent->wasAskedForDifficulty = 1;
+                        const int difficulty = agent->getMission()->getDifficulty();
+                        const int textId = static_cast<int>(
+                            (static_cast<float>(difficulty) / 10.0f) * 5.0f) + 808;
+                        this->scrollWindow->setText(agent->getName(),
+                            String(*Globals::gameText->getText(textId), false));
+                        this->singleOffer = 1;
+                        this->mode = 2;
+                        this->chatScroll = 0;
                     }
                     if (agent->isGenericAgent() != 0) {
                         agent->setEvent(1);
