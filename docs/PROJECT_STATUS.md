@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-01 (`MissionsWindow::draw` bindings)
+
+The ARM-confirmed draw path now uses `Globals::Canvas`, `layout`,
+`font` and `imageFactory`, text IDs 129/555/556, and the original
+vertical spacing of agent details. It also calls the six-argument
+`Layout::drawBox` overload. Windows and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. Focused `draw()` rose from 34.3% to
+**85.3% source-shape** and from 19.0% to **33.9% strict fuzzy**.
+The full corpus covers **4,323/4,524** originals over 4,752 pairs at
+**96.03% source-shape / 85.80% strict fuzzy**, with **2,726 linked-exact
+/ 1,091 byte-exact**, zero skipped, 201 missing, and no exact-set
+losses. Touch handlers still have unbound translation-unit pointers;
+live rendering remains unverified while device work is deferred.
+Next offline priority: restore touch and star-map return bindings.
+See [draw evidence](MISSIONSWINDOW_DRAW_BINDINGS_ARM_2026-11-01.md).
+
 Last reviewed: 2026-11-01 (`MissionsWindow::init` bindings)
 
 The ARM-confirmed initialization path now uses `Globals` for device

@@ -27,12 +27,6 @@
 static Layout **g_mw_m_layout = nullptr;
 static Layout **g_mw_b_layout = nullptr;
 
-static Layout **g_mwd_layout = nullptr;
-static int *g_mwd_textId = nullptr;
-static void *g_mwd_color = nullptr;
-static ImageFactory **g_mwd_imageFactory = nullptr;
-static void *g_mwd_font = nullptr;
-
 static char *g_mwt_flagA = nullptr;
 static char *g_mwt_flagB = nullptr;
 static char *g_mwt_flagC = nullptr;
@@ -354,16 +348,14 @@ void MissionsWindow::draw() {
         return;
     }
 
-    PaintCanvas *canvas = PaintCanvas::gCanvas;
-    Layout *L = *g_mwd_layout;
-    void *color = *(void **) g_mwd_color;
-    void *font = *(void **) g_mwd_font;
-    int titleId = *g_mwd_textId;
+    PaintCanvas *canvas = Globals::Canvas;
+    Layout *L = Globals::layout;
+    unsigned int font = Globals::font;
 
-    ((PaintCanvas *) canvas)->SetColor((unsigned int) (uintptr_t) color);
+    canvas->SetColor(0xffffffffu);
 
     {
-        String *ht = Globals::gameText->getText(titleId);
+        String *ht = Globals::gameText->getText(129);
         String header(*ht);
         L->drawHeader(header);
     }
@@ -378,12 +370,11 @@ void MissionsWindow::draw() {
     int ow = this->m_width, oh = this->m_height;
 
     {
-        String *t = Globals::gameText->getText(titleId);
+        String *t = Globals::gameText->getText(555);
         String box(*t);
         int c = L->field_0xc, p20 = L->field_0x20;
         int p28 = L->buttonInsetX, p2c = L->field_0x2c;
-        L->drawBox(1, p28 + ox, oy + c + p20, (ow >> 1) - (p2c + p28), L->field_0x5c, box,
-                   (unsigned) (uintptr_t) canvas);
+        L->drawBox(1, p28 + ox, oy + c + p20, (ow >> 1) - (p2c + p28), L->field_0x5c, box);
     }
     {
         String box("", false);
@@ -392,19 +383,18 @@ void MissionsWindow::draw() {
         int p28 = L->buttonInsetX, p2c = L->field_0x2c;
         int p5c = L->field_0x5c;
         L->drawBox(5, p28 + ox, oy + c + p20 + p5c + p2c, (ow >> 1) - (p2c + p28),
-                   ((oh - (p20 + c + p5c + p2c * 2)) - p10) - p24, box, (unsigned) (uintptr_t) canvas);
+                   ((oh - (p20 + c + p5c + p2c * 2)) - p10) - p24, box);
     }
 
     this->m_pCampaignWindow->draw();
     if (this->m_pAcceptButton) this->m_pAcceptButton->draw();
 
     {
-        String *t = Globals::gameText->getText(titleId);
+        String *t = Globals::gameText->getText(556);
         String box(*t);
         int c = L->field_0xc, p20 = L->field_0x20;
         int p28 = L->buttonInsetX, p2c = L->field_0x2c;
-        L->drawBox(1, ox + (ow >> 1) + p2c, oy + c + p20, ((ow >> 1) - p2c) - p28, L->field_0x5c, box,
-                   (unsigned) (uintptr_t) canvas);
+        L->drawBox(1, ox + (ow >> 1) + p2c, oy + c + p20, ((ow >> 1) - p2c) - p28, L->field_0x5c, box);
     }
     {
         String box("", false);
@@ -413,12 +403,12 @@ void MissionsWindow::draw() {
         int p28 = L->buttonInsetX, p2c = L->field_0x2c;
         int p5c = L->field_0x5c;
         L->drawBox(5, ox + (ow >> 1) + p2c, oy + p2c + c + p20 + p5c, ((ow >> 1) - p2c) - p28,
-                   ((oh - (c + p2c * 2 + p20 + p5c)) - p10) - p24, box, (unsigned) (uintptr_t) canvas);
+                   ((oh - (c + p2c * 2 + p20 + p5c)) - p10) - p24, box);
     }
 
     Mission *fm = Status::gStatus->getFreelanceMission();
     if (fm != nullptr && fm->isEmpty() == 0 && this->m_pAgentImageParts != nullptr) {
-        (*g_mwd_imageFactory)->drawChar(
+        static_cast<ImageFactory *>(Globals::imageFactory)->drawChar(
             this->m_pAgentImageParts, ox + (ow >> 1) + L->field_0x2c,
             L->field_0x2c + oy + L->field_0xc + L->field_0x20 + L->field_0x5c, false);
 
@@ -426,14 +416,14 @@ void MissionsWindow::draw() {
         int detailY = oy + L->field_0xc + L->field_0x20 + L->field_0x2c + L->field_0x5c;
 
         String name = ((Agent *) (fm->getAgent()))->getName();
-        ((PaintCanvas *) canvas)->DrawString((unsigned int) (uintptr_t) font, name, detailX, detailY, false);
+        canvas->DrawString(font, name, detailX, detailY, false);
 
         String station = ((Agent *) (fm->getAgent()))->getStationName();
-        ((PaintCanvas *) canvas)->DrawString((unsigned int) (uintptr_t) font, station, detailX, detailY, false);
+        canvas->DrawString(font, station, detailX, detailY + L->field_0x4, false);
 
         String *typeTxt = Globals::gameText->getText(
             ((Agent *) (fm->getAgent()))->getMission()->getType() + 0x162);
-        ((PaintCanvas *) canvas)->DrawString((unsigned int) (uintptr_t) font, *typeTxt, detailX, detailY, false);
+        canvas->DrawString(font, *typeTxt, detailX, detailY + 2 * L->field_0x4, false);
     }
 
     this->m_pFreelanceWindow->draw();
