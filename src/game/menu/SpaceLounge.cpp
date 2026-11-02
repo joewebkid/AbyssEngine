@@ -924,12 +924,21 @@ void SpaceLounge::onKeyPress(int key) {
                 return;
             }
             const int offer = agent->getOffer();
-            if (key == 0x10000 && (offer == 2 || offer == 3 || offer == 4)) {
+            if (key == 0x10000 &&
+                (offer == 2 || offer == 3 || offer == 4 || offer == 9)) {
                 auto *random = static_cast<AbyssEngine::AERandom *>(Globals::rnd);
                 String reply(*Globals::gameText->getText(random->nextInt(3) + 850), false);
                 Status *status = Globals::status;
-                status->changeCredits(-agent->getSellItemPrice());
-                if (offer == 2) {
+                if (offer == 9) {
+                    float charge = static_cast<float>(-agent->getSellItemPrice());
+                    if (Globals::options[0x38] == 0) {
+                        charge += charge;
+                    }
+                    status->changeCredits(static_cast<int>(charge));
+                } else {
+                    status->changeCredits(-agent->getSellItemPrice());
+                }
+                if (offer == 2 || offer == 9) {
                     Item *prototype = (*static_cast<Array<Item *> *>(Globals::items))[
                         agent->getSellItemIndex()];
                     Item *purchased = prototype->makeItem(agent->getSellItemQuantity());
@@ -950,9 +959,11 @@ void SpaceLounge::onKeyPress(int key) {
                     if (!merged) {
                         status->getShip()->addCargo(purchased);
                     }
-                    const int itemIndex = agent->getSellItemIndex();
-                    if (itemIndex >= 132 && itemIndex <= 153) {
-                        (*status->field_ac)[itemIndex - 132] = true;
+                    if (offer == 2) {
+                        const int itemIndex = agent->getSellItemIndex();
+                        if (itemIndex >= 132 && itemIndex <= 153) {
+                            (*status->field_ac)[itemIndex - 132] = true;
+                        }
                     }
                 } else if (offer == 3) {
                     Array<BluePrint *> *blueprints = status->getBluePrints();
@@ -968,14 +979,14 @@ void SpaceLounge::onKeyPress(int key) {
                     this->field_0x18_byte = 1;
                     this->hangarUpdate = 1;
                 }
-                if (offer != 2) {
+                if (offer == 3 || offer == 4) {
                     Array<Agent *> *allAgents = status->getAgents();
                     const unsigned index = static_cast<unsigned>(agent->getIndex());
                     if (index < allAgents->size()) {
                         (*allAgents)[index]->setOfferAccepted(true);
                     }
                 }
-                if (offer == 2 || offer == 3) {
+                if (offer == 2 || offer == 3 || offer == 9) {
                     this->hangarUpdate = 1;
                 }
                 agent->setOfferAccepted(true);
@@ -1017,15 +1028,18 @@ void SpaceLounge::onKeyPress(int key) {
                     this->mode = 0;
                     return;
                 }
-                if (offer != 2 && offer != 3 && offer != 4) {
+                if (offer != 2 && offer != 3 && offer != 4 && offer != 9) {
                     return;
                 }
                 Status *status = Globals::status;
-                const float price = static_cast<float>(agent->getSellItemPrice());
+                const float priceFactor =
+                    offer == 9 && Globals::options[0x38] == 0 ? 2.0f : 1.0f;
+                const float price =
+                    priceFactor * static_cast<float>(agent->getSellItemPrice());
                 const float credits = static_cast<float>(status->getCredits());
                 if (price > credits) {
                     const int shortfall = static_cast<int>(
-                        static_cast<float>(agent->getSellItemPrice()) -
+                        priceFactor * static_cast<float>(agent->getSellItemPrice()) -
                         static_cast<float>(status->getCredits()));
                     String prompt = status->replaceHash(
                         String(*Globals::gameText->getText(203), false),
@@ -1035,7 +1049,7 @@ void SpaceLounge::onKeyPress(int key) {
                     return;
                 }
                 String prompt;
-                if (offer == 2) {
+                if (offer == 2 || offer == 9) {
                     prompt = *Globals::gameText->getText(868);
                     prompt = status->replaceHash(prompt,
                         String(agent->getSellItemQuantity()), String("#Q", false));
@@ -1058,7 +1072,8 @@ void SpaceLounge::onKeyPress(int key) {
                         String("#S", false));
                 }
                 prompt = status->replaceHash(prompt,
-                    Globals::layout->formatCredits(agent->getSellItemPrice()),
+                    Globals::layout->formatCredits(static_cast<int>(
+                        priceFactor * static_cast<float>(agent->getSellItemPrice()))),
                     String("#C", false));
                 this->choiceWindow->set(prompt, true);
                 this->chatActive = 1;

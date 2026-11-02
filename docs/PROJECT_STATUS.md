@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` keyboard offer 9)
+
+The ARM-backed keyboard path now handles offer **9** from the
+multiplier-adjusted credit gate and text **868** confirmation through
+purchase. When options byte `0x38` is zero, the shown price and
+credit charge double. The purchased item merges with same-index
+equipment or is added to cargo; this branch does not set the
+offer-2 item flags or the global-agent acceptance flag. Focused
+`onKeyPress` source-shape rose **46.4% → 47.5%** and strict fuzzy
+**10.5% → 13.8%**. Windows and ARM64 static builds pass; ARMv7
+compiles 209/209 units. Full corpus coverage remains **4,323/4,524**
+originals over 4,762 pairs at **96.14% source-shape / 85.93% strict
+fuzzy**, with **2,741 linked-exact / 1,096 byte-exact**, zero
+skipped, 201 missing, and no exact-set losses. Runtime purchase and
+item ownership remain unverified while device testing is deferred.
+Next offline priority: offers 8/10 or mission-text recovery. See
+[offer-9 evidence](SPACELOUNGE_KEY_OFFER9_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` keyboard item offer)
 
 The ARM-backed keyboard path now handles offer **2** from credit
