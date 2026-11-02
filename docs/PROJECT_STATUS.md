@@ -1,5 +1,25 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` mission reply/capacity)
+
+The ARM-backed mode-2 handler for offers **0 and 5** now reopens a
+single mission offer by clearing `singleOffer`, rebuilding the agent
+text, substituting formatted reward plus bonus and lounge title for
+`#C` when the mission is nonempty, and clearing chat scroll. The
+ordinary path now blocks type-0 missions when the ship lacks cargo
+space (text **337**) and type-11 missions when the passenger count
+exceeds ship capacity (text **338**), substituting the required
+amount for `#Q`. Focused `OnTouchEnd` source-shape rose **70.8% →
+78.3%** and strict fuzzy **26.6% → 27.6%**. Windows and ARM64
+static builds pass; ARMv7 compiles 209/209 units. Full corpus
+coverage remains **4,323/4,524** originals over 4,762 pairs at
+**96.13% source-shape / 85.93% strict fuzzy**, with **2,741
+linked-exact / 1,096 byte-exact**, zero skipped, 201 missing, and
+no exact-set losses. Live dialogue and capacity behavior remains
+unverified while device testing is deferred. Next offline priority:
+mission confirmation after the capacity gates. See
+[mission gate evidence](SPACELOUNGE_MISSION_RESHOW_CAPACITY_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` wingman offer 6)
 
 The ARM-backed mode-2 acceptance handler now checks whether

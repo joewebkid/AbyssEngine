@@ -404,6 +404,46 @@ int SpaceLounge::OnTouchEnd(int x, int y) {
                             this->mode = 0;
                             return 0;
                         }
+                        if (offer == 0 || offer == 5) {
+                            if (this->singleOffer != 0) {
+                                this->mode = 2;
+                                this->singleOffer = 0;
+                                String missionText = Globals::gGlobals->getAgentMissionText(agent);
+                                Mission *mission = agent->getMission();
+                                if (mission != nullptr && !mission->isEmpty()) {
+                                    const int reward = mission->getReward() + mission->getBonus();
+                                    missionText = Globals::status->replaceHash(
+                                        missionText,
+                                        Globals::layout->formatCredits(reward) + this->title,
+                                        String("#C", false));
+                                }
+                                this->scrollWindow->setText(agent->getName(), missionText);
+                                this->chatScroll = 0;
+                                return 0;
+                            }
+                            Mission *mission = agent->getMission();
+                            const int missionType = mission->getType();
+                            int amount = 0;
+                            int textId = 0;
+                            if (missionType == 0) {
+                                amount = mission->getProductionGoodAmount();
+                                if (!Globals::status->getShip()->spaceAvailable(amount)) {
+                                    textId = 337;
+                                }
+                            } else if (missionType == 11) {
+                                amount = mission->getProductionGoodAmount();
+                                if (amount > Globals::status->getShip()->getMaxPassengers()) {
+                                    textId = 338;
+                                }
+                            }
+                            if (textId != 0) {
+                                String prompt = Globals::status->replaceHash(
+                                    String(*Globals::gameText->getText(textId), false),
+                                    String(amount), String("#Q", false));
+                                this->choiceWindow->set(prompt, false);
+                                this->choiceVisible = 1;
+                            }
+                        }
                         if (offer == 2 || offer == 3 || offer == 4 ||
                             offer == 8 || offer == 9 || offer == 10) {
                             const float priceFactor =
