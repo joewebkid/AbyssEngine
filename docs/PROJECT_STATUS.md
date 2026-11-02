@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (title image draw path).
+Original Android ARM confirms that the five-argument `DrawImage2D`
+uses its first byte for screen placement and its second for region
+alignment, with dimensions read through the image mesh. The recovered
+code reversed those flags, dereferenced a texture ID as a pointer and
+mixed X/Y placement. `MTitle` also supplied a wrong first flag. These
+source forms are corrected; native, ARM64 and ARMv7 209/209 builds pass.
+The full ARM corpus remains **4,323/4,524** originals, **4,762** pairs,
+**96.20% / 85.96%**, **2,741 linked-exact / 1,096 byte-exact**, zero
+skipped, and no exact-set losses. Redmi confirmed successful title-logo
+resource creation, but its locked, dozing screen stopped frame callbacks
+before the corrected draw path could be tested. Visible rendering remains
+unverified. See [title image ARM evidence](IMAGE2D_TITLE_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (Redmi ARM64 startup and menu diagnostics).
 The clone APK was absent from Redmi during earlier visual checks; it is
 now installed separately with its OBB. Device traces exposed successive

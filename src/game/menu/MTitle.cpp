@@ -110,8 +110,9 @@ void MTitle::OnRender2D() {
 
     int color = (int) (fade * 255.0f) - 0x100;
     canvas->SetColor((unsigned int) color);
-    canvas->DrawImage2D((unsigned int) image, 0, 0, (unsigned char) 0, (unsigned char) 0x44);
+    canvas->DrawImage2D((unsigned int) image, 0, 0, (unsigned char) 0x44, (unsigned char) 0x44);
     canvas->End2d();
+    canvas->SwapBuffer();
 }
 
 void MTitle::OnRender3D() {

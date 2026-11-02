@@ -67,7 +67,7 @@ namespace {
 // ---------------------------------------------------------------------------
 // Image2D handle (entries of PaintCanvas::images).
 //   +0x00 void*    backing mesh object (vertex/uv/index buffers)
-//   +0x04 uint32   texture id (also reinterpreted as region-record pointer)
+//   +0x04 uint32   texture id
 //   +0x08 uint16   region: u origin denominator source
 //   +0x0a uint16   region: inverse-width source
 //   +0x0c uint16   region: u0
@@ -78,10 +78,7 @@ namespace {
 // ---------------------------------------------------------------------------
 struct PCImage2DView {
     void *mesh;          // +0x00
-    union {
-        uint32_t textureId; // +0x04
-        uint32_t regionPtr; // +0x04 (legacy pointer interpretation; still a 32-bit word)
-    };
+    uint32_t textureId; // +0x04
     uint16_t regionA;    // +0x08
     uint16_t regionB;    // +0x0a
     uint16_t u0;         // +0x0c
@@ -94,8 +91,8 @@ static_assert(sizeof(PCImage2DView) == sizeof(AbyssEngine::Image2D), "Image2D ov
 static_assert(offsetof(PCImage2DView, width) == offsetof(AbyssEngine::Image2D, sizeX), "Image2D overlay width");
 static_assert(offsetof(PCImage2DView, restoreFlag) == offsetof(AbyssEngine::Image2D, restoreFlag), "Image2D overlay restore");
 
-// Region record reached via PCImage2DView::textureId reinterpreted as a pointer
-// (i.e. *(char**)(img+4)).  Floats at +0x0c (width) and +0x1c (height).
+// Region dimensions in the Image2D mesh's position buffer.
+// Floats at +0x0c (width) and +0x1c (height).
 struct PCRegionView {
     uint8_t pad0[0x0c];
     float width;   // +0x0c
@@ -3914,7 +3911,7 @@ void PaintCanvas::EnableClip(int x, int y, int w, int h) {
 }
 
 void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
-                              unsigned char regionAlignFlags, unsigned char placeFlags) {
+                              unsigned char placeFlags, unsigned char regionAlignFlags) {
     if (index >= this->images.count) {
         return;
     }
@@ -3928,24 +3925,23 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
         hOff = this->GetWidth() >> 1;
     } else if ((placeFlags & 7) == 2) {
         hOff = this->GetWidth();
-        y = -y;
+        x = -x;
     } else {
         hOff = 0;
     }
 
     int vOff;
-    unsigned int yShift = regionAlignFlags;
     if ((placeFlags & 0x70) == 0x40) {
         vOff = this->GetHeight() >> 1;
     } else if ((placeFlags & 0x70) == 0x20) {
         vOff = this->GetHeight();
-        yShift = (unsigned int) (-(int) yShift);
+        y = -y;
     } else {
         vOff = 0;
     }
 
     int rx;
-    PCRegionView *region = (PCRegionView *) img->regionPtr;
+    PCRegionView *region = (PCRegionView *) reinterpret_cast<Mesh *>(img->mesh)->positions;
     if ((regionAlignFlags & 7) == 4) {
         double w = (double) static_cast<float>((int) region->width);
         rx = (int) (long long) (w * -0.5);
@@ -3956,8 +3952,8 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
     }
 
     int ry;
-    PCRegionView *region2 = (PCRegionView *)
-        ((PCImage2DView *) ((char **) this->images.data_)[index])->regionPtr;
+    PCRegionView *region2 = (PCRegionView *) reinterpret_cast<Mesh *>(
+        ((PCImage2DView *) ((char **) this->images.data_)[index])->mesh)->positions;
     if ((regionAlignFlags & 0x70) == 0x20) {
         ry = -(int) region2->height;
     } else if ((regionAlignFlags & 0x70) == 0x40) {
@@ -3970,8 +3966,8 @@ void PaintCanvas::DrawImage2D(unsigned int index, int x, int y,
     PCImage2DView *img2 = (PCImage2DView *) ((char **) this->images.data_)[index];
     this->SetTexture(img2->textureId, 0xffffffffu);
 
-    float fx = static_cast<float>(hOff + y + rx);
-    float fy = static_cast<float>(vOff + (int) yShift + ry);
+    float fx = static_cast<float>(hOff + x + rx);
+    float fy = static_cast<float>(vOff + y + ry);
 
     float m[16];
     memset(m, 0, sizeof(m));
