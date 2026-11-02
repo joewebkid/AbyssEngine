@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (ships 044–045 mesh material links). Android
+ARM supplies **34244** to ship 044's main and two LOD meshes and
+**34245** to ship 045's main mesh; four zero links are restored. Their
+four texture files are present in the original OBB. Windows native,
+ARMv7, ARM64 static and strict shared builds plus resource-table checks
+pass. Focused `BuildResourceList` stays **77.0%** source-shape; strict
+fuzzy changes **20.2% → 18.8%**, and the function remains nonexact.
+Full ARM corpus: **4,323/4,524** originals, **4,762** pairs,
+**96.20% / 85.96%**, **2,741 linked-exact / 1,096 byte-exact**, zero
+skipped, 201 missing and no pair or exact-set losses. The staged Redmi
+APK contains an earlier revision and its separate package is not
+installed: Play Protect rejected the ADB installation. The reported
+resource-download screen came from the original GOF2 package; current
+runtime behavior remains unverified. Next: Supernova ships 046–049
+and a current-source APK test after device installation is accepted.
+See [ships 044–045 evidence](ARM_SHIP_044_045_MATERIAL_LINKS_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (ships 041–043 mesh material links). Android
 ARM supplies **34241–34243** to each ship's main and two LOD meshes;
 nine zero links are restored. Their six texture files are present in

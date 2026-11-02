@@ -603,7 +603,7 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
                                                 false));
     ADD_RES(resources[215], 
         17251, 4, new AbyssEngine::ResourceMesh("data/assets/supernova/3d/meshes/ships/sn_ship_044_elite_nivelian.aem",
-                                                0, false));
+                                                34244, false));
     ADD_RES(resources[216], 18779, 4, new AbyssEngine::ResourceMesh(
                                  "data/assets/supernova/3d/meshes/ships/sn_ship_044_elite_nivelian_lights.aem", 32544,
                                  false));
@@ -612,12 +612,12 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
                                  32544, false));
     ADD_RES(resources[218], 
         17252, 4, new AbyssEngine::ResourceMesh(
-            "data/assets/supernova/3d/meshes/ships/sn_ship_044_elite_nivelian_lod_1.aem", 0, false));
+            "data/assets/supernova/3d/meshes/ships/sn_ship_044_elite_nivelian_lod_1.aem", 34244, false));
     ADD_RES(resources[219], 
         17253, 4, new AbyssEngine::ResourceMesh(
-            "data/assets/supernova/3d/meshes/ships/sn_ship_044_elite_nivelian_lod_2.aem", 0, false));
+            "data/assets/supernova/3d/meshes/ships/sn_ship_044_elite_nivelian_lod_2.aem", 34244, false));
     ADD_RES(resources[220], 
-        17257, 4, new AbyssEngine::ResourceMesh("data/assets/supernova/3d/meshes/ships/sn_ship_045_most_wanted.aem", 0,
+        17257, 4, new AbyssEngine::ResourceMesh("data/assets/supernova/3d/meshes/ships/sn_ship_045_most_wanted.aem", 34245,
                                                 false));
     ADD_RES(resources[221], 18045, 4, new AbyssEngine::ResourceMesh(
                                  "data/assets/supernova/3d/meshes/ships/sn_ship_045_most_wanted_engine_add.aem", 32545,
