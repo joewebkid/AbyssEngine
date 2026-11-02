@@ -3156,7 +3156,7 @@ static void mgame_clear_completed_mission(MGame *self, Status *status) {
 
 static void mgame_create_followup_drill_mission(MGame *self, Status *status) {
     self->field_0x1e0 = self->level->killCountB;
-    Item *drill = (*Item::g_items)[216]->makeItem(10);
+    Item *drill = (*static_cast<Array<Item *> *>(Globals::items))[216]->makeItem(10);
     status->getShip()->setEquipment(drill, 0);
 
     String client("Client", false);
@@ -3414,7 +3414,7 @@ static void mgame_handle_cargo_conversion_choice(MGame *self, int x, int y) {
         int convertedCount = 0;
         while (ship->hasCargo(sourceItem, batchSize)) {
             ship->removeCargo(sourceItem, batchSize);
-            ship->addCargo((*Item::g_items)[replacementItem]->makeItem(1));
+            ship->addCargo((*static_cast<Array<Item *> *>(Globals::items))[replacementItem]->makeItem(1));
             ++convertedCount;
             convertedAny = true;
         }

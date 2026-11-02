@@ -85,7 +85,7 @@ float Galaxy::distance(SolarSystem *a, SolarSystem *b) {
 void *Galaxy::getPlasmaProbabilities(Station *station) {
     int alien = Status::gStatus->inAlienOrbit() ? 1 : 0;
     Array<SolarSystem *> *systems = alien == 0 ? this->systems : 0;
-    Array<Item *> *itemTable = Item::g_items;
+    Array<Item *> *itemTable = static_cast<Array<Item *> *>(Globals::items);
 
     int *probs = new int[4];
     int *ids = new int[4];
@@ -163,7 +163,7 @@ void *Galaxy::getAsteroidProbabilities(Station *station) {
     int alien = Status::gStatus->inAlienOrbit() ? 1 : 0;
     int supernova = Status::gStatus->inSupernovaOrbit() ? 1 : 0;
     Array<SolarSystem *> *systems = alien == 0 ? this->systems : 0;
-    Array<Item *> *itemTable = Item::g_items;
+    Array<Item *> *itemTable = static_cast<Array<Item *> *>(Globals::items);
 
     int *probs = new int[11];
     int *ids = new int[11];

@@ -213,7 +213,7 @@ void liw_fill_item_rows(ListItemWindow *self, ListItem *listItem, bool includePr
         const int itemIndex = listItem->isBluePrint()
             ? listItem->bluePrint->getIndex()
             : listItem->pendingProduct->blueprintIndex;
-        item = (*Item::g_items)[itemIndex];
+        item = (*static_cast<Array<Item *> *>(Globals::items))[itemIndex];
     }
 
     const int itemIndex = item->getIndex();
@@ -619,7 +619,7 @@ void ListItemWindow::draw() {
         Item *itemPtr = li->item;
         if (!li->isItem()) {
             const int itemIndex = li->isBluePrint() ? li->bluePrint->getIndex() : li->pendingProduct->blueprintIndex;
-            itemPtr = (*Item::g_items)[itemIndex];
+            itemPtr = (*static_cast<Array<Item *> *>(Globals::items))[itemIndex];
         }
         imageFactory->drawItem(itemPtr->getIndex(), itemPtr->getType(), iconX, iconY);
     } else if (isShip) {

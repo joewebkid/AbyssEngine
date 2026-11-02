@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (Redmi ARM64 startup crash and item catalog).
+The newer clone APK was absent from Redmi during earlier visual checks.
+After installing it with its OBB, a native startup crash was traced to
+`Galaxy::getAsteroidProbabilities`: the recovered code read an
+uninitialized `Item::g_items` pointer where Android ARM reads the
+catalog loaded as `Globals::items`. Seven production reads now use the
+loaded catalog. A newly signed ARM64 APK stayed alive beyond the old
+crash window, but the frame is still black; playable rendering remains
+unverified. Windows and ARM64 static builds pass; ARMv7 compiles
+**209/209** units. Full ARM corpus: **4,323/4,524** originals,
+**4,762** pairs, **96.20% / 85.96%**, **2,741 linked-exact /
+1,096 byte-exact**, 201 missing, zero skipped and no exact-set losses.
+Next: identify whether the opening cutscene finishes and where the
+GL frame becomes black. See
+[Redmi catalog/runtime evidence](GALAXY_ITEM_CATALOG_ARM64_RUNTIME_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (ships 013–036 blend-0 materials).
 Original Android ARM supplies texture arguments **34013–34036** to
 materials **34313–34336** with blend 0; all 24 placeholder links are

@@ -1,4 +1,5 @@
 #include "game/core/HangarList.h"
+#include "game/core/Globals.h"
 #include "game/mission/BluePrint.h"
 #include "game/mission/Item.h"
 #include "game/mission/Status.h"
@@ -146,7 +147,7 @@ void HangarList::fillIngredientsList(BluePrint *blueprint, bool flag) {
     (void) flag;
     Ship *ship = Status::gStatus->getShip();
     Array<Item *> *cargo = ship->getCargo();
-    Array<Item *> *allItems = Item::g_items;
+    Array<Item *> *allItems = static_cast<Array<Item *> *>(Globals::items);
     Array<int> *ingredients = blueprint->getIngredientList();
     uint32_t count = ingredients->size();
 
