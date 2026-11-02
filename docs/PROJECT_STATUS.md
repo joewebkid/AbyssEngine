@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (ships 026–028 mesh material links). Android
+ARM supplies **34226–34228** to each ship's main and two LOD meshes;
+nine zero links are restored and match kind-6 material registrations.
+Focused `BuildResourceList` stays **77.1%** source-shape / **21.6%**
+strict fuzzy and remains nonexact. Windows native, ARMv7, ARM64 static
+and strict shared builds plus resource-table checks pass. Full ARM
+corpus: **4,323/4,524** originals, **4,762** pairs, **96.20%**
+source-shape, **85.96%** strict fuzzy, **2,741 linked-exact / 1,096
+byte-exact**, zero skipped, 201 missing and no pair or exact-set
+losses. The staged Redmi APK contains an earlier source revision and
+its separate package is not installed, so runtime behavior remains
+unverified. Next: ships 029–031 and a live test of the staged APK. See
+[ships 026–028 evidence](ARM_SHIP_026_028_MATERIAL_LINKS_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (ships 023–025 mesh material links). Android
 ARM supplies **34223–34225** to each ship's main and two LOD meshes;
 nine zero links are restored and match kind-6 material registrations.
