@@ -186,3 +186,47 @@ Normalized comparison-pair and exact-symbol sets are unchanged:
 **2,741 linked-exact**, **1,096 byte-exact**, zero skipped,
 201 missing. Full report:
 `D:/gof2-arm64-crypto/space-startchat-mission0-20261102-full.json`.
+
+## First encounters: ore, wingman and standing
+
+The Android ore-request path (generic offer 1) draws an unvisited
+index among 21 `agentVisited` flags, marks it visited, maps index
+16 for nonzero race and index 13 for female agents to text index
+4, and stores text `820 + index` in `field_0x28`
+(`0x16b2f2`–`0x16b348`). It expands `#S`, `#N`, and
+`#ORE`, stores the mission string, displays it without a greeting,
+and sets agent event 1 (`0x16b374`–`0x16b4c2`,
+`0x16c534`–`0x16c56a`).
+
+The first wingman offer (6) selects text `779 + friends` or
+`782 + friends` according to `gotAllMedals()`, expands `#C`
+from the agent's cost and `#W` from wingman name index 1 when
+there is a friend, then stores and displays the offer with the
+shared greeting and reply (`0x16b9e8`–`0x16bb02`).
+
+The standing offer (7) checks whether the race is an enemy.
+For a nonenemy, it shows text `883` and returns in mode 3
+without the shared sound tail (`0x16bb10`–`0x16bf92`).
+For an enemy, it chooses race-specific text `878`, `880`,
+`881` or `882` and computes the price from absolute standing
+as `standing / 100 × 16,000`; the original Thumb literals at
+`0x16bba4` and `0x16bba8` are 100.0 and 16,000.0.
+It expands `#C`, stores the agent cost, and proceeds through
+the shared reply (`0x16bb42`–`0x16d0d4`).
+
+Focused `startChat()` source-shape rises **76.6% → 87.0%** and
+strict fuzzy rises **9.2% → 10.0%**. The ARM function has 4,159
+instructions versus 4,856 original. The focused unit retains
+22 linked-exact and 7 byte-exact matches over 42 comparisons;
+ARMv7 compiles 209/209 units and Windows/ARM64 static builds pass.
+Focused report:
+`D:/gof2-arm64-crypto/space-startchat-generic-rest-20261102-focused.json`.
+The 21-flag exhaustion case and all rendered dialogue remain
+unverified at runtime while device work is deferred.
+
+The full ARM corpus compares **4,323/4,524** originals over **4,762**
+pairs at **96.17%** mean source-shape / **85.94%** strict fuzzy.
+The normalized pair, **2,741 linked-exact**, and **1,096
+byte-exact** sets remain unchanged, with zero skipped and 201
+missing originals. Full report:
+`D:/gof2-arm64-crypto/space-startchat-generic-rest-20261102-full.json`.

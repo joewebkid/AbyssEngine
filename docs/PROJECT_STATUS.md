@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge::startChat` ore, wingman
+and standing offers). The Android-backed generic first-encounter
+branches now track unvisited ore requests, build the wingman offer
+from medal and friend state, and handle hostile/nonhostile standing
+with the original 16,000-credit factor. Focused `startChat`
+source-shape rises **76.6% → 87.0%** and strict fuzzy **9.2% →
+10.0%**. Windows and ARM64 static builds pass; ARMv7 compiles
+209/209 units. The full corpus compares **4,323/4,524** originals
+over **4,762** pairs at **96.17%** mean source-shape / **85.94%**
+strict fuzzy, with **2,741 linked-exact / 1,096 byte-exact**,
+zero skipped, 201 missing and no exact-set losses. Rendered
+dialogue and 21-flag exhaustion remain unverified in the running
+game while device work is deferred. Next offline priority:
+reconcile remaining `startChat` control flow and string shapes
+against ARM. See
+[conversation entry evidence](SPACELOUNGE_STARTCHAT_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge::startChat` first generic
 mission description). The Android-backed offer-0 path now expands
 mission type, item, quantity, destination, target and reward, stores

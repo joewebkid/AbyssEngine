@@ -1874,7 +1874,87 @@ void SpaceLounge::startChat() {
     }
 
     String message;
-    if (!agent->isKnown() && offer == 0 &&
+    bool firstOreRequest = false;
+    if (!agent->isKnown() && offer == 1) {
+        ++status->field_d0;
+        int visitedIndex;
+        do {
+            visitedIndex = random->nextInt(21);
+        } while (this->agentVisited[visitedIndex]);
+        this->agentVisited[visitedIndex] = 1;
+        int textIndex = visitedIndex;
+        if (visitedIndex == 16 && agent->getRace() != 0)
+            textIndex = 4;
+        if (textIndex == 13 && !agent->isMale())
+            textIndex = 4;
+        agent->field_0x28 = textIndex + 820;
+        String offerText = *texts->getText(agent->field_0x28);
+        offerText = status->replaceHash(
+            offerText,
+            static_cast<Globals *>(Globals::globals)->getRandomPlanetName(),
+            String("#S"));
+        offerText = status->replaceHash(
+            offerText, agent->getName(), String("#N"));
+        offerText = status->replaceHash(
+            offerText, *texts->getText(random->nextInt(10) + 1428),
+            String("#ORE"));
+        agent->setMissionString(offerText);
+        message = offerText;
+        firstOreRequest = true;
+    } else if (!agent->isKnown() && offer == 6) {
+        ++status->field_d0;
+        String greeting = *texts->getText(random->nextInt(6) + 750);
+        String introduction = *texts->getText(random->nextInt(2) + 756);
+        introduction = status->replaceHash(
+            introduction, agent->getName(), String("#N"));
+
+        const int friends = agent->getWingmanFriendsCount();
+        auto *achievements = static_cast<Achievements *>(
+            Globals::achievements);
+        String offerText = *texts->getText(
+            (achievements->gotAllMedals() ? 782 : 779) + friends);
+        offerText = status->replaceHash(
+            offerText, layout->formatCredits(agent->getCosts()),
+            String("#C"));
+        if (friends > 0) {
+            offerText = status->replaceHash(
+                offerText, agent->getWingmanName(1), String("#W"));
+        }
+        agent->setMissionString(offerText);
+        message = greeting + String(" ") + introduction + String(" ") +
+            String("\n") + offerText + String("\n") +
+            *texts->getText(random->nextInt(3) + 841);
+    } else if (offer == 7) {
+        ++status->field_d0;
+        const int race = agent->getRace();
+        Standing *standing = status->getStanding();
+        int reputation = standing->getStanding((race | 1) == 3);
+        if (!standing->isEnemy(race)) {
+            this->scrollWindow->setText(
+                agent->getName(), *texts->getText(883));
+            this->mode = 3;
+            this->chatScroll = 0;
+            return;
+        }
+        if (reputation < 0)
+            reputation = -reputation;
+        const int cost = static_cast<int>(
+            static_cast<float>(reputation) / 100.0f * 16000.0f);
+        int textId = 882;
+        if (race == 0)
+            textId = 881;
+        else if (race == 2)
+            textId = 878;
+        else if (race == 3)
+            textId = 880;
+        String offerText = status->replaceHash(
+            *texts->getText(textId), layout->formatCredits(cost),
+            String("#C"));
+        agent->setCosts(cost);
+        agent->setMissionString(offerText);
+        message = String("  \n") + offerText + String("\n") +
+            *texts->getText(random->nextInt(3) + 841);
+    } else if (!agent->isKnown() && offer == 0 &&
         agent->getMission() != nullptr) {
         ++status->field_d0;
         String greeting = *texts->getText(random->nextInt(6) + 750);
@@ -2046,6 +2126,8 @@ void SpaceLounge::startChat() {
         }
     }
     this->scrollWindow->setText(agent->getName(), message);
+    if (firstOreRequest)
+        agent->setEvent(1);
     agent->setStationName(status->getStation()->getName());
     agent->setSystemName(status->getSystem()->getName());
     this->chatScroll = 0;
