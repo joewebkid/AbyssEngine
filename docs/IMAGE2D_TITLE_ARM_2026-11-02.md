@@ -113,3 +113,9 @@ center at clip coordinates `(0,0)` and its corners within roughly
 of the running shader matrix. It makes a completely offscreen quad
 less likely and prioritizes checking the live matrix, RGBA color,
 actual OpenGL texture object and texture sampling state.
+
+Cleanup requested on 2026-11-03: when Redmi is next available, uninstall
+only the test clone `net.fishlabs.gof2hdallandroiddevx` and remove its
+OBB under `Android/obb/net.fishlabs.gof2hdallandroiddevx/`. Keep the
+original `net.fishlabs.gof2hdallandroid2012` app and its OBB. No
+further Redmi testing is planned.

@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-03 (engine mesh shader dispatch).
+The original Android ARM `RenderMesh` selects a shader by render-mode
+flags and vertex format; `ShaderSetActive` publishes the draw flag and
+active shader index. That recovered path was restricted to ARM64, so
+the ARMv7 shader branch could skip drawing. It is now shared by both
+architectures. Focused source-shape improved **15.9% → 65.2%** for
+`RenderMesh` and **85.3% → 98.5%** for `ShaderSetActive`. Windows
+native and ARM64 static builds pass. The full ARM corpus compiled
+**209/209** units and compared **4,323/4,524** originals in **4,762**
+pairs at **96.22% / 85.99%** mean source-shape / strict fuzzy, with
+**2,741 linked-exact / 1,096 byte-exact**, 201 missing, zero skipped
+and no pair or exact-set losses. Draw-statistics layout and live
+rendering remain unverified. Redmi testing is stopped at the user's
+request; removal of its separate test clone and OBB is recorded in
+the title-image note. See [ARM shader dispatch evidence](ENGINE_RENDER_MESH_SHADER_DISPATCH_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-02 (title render pass on Redmi).
 Original Android ARM calls `End3d()` in `MTitle::OnRender3D`; that
 missing call is restored. Focused source-shape for the function rose

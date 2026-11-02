@@ -582,7 +582,6 @@ void Engine::RenderMesh(Mesh *mesh) {
         }
     } else {
         g_Engine_shaderDrew = 0;
-#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
         // Original RenderMesh chooses a shader from the active render mode and
         // mesh attributes. The first registered shader is index zero.
         const uint32_t flags = this->glEnableFlags;
@@ -623,9 +622,6 @@ void Engine::RenderMesh(Mesh *mesh) {
         } else shaderIndex = NoTexShader::ShaderIndex;
         if (shaderIndex >= 0)
             this->ShaderSetActive(shaderIndex, mesh);
-#else
-        this->ShaderSetActive(g_Engine_defaultShader, mesh);
-#endif
         if (g_Engine_shaderDrew != 0) {
             int oldBuffer = 0;
             glGetIntegerv(0x8ca6, &oldBuffer);
@@ -882,15 +878,8 @@ void Engine::DrawLine2D(float *verts, int count, bool strip) {
 
 void Engine::ShaderSetActive(int shaderIndex, Mesh *mesh) {
     while (shaderIndex == -1) {
-#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
         shaderIndex = (mesh->vertexFormat & 2) ? TextureShader::ShaderIndex
                                                 : SimpleShader::ShaderIndex;
-#else
-        shaderIndex = g_Engine_defaultShader;
-        if ((((uint32_t) mesh->vertexFormat) << 30) >= 0) {
-            shaderIndex = g_Engine_altShader;
-        }
-#endif
     }
 
     bool hasExtra = mesh != 0 && mesh->hasAnimation != 0;
@@ -899,21 +888,18 @@ void Engine::ShaderSetActive(int shaderIndex, Mesh *mesh) {
         return;
     }
     g_Engine_shaderDirty = 1;
+    g_Engine_shaderDrew = 1;
 
     if (shader->program != this->currentProgram) {
         shader->UseShader(hasExtra);
         shader = (*this->shaders)[shaderIndex];
         this->currentProgram = shader->program;
         g_Engine_currentShader = shaderIndex;
+        g_Engine_activeShader = shaderIndex;
     }
     shader->UseShader(hasExtra);
     shader = (*this->shaders)[shaderIndex];
     shader->UpdateMeshData(mesh, this);
-#if defined(__ANDROID__) && __SIZEOF_POINTER__ == 8
-    // The original ShaderSetActive marks a valid shader before RenderMesh draws.
-    g_Engine_shaderDrew = 1;
-    g_Engine_activeShader = shaderIndex;
-#endif
     if (mesh != 0) {
         uint32_t triangles = ((unsigned) (mesh->indexCount) / (unsigned) (3));
         (*this->triangleCounts)[shaderIndex] += triangles;
