@@ -46,3 +46,22 @@ exact-match sets have zero gains and zero losses. The new report is
 Next: run the corrected APK with an unlocked, awake screen; capture a
 title/menu screenshot and OpenGL errors. If it is still black, inspect
 texture upload, shader selection and the 2D draw call on device.
+
+Later the corrected APK was observed in the foreground on an awake,
+unlocked Redmi. The screenshot
+`D:/gof2-arm64-crypto/redmi-image2d-awake-20261102.png` was entirely
+black. Android recorded an input-dispatch ANR at 17:17:50 and stopped
+the process after user interaction. Its `exit-info` also records a
+similar ANR at 16:26:37, before this title-image correction; this is
+not evidence that the correction introduced the stall. Android denied
+access to the ANR stack trace without root. A separate signed APK with
+bounded `GOF2FRAME` logging was prepared outside Git, but no fresh
+foreground run of it has been made yet. The current source tree contains
+none of that diagnostic logging.
+
+The Poco X3 original OBB was copied to the separate clone package's OBB
+directory without modifying the original. Play Protect blocked the test
+APK installation there pending manual confirmation. The cloned OBB uses
+about 1.01 GB of the phone's storage and can be removed after testing.
+The next priority is a fresh unlocked run of the diagnostic APK to locate
+the first frame stall before changing rendering code again.

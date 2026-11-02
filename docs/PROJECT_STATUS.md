@@ -11,7 +11,10 @@ The full ARM corpus remains **4,323/4,524** originals, **4,762** pairs,
 **96.20% / 85.96%**, **2,741 linked-exact / 1,096 byte-exact**, zero
 skipped, and no exact-set losses. Redmi confirmed successful title-logo
 resource creation, but its locked, dozing screen stopped frame callbacks
-before the corrected draw path could be tested. Visible rendering remains
+before the corrected draw path could be tested. A later unlocked Redmi
+run of the corrected APK produced a fully black screenshot and an Android
+input-dispatch ANR. A similar ANR predates this image correction; the
+stall's native call site is still unknown. Visible rendering remains
 unverified. See [title image ARM evidence](IMAGE2D_TITLE_ARM_2026-11-02.md).
 
 Last reviewed: 2026-11-02 (Redmi ARM64 startup and menu diagnostics).
