@@ -552,24 +552,24 @@ void Engine::RenderMesh(Mesh *mesh) {
     if (g_Engine_useShaders == 0) {
         glVertexPointer(3, 0x1406, 0, mesh->positions);
         this->AEClientState(0x8074, true);
-        bool tex = ((uint32_t) mesh->vertexFormat << 30) < 0;
+        bool tex = (mesh->vertexFormat & 2) != 0;
 
         if (tex && (mesh->material == 0 ||
                     ((Material *) mesh->material)->textures[1] == -1)) {
             glTexCoordPointer(2, 0x1406, 0, mesh->texCoords);
         }
         this->AEClientState(0x8078, tex);
-        bool normals = ((uint32_t) mesh->vertexFormat << 29) < 0;
+        bool normals = (mesh->vertexFormat & 4) != 0;
         if (normals) {
             glNormalPointer(0x1406, 0, mesh->normals);
         }
         this->AEClientState(0x8075, normals);
-        bool colors = ((uint32_t) mesh->vertexFormat << 28) < 0;
+        bool colors = (mesh->vertexFormat & 8) != 0;
         if (colors) {
             glColorPointer(4, 0x1406, 0, (void *) (uintptr_t) mesh->colors);
         }
         this->AEClientState(0x8076, colors);
-        if (((uint32_t) mesh->vertexFormat << 27) < 0) {
+        if ((mesh->vertexFormat & 0x10) != 0) {
             glDrawElements(4, mesh->indexCount, 0x1403,
                            mesh->indices);
         } else {
@@ -625,11 +625,26 @@ void Engine::RenderMesh(Mesh *mesh) {
         if (g_Engine_shaderDrew != 0) {
             int oldBuffer = 0;
             glGetIntegerv(0x8ca6, &oldBuffer);
-            if (((uint32_t) mesh->vertexFormat << 27) < 0) {
+            if ((mesh->vertexFormat & 0x10) != 0) {
+                const int tris = static_cast<unsigned int>(mesh->indexCount) / 3;
                 if (mesh->uploaded == 0) {
+                    if (this->statsBucketFlag != 0) {
+                        this->triangleCountClientB += tris;
+                        this->drawCallCountB += 1;
+                    } else {
+                        this->triangleCountClientA += tris;
+                        this->drawCallCountA += 1;
+                    }
                     glDrawElements(4, mesh->indexCount, 0x1403,
                                    mesh->indices);
                 } else {
+                    if (this->statsBucketFlag != 0) {
+                        this->triangleCountB += tris;
+                        this->drawCallCountB += 1;
+                    } else {
+                        this->triangleCountA += tris;
+                        this->drawCallCountA += 1;
+                    }
                     glBindBuffer(0x8893, mesh->indexVBO);
                     glDrawElements(4, mesh->indexCount, 0x1403, 0);
                     glBindBuffer(0x8892, 0);

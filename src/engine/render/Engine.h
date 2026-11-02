@@ -80,7 +80,13 @@ namespace AbyssEngine {
         String str_0x3c;
         uint8_t _pad0x48[4];
         String str_0x4c;
-        uint64_t field_0x58;
+        union {
+            uint64_t field_0x58;
+            struct {
+                int triangleCountClientA;
+                int triangleCountClientB;
+            };
+        };
 
         int drawCallCountB;
         int drawCallCountA;
@@ -622,6 +628,12 @@ namespace AbyssEngine {
         static unsigned char WireFrame;
         static float nearPlane;
     };
+#if __SIZEOF_POINTER__ == 4
+    static_assert(__builtin_offsetof(Engine, triangleCountClientA) == 0x58, "ARM client triangle A offset");
+    static_assert(__builtin_offsetof(Engine, triangleCountClientB) == 0x5c, "ARM client triangle B offset");
+    static_assert(__builtin_offsetof(Engine, drawCallCountB) == 0x60, "ARM draw call B offset");
+    static_assert(__builtin_offsetof(Engine, drawCallCountA) == 0x64, "ARM draw call A offset");
+#endif
 }
 
 using ::AbyssEngine::Engine;

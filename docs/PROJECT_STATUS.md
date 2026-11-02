@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-03 (engine mesh vertex flags and draw counters).
+`RenderMesh` used unsigned shifted `< 0` checks, which made its texture,
+normal, color and indexed-draw flags always false. Source-backed direct
+bit checks restore these paths, and the indexed shader branch now
+updates the original client/VBO draw counters. Focused ARM source-shape
+rose **65.2% → 90.0%**; strict fuzzy rose **56.8% → 58.3%**. Windows
+native and ARM64 static builds pass. The full ARM corpus compiled
+**209/209** units and compared **4,323/4,524** originals in **4,762**
+pairs at **96.23% / 85.99%** mean source-shape / strict fuzzy, with
+**2,741 linked-exact / 1,096 byte-exact**, 201 missing, zero skipped
+and no pair or exact-set losses. Visible output remains unverified;
+Redmi testing is stopped at the user's request. Its extra test clone
+and OBB remain recorded for later removal. See
+[vertex flag and counter evidence](ENGINE_RENDER_MESH_VERTEX_FLAGS_STATS_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (engine mesh shader dispatch).
 The original Android ARM `RenderMesh` selects a shader by render-mode
 flags and vertex format; `ShaderSetActive` publishes the draw flag and
