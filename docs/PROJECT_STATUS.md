@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` keyboard options)
+
+The ARM-backed mode-2 keyboard path now uses three, four or five
+options according to mission/offer type, wraps `chatAnswer` under
+the previous/next keys, and dispatches recovered options **1**, **2**
+and **4** for the refusal reply, repeated mission text and difficulty
+reply. Focused `onKeyPress` source-shape rose **14.6% → 20.4%** and
+strict fuzzy **5.0% → 7.8%**. Windows and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. Full corpus coverage remains
+**4,323/4,524** originals over 4,762 pairs at **96.13%
+source-shape / 85.93% strict fuzzy**, with **2,741 linked-exact /
+1,096 byte-exact**, zero skipped, 201 missing, and no exact-set
+losses. Option **2** relies on `getAgentMissionText()`, whose runtime
+semantics remain unverified. Options **0** and **3** and other offer
+acceptance paths are incomplete. Device testing remains deferred.
+Next offline priority: keyboard options 0/3 or the mission-text
+implementation. See
+[keyboard option evidence](SPACELOUNGE_KEY_OPTIONS_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` offer-4 acceptance)
 
 The ARM-backed mode-2 confirmation path now handles accepted offer

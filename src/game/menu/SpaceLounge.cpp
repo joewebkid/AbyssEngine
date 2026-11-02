@@ -945,28 +945,64 @@ void SpaceLounge::onKeyPress(int key) {
             }
             return;
         }
-        if (key == 0x40000) {
-            this->mode = 1;
-        } else if (key == 0x10000 || key == 0x20000) {
-            if (((Agent *) (agent))->getMission() == 0 && ((Agent *) (agent))->isGenericAgent() != 0) {
-                ((Agent *) (agent))->setEvent(1);
-            }
-            this->mode = 0;
-        } else if (key == 0x8000) {
-            if (ScrollTouchBox *box = this->scrollWindow->scrollBox) {
-                if (box->contentHeight - box->height > 0) {
-                    box->scrollOffset -= box->height;
-                    box->update(0);
-                }
-            }
-        } else if (key == 0x4000) {
-            if (ScrollTouchBox *box = this->scrollWindow->scrollBox) {
-                if (box->contentHeight - box->height > 0) {
-                    box->scrollOffset += box->height;
-                    box->update(0);
-                }
+        Mission *mission = agent->getMission();
+        int optionCount = 3;
+        if (mission != nullptr && mission->isOutsideMission()) {
+            optionCount = 5;
+        } else {
+            const int offer = agent->getOffer();
+            if (offer == 2 || offer == 3 || offer == 8 || offer == 9 || offer == 10) {
+                optionCount = 4;
             }
         }
+        if (key == 0x4000) {
+            const int current = this->chatAnswer < 1 ? optionCount : this->chatAnswer;
+            this->chatAnswer = current - 1;
+            return;
+        }
+        if (key == 0x8000) {
+            const int next = this->chatAnswer + 1;
+            this->chatAnswer = next >= optionCount ? 0 : next;
+            return;
+        }
+        if (key != 0x10000 && key != 0x20000) {
+            return;
+        }
+        switch (this->chatAnswer) {
+            case 1: {
+                auto *random = static_cast<AbyssEngine::AERandom *>(Globals::rnd);
+                this->scrollWindow->setText(agent->getName(),
+                    String(*Globals::gameText->getText(random->nextInt(5) + 845), false));
+                this->chatScroll = 0;
+                this->mode = 3;
+                ++Globals::status->field_e0;
+                break;
+            }
+            case 2:
+                this->mode = 2;
+                this->scrollWindow->setText(agent->getName(),
+                    Globals::gGlobals->getAgentMissionText(agent));
+                this->chatScroll = 0;
+                ++Globals::status->field_e4;
+                break;
+            case 4: {
+                agent->wasAskedForDifficulty = 1;
+                const int difficulty = agent->getMission()->getDifficulty();
+                const int textId = static_cast<int>(
+                    (static_cast<float>(difficulty) / 10.0f) * 5.0f) + 808;
+                this->scrollWindow->setText(agent->getName(),
+                    String(*Globals::gameText->getText(textId), false));
+                this->chatScroll = 0;
+                this->mode = 2;
+                break;
+            }
+            default:
+                return;
+        }
+        if (agent->isGenericAgent() != 0) {
+            agent->setEvent(1);
+        }
+        return;
     }
 }
 
