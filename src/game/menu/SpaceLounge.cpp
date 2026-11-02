@@ -924,12 +924,37 @@ void SpaceLounge::onKeyPress(int key) {
                 return;
             }
             const int offer = agent->getOffer();
-            if (key == 0x10000 && (offer == 3 || offer == 4)) {
+            if (key == 0x10000 && (offer == 2 || offer == 3 || offer == 4)) {
                 auto *random = static_cast<AbyssEngine::AERandom *>(Globals::rnd);
                 String reply(*Globals::gameText->getText(random->nextInt(3) + 850), false);
                 Status *status = Globals::status;
                 status->changeCredits(-agent->getSellItemPrice());
-                if (offer == 3) {
+                if (offer == 2) {
+                    Item *prototype = (*static_cast<Array<Item *> *>(Globals::items))[
+                        agent->getSellItemIndex()];
+                    Item *purchased = prototype->makeItem(agent->getSellItemQuantity());
+                    bool merged = false;
+                    if (purchased->getType() == 1) {
+                        Array<Item *> *equipment = status->getShip()->getEquipment();
+                        if (equipment != nullptr) {
+                            for (unsigned i = 0; i < equipment->size(); ++i) {
+                                Item *existing = (*equipment)[i];
+                                if (existing != nullptr &&
+                                    existing->getIndex() == purchased->getIndex()) {
+                                    existing->changeAmount(purchased->getAmount());
+                                    merged = true;
+                                }
+                            }
+                        }
+                    }
+                    if (!merged) {
+                        status->getShip()->addCargo(purchased);
+                    }
+                    const int itemIndex = agent->getSellItemIndex();
+                    if (itemIndex >= 132 && itemIndex <= 153) {
+                        (*status->field_ac)[itemIndex - 132] = true;
+                    }
+                } else if (offer == 3) {
                     Array<BluePrint *> *blueprints = status->getBluePrints();
                     for (unsigned i = 0; i < blueprints->size(); ++i) {
                         BluePrint *blueprint = (*blueprints)[i];
@@ -943,12 +968,14 @@ void SpaceLounge::onKeyPress(int key) {
                     this->field_0x18_byte = 1;
                     this->hangarUpdate = 1;
                 }
-                Array<Agent *> *allAgents = status->getAgents();
-                const unsigned index = static_cast<unsigned>(agent->getIndex());
-                if (index < allAgents->size()) {
-                    (*allAgents)[index]->setOfferAccepted(true);
+                if (offer != 2) {
+                    Array<Agent *> *allAgents = status->getAgents();
+                    const unsigned index = static_cast<unsigned>(agent->getIndex());
+                    if (index < allAgents->size()) {
+                        (*allAgents)[index]->setOfferAccepted(true);
+                    }
                 }
-                if (offer == 3) {
+                if (offer == 2 || offer == 3) {
                     this->hangarUpdate = 1;
                 }
                 agent->setOfferAccepted(true);
@@ -990,7 +1017,7 @@ void SpaceLounge::onKeyPress(int key) {
                     this->mode = 0;
                     return;
                 }
-                if (offer != 3 && offer != 4) {
+                if (offer != 2 && offer != 3 && offer != 4) {
                     return;
                 }
                 Status *status = Globals::status;
@@ -1008,7 +1035,15 @@ void SpaceLounge::onKeyPress(int key) {
                     return;
                 }
                 String prompt;
-                if (offer == 3) {
+                if (offer == 2) {
+                    prompt = *Globals::gameText->getText(868);
+                    prompt = status->replaceHash(prompt,
+                        String(agent->getSellItemQuantity()), String("#Q", false));
+                    prompt = status->replaceHash(prompt,
+                        String(*Globals::gameText->getText(
+                            agent->getSellItemIndex() + 1274), false),
+                        String("#P", false));
+                } else if (offer == 3) {
                     prompt = *Globals::gameText->getText(869);
                     Item *item = (*static_cast<Array<Item *> *>(Globals::items))[
                         agent->getSellBlueprintIndex()];

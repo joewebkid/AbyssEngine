@@ -1,5 +1,25 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` keyboard item offer)
+
+The ARM-backed keyboard path now handles offer **2** from credit
+check and confirmation through purchase. It formats text **868**
+with quantity, item name and price; on acceptance it creates the
+item, merges same-index type-1 equipment amounts or adds it to ship
+cargo, records status flags for item indices 132–153, and displays
+the final reply. It does not mark an indexed global agent accepted,
+matching the original offer-2 branch. Focused `onKeyPress`
+source-shape rose **39.6% → 46.4%** and strict fuzzy **10.3% →
+10.5%**. Windows and ARM64 static builds pass; ARMv7 compiles
+209/209 units. Full corpus coverage remains **4,323/4,524**
+originals over 4,762 pairs at **96.14% source-shape / 85.93% strict
+fuzzy**, with **2,741 linked-exact / 1,096 byte-exact**, zero
+skipped, 201 missing, and no exact-set losses. Runtime purchase and
+ownership behavior remains unverified while device testing is
+deferred. Next offline priority: remaining offer transactions or
+mission-text recovery. See
+[item offer evidence](SPACELOUNGE_KEY_OFFER2_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` keyboard blueprint offer)
 
 The ARM-backed keyboard path now shows offer **3** confirmation with
