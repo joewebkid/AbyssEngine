@@ -985,6 +985,63 @@ void SpaceLounge::onKeyPress(int key) {
                 this->chatScroll = 0;
                 ++Globals::status->field_e4;
                 break;
+            case 3: {
+                const int offer = agent->getOffer();
+                if (offer == 2 || offer == 3) {
+                    if (this->listWindow == nullptr) {
+                        this->listWindow = new ListItemWindow();
+                    }
+                    if (offer == 2) {
+                        Item *item = (*static_cast<Array<Item *> *>(Globals::items))[
+                            agent->getSellItemIndex()];
+                        this->listWindow->set(new ListItem(item), 0, 0, 0, 0, false);
+                    } else {
+                        Array<BluePrint *> *blueprints = Globals::status->getBluePrints();
+                        for (unsigned i = 0; i < blueprints->size(); ++i) {
+                            BluePrint *blueprint = (*blueprints)[i];
+                            if (blueprint->getIndex() == agent->getSellBlueprintIndex()) {
+                                Item *item = (*static_cast<Array<Item *> *>(Globals::items))[
+                                    blueprint->getIndex()];
+                                this->listWindow->set(new ListItem(item), 0, 0, 0, 0, false);
+                                break;
+                            }
+                        }
+                    }
+                    this->listVisible = 1;
+                    break;
+                }
+                if (mission == nullptr) {
+                    return;
+                }
+                agent->wasAskedForLocation = 1;
+                const int targetStation = mission->getTargetStation();
+                int textId = 0;
+                if (targetStation == Globals::status->getStation()->getIndex()) {
+                    textId = 805;
+                } else if (Globals::status->getSystem()->stationIsInSystem(targetStation)) {
+                    textId = 806;
+                }
+                if (textId != 0) {
+                    this->scrollWindow->setText(agent->getName(),
+                        String(*Globals::gameText->getText(textId), false));
+                    this->chatScroll = 0;
+                    this->mode = 2;
+                } else {
+                    auto *manager = static_cast<AbyssEngine::ApplicationManager *>(
+                        Globals::appManager);
+                    auto *module = static_cast<SpaceLoungeStarMapModule *>(
+                        manager->GetApplicationModule(5));
+                    this->starMap = module->starMap;
+                    if (this->starMap != nullptr) {
+                        this->starMap->init(true, mission, false, -1);
+                    } else {
+                        module->starMap = new StarMap(true, mission, false, -1);
+                        this->starMap = module->starMap;
+                    }
+                    this->mapVisible = 1;
+                }
+                break;
+            }
             case 4: {
                 agent->wasAskedForDifficulty = 1;
                 const int difficulty = agent->getMission()->getDifficulty();

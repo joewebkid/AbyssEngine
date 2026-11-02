@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` keyboard option 3)
+
+The ARM-backed keyboard option **3** now previews offered items and
+blueprints for offers **2/3**. For an agent with a mission, it shows
+target-station text **805/806** or opens the mission StarMap, then
+follows the generic-agent event path. Focused `onKeyPress`
+source-shape rose **20.4% → 27.0%** and strict fuzzy **7.8% → 9.2%**.
+Windows and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+Full corpus coverage remains **4,323/4,524** originals over 4,762
+pairs at **96.13% source-shape / 85.93% strict fuzzy**, with **2,741
+linked-exact / 1,096 byte-exact**, zero skipped, 201 missing, and no
+exact-set losses. The source checks for a null mission before the
+location branch; ARM does not, and offers 8–10 can be constructed
+without missions. Their keyboard option-3 semantics are unresolved.
+Runtime behavior remains unverified while device testing is deferred.
+Next offline priority: keyboard option 0 and mission-text recovery.
+See [option-3 evidence](SPACELOUNGE_KEY_OPTION3_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` keyboard options)
 
 The ARM-backed mode-2 keyboard path now uses three, four or five
