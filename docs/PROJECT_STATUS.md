@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (ships 032–034 and late material records).
+Android ARM supplies **34232–34234** to each ship's main and two LOD
+meshes; nine zero links are restored. Two misrecovered later records
+are corrected to material IDs **34244/34245**, with original texture
+pairs **34044/34144** and **34045/34145**. Windows native, ARMv7,
+ARM64 static and strict shared builds plus resource-table checks pass.
+Focused `BuildResourceList` changes **77.1% / 21.6% → 77.0% / 19.3%**
+source-shape / strict fuzzy; its ARM-backed data correction remains
+nonexact. Full ARM corpus: **4,323/4,524** originals, **4,762** pairs,
+**96.20% / 85.96%**, **2,741 linked-exact / 1,096 byte-exact**, zero
+skipped, 201 missing and no pair or exact-set losses. The staged Redmi
+APK still contains an earlier revision and its separate package is not
+installed; runtime behavior is unverified. Next: ships 035–037,
+Supernova 044–045 mesh links and a current-source APK test. See
+[ships 032–034 evidence](ARM_SHIP_032_034_MATERIAL_LINKS_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (ships 029–031 mesh material links). Android
 ARM supplies **34229–34231** to each ship's main and two LOD meshes;
 nine zero links are restored and match kind-6 material registrations.
