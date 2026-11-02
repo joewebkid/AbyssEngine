@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge::getSoundId` special
+texts). The ARM-backed sound path now compares texts 820, 824, 827
+and 833 only for offer 1; a 30% generic sound override for other
+offers no longer triggers that special comparison. Focused
+`getSoundId` source-shape rises **84.9% → 85.1%** and strict fuzzy
+**48.4% → 50.9%**. Windows and ARM64 static builds pass; ARMv7
+compiles 209/209 units. The full corpus compares **4,323/4,524**
+originals over **4,762** pairs at **96.18%** mean source-shape /
+**85.94%** strict fuzzy, with **2,741 linked-exact / 1,096
+byte-exact**, zero skipped, 201 missing and no exact-set losses.
+Three direct ARM callers discard the `onKeyPress` return register,
+so its decompiler-inferred return type remains unproven. Live
+sound behavior remains unverified while device work is deferred.
+Next offline priority: investigate the remaining `SpaceLounge`
+input and dialogue differences with source-backed branch evidence.
+See [sound selection evidence](SPACELOUNGE_SOUND_SPECIAL_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge::onKeyPress` mission
 offers and credit correction). The ARM-backed keyboard path now
 checks mission cargo and passenger capacity, offers confirmation,

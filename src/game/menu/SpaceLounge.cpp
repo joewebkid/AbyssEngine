@@ -731,7 +731,7 @@ int SpaceLounge::getSoundId(Agent *agent) {
 
     missionText = Globals::gGlobals->getAgentMissionText(static_cast<Agent *>(agent));
 
-    bool checkSpecialText = true;
+    const bool checkSpecialText = offer == 1;
     int soundId;
     switch (offer) {
         case 0:
@@ -776,10 +776,8 @@ int SpaceLounge::getSoundId(Agent *agent) {
     }
 
     if (offer != 1) {
-        checkSpecialText = false;
         if (random->nextInt(100) < 30) {
             soundId = random->nextInt(2) + 0x30d;
-            checkSpecialText = true;
         }
     }
 
