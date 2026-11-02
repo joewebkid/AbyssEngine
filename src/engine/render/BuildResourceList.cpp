@@ -4209,7 +4209,7 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
                                   false));
     ADD_RES(resources[2133], 
         17216, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_038_deep_science.aem",
-                                                65535, false));
+                                                34238, false));
     ADD_RES(resources[2134], 18738, 4, new AbyssEngine::ResourceMesh(
                                   "data/assets/valkyrie/3d/meshes/ships/v_ship_038_deep_science_lights_anim_add.aem",
                                   32538, false));
@@ -4217,12 +4217,12 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
                                   "data/assets/valkyrie/3d/meshes/ships/v_ship_038_deep_science_engine_add.aem", 32538,
                                   false));
     ADD_RES(resources[2136], 
-        17221, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_039_vossk.aem", 0, false));
+        17221, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_039_vossk.aem", 34239, false));
     ADD_RES(resources[2137], 
-        17222, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_039_vossk_lod_1.aem", 0,
+        17222, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_039_vossk_lod_1.aem", 34239,
                                                 false));
     ADD_RES(resources[2138], 
-        17223, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_039_vossk_lod_2.aem", 0,
+        17223, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_039_vossk_lod_2.aem", 34239,
                                                 false));
     ADD_RES(resources[2139], 
         18739, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_039_vossk_lights_add.aem",
@@ -4232,7 +4232,7 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
                                                 32539, false));
     ADD_RES(resources[2141], 
         17227, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_040_deep_science.aem",
-                                                65535, false));
+                                                34240, false));
     ADD_RES(resources[2142], 17231, 4, new AbyssEngine::ResourceMesh(
                                   "data/assets/valkyrie/3d/meshes/ships/v_ship_040_deep_science_lights_add.aem", 32540,
                                   false));
