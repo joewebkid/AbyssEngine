@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (ships 042–063 blend-8 material links).
+Android ARM directly supplies 17 texture arguments to the noncontiguous
+material block; the matching 17 placeholders are restored. Fifteen
+linked texture files exist in the original OBB. Original arguments
+**34050/34053** have no texture registration or ship asset and remain
+unverified at runtime. Windows native, ARM64 static, ARMv7 209/209,
+and resource-table checks pass. Focused `BuildResourceList` remains
+nonexact at **77.3%** source-shape; strict fuzzy **19.0% → 18.0%**.
+Full ARM corpus: **4,323/4,524** originals, **4,762** pairs,
+**96.20% / 85.96%**, **2,741 linked-exact / 1,096 byte-exact**,
+zero skipped, 201 missing, and no pair or exact-set losses. Live
+material rendering and the Redmi resource check remain unverified.
+Next: inspect the following material family and trace original
+lookup behavior for the two absent texture IDs. See
+[ships 042–063 evidence](ARM_SHIP_042_063_BLEND8_MATERIALS_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (ships 016–036 blend-8 materials). The
 original Android ARM passes diffuse textures **34016–34036** to
 kind-6 materials **34416–34436** with blend 8; all 21 placeholder
