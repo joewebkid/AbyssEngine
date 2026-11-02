@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`Globals::getAgentMissionText` recovery)
+
+The ARM-backed agent dialogue function now handles generic mission
+offers, item and production goods, wingman/standing requests, and
+non-generic sale offers. It no longer dereferences static null
+placeholders before checking the agent. Focused source-shape rose
+**3.0% → 72.1%** and strict fuzzy **1.2% → 20.1%**. Windows and
+ARM64 static builds pass; ARMv7 compiles 209/209 units. Full corpus
+coverage remains **4,323/4,524** originals over 4,762 pairs;
+mean source-shape rose **96.14% → 96.15%**, strict fuzzy remains
+**85.93%**, and **2,741 linked-exact / 1,096 byte-exact** matches
+remain with zero skipped, 201 missing, and no exact-set losses.
+Rendered dialogue and mission side effects remain unverified while
+device testing is deferred. Next offline priority: review remaining
+string-temporary differences in this function or another incomplete
+runtime path. See
+[agent dialogue evidence](GLOBALS_AGENT_MISSION_TEXT_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` keyboard ship-mod offer 8)
 
 The ARM-backed keyboard path now handles offer **8** through the

@@ -87,14 +87,6 @@ struct InitZeroObject {
     };
 };
 
-// Small per-frame mission/work object reached through the `busy` handle in
-// Globals::getAgentMissionText(); only the recursion-guard counter at 0xd0 is
-// touched here.
-struct AgentBusyObject {
-    uint8_t  _pad[0xd0];      // 0x00
-    int32_t  guardCounter;    // 0xd0
-};
-
 // Object reached through the `secondary` handle in Globals::Globals(): two
 // leading int slots plus a flag byte at 0x13.
 struct CtorSecondaryObject {
@@ -152,7 +144,6 @@ static_assert(offsetof(InitZeroObject, tailAt2f) == 0x2f, "tailAt2f");
 static_assert(offsetof(InitZeroObject, tailAt33) == 0x33, "tailAt33");
 static_assert(offsetof(InitZeroObject, tailAt37) == 0x37, "tailAt37");
 
-static_assert(offsetof(AgentBusyObject, guardCounter) == 0xd0, "guardCounter");
 static_assert(offsetof(CtorSecondaryObject, slot1) == 0x04, "slot1");
 static_assert(offsetof(CtorSecondaryObject, flagAt13) == 0x13, "flagAt13");
 #endif
@@ -415,8 +406,6 @@ int FModSound_tryToStopMusicForBGMusic() {
     return Globals::sound ? Globals::sound->tryToStopMusicForBGMusic() : 0;
 }
 #endif
-
-static Status **g_status;
 
 extern int g_android_leaderboard_scores[8];
 
@@ -715,156 +704,259 @@ void Globals::setCoordsSteer(int p1, int p2, int p3, int p4,
     }
 }
 
-static void *const gGAMT_guard = nullptr;
-static const char gGAMT_noAgent[] = "";
-static void *const gGAMT_busyObj = nullptr;
-static void *const gGAMT_modText = nullptr;
-
 String Globals::getAgentMissionText(Agent *agent) {
-    int *guardP = *(int **) gGAMT_guard;
-    volatile int saved = *guardP;
-
-    String result;
-
     if (agent == nullptr) {
-        result.ctor_char(gGAMT_noAgent, false);
-        return result;
+        return String("");
     }
 
-    String acc;
+    Status *status = Globals::status;
+    GameText *texts = Globals::gameText;
+    Layout *layout = Globals::layout;
+    auto *random = static_cast<AbyssEngine::AERandom *>(Globals::rnd);
+    String text;
 
-    if (agent->isGenericAgent() == 0) {
-        int event = agent->getEvent();
-        if (event < 1 && agent->hasAcceptedOffer() == 0) {
-            AgentBusyObject **busySlot = *(AgentBusyObject ***) gGAMT_busyObj;
-            AgentBusyObject *busy = *busySlot;
-
-            busy->guardCounter += 1;
-            int offer = agent->getOffer();
-
-            if (offer == 8) {
-                int ship = (int) (long) Status::gStatus->getShip();
-                int price = ((Ship *) (ship))->getPrice();
-                int pct = agent->getModPricePercentage();
-                agent->setSellItemPrice(idiv(price * pct, 100));
-                ship = (int) (long) Status::gStatus->getShip();
-                int modIdx = agent->getSellModIndex();
-                if (((Ship *) (ship))->hasModInstalled(modIdx) != 0) {
-                    void *t = ((GameText *) ((void *) (long) **(int **) gGAMT_modText))->getText(modIdx);
-                    (void) t;
-                    busy->guardCounter -= 1;
-                    result.Set((acc).data);
-                    return result;
+    if (agent->isGenericAgent()) {
+        switch (agent->getOffer()) {
+            case 0: {
+                Mission *mission = agent->getMission();
+                if (mission == nullptr) {
+                    agent->field_0x28 = 820;
+                    text = *texts->getText(820);
+                    break;
                 }
-            }
+                const int type = mission->getType();
+                text += *texts->getText(type + 786);
+                if (type == 3 || type == 5) {
+                    text += String(" ") + *texts->getText(802);
+                }
+                const int goodText = mission->getProductionGoodIndex() +
+                    (type == 15 ? 1274 : 813);
+                text = status->replaceHash(text, *texts->getText(goodText),
+                                           String("#P"));
+                text = status->replaceHash(
+                    text, String(mission->getProductionGoodAmount()), String("#Q"));
+                text = status->replaceHash(
+                    text, type == 14 ? mission->getTargetSystemName()
+                                    : mission->getTargetStationName(),
+                    String("#S"));
+                text = status->replaceHash(text, mission->getTargetName(),
+                                           String("#N"));
 
-            {
-                Agent *agentArg = agent;
-                int bamtOffer = offer;
-                String mt;
-                { if (mt.data) delete[] mt.data; mt.data = nullptr; mt.length = 0; }
-                if (bamtOffer < 0 || agentArg == 0) {
-                    void *line = ((GameText *) (void *) (long) **(int **) &g_status)->getText(0x300);
-                    mt = *(String *) line;
-                    acc.Set((mt).data);
-                } else {
-                    int baseKey;
-                    switch (bamtOffer) {
-                        case 8: baseKey = 0x36a;
-                            break;
-                        case 9: baseKey = 0x36a;
-                            break;
-                        case 10: baseKey = 0x36a;
-                            break;
-                        case 4: baseKey = 0x36a;
-                            break;
-                        default: baseKey = 0x36a;
-                            break;
-                    }
-                    void *base = ((GameText *) (void *) (long) **(int **) &g_status)->getText(baseKey);
-                    mt = *(String *) base;
-                    {
-                        String tok;
-                        { if (tok.data) delete[] tok.data; tok.data = nullptr; tok.length = 0; }
-                        ((Agent *) agentArg)->getName();
-                    }
-                    acc.Set((mt).data);
+                if (agent->field_0x28 == -1) {
+                    agent->field_0x28 = random->nextInt(3) + 764;
                 }
-            }
-            busy->guardCounter -= 1;
-        } else {
-            {
-                Agent *agentArg = agent;
-                int bamtOffer = -1;
-                String mt;
-                { if (mt.data) delete[] mt.data; mt.data = nullptr; mt.length = 0; }
-                if (bamtOffer < 0 || agentArg == 0) {
-                    void *line = ((GameText *) (void *) (long) **(int **) &g_status)->getText(0x300);
-                    mt = *(String *) line;
-                    acc.Set((mt).data);
-                } else {
-                    int baseKey;
-                    switch (bamtOffer) {
-                        case 8: baseKey = 0x36a;
-                            break;
-                        case 9: baseKey = 0x36a;
-                            break;
-                        case 10: baseKey = 0x36a;
-                            break;
-                        case 4: baseKey = 0x36a;
-                            break;
-                        default: baseKey = 0x36a;
-                            break;
-                    }
-                    void *base = ((GameText *) (void *) (long) **(int **) &g_status)->getText(baseKey);
-                    mt = *(String *) base;
-                    {
-                        String tok;
-                        { if (tok.data) delete[] tok.data; tok.data = nullptr; tok.length = 0; }
-                        ((Agent *) agentArg)->getName();
-                    }
-                    acc.Set((mt).data);
+                text += String("\n") + *texts->getText(agent->field_0x28);
+                const float bonus = status->getStanding()->getMissionBonus(
+                    agent->getRace());
+                String bonusText;
+                if (bonus > 0.0f) {
+                    bonusText = String(" ") + status->replaceHash(
+                        *texts->getText(767),
+                        String(static_cast<int>(bonus * 100.0f)), String("#P")) +
+                        String(" ");
                 }
+                const int rawBonus = static_cast<int>(
+                    bonus * static_cast<float>(mission->getReward()));
+                const int remainder = rawBonus % 50;
+                int roundedBonus = rawBonus + remainder;
+                if (roundedBonus % 50 != 0) {
+                    roundedBonus = rawBonus - remainder;
+                }
+                mission->setBonus(roundedBonus);
+                text = status->replaceHash(
+                    text, layout->formatCredits(
+                        mission->getReward() + mission->getBonus()) + bonusText,
+                    String("#C"));
+                if (mission->getStatusValue() == -1) {
+                    text = status->replaceHash(
+                        *texts->getText(803), mission->getTargetStationName(),
+                        String("#S"));
+                }
+                break;
             }
+            case 1: {
+                if (agent->field_0x28 == -1) {
+                    agent->field_0x28 = 824;
+                }
+                text = *texts->getText(agent->field_0x28);
+                const String name = agent->getName();
+                const int station = status->getStation()->getIndex();
+                random->setSeed(station + agent->getRace() * name.length);
+                if (static_cast<int>(text.IndexOf(String("#S"))) >= 0) {
+                    text = status->replaceHash(
+                        text, this->getRandomPlanetName(), String("#S"));
+                }
+                text = status->replaceHash(text, name, String("#N"));
+                text = status->replaceHash(
+                    text, *texts->getText(random->nextInt(10) + 1428),
+                    String("#ORE"));
+                random->reset();
+                break;
+            }
+            case 2: {
+                if (agent->field_0x28 == -1) {
+                    agent->field_0x28 = random->nextInt(5) + 768;
+                }
+                if (agent->field_0x2c == -1) {
+                    agent->field_0x2c = random->nextInt(2) + 773;
+                }
+                text += *texts->getText(agent->field_0x28);
+                text += String("\n") + *texts->getText(agent->field_0x2c);
+                text = status->replaceHash(
+                    text, String(agent->getSellItemQuantity()), String("#Q"));
+                text = status->replaceHash(
+                    text, *texts->getText(agent->getSellItemIndex() + 1274),
+                    String("#P"));
+                text = status->replaceHash(
+                    text, layout->formatCredits(agent->getSellItemPrice()),
+                    String("#C"));
+                if (agent->getSellItemQuantity() >= 2) {
+                    text += String(" ") + *texts->getText(775);
+                    text = status->replaceHash(
+                        text, layout->formatCredits(
+                            agent->getSellItemPrice() /
+                            agent->getSellItemQuantity()), String("#C"));
+                }
+                break;
+            }
+            case 5: {
+                if (agent->getMission() == nullptr) {
+                    auto *galaxy = static_cast<Galaxy *>(Globals::galaxy);
+                    auto *generator = static_cast<Generator *>(Globals::generator);
+                    agent->setMission(generator->createMission(
+                        agent, galaxy->getSystems()));
+                }
+                Mission *mission = agent->getMission();
+                if (agent->field_0x28 == -1) {
+                    agent->field_0x28 = random->nextInt(2) + 777;
+                }
+                text += *texts->getText(agent->field_0x28);
+                text = status->replaceHash(
+                    text, String(mission->getProductionGoodAmount()),
+                    String("#Q"));
+                text = status->replaceHash(
+                    text, *texts->getText(mission->getProductionGoodIndex() + 1274),
+                    String("#P"));
+                text = status->replaceHash(
+                    text, layout->formatCredits(mission->getReward()),
+                    String("#C"));
+                break;
+            }
+            case 6: {
+                const int friends = agent->getWingmanFriendsCount();
+                auto *achievements = static_cast<Achievements *>(Globals::achievements);
+                const int firstText =
+                    (achievements->gotAllMedals() ? 782 : 779) + friends;
+                text += *texts->getText(firstText);
+                text = status->replaceHash(
+                    text, layout->formatCredits(agent->getCosts()),
+                    String("#C"));
+                if (friends > 0) {
+                    text = status->replaceHash(
+                        text, agent->getWingmanName(1), String("#W"));
+                }
+                break;
+            }
+            case 7: {
+                const int race = agent->getRace();
+                Standing *standing = status->getStanding();
+                int reputation = standing->getStanding((race | 1) == 3);
+                if (!standing->isEnemy(race)) {
+                    return *texts->getText(883);
+                }
+                if (reputation < 0) {
+                    reputation = -reputation;
+                }
+                const int rehabilitationCost = static_cast<int>(
+                    static_cast<float>(reputation) / 100.0f * 32000.0f);
+                int textId = 882;
+                if (race == 0) {
+                    textId = 881;
+                } else if (race == 2) {
+                    textId = 878;
+                } else if (race == 3) {
+                    textId = 880;
+                }
+                text = status->replaceHash(
+                    *texts->getText(textId),
+                    layout->formatCredits(rehabilitationCost), String("#C"));
+                break;
+            }
+            default:
+                break;
         }
+        Mission *mission = agent->getMission();
+        if (mission != nullptr && mission->getType() == 12) {
+            text = status->replaceHash(
+                *texts->getText(798),
+                layout->formatCredits(mission->getReward() + mission->getBonus()),
+                String("#C"));
+        }
+        return text;
+    }
+
+    if (agent->getEvent() >= 1 || agent->hasAcceptedOffer()) {
+        return *texts->getText(858);
+    }
+
+    ++status->field_d0;
+    const int offer = agent->getOffer();
+    if (offer == 8) {
+        Ship *ship = status->getShip();
+        agent->setSellItemPrice(
+            ship->getPrice() * agent->getModPricePercentage() / 100);
+        if (ship->hasModInstalled(agent->getSellModIndex())) {
+            --status->field_d0;
+            return *texts->getText(858);
+        }
+    }
+
+    if (agent->field_0x28 == -1) {
+        agent->field_0x28 = random->nextInt(2) + 874;
+    }
+    text = *texts->getText(agent->field_0x28);
+    text += String(" ") + *texts->getText(agent->getIndex() + 886);
+
+    if (offer == 8) {
+        text += String(" ") + *texts->getText(879);
+    } else if (offer == 9 || offer == 10) {
+        if (agent->field_0x2c == -1) {
+            agent->field_0x2c = random->nextInt(2) + 773;
+        }
+        text += String("\n") + *texts->getText(agent->field_0x2c);
+        text = status->replaceHash(
+            text, String(offer == 10 ? 1 : agent->getSellItemQuantity()),
+            String("#Q"));
+        text = status->replaceHash(
+            text, *texts->getText(agent->getSellItemIndex() +
+                                  (offer == 10 ? 913 : 1274)),
+            String("#P"));
+    } else if (offer == 4) {
+        text += String(" ") + *texts->getText(877);
+        auto *galaxy = static_cast<Galaxy *>(Globals::galaxy);
+        text = status->replaceHash(
+            text, galaxy->getSystem(agent->getSellSystemIndex())->getName(),
+            String("#S"));
     } else {
-        {
-            Agent *agentArg = agent;
-            int bamtOffer = -1;
-            String mt;
-            { if (mt.data) delete[] mt.data; mt.data = nullptr; mt.length = 0; }
-            if (bamtOffer < 0 || agentArg == 0) {
-                void *line = ((GameText *) (void *) (long) **(int **) &g_status)->getText(0x300);
-                mt = *(String *) line;
-                acc.Set((mt).data);
-            } else {
-                int baseKey;
-                switch (bamtOffer) {
-                    case 8: baseKey = 0x36a;
-                        break;
-                    case 9: baseKey = 0x36a;
-                        break;
-                    case 10: baseKey = 0x36a;
-                        break;
-                    case 4: baseKey = 0x36a;
-                        break;
-                    default: baseKey = 0x36a;
-                        break;
-                }
-                void *base = ((GameText *) (void *) (long) **(int **) &g_status)->getText(baseKey);
-                mt = *(String *) base;
-                {
-                    String tok;
-                    { if (tok.data) delete[] tok.data; tok.data = nullptr; tok.length = 0; }
-                    ((Agent *) agentArg)->getName();
-                }
-                acc.Set((mt).data);
-            }
-        }
+        text += String(" ") + *texts->getText(876);
+        Item *item = (*static_cast<Array<Item *> *>(Globals::items))[
+            agent->getSellBlueprintIndex()];
+        text = status->replaceHash(
+            text, *texts->getText(item->getIndex() + 1274), String("#N"));
     }
 
-    result.Set((acc).data);
-    return result;
+    int price = agent->getSellItemPrice();
+    if (offer == 8 || offer == 9 || offer == 10) {
+        float adjusted = static_cast<float>(price);
+        if (Globals::options[0x38] == 0) {
+            adjusted += adjusted;
+        }
+        price = static_cast<int>(adjusted);
+    }
+    text = status->replaceHash(
+        text, layout->formatCredits(price), String("#C"));
+    text += String("\n") + *texts->getText(random->nextInt(3) + 841);
+    return text;
 }
 
 // Android 2.0.16 .rodata 0x1cb17a / 0x1ca487 / 0x1cb192..0x1cb1e8.
