@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (Redmi ARM64 runtime checks). On the
+physical Android 16 `25053RT47C`, the installed October 28 test APK
+starts with the original OBB but renders almost black and logs 20
+GLSL syntax errors. Its previously known `PlayerEgo::setShip` null
+material-block crash reproduced during a later run. A separate
+October 30 test APK, manually approved after Play Protect rejected
+ADB installation, starts with a package-specific copy of the same
+OBB and logs one GLSL syntax error, but its captured game frame is
+fully black. The clone stayed alive through the observed run, a
+center tap gave no visible change, and Back closed it. The test
+clone, copied OBB and uploaded APK were removed afterward; the
+original installed package and OBB remain. Neither APK contains the
+November 2 ModStation work. No source changed in this runtime pass,
+so the last full ARM corpus remains **4,323/4,524**, **96.20%**
+source-shape, **85.95%** strict fuzzy and **2,741/1,096**
+linked-exact/byte-exact. Next: current-source APK shader/GL frame
+trace, then ship-material creation. See
+[Redmi runtime evidence](REDMI_ARM64_RUNTIME_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`ModStation::OnKeyPress` hangar and pirate
 dialogues). The ARM-backed keyboard handler now opens the ordinary
 hangar through button 0, applies its campaign gate, refreshes it
