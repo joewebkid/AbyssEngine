@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (ships 056–060 material records). Android
+ARM supplies **34256–34260** to five main ship meshes, with matching
+kind-6 materials and diffuse/normal texture pairs. Ten secondary
+material texture links and the original **34602** link for the 060
+lights mesh are restored. All ten ship textures exist in the original
+OBB; resolution of material 34602 remains unverified. Windows native,
+ARMv7, ARM64 static and strict shared builds plus resource-table checks
+pass. Focused `BuildResourceList` source-shape **77.1% → 77.2%** and
+strict fuzzy **27.0% → 20.5%**; it remains nonexact. Full ARM corpus:
+**4,323/4,524** originals, **4,762** pairs, **96.20% / 85.96%**,
+**2,741 linked-exact / 1,096 byte-exact**, zero skipped, 201 missing
+and no pair or exact-set losses. The Redmi user reports a resource
+download screen after manual APK installation; its package and OBB
+status await an ADB check. Next: inspect 34602, ships 061–063 and the
+Redmi runtime. See [ships 056–060 evidence](ARM_SHIP_056_060_MATERIAL_RECORDS_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (ships 051–055 material records). Android
 ARM supplies **34251/34252/34254/34255** to the four main meshes and
 **34354** to the emissive mesh of 054. Five base material records and
