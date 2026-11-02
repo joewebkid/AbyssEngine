@@ -663,7 +663,7 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
                                  32549, false));
     ADD_RES(resources[235], 
         17293, 4, new AbyssEngine::ResourceMesh("data/assets/supernova/3d/meshes/ships/sn_ship_051_dropship_terran.aem",
-                                                0, false));
+                                                34251, false));
     ADD_RES(resources[236], 18051, 4, new AbyssEngine::ResourceMesh(
                                  "data/assets/supernova/3d/meshes/ships/sn_ship_051_dropship_terran_engine_add.aem",
                                  32551, false));
@@ -672,7 +672,7 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
                                  false));
     ADD_RES(resources[238], 
         17299, 4,
-        new AbyssEngine::ResourceMesh("data/assets/supernova/3d/meshes/ships/sn_ship_052_retro.aem", 0, false));
+        new AbyssEngine::ResourceMesh("data/assets/supernova/3d/meshes/ships/sn_ship_052_retro.aem", 34252, false));
     ADD_RES(resources[239], 
         18052, 4, new AbyssEngine::ResourceMesh(
             "data/assets/supernova/3d/meshes/ships/sn_ship_052_retro_engine_add.aem", 32552, false));
@@ -681,15 +681,15 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
             "data/assets/supernova/3d/meshes/ships/sn_ship_052_retro_lights_add.aem", 32552, false));
     ADD_RES(resources[241], 
         17311, 4,
-        new AbyssEngine::ResourceMesh("data/assets/supernova/3d/meshes/ships/sn_ship_054_vossk.aem", 0, false));
+        new AbyssEngine::ResourceMesh("data/assets/supernova/3d/meshes/ships/sn_ship_054_vossk.aem", 34254, false));
     ADD_RES(resources[242], 
         18054, 4, new AbyssEngine::ResourceMesh(
             "data/assets/supernova/3d/meshes/ships/sn_ship_054_vossk_engine_add.aem", 32554, false));
     ADD_RES(resources[243], 
         17316, 4, new AbyssEngine::ResourceMesh("data/assets/supernova/3d/meshes/ships/sn_ship_054_vossk_emissive.aem",
-                                                0, false));
+                                                34354, false));
     ADD_RES(resources[244], 
-        17317, 4, new AbyssEngine::ResourceMesh("data/assets/supernova/3d/meshes/ships/sn_ship_055_modified.aem", 0,
+        17317, 4, new AbyssEngine::ResourceMesh("data/assets/supernova/3d/meshes/ships/sn_ship_055_modified.aem", 34255,
                                                 false));
     ADD_RES(resources[245], 18818, 4, new AbyssEngine::ResourceMesh(
                                  "data/assets/supernova/3d/meshes/ships/sn_ship_055_modified_lights_add.aem", 32555,
@@ -1731,11 +1731,11 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[679], 34248, 6, new AbyssEngine::ResourceMaterial(34048, 34148, static_cast<BlendMode>(28)));
     ADD_RES(resources[680], 34249, 6, new AbyssEngine::ResourceMaterial(34049, 34149, static_cast<BlendMode>(28)));
     ADD_RES(resources[681], 34250, 6, new AbyssEngine::ResourceMaterial(34050, 34150, static_cast<BlendMode>(28)));
-    ADD_RES(resources[682], 65535, 6, new AbyssEngine::ResourceMaterial(65535, 0, static_cast<BlendMode>(28)));
-    ADD_RES(resources[683], 65535, 6, new AbyssEngine::ResourceMaterial(65535, 0, static_cast<BlendMode>(28)));
-    ADD_RES(resources[684], 34253, 6, new AbyssEngine::ResourceMaterial(65535, 0, static_cast<BlendMode>(28)));
-    ADD_RES(resources[685], 65535, 6, new AbyssEngine::ResourceMaterial(65535, 0, static_cast<BlendMode>(28)));
-    ADD_RES(resources[686], 65535, 6, new AbyssEngine::ResourceMaterial(65535, 0, static_cast<BlendMode>(28)));
+    ADD_RES(resources[682], 34251, 6, new AbyssEngine::ResourceMaterial(34051, 34151, static_cast<BlendMode>(28)));
+    ADD_RES(resources[683], 34252, 6, new AbyssEngine::ResourceMaterial(34052, 34152, static_cast<BlendMode>(28)));
+    ADD_RES(resources[684], 34253, 6, new AbyssEngine::ResourceMaterial(34053, 34153, static_cast<BlendMode>(28)));
+    ADD_RES(resources[685], 34254, 6, new AbyssEngine::ResourceMaterial(34054, 34154, static_cast<BlendMode>(28)));
+    ADD_RES(resources[686], 34255, 6, new AbyssEngine::ResourceMaterial(34055, 34155, static_cast<BlendMode>(28)));
     ADD_RES(resources[687], 65535, 6, new AbyssEngine::ResourceMaterial(65535, 0, static_cast<BlendMode>(28)));
     ADD_RES(resources[688], 65535, 6, new AbyssEngine::ResourceMaterial(65535, 0, static_cast<BlendMode>(28)));
     ADD_RES(resources[689], 65535, 6, new AbyssEngine::ResourceMaterial(65535, 0, static_cast<BlendMode>(28)));
@@ -1860,16 +1860,16 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
     ADD_RES(resources[808], 32549, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_2));
     ADD_RES(resources[809], 34350, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_dummy));
     ADD_RES(resources[810], 32550, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_2));
-    ADD_RES(resources[811], 34351, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_dummy));
-    ADD_RES(resources[812], 32551, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_2));
-    ADD_RES(resources[813], 34352, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_dummy));
-    ADD_RES(resources[814], 32552, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_2));
-    ADD_RES(resources[815], 34353, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_dummy));
-    ADD_RES(resources[816], 32553, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_2));
-    ADD_RES(resources[817], 34354, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_dummy));
-    ADD_RES(resources[818], 32554, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_2));
-    ADD_RES(resources[819], 34355, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_dummy));
-    ADD_RES(resources[820], 32555, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_2));
+    ADD_RES(resources[811], 34351, 6, new AbyssEngine::ResourceMaterial(34051, BlendMode_dummy));
+    ADD_RES(resources[812], 32551, 6, new AbyssEngine::ResourceMaterial(34051, BlendMode_2));
+    ADD_RES(resources[813], 34352, 6, new AbyssEngine::ResourceMaterial(34052, BlendMode_dummy));
+    ADD_RES(resources[814], 32552, 6, new AbyssEngine::ResourceMaterial(34052, BlendMode_2));
+    ADD_RES(resources[815], 34353, 6, new AbyssEngine::ResourceMaterial(34053, BlendMode_dummy));
+    ADD_RES(resources[816], 32553, 6, new AbyssEngine::ResourceMaterial(34053, BlendMode_2));
+    ADD_RES(resources[817], 34354, 6, new AbyssEngine::ResourceMaterial(34054, BlendMode_dummy));
+    ADD_RES(resources[818], 32554, 6, new AbyssEngine::ResourceMaterial(34054, BlendMode_2));
+    ADD_RES(resources[819], 34355, 6, new AbyssEngine::ResourceMaterial(34055, BlendMode_dummy));
+    ADD_RES(resources[820], 32555, 6, new AbyssEngine::ResourceMaterial(34055, BlendMode_2));
     ADD_RES(resources[821], 34356, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_dummy));
     ADD_RES(resources[822], 32556, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_2));
     ADD_RES(resources[823], 34357, 6, new AbyssEngine::ResourceMaterial(65535, BlendMode_dummy));

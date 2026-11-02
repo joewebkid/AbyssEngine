@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (ships 051–055 material records). Android
+ARM supplies **34251/34252/34254/34255** to the four main meshes and
+**34354** to the emissive mesh of 054. Five base material records and
+ten secondary material texture links are restored. The original also
+registers 053 materials, although it has no 053 mesh or texture
+resource; no nonexistent assets were added. Windows native, ARMv7,
+ARM64 static and strict shared builds plus resource-table checks pass.
+Focused `BuildResourceList` stays **77.1%** source-shape while strict
+fuzzy rises **19.6% → 27.0%**; it remains nonexact. Full ARM corpus:
+**4,323/4,524** originals, **4,762** pairs, **96.20% / 85.96%**,
+**2,741 linked-exact / 1,096 byte-exact**, zero skipped, 201 missing
+and no pair or exact-set losses. The Redmi test APK predates this
+package and runtime behavior remains unverified. Next: ships 056–060
+and a fresh APK test after device installation is accepted. See
+[ships 051–055 evidence](ARM_SHIP_051_055_MATERIAL_RECORDS_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (ships 046–049 mesh and material records).
 Android ARM supplies **34246–34249** to the four main meshes and
 registers those four materials with texture pairs **34046–34049** /
