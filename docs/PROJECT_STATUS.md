@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (ships 008–009 mesh resource links). Android
+ARM value flow supplies **34208** to ship 008's main and both LOD meshes,
+and **34109** to ship 009's three meshes. Six zero links are restored.
+The 009 value resolves to a kind-2 texture entry, despite a separate
+kind-6 material 34209; live material lookup remains unverified. Focused
+`BuildResourceList` source-shape stays **77.0%**, strict fuzzy falls
+**23.9% → 21.6%**, and it remains nonexact. Windows native, ARMv7,
+ARM64 static and strict shared builds plus resource-table checks pass.
+Full ARM corpus: **4,323/4,524** originals, **4,762** pairs,
+**96.20%** source-shape, **85.96%** strict fuzzy, **2,741 linked-exact /
+1,096 byte-exact**, zero skipped, 201 missing and no pair or exact-set
+losses. A signed APK and matching original OBB are on the Redmi, but
+only the original GOF2 package is currently installed; current build
+startup, rendering and the old `PlayerEgo::setShip` crash remain
+unverified. See [ships 008–009 material evidence](ARM_SHIP_008_009_MATERIAL_LINKS_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (ships 004–007 material links). Original
 Android ARM supplies material IDs **34204–34207** to the main and two
 LOD meshes of each ship; twelve zero links are restored. Ships 008–009
