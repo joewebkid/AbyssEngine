@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (pirate glow material 34602). Original
+Android ARM registers **34602 → texture 34502, blend 2** and supplies
+34602 to 15 pirate ship/station meshes in addition to the previously
+restored ship 060 lights mesh. The missing kind-6 resource record and
+15 incorrect mesh links are restored. The texture and all 15 pirate
+mesh files exist in the original OBB. Windows native, ARMv7, ARM64
+static and strict shared builds plus resource-table checks pass.
+Focused `BuildResourceList` remains **77.2%** source-shape and **18.7%**
+strict fuzzy; it is nonexact. Full ARM corpus: **4,323/4,524**
+originals, **4,762** pairs, **96.20% / 85.96%**,
+**2,741 linked-exact / 1,096 byte-exact**, zero skipped, 201 missing
+and no pair or exact-set losses. Live rendering and the Redmi resource
+download screen remain unverified until the device reconnects. Next:
+trace adjacent material 34605 and other remaining links. See
+[pirate glow evidence](ARM_PIRATE_GLOW_34602_MATERIAL_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (ships 061–063 material records). Android
 ARM supplies **34261–34263** to three main meshes and **34363** to the
 063 lights emissive mesh. Two main material records and four secondary

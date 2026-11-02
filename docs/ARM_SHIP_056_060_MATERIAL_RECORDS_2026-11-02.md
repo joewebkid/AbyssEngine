@@ -56,3 +56,7 @@ Next: inspect the unresolved 34602 light material and the remaining
 ships 061–063 placeholders. The Redmi resource-download screen needs
 its installed package, OBB permissions and process log checked over
 ADB before attributing it to the new build.
+
+Follow-up on 2026-11-02: [pirate glow material 34602](ARM_PIRATE_GLOW_34602_MATERIAL_2026-11-02.md)
+recovers its kind-6 resource at slot 630 with texture 34502, resolving
+the missing table record noted above. Live rendering remains unverified.

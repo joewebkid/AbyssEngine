@@ -52,3 +52,7 @@ The Redmi package and OBB state also remain unverified because the
 device is not currently visible over ADB. Next: resolve 34602 and
 inspect the remaining resource-table placeholders or the Redmi runtime
 when that device reconnects.
+
+Follow-up on 2026-11-02: [pirate glow material 34602](ARM_PIRATE_GLOW_34602_MATERIAL_2026-11-02.md)
+recovers the previously unresolved resource record and its confirmed
+pirate mesh links. Live rendering remains unverified.
