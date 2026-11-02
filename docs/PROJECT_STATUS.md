@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` keyboard ship-mod offer 8)
+
+The ARM-backed keyboard path now handles offer **8** through the
+factor-adjusted price gate, text **871** confirmation, credit charge,
+and `Ship::addMod()` on the current ship. Unlike other purchases, the
+original leaves the selected agent unaccepted, allowing another mod
+purchase. Focused `onKeyPress` source-shape rose **49.1% → 49.8%**;
+strict fuzzy fell **18.5% → 13.7%** as the large incomplete function's
+alignment changed. Windows and ARM64 static builds pass; ARMv7
+compiles 209/209 units. Full corpus coverage remains **4,323/4,524**
+originals over 4,762 pairs at **96.14% source-shape / 85.93% strict
+fuzzy**, with **2,741 linked-exact / 1,096 byte-exact**, zero skipped,
+201 missing, and no exact-set losses. Runtime repeat-purchase and mod
+application remain unverified while device testing is deferred. Next
+offline priority: mission-text recovery or other incomplete
+`SpaceLounge` branches. See
+[ship-mod evidence](SPACELOUNGE_KEY_OFFER8_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` keyboard ship offer 10)
 
 The ARM-backed keyboard path now handles offer **10** through the
