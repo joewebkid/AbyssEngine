@@ -23,6 +23,7 @@
 #include "engine/render/ImageFactory.h"
 #include "game/ui/Layout.h"
 #include "game/mission/Mission.h"
+#include "game/mission/Achievements.h"
 #include "game/mission/Item.h"
 #include "game/mission/Status.h"
 #include "game/ui/TouchButton.h"
@@ -483,6 +484,36 @@ int SpaceLounge::OnTouchEnd(int x, int y) {
                                 this->choiceWindow->set(prompt, true);
                                 this->chatActive = 1;
                             }
+                        }
+                        if (offer == 6) {
+                            if (Globals::status->getWingmen() != nullptr) {
+                                this->choiceWindow->set(*Globals::gameText->getText(785), false);
+                                this->choiceVisible = 1;
+                                return 0;
+                            }
+                            const int credits = Globals::status->getCredits();
+                            if (credits < agent->getCosts()) {
+                                const int shortfall = agent->getCosts() -
+                                    Globals::status->getCredits();
+                                String prompt = Globals::status->replaceHash(
+                                    String(*Globals::gameText->getText(203), false),
+                                    Globals::layout->formatCredits(shortfall),
+                                    String("#C", false));
+                                this->choiceWindow->set(prompt, false);
+                                this->choiceVisible = 1;
+                                return 0;
+                            }
+                            auto *achievements = static_cast<Achievements *>(Globals::achievements);
+                            const int textId = achievements->gotAllMedals() ? 867 : 866;
+                            String prompt(*Globals::gameText->getText(textId), false);
+                            prompt = Globals::status->replaceHash(
+                                prompt, String(agent->getWingmanFriendsCount() + 1),
+                                String("#Q", false));
+                            prompt = Globals::status->replaceHash(
+                                prompt, Globals::layout->formatCredits(agent->getCosts()),
+                                String("#C", false));
+                            this->choiceWindow->set(prompt, true);
+                            this->chatActive = 1;
                         }
                         if (offer == 7) {
                             const int cost = agent->getCosts();

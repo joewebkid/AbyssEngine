@@ -1,5 +1,25 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` wingman offer 6)
+
+The ARM-backed mode-2 acceptance handler now checks whether
+`Status::getWingmen()` returns a non-null pointer for offer **6**.
+That gate opens text **785** without buttons. Insufficient credits
+open text **203** with the shortfall. With no current wingman and
+enough credits, the handler chooses text **866/867** by medal status,
+substitutes the agent's friend count plus one for `#Q` and cost for
+`#C`, then opens confirmation. Focused `OnTouchEnd` source-shape rose
+**63.4% → 70.8%**; strict fuzzy moved **27.0% → 26.6%**. Windows
+and ARM64 static builds pass; ARMv7 compiles 209/209 units. Full
+corpus coverage remains **4,323/4,524** originals over 4,762 pairs;
+mean source-shape rose **96.12% → 96.13%**, strict fuzzy remains
+**85.93%**, and **2,741 linked-exact / 1,096 byte-exact** matches
+have no exact-set losses. There are zero skipped and 201 missing.
+Runtime wingman hiring remains unverified while device testing is
+deferred. Next offline priority: the mode-2 mission acceptance paths
+for offers 0 and 5. See
+[wingman evidence](SPACELOUNGE_WINGMAN_OFFER_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` offers 8/10 confirmation)
 
 The ARM-backed mode-2 acceptance handler now formats affordable
