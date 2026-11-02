@@ -3741,12 +3741,12 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
         18700, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_000_midorian_lights_add.aem",
                                                 34600, false));
     ADD_RES(resources[1965], 
-        17001, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_001_terran.aem", 0, false));
+        17001, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_001_terran.aem", 34201, false));
     ADD_RES(resources[1966], 
-        17103, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_001_terran_lod_1.aem", 0,
+        17103, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_001_terran_lod_1.aem", 34201,
                                                 false));
     ADD_RES(resources[1967], 
-        17104, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_001_terran_lod_2.aem", 0,
+        17104, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_001_terran_lod_2.aem", 34201,
                                                 false));
     ADD_RES(resources[1968], 
         18001, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_001_terran_engine_add.aem", 3,
@@ -3755,13 +3755,13 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
         18701, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_001_terran_lights_add.aem", 3,
                                                 false));
     ADD_RES(resources[1970], 
-        17002, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_002_pirates.aem", 0, false));
+        17002, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_002_pirates.aem", 34202, false));
     ADD_RES(resources[1971], 
         17106, 4,
-        new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_002_pirates_lod_1.aem", 0, false));
+        new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_002_pirates_lod_1.aem", 34202, false));
     ADD_RES(resources[1972], 
         17107, 4,
-        new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_002_pirates_lod_2.aem", 0, false));
+        new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_002_pirates_lod_2.aem", 34202, false));
     ADD_RES(resources[1973], 
         18002, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_002_pirates_engine_add.aem",
                                                 34811, false));
@@ -3769,12 +3769,12 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
         18702, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_002_pirates_lights_add.aem",
                                                 34811, false));
     ADD_RES(resources[1975], 
-        17003, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_003_midorian.aem", 0, false));
+        17003, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_003_midorian.aem", 34203, false));
     ADD_RES(resources[1976], 
-        17109, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_003_midorian_lod_1.aem", 0,
+        17109, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_003_midorian_lod_1.aem", 34203,
                                                 false));
     ADD_RES(resources[1977], 
-        17110, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_003_midorian_lod_2.aem", 0,
+        17110, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_003_midorian_lod_2.aem", 34203,
                                                 false));
     ADD_RES(resources[1978], 
         18003, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_003_midorian_engine_add.aem",

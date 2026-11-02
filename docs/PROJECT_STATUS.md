@@ -1,5 +1,18 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (ships 001–003 material links). The original
+Android ARM passes materials **34201–34203** to each ship's main and
+two LOD meshes; nine zero placeholders are restored. `BuildResourceList`
+remains **77.0%** source-shape / **23.9%** strict fuzzy and nonexact.
+Windows native, ARMv7, ARM64 static and strict shared builds pass;
+resource-table checks pass. Full ARM corpus: **4,323/4,524** originals,
+**4,762** pairs, **96.20%** source-shape, **85.96%** strict fuzzy,
+**2,741 linked-exact / 1,096 byte-exact**, zero skipped, 201 missing,
+and no pair or exact-set losses. The latest signed test APK is on the
+Redmi with a matching checksum but its separate package is not yet
+installed, so rendered materials and the old player-ship crash remain
+unverified. See [ships 001–003 material evidence](ARM_SHIP_001_003_MATERIAL_LINKS_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (ship 000 material links). Original Android
 ARM passes material resource **34200** to ship 000's main and two LOD
 meshes; the three zero placeholders are restored. This closes a
