@@ -27,6 +27,7 @@
 #include "game/mission/Item.h"
 #include "game/mission/Status.h"
 #include "game/ship/Ship.h"
+#include "game/world/Standing.h"
 #include "game/ui/TouchButton.h"
 #include "engine/audio/FModSound.h"
 
@@ -1853,8 +1854,54 @@ void SpaceLounge::startChat() {
         return;
     }
 
+    if (agent->isKnown() && offer != 7 && agent->hasAcceptedOffer()) {
+        int textId = 858;
+        if (offer == 5) {
+            textId = 857;
+        } else if (offer == 6 ||
+                   (agent->getMission() != nullptr &&
+                    agent->getMission()->getType() == 12)) {
+            textId = 859;
+        }
+        this->scrollWindow->setText(agent->getName(), *texts->getText(textId));
+        this->mode = 3;
+        this->chatScroll = 0;
+        const int sound = this->getSoundId(agent);
+        if (sound >= 0)
+            Globals::sound->play(sound, nullptr, nullptr, 0.0f);
+        return;
+    }
+
+    Mission *mission = agent->getMission();
+    const bool knownMission = agent->isKnown() && offer == 0 &&
+        mission != nullptr && mission->getType() != 8 &&
+        mission->getType() != 12;
+    if (knownMission) {
+        const float bonus = status->getStanding()->getMissionBonus(
+            agent->getRace());
+        const int raw = static_cast<int>(
+            bonus * static_cast<float>(mission->getReward()));
+        int rounded = raw + raw % 50;
+        if (rounded % 50 != 0)
+            rounded = raw - raw % 50;
+        mission->setBonus(rounded);
+        if (bonus > 0.0f) {
+            this->title = String(" ") + status->replaceHash(
+                *texts->getText(767), String(static_cast<int>(bonus * 100.0f)),
+                String("#P")) + String(" ");
+        } else {
+            this->title = String("");
+        }
+    }
     String message = static_cast<Globals *>(Globals::globals)->
         getAgentMissionText(agent);
+    if (knownMission) {
+        message = status->replaceHash(
+            message,
+            layout->formatCredits(mission->getReward() + mission->getBonus()) +
+                this->title,
+            String("#C"));
+    }
     this->scrollWindow->setText(agent->getName(), message);
     agent->setStationName(status->getStation()->getName());
     agent->setSystemName(status->getSystem()->getName());

@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge::startChat` known generic
+agents). The ARM-backed accepted-offer path now chooses the original
+text for offers 5, 6 and mission type 12, enters mode 3, and gates
+sound. Known, unaccepted offer-0 missions now compute and store the
+standing-based bonus before text display. Focused `startChat`
+source-shape rose **34.9% → 42.2%** and strict fuzzy **7.9% →
+10.8%**. Windows and ARM64 static builds pass; ARMv7 compiles 209/209
+units. The full corpus compares **4,323/4,524** originals over
+**4,762** pairs at **96.16%** mean source-shape / **85.94%** strict
+fuzzy, with **2,741 linked-exact / 1,096 byte-exact**, zero skipped,
+201 missing and no exact-set losses. Generic-agent first-encounter
+branches remain incomplete, and live dialogue is unverified while
+device work is deferred. See
+[conversation entry evidence](SPACELOUNGE_STARTCHAT_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge::startChat` conversation
 entry). The Android-backed iPad panel movement and non-generic agent
 offer branches now replace a broken text-pointer stub. Focused

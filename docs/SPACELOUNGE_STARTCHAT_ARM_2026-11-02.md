@@ -44,3 +44,36 @@ byte-exact** sets, as well as the normalized comparison-pair set, are
 identical to the previous full report. There are zero skipped and 201
 missing originals. Full report:
 `D:/gof2-arm64-crypto/space-startchat-recovery-20261102-full.json`.
+
+## Known generic agents: accepted offers and mission bonus
+
+The next ARM-backed slice restores the `isKnown() && offer != 7`
+branch at `0x16ad70`. Accepted offers show text `857` for offer 5,
+`859` for offer 6 or mission type 12, and `858` otherwise, then
+enter mode 3 with the original sound gate
+(`0x16aeb2`–`0x16ce2a`). The previous fallback instead generated
+a new mission description and entered mode 1.
+
+For a known, unaccepted offer-0 mission whose type is neither 8 nor
+12, the source now computes the standing bonus, rounds it by the
+original remainder formula, stores it on the mission, and formats
+the positive bonus in the lounge title
+(`0x16c930`–`0x16ca3c`, `0x16d61e`–`0x16d740`). It then uses the
+existing mission-text function and the original final station,
+system, keypress, and sound path. Text output and reward changes
+remain unverified in the running game.
+
+Focused `startChat()` source-shape rises **34.9% → 42.2%**
+from the preceding slice; strict fuzzy rises **7.9% → 10.8%**.
+The new ARM function has 1,629 instructions versus 4,856 original.
+The focused unit retains 22 linked-exact and 7 byte-exact matches
+over 42 comparisons, with 209/209 ARMv7 translation units compiled.
+Windows and ARM64 static builds pass. Focused report:
+`D:/gof2-arm64-crypto/space-startchat-known-20261102-focused.json`.
+
+The subsequent full corpus remains **4,323/4,524** originals and
+**4,762** comparison pairs, with **96.16%** mean source-shape,
+**85.94%** strict fuzzy, **2,741 linked-exact**, **1,096 byte-exact**,
+zero skipped and 201 missing. Normalized pair and exact-symbol sets
+are unchanged from the preceding full report. Full report:
+`D:/gof2-arm64-crypto/space-startchat-known-20261102-full.json`.
