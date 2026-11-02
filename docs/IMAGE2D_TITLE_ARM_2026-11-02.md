@@ -95,3 +95,21 @@ installed after Redmi disconnected from ADB. All temporary probes were
 removed from the source. Next: inspect that matrix and color state on
 device, then texture content and shader uniforms if the projected
 geometry is valid.
+
+## Offline checks before the next device run
+
+The original OBB contains `gof2_logos_iphone4.aei` as a 1024×1024
+uncompressed RGBA image (AEI type 1). Region 1 is `(x=1, y=297,
+width=378, height=431)`, matching the dimensions logged for the
+rendered title image. The atlas pixel at that region's center
+`(190,512)` is RGBA `(54,54,54,221)`, so the source image itself is
+not all black or transparent.
+
+Using the observed 1280×2772 logical display and the logged title
+translation `(451,1171)`, the current `Initialize(false)` projection,
+`SetOrthoMatrix` and `SetWorldViewMatrix` formulas place the quad's
+center at clip coordinates `(0,0)` and its corners within roughly
+`x=±0.156, y=±0.295`. This is an offline calculation, not a readback
+of the running shader matrix. It makes a completely offscreen quad
+less likely and prioritizes checking the live matrix, RGBA color,
+actual OpenGL texture object and texture sampling state.
