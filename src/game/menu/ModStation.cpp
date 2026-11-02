@@ -276,6 +276,9 @@ void ModStation::checkPendingProducts() {
 
 static bool g_stationMissionsHelpShown = false;
 static bool g_stationStatusHelpShown = false;
+static bool g_stationLoungeHelpShown = false;
+static bool g_stationMapHelpShown = false;
+static bool g_stationEarlyMapHelpShown = false;
 
 void ModStation::OnKeyPress(long long, long long key) {
     if (this->stationActive == 0)
@@ -341,7 +344,74 @@ void ModStation::OnKeyPress(long long, long long key) {
         return;
 
     int which = this->selectedButton;
-    if (which == 3) {
+    if (which == 1) {
+        const int campaign = Globals::status->getCurrentCampaignMission();
+        if (campaign < 13 || campaign == 49) {
+            static_cast<ChoiceWindow *>(this->choiceWindow)->set(
+                *Globals::gameText->getText(528));
+            this->m_nStarMapWindowOpen.bytes[3] = 1;
+            return;
+        }
+        Station *station = Globals::status->getStation();
+        if (station->getIndex() == 88 && station->stationHasPirateBase()) {
+            return;
+        }
+        if (this->spaceLounge != nullptr) {
+            static_cast<SpaceLounge *>(this->spaceLounge)->init();
+        } else {
+            this->spaceLounge = new SpaceLounge();
+        }
+        Globals::sound->setParamValue(0, Globals::sound->currentMusicEvent, 2.0f);
+        Globals::sound->stop(122);
+        Globals::sound->play(108, nullptr, nullptr, 0.0f);
+        this->subWindowFlags.bytes[1] = 1;
+        if (!g_stationLoungeHelpShown) {
+            g_stationLoungeHelpShown = true;
+            Globals::layout->initHelpWindow(
+                String(*Globals::gameText->getText(627), false));
+        }
+    } else if (which == 2) {
+        const int campaign = Globals::status->getCurrentCampaignMission();
+        if (campaign < 9 || campaign == 48 || campaign == 49) {
+            static_cast<ChoiceWindow *>(this->choiceWindow)->set(
+                *Globals::gameText->getText(528));
+            this->m_nStarMapWindowOpen.bytes[3] = 1;
+            return;
+        }
+        Ship *ship = Globals::status->getShip();
+        if (ship->getCurrentLoad() > ship->getMaxLoad()) {
+            static_cast<ChoiceWindow *>(this->choiceWindow)->set(
+                *Globals::gameText->getText(204));
+            this->m_nStarMapWindowOpen.bytes[3] = 1;
+            return;
+        }
+        if (campaign == 77 && ship->getIndex() != 37) {
+            static_cast<ChoiceWindow *>(this->choiceWindow)->set(
+                *Globals::gameText->getText(326));
+            this->m_nStarMapWindowOpen.bytes[3] = 1;
+            return;
+        }
+        if (this->starMap != nullptr) {
+            this->starMap->init(false, nullptr, false, -1);
+        } else {
+            this->starMap = new StarMap(false, nullptr, false, -1);
+        }
+        if (ship->hasEquipment(85, 1) || ship->hasJumpDriveIntegrated()) {
+            this->starMap->setJumpMapMode(false, true);
+        }
+        this->subWindowFlags.bytes[3] = 1;
+        Globals::sound->stop(122);
+        Globals::sound->setParamValue(0, Globals::sound->currentMusicEvent, 0.6f);
+        if (campaign >= 16 && !g_stationMapHelpShown) {
+            g_stationMapHelpShown = true;
+            Globals::layout->initHelpWindow(
+                String(*Globals::gameText->getText(628), false));
+        } else if (campaign <= 15 && !g_stationEarlyMapHelpShown) {
+            g_stationEarlyMapHelpShown = true;
+            Globals::layout->initHelpWindow(
+                String(*Globals::gameText->getText(631), false));
+        }
+    } else if (which == 3) {
         if (Globals::status->getCurrentCampaignMission() <= 8) {
             static_cast<ChoiceWindow *>(this->choiceWindow)->set(
                 *Globals::gameText->getText(528));

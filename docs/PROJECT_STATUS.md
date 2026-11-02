@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`ModStation::OnKeyPress` lounge and map
+routes). The ARM-backed station keyboard handler now applies the
+campaign gates for buttons 1 and 2, opens the ordinary SpaceLounge,
+checks map cargo and step-77 ship restrictions, creates or resets
+the StarMap, sets the jump-map mode when available, and restores
+their sound and one-time help transitions. The station-88 pirate
+dialogue remains incomplete because its image-parts global is not
+yet identified. Focused `OnKeyPress` source-shape rises **35.4% →
+60.7%** and strict fuzzy **18.0% → 34.5%**. Windows and ARM64
+static builds pass; ARMv7 compiles 209/209 units. The full corpus
+compares **4,323/4,524** originals over **4,762** pairs at
+**96.19%** mean source-shape / **85.95%** strict fuzzy, with
+**2,741 linked-exact / 1,096 byte-exact**, zero skipped, 201
+missing and no exact-set losses. Live behavior remains unverified
+while device work is deferred. Next offline priority: button-0
+hangar route and the pirate dialogue. See
+[lounge/map keyboard evidence](MODSTATION_KEY_LOUNGE_MAP_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`ModStation::OnKeyPress` missions and
 status routes). The ARM-backed station keyboard handler now checks
 for level-up through the real Status method, sends medal confirmation
