@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge::startChat` first generic
+item offer). The ARM-backed first-encounter branch now draws greeting
+and introduction text, selects and stores item-offer text, applies
+the campaign-24 station/item override, and shows price and quantity
+before the shared keypress path. Focused `startChat` source-shape
+rose **42.2% → 54.0%** and strict fuzzy **10.8% → 12.3%**.
+Windows and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+The full corpus compares **4,323/4,524** originals over **4,762**
+pairs; mean source-shape rises **96.16% → 96.17%**, strict fuzzy
+remains **85.94%**, and the **2,741 linked-exact / 1,096 byte-exact**
+sets have no losses. There are zero skipped and 201 missing originals.
+Running-game text and mission effects remain unverified while device
+work is deferred. Next offline priority: the first generic
+mission-offer branch. See
+[conversation entry evidence](SPACELOUNGE_STARTCHAT_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge::startChat` known generic
 agents). The ARM-backed accepted-offer path now chooses the original
 text for offers 5, 6 and mission type 12, enters mode 3, and gates

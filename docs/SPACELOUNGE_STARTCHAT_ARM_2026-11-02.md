@@ -77,3 +77,37 @@ The subsequent full corpus remains **4,323/4,524** originals and
 zero skipped and 201 missing. Normalized pair and exact-symbol sets
 are unchanged from the preceding full report. Full report:
 `D:/gof2-arm64-crypto/space-startchat-known-20261102-full.json`.
+
+## First encounter: generic item offer
+
+For an unknown generic agent with offer 2, the original increments
+`Status::field_d0`, draws greeting text `750`–`755`, draws an
+introduction `756`–`757`, and replaces its `#N` with the agent's
+name (`0x16ad76`–`0x16b006`). It draws offer text `768`–`772`
+and reply text `773`–`774` even when the agent already has saved
+text IDs. Campaign mission 24 at station 10 with item 68 overrides
+those IDs with `193` and `194` (`0x16b4fc`–`0x16b53a`).
+
+The recovered branch expands `#Q`, `#P`, and `#C`, adds the unit
+price sentence for quantities of at least two, stores the offer
+text as the agent's mission string, and composes the first-encounter
+message with random reply `841`–`843` before the shared station,
+system, keypress, and sound tail (`0x16b54e`–`0x16c8d0`).
+This replaces a fallback that omitted the greeting and campaign
+override. The text and mission effects have not been checked in a
+running game.
+
+Focused `startChat()` source-shape rises **42.2% → 54.0%** and
+strict fuzzy **10.8% → 12.3%**. The ARM function has 2,157
+instructions versus 4,856 original. The focused unit keeps 22
+linked-exact and 7 byte-exact matches over 42 comparisons;
+209/209 ARMv7 translation units compile, and Windows and ARM64
+static builds pass. Focused report:
+`D:/gof2-arm64-crypto/space-startchat-trade-20261102-focused.json`.
+
+The full ARM corpus still compares **4,323/4,524** originals over
+**4,762** pairs. Mean source-shape rises **96.16% → 96.17%**;
+strict fuzzy remains **85.94%**. The normalized pair, **2,741
+linked-exact**, and **1,096 byte-exact** sets are unchanged, with zero
+skipped and 201 missing originals. Full report:
+`D:/gof2-arm64-crypto/space-startchat-trade-20261102-full.json`.

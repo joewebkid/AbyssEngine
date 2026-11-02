@@ -1872,35 +1872,75 @@ void SpaceLounge::startChat() {
         return;
     }
 
-    Mission *mission = agent->getMission();
-    const bool knownMission = agent->isKnown() && offer == 0 &&
-        mission != nullptr && mission->getType() != 8 &&
-        mission->getType() != 12;
-    if (knownMission) {
-        const float bonus = status->getStanding()->getMissionBonus(
-            agent->getRace());
-        const int raw = static_cast<int>(
-            bonus * static_cast<float>(mission->getReward()));
-        int rounded = raw + raw % 50;
-        if (rounded % 50 != 0)
-            rounded = raw - raw % 50;
-        mission->setBonus(rounded);
-        if (bonus > 0.0f) {
-            this->title = String(" ") + status->replaceHash(
-                *texts->getText(767), String(static_cast<int>(bonus * 100.0f)),
-                String("#P")) + String(" ");
-        } else {
-            this->title = String("");
+    String message;
+    if (!agent->isKnown() && offer == 2) {
+        ++status->field_d0;
+        String greeting = *texts->getText(random->nextInt(6) + 750);
+        String introduction = *texts->getText(random->nextInt(2) + 756);
+        introduction = status->replaceHash(
+            introduction, agent->getName(), String("#N"));
+
+        agent->field_0x28 = random->nextInt(5) + 768;
+        agent->field_0x2c = random->nextInt(2) + 773;
+        if (status->getCurrentCampaignMission() == 24 &&
+            status->getStation()->getIndex() == 10 &&
+            agent->getSellItemIndex() == 68) {
+            agent->field_0x28 = 193;
+            agent->field_0x2c = 194;
         }
-    }
-    String message = static_cast<Globals *>(Globals::globals)->
-        getAgentMissionText(agent);
-    if (knownMission) {
-        message = status->replaceHash(
-            message,
-            layout->formatCredits(mission->getReward() + mission->getBonus()) +
-                this->title,
+        String offerText = *texts->getText(agent->field_0x28);
+        offerText += String("\n") + *texts->getText(agent->field_0x2c);
+        offerText = status->replaceHash(
+            offerText, String(agent->getSellItemQuantity()), String("#Q"));
+        offerText = status->replaceHash(
+            offerText, *texts->getText(agent->getSellItemIndex() + 1274),
+            String("#P"));
+        offerText = status->replaceHash(
+            offerText, layout->formatCredits(agent->getSellItemPrice()),
             String("#C"));
+        if (agent->getSellItemQuantity() >= 2) {
+            offerText += String(" ") + *texts->getText(775);
+            offerText = status->replaceHash(
+                offerText, layout->formatCredits(
+                    agent->getSellItemPrice() / agent->getSellItemQuantity()),
+                String("#C"));
+        }
+        agent->setMissionString(offerText);
+        message = greeting + String(" ") + introduction + String(" ") +
+            offerText + String("\n") +
+            *texts->getText(random->nextInt(3) + 841);
+    } else {
+        Mission *mission = agent->getMission();
+        const bool knownMission = agent->isKnown() && offer == 0 &&
+            mission != nullptr && mission->getType() != 8 &&
+            mission->getType() != 12;
+        if (knownMission) {
+            const float bonus = status->getStanding()->getMissionBonus(
+                agent->getRace());
+            const int raw = static_cast<int>(
+                bonus * static_cast<float>(mission->getReward()));
+            int rounded = raw + raw % 50;
+            if (rounded % 50 != 0)
+                rounded = raw - raw % 50;
+            mission->setBonus(rounded);
+            if (bonus > 0.0f) {
+                this->title = String(" ") + status->replaceHash(
+                    *texts->getText(767),
+                    String(static_cast<int>(bonus * 100.0f)),
+                    String("#P")) + String(" ");
+            } else {
+                this->title = String("");
+            }
+        }
+        message = static_cast<Globals *>(Globals::globals)->
+            getAgentMissionText(agent);
+        if (knownMission) {
+            message = status->replaceHash(
+                message,
+                layout->formatCredits(mission->getReward() +
+                                      mission->getBonus()) + this->title,
+                String("#C"));
+        }
     }
     this->scrollWindow->setText(agent->getName(), message);
     agent->setStationName(status->getStation()->getName());
