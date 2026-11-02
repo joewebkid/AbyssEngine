@@ -4240,12 +4240,12 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
                                   "data/assets/valkyrie/3d/meshes/ships/v_ship_040_deep_science_engine_add.aem", 32540,
                                   false));
     ADD_RES(resources[2144], 
-        17233, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_041_vossk.aem", 0, false));
+        17233, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_041_vossk.aem", 34241, false));
     ADD_RES(resources[2145], 
-        17234, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_041_vossk_lod_1.aem", 0,
+        17234, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_041_vossk_lod_1.aem", 34241,
                                                 false));
     ADD_RES(resources[2146], 
-        17235, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_041_vossk_lod_2.aem", 0,
+        17235, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_041_vossk_lod_2.aem", 34241,
                                                 false));
     ADD_RES(resources[2147], 
         18741, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_041_vossk_lights_add.aem",
@@ -4254,20 +4254,20 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
         18041, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_041_vossk_engine_add.aem",
                                                 32541, false));
     ADD_RES(resources[2149], 
-        17239, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_042_retro.aem", 0, false));
+        17239, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_042_retro.aem", 34242, false));
     ADD_RES(resources[2150], 
-        17240, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_042_retro_lod_1.aem", 0, false));
+        17240, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_042_retro_lod_1.aem", 34242, false));
     ADD_RES(resources[2151], 
-        17241, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_042_retro_lod_2.aem", 0, false));
+        17241, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_042_retro_lod_2.aem", 34242, false));
     ADD_RES(resources[2152], 
         17243, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_042_retro_lights_add.aem", 32542,
                                                 false));
     ADD_RES(resources[2153], 
-        17245, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_043_retro.aem", 0, false));
+        17245, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_043_retro.aem", 34243, false));
     ADD_RES(resources[2154], 
-        17246, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_043_retro_lod_1.aem", 0, false));
+        17246, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_043_retro_lod_1.aem", 34243, false));
     ADD_RES(resources[2155], 
-        17247, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_043_retro_lod_2.aem", 0, false));
+        17247, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_043_retro_lod_2.aem", 34243, false));
     ADD_RES(resources[2156], 
         17249, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_043_retro_lights_add.aem", 32543,
                                                 false));
