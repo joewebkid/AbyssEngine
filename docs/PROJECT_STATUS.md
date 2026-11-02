@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` keyboard ship offer 10)
+
+The ARM-backed keyboard path now handles offer **10** through the
+factor-adjusted price gate, text **873** confirmation, credit charge,
+and ship purchase. The original creates two distinct ships from the
+same prototype: one is added to `voidStation` and the other to the
+current station. The selected agent is accepted and the hangar is
+marked for update. Focused `onKeyPress` source-shape rose **47.5%
+→ 49.1%** and strict fuzzy **13.8% → 18.5%**. Windows and ARM64
+static builds pass; ARMv7 compiles 209/209 units. Full corpus coverage
+remains **4,323/4,524** originals over 4,762 pairs at **96.14%
+source-shape / 85.93% strict fuzzy**, with **2,741 linked-exact /
+1,096 byte-exact**, zero skipped, 201 missing, and no exact-set
+losses. Runtime purchase and station persistence remain unverified
+while device testing is deferred. Next offline priority: offer 8 or
+mission-text recovery. See
+[ship offer evidence](SPACELOUNGE_KEY_OFFER10_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` keyboard offer 9)
 
 The ARM-backed keyboard path now handles offer **9** from the
