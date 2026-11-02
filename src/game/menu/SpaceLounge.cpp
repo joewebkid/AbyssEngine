@@ -1874,7 +1874,79 @@ void SpaceLounge::startChat() {
     }
 
     String message;
-    if (!agent->isKnown() && offer == 2) {
+    if (!agent->isKnown() && offer == 0 &&
+        agent->getMission() != nullptr) {
+        ++status->field_d0;
+        String greeting = *texts->getText(random->nextInt(6) + 750);
+        String introduction = *texts->getText(random->nextInt(2) + 756);
+        String interlude = *texts->getText(random->nextInt(6) + 758);
+        introduction = status->replaceHash(
+            introduction, agent->getName(), String("#N"));
+        Generator *generator = new Generator();
+
+        Mission *mission = agent->getMission();
+        const int type = mission->getType();
+        String offerText = *texts->getText(type + 786);
+        if (type == 5 || type == 3)
+            offerText += String(" ") + *texts->getText(802);
+        const int goodText = mission->getProductionGoodIndex() +
+            (type == 15 ? 1274 : 813);
+        offerText = status->replaceHash(
+            offerText, *texts->getText(goodText), String("#P"));
+        offerText = status->replaceHash(
+            offerText, String(mission->getProductionGoodAmount()),
+            String("#Q"));
+        offerText = status->replaceHash(
+            offerText,
+            type == 14 ? mission->getTargetSystemName()
+                       : mission->getTargetStationName(),
+            String("#S"));
+        offerText = status->replaceHash(
+            offerText, mission->getTargetName(), String("#N"));
+        agent->field_0x28 = random->nextInt(3) + 764;
+        offerText += String("\n") + *texts->getText(agent->field_0x28);
+
+        const float bonus = status->getStanding()->getMissionBonus(
+            agent->getRace());
+        if (bonus > 0.0f) {
+            this->title = String(" ") + status->replaceHash(
+                *texts->getText(767),
+                String(static_cast<int>(bonus * 100.0f)),
+                String("#P")) + String(" ");
+        } else {
+            this->title = String("");
+        }
+        agent->setMissionString(offerText);
+        const int raw = static_cast<int>(
+            bonus * static_cast<float>(mission->getReward()));
+        int rounded = raw + raw % 50;
+        if (rounded % 50 != 0)
+            rounded = raw - raw % 50;
+        mission->setBonus(rounded);
+        offerText = status->replaceHash(
+            offerText,
+            layout->formatCredits(mission->getReward() +
+                                  mission->getBonus()) + this->title,
+            String("#C"));
+        delete generator;
+
+        if (type == 8)
+            agent->setMissionString(offerText);
+        if (type == 12) {
+            offerText = status->replaceHash(
+                *texts->getText(798),
+                layout->formatCredits(mission->getReward() +
+                                      mission->getBonus()),
+                String("#C"));
+            agent->setMissionString(offerText);
+            message = offerText + String("\n") +
+                *texts->getText(random->nextInt(3) + 841);
+        } else {
+            message = greeting + String(" ") + introduction + String(" ") +
+                interlude + String("\n") + offerText + String("\n") +
+                *texts->getText(random->nextInt(3) + 841);
+        }
+    } else if (!agent->isKnown() && offer == 2) {
         ++status->field_d0;
         String greeting = *texts->getText(random->nextInt(6) + 750);
         String introduction = *texts->getText(random->nextInt(2) + 756);
@@ -1908,7 +1980,7 @@ void SpaceLounge::startChat() {
         }
         agent->setMissionString(offerText);
         message = greeting + String(" ") + introduction + String(" ") +
-            offerText + String("\n") +
+            String("\n") + offerText + String("\n") +
             *texts->getText(random->nextInt(3) + 841);
     } else if (!agent->isKnown() && offer == 5) {
         ++status->field_d0;
@@ -1938,7 +2010,7 @@ void SpaceLounge::startChat() {
         delete generator;
         agent->setMissionString(offerText);
         message = greeting + String(" ") + introduction + String(" ") +
-            interlude + offerText + String("\n") +
+            interlude + String("\n") + offerText + String("\n") +
             *texts->getText(random->nextInt(3) + 841);
     } else {
         Mission *mission = agent->getMission();

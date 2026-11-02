@@ -146,3 +146,43 @@ The normalized pair and exact-symbol sets are unchanged:
 **2,741 linked-exact**, **1,096 byte-exact**, zero skipped,
 201 missing. Full report:
 `D:/gof2-arm64-crypto/space-startchat-mission5-20261102-full.json`.
+
+## First encounter: generic mission description
+
+For an unknown generic agent with offer 0 and an assigned mission,
+Android ARM draws greeting `750`–`755`, introduction
+`756`–`757`, and interlude `758`–`763`, then uses the
+mission-type text at `786 + type` (`0x16ad76`–`0x16b064`).
+Types 3 and 5 append text `802`; type 15 resolves `#P` from the
+item-name range `1274 + index`, while other types use
+`813 + index`. The path expands `#Q`, `#S`, and `#N` from
+the mission, chooses an offer line `764`–`766`, and computes
+the standing-based reward bonus using the original remainder
+formula (`0x16b07a`–`0x16c4ec`).
+
+The original stores the offer string before `#C` expansion for
+ordinary mission types. Type 8 stores the expanded string as well.
+Type 12 replaces the whole offer with text `798`, expands its
+reward, and displays only that offer plus a random reply
+(`0x16c510`–`0x16c6ee`). Those branches are now explicit.
+The shared general ending also inserts a newline before the offer
+text (`0x16c71e`–`0x16c802`); this corrects the earlier
+first-encounter implementations for offers 2 and 5.
+
+Focused `startChat()` source-shape rises **62.1% → 76.6%**.
+Strict fuzzy falls **10.7% → 9.2%** as the large incomplete
+function's alignment changes; this remains a partial reconstruction.
+The ARM function has 3,406 instructions versus 4,856 original.
+The focused unit keeps 22 linked-exact and 7 byte-exact matches
+over 42 comparisons. ARMv7 compiles 209/209 translation units;
+Windows and ARM64 static builds pass. Focused report:
+`D:/gof2-arm64-crypto/space-startchat-mission0-20261102-focused.json`.
+Reward, mission-string and rendered-dialogue behavior remain
+unverified in a running game while device work is deferred.
+
+The full ARM corpus remains **4,323/4,524** originals over **4,762**
+pairs at **96.17%** mean source-shape / **85.94%** strict fuzzy.
+Normalized comparison-pair and exact-symbol sets are unchanged:
+**2,741 linked-exact**, **1,096 byte-exact**, zero skipped,
+201 missing. Full report:
+`D:/gof2-arm64-crypto/space-startchat-mission0-20261102-full.json`.
