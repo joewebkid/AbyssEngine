@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (ships 000–012 blend-0 materials).
+Android ARM supplies diffuse textures **34000–34012** to materials
+**34300–34312** with blend 0. One wrong and twelve placeholder
+texture links are restored; all 13 diffuse files exist in the
+original OBB. Windows native, ARM64 static, ARMv7 209/209 and
+resource-table checks pass. Focused `BuildResourceList` remains
+nonexact at **77.3%** source-shape; strict fuzzy **18.0% → 19.1%**.
+Full ARM corpus: **4,323/4,524** originals, **4,762** pairs,
+**96.20% / 85.96%**, **2,741 linked-exact / 1,096 byte-exact**,
+zero skipped, 201 missing, and no pair or exact-set losses.
+Original `MaterialCreate` confirms that a missing texture does not
+abort material registration, clarifying the 34050/34053 links.
+Live rendering remains unverified; the Redmi is unavailable over ADB.
+Next: inspect the following blend-0 family and the Redmi resource
+check when possible. See
+[ships 000–012 blend-0 evidence](ARM_SHIP_000_012_DUMMY_MATERIALS_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (ships 042–063 blend-8 material links).
 Android ARM directly supplies 17 texture arguments to the noncontiguous
 material block; the matching 17 placeholders are restored. Fifteen

@@ -29,7 +29,11 @@ original resource run or the reconstructed table, and the OBB has no
 `ship_050_` or `ship_053_` paths. Their material arguments nevertheless
 appear explicitly in the original constructor sequence. This records
 an original dangling reference; it does not establish that those
-materials can render.
+materials can render. Original ARM `PaintCanvas::MaterialCreate`
+at `0x79ea2–0x79ece` branches out of the texture loop on a missing
+resource and still registers the material at `0x79ece–0x79efc`.
+The current C++ follows that control flow; the visual result remains
+unverified.
 
 Windows native and ARM64 static builds pass. Five resource-material
 table tests and the full resource-table smoke at `-O0`/`-O2` pass;
