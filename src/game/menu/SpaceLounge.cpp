@@ -872,6 +872,22 @@ void SpaceLounge::onKeyPress(int key) {
                 this->mode = 2;
             } else {
                 this->mode = mode == 1 ? 2 : 0;
+                if (mode == 3 && this->field_0x18_byte != 0) {
+                    auto *manager = static_cast<AbyssEngine::ApplicationManager *>(
+                        Globals::appManager);
+                    auto *module = static_cast<SpaceLoungeStarMapModule *>(
+                        manager->GetApplicationModule(5));
+                    this->starMap = module->starMap;
+                    const int systemIndex = ((Agent *) (agent))->getSellSystemIndex();
+                    if (this->starMap != nullptr) {
+                        this->starMap->init(false, nullptr, true, systemIndex);
+                    } else {
+                        module->starMap = new StarMap(false, nullptr, true, systemIndex);
+                        this->starMap = module->starMap;
+                    }
+                    this->field_0x18_byte = 0;
+                    this->mapVisible = 1;
+                }
             }
         } else if (key == 0x40000) {
             if (this->chatScroll < 3) {
@@ -888,6 +904,16 @@ void SpaceLounge::onKeyPress(int key) {
 
     if (mode == 2) {
         void *agent = key_agent(this);
+        if (this->listVisible != 0) {
+            if (key == 0x40000) {
+                this->listVisible = 0;
+                auto *manager = static_cast<AbyssEngine::ApplicationManager *>(
+                    Globals::appManager);
+                auto *engine = static_cast<AbyssEngine::Engine *>(manager->GetEngine());
+                engine->SetPostEffect(0x1400000u, this->savedPostEffect != 0);
+            }
+            return;
+        }
         if (key == 0x40000) {
             this->mode = 1;
         } else if (key == 0x10000 || key == 0x20000) {
