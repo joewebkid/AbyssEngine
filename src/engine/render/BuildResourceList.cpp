@@ -4171,12 +4171,12 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
         18734, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_034_terran_lights_add.aem", 3,
                                                 false));
     ADD_RES(resources[2120], 
-        17035, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_035_nivelian.aem", 0, false));
+        17035, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_035_nivelian.aem", 34235, false));
     ADD_RES(resources[2121], 
-        17205, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_035_nivelian_lod_1.aem", 0,
+        17205, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_035_nivelian_lod_1.aem", 34235,
                                                 false));
     ADD_RES(resources[2122], 
-        17206, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_035_nivelian_lod_2.aem", 0,
+        17206, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_035_nivelian_lod_2.aem", 34235,
                                                 false));
     ADD_RES(resources[2123], 
         18035, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_035_nivelian_engine_add.aem",
@@ -4185,12 +4185,12 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
         18735, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_035_nivelian_lights_add.aem",
                                                 34810, false));
     ADD_RES(resources[2125], 
-        17036, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_036_terran.aem", 0, false));
+        17036, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_036_terran.aem", 34236, false));
     ADD_RES(resources[2126], 
-        17208, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_036_terran_lod_1.aem", 0,
+        17208, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_036_terran_lod_1.aem", 34236,
                                                 false));
     ADD_RES(resources[2127], 
-        17209, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_036_terran_lod_2.aem", 0,
+        17209, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_036_terran_lod_2.aem", 34236,
                                                 false));
     ADD_RES(resources[2128], 
         18036, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_036_terran_engine_add.aem", 3,
@@ -4200,7 +4200,7 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
                                                 false));
     ADD_RES(resources[2130], 
         17211, 4, new AbyssEngine::ResourceMesh("data/assets/valkyrie/3d/meshes/ships/v_ship_037_deep_science.aem",
-                                                65535, false));
+                                                34237, false));
     ADD_RES(resources[2131], 17215, 4, new AbyssEngine::ResourceMesh(
                                   "data/assets/valkyrie/3d/meshes/ships/v_ship_037_deep_science_lights_anim_add.aem",
                                   32537, false));
