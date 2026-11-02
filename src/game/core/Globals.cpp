@@ -493,8 +493,7 @@ static const char gGLA_newline[] = "\n";
 
 void Globals::getLineArray(unsigned int font, const String &text, int maxWidth,
                            Array<String *> *out) {
-    String *line = static_cast<String *>(::operator new(sizeof(String)));
-    { String *_s = line; if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
+    String *line = new String();
 
     String work;
     work.Set((const_cast<String *>(&text))->data);
@@ -512,14 +511,11 @@ void Globals::getLineArray(unsigned int font, const String &text, int maxWidth,
         consumed += static_cast<int>(line->size());
         count++;
     }
-    { String *_s = line; if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-    ::operator delete(line);
+    delete line;
 
     ArraySetLength(count, *out);
     for (unsigned i = 0; i < count; i++) {
-        String *s = static_cast<String *>(::operator new(sizeof(String)));
-        { String *_s = s; if (_s->data) delete[] _s->data; _s->data = nullptr; _s->length = 0; }
-        (*out)[i] = s;
+        (*out)[i] = new String();
     }
 
     int consumed = 0;
@@ -1986,6 +1982,10 @@ int Globals::init(AbyssEngine::ApplicationManager *app, AbyssEngine::Engine *eng
     AERandom_ctor(rng);
 #endif
     Globals::globals = this;
+#if __SIZEOF_POINTER__ == 8
+    // ARMv7 callers use globals; mirror it for legacy recovered callers on 64-bit hosts.
+    Globals::gGlobals = this;
+#endif
     Globals::rnd = rng;
     AERandom::gRandom = (AbyssEngine::AERandom *) rng;
 

@@ -340,6 +340,10 @@ void ApplicationManager::OnUpdate(long long now) {
             this->keyState = 0;
             break;
         case 5: {
+            const uint64_t previous = this->frameTimeMs;
+            this->previousFrameTimeMs = previous;
+            this->frameTimeMs = static_cast<uint64_t>(now);
+            this->currentTimeMs += this->frameTimeMs - previous;
             void *module = this->currentModule;
             if (module != 0) {
                 ModuleVTable *vtable = module_vtable(module);

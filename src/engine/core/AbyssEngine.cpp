@@ -1151,7 +1151,7 @@ namespace AbyssEngine {
         if (n == 0)
             return -4;
 
-        SpriteSystem *sys = (SpriteSystem *) operator new(0x14);
+        SpriteSystem *sys = (SpriteSystem *) operator new(sizeof(SpriteSystem));
         sys->posCpu = 0;
         sys->sizeCpu = 0;
         sys->mesh = 0;

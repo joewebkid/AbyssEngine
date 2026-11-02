@@ -261,9 +261,17 @@ int ModMainMenu::OnInitialize() {
         goto music;
 
     {
+#if __SIZEOF_POINTER__ == 8
+        OptionsRecord *options = reinterpret_cast<OptionsRecord *>(Globals::options);
+#else
         OptionsRecord *options = (OptionsRecord *) g_ModMainMenu_initOptions;
+#endif
         if (options->firstRunPreviewChecked == 0) {
+#if __SIZEOF_POINTER__ == 8
+            void **recordHolder = &Globals::recordHandler;
+#else
             void **recordHolder = g_ModMainMenu_initRecord;
+#endif
             void *record = ((RecordHandler *) (*recordHolder))->recordStoreReadPreview(0);
             if (record != nullptr) {
                 this->hasSavedGame = 1;

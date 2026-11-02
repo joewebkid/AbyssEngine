@@ -1,19 +1,31 @@
 # Project Status
 
-Last reviewed: 2026-11-02 (Redmi ARM64 startup crash and item catalog).
-The newer clone APK was absent from Redmi during earlier visual checks.
-After installing it with its OBB, a native startup crash was traced to
-`Galaxy::getAsteroidProbabilities`: the recovered code read an
-uninitialized `Item::g_items` pointer where Android ARM reads the
-catalog loaded as `Globals::items`. Seven production reads now use the
-loaded catalog. A newly signed ARM64 APK stayed alive beyond the old
-crash window, but the frame is still black; playable rendering remains
-unverified. Windows and ARM64 static builds pass; ARMv7 compiles
-**209/209** units. Full ARM corpus: **4,323/4,524** originals,
-**4,762** pairs, **96.20% / 85.96%**, **2,741 linked-exact /
-1,096 byte-exact**, 201 missing, zero skipped and no exact-set losses.
-Next: identify whether the opening cutscene finishes and where the
-GL frame becomes black. See
+Last reviewed: 2026-11-02 (Redmi ARM64 startup and menu diagnostics).
+The clone APK was absent from Redmi during earlier visual checks; it is
+now installed separately with its OBB. Device traces exposed successive
+startup faults in the item catalog, sound-resource global, difficulty
+settings pointer and menu options alias. The catalog now uses
+`Globals::items`; the 64-bit runtime mirrors `Globals::globals` to its
+recovered alias, reads difficulty from `Globals::options`, and allocates
+the full host size for `Gun`. The active-state frame clock now advances,
+so the title switches to the menu after about eight seconds. A Redmi
+trace reached the end of cutscene initialization and the following
+menu options step. The next faults were a wrong button-constructor
+argument, a 32-bit-only allocation size for `SpriteSystem`, and
+destruction of unconstructed `String` objects during line splitting.
+Those paths have been corrected; a Redmi run stayed alive past the
+menu transition, while the screen remained black. A temporary magenta
+OpenGL clear appeared on the device, confirming that Android presents
+native frames and narrowing the black output to the game's image draw
+path. The test clear was removed. No visible menu or playable frame is
+verified. Windows and ARM64 static builds pass. The fresh full ARMv7
+corpus after these port fixes compiled
+**209/209** units and compared **4,323/4,524** originals in **4,762**
+pairs at **96.20% / 85.96%** source-shape / strict fuzzy, with **2,741
+linked-exact / 1,096 byte-exact**, 201 missing and zero skipped. The
+comparison pair set and both exact-match sets have zero gains and zero
+losses against the previous full snapshot. Next: trace title image
+loading, texture binding and shader draw state. See
 [Redmi catalog/runtime evidence](GALAXY_ITEM_CATALOG_ARM64_RUNTIME_2026-11-02.md).
 
 Last reviewed: 2026-11-02 (ships 013–036 blend-0 materials).

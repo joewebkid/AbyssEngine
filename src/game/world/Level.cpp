@@ -246,8 +246,6 @@ static float g_cso_posX = 0;
 static float g_cso_posZ = 0;
 
 
-static int *g_ag_diffRec = nullptr;
-
 static int **g_ag_shipTbl = nullptr;
 
 static int **g_ag_itemTblA = nullptr;
@@ -855,7 +853,7 @@ Gun *Level::createGun(int idx, int owner, int kind, int hp, int dmg, int rate, i
         case ITEM_SORT_THERMO: {
             int res = g_cg_meshTable[idx];
             if (res < 0) {
-                gun = (Gun *) ::operator new(0x114);
+                gun = (Gun *) ::operator new(sizeof(Gun));
                 new(gun) Gun(owner, dmg, 1, hp, cool, rate, (float) color, Vector{0.0f, 0.0f, 0.0f},
                              Vector{0.0f, 0.0f, 0.0f});
                 gun->setIndex(idx);
@@ -865,7 +863,7 @@ Gun *Level::createGun(int idx, int owner, int kind, int hp, int dmg, int rate, i
                 new(obj) BeamGun(owner, gun, idx, this);
             } else {
                 int barrels = ((unsigned) (idx - 9) < 3 || idx == 0xe4) ? 1 : 0x14;
-                gun = (Gun *) ::operator new(0x114);
+                gun = (Gun *) ::operator new(sizeof(Gun));
                 if (kind == ITEM_SORT_THERMO) {
                     new(gun) Gun(owner, dmg, barrels, hp, cool, rate, (float) color,
                                  Vector{0.0f, 0.0f, 0.0f}, Vector{0.0f, 0.0f, 0.0f});
@@ -889,7 +887,7 @@ Gun *Level::createGun(int idx, int owner, int kind, int hp, int dmg, int rate, i
         }
         case ITEM_SORT_AUTO_CANNON:
         case ITEM_SORT_SCATTER_GUN:
-            gun = (Gun *) ::operator new(0x114);
+            gun = (Gun *) ::operator new(sizeof(Gun));
             new(gun) Gun(owner, dmg, 0x19, hp, cool, rate, (float) color, Vector{0.0f, 0.0f, 0.0f},
                          Vector{0.0f, 0.0f, 0.0f});
             gun->setIndex(idx);
@@ -902,7 +900,7 @@ Gun *Level::createGun(int idx, int owner, int kind, int hp, int dmg, int rate, i
         case ITEM_SORT_ROCKET:
         case ITEM_SORT_MISSILE:
         case ITEM_SORT_CLUSTER_MISSILE: {
-            gun = (Gun *) ::operator new(0x114);
+            gun = (Gun *) ::operator new(sizeof(Gun));
             int barrels = (kind == ITEM_SORT_CLUSTER_MISSILE) ? (idx - 0xd3) : 5;
             new(gun) Gun(owner, dmg, barrels, hp, cool, rate, (float) color, Vector{0.0f, 0.0f, 0.0f},
                          Vector{0.0f, 0.0f, 0.0f});
@@ -918,7 +916,7 @@ Gun *Level::createGun(int idx, int owner, int kind, int hp, int dmg, int rate, i
         case ITEM_SORT_EMP_BOMB:
         case ITEM_SORT_NUKE:
         case ITEM_SORT_IONIZING_MISSILE: {
-            gun = (Gun *) ::operator new(0x114);
+            gun = (Gun *) ::operator new(sizeof(Gun));
             new(gun) Gun(owner, dmg, 1, hp, cool, rate, (float) color, Vector{0.0f, 0.0f, 0.0f},
                          Vector{0.0f, 0.0f, 0.0f});
             gun->setIndex(idx);
@@ -933,7 +931,7 @@ Gun *Level::createGun(int idx, int owner, int kind, int hp, int dmg, int rate, i
         }
         case ITEM_SORT_TURRET:
         case ITEM_SORT_PLASMA_COLLECTOR: {
-            gun = (Gun *) ::operator new(0x114);
+            gun = (Gun *) ::operator new(sizeof(Gun));
             new(gun) Gun(owner, dmg, 0xf, hp, cool, rate, (float) color,
                          Vector{idx == 0x30 ? 80.0f : 0.0f, 0.0f, 0.0f}, Vector{0.0f, 0.0f, 0.0f});
             gun->setIndex(idx);
@@ -948,7 +946,7 @@ Gun *Level::createGun(int idx, int owner, int kind, int hp, int dmg, int rate, i
             break;
         }
         case ITEM_SORT_MINE: {
-            gun = (Gun *) ::operator new(0x114);
+            gun = (Gun *) ::operator new(sizeof(Gun));
             new(gun) Gun(owner, dmg, 10, hp, cool, rate, 2.0f, Vector{0.0f, 0.0f, 0.0f}, Vector{0.0f, 0.0f, 0.0f});
             gun->setIndex(idx);
             gun->weaponType = ITEM_SORT_MINE;
@@ -959,7 +957,7 @@ Gun *Level::createGun(int idx, int owner, int kind, int hp, int dmg, int rate, i
             break;
         }
         case ITEM_SORT_SENTRY_GUN: {
-            gun = (Gun *) ::operator new(0x114);
+            gun = (Gun *) ::operator new(sizeof(Gun));
             new(gun) Gun(owner, 0, 3, hp, cool, rate, 2.0f, Vector{0.0f, 0.0f, 0.0f}, Vector{0.0f, 0.0f, 0.0f});
             gun->setIndex(idx);
             gun->weaponType = ITEM_SORT_SENTRY_GUN;
@@ -970,7 +968,7 @@ Gun *Level::createGun(int idx, int owner, int kind, int hp, int dmg, int rate, i
             break;
         }
         case ITEM_SORT_SHOCK_BLAST: {
-            gun = (Gun *) ::operator new(0x114);
+            gun = (Gun *) ::operator new(sizeof(Gun));
             new(gun) Gun(owner, dmg, 1, hp, 1, rate, (float) color, Vector{0.0f, 0.0f, 0.0f}, Vector{0.0f, 0.0f, 0.0f});
             gun->setIndex(idx);
             gun->weaponType = ITEM_SORT_SHOCK_BLAST;
@@ -6694,7 +6692,9 @@ void Level::assignGuns() {
     if (lvlPower >= 20.0f) lvlPower = 20.0f;
     if (lvlPower < 0.0f) lvlPower = (float) (Status::gStatus->getLevel() - 2) * g_ag_perLevel;
 
-    float diffScale = ((DifficultyRecord *) (intptr_t) * g_ag_diffRec)->hpScale;
+    float diffScale;
+    std::memcpy(&diffScale, Globals::options + 0x2c,
+                sizeof(diffScale));
     int camp = Status::gStatus->getCurrentCampaignMission();
     int basePower = (int) (lvlPower + lvlPower * (diffScale - 0.5f));
     Wanted *wanted = (Wanted *) Status::gStatus->getWantedInCurrentOrbit();
@@ -6770,7 +6770,7 @@ void Level::assignGuns() {
                 if (((Mission *) Status::gStatus->getMission())->getType() == 0xb7) dmg = 1;
             }
 
-            Gun *gun = (Gun *) ::operator new(0x114);
+            Gun *gun = (Gun *) ::operator new(sizeof(Gun));
             int won = Status::gStatus->gameWon();
             int rampMis = (won != 0) ? 0x2d : Status::gStatus->getCurrentCampaignMission();
             new(gun) Gun(0, dmg, 4, -1, 3000, rampMis * -2 + 600, (float) color, Vector{0.0f, 0.0f, 0.0f},
@@ -6932,7 +6932,7 @@ void Level::assignGuns() {
             KIPlayer *shipNow = (*this->enemies)[i];
             if (wanted != 0 && ((KIPlayer *) (intptr_t) shipNow)->field_0x42 != 0 &&
                 (unsigned) (shipNow->shipGroupFlag - 0x2d) < 4) {
-                Gun *gun2 = (Gun *) ::operator new(0x114);
+                Gun *gun2 = (Gun *) ::operator new(sizeof(Gun));
                 new(gun2) Gun(0, dmg << 2, 4, -1, 10000, 3000, (float) color,
                               Vector{0.0f, 0.0f, 0.0f}, Vector{0.0f, 0.0f, 0.0f});
                 gun2->setFriendGun(1);
@@ -6947,7 +6947,7 @@ void Level::assignGuns() {
             }
 
             if ((unsigned) (camp2 - 0x9d) < 2 && ((KIPlayer *) (*this->enemies)[i])->shipGroupFlag == 0x31) {
-                Gun *gun3 = (Gun *) ::operator new(0x114);
+                Gun *gun3 = (Gun *) ::operator new(sizeof(Gun));
                 int won3 = Status::gStatus->gameWon();
                 int rampMis3 = (won3 != 0) ? 0x2d : Status::gStatus->getCurrentCampaignMission();
                 new(gun3) Gun(0, dmg, 4, -1, 3000, rampMis3 * -2 + 600, (float) color,
@@ -6974,7 +6974,7 @@ void Level::assignGuns() {
     wingmanExtra:
         if (((KIPlayer *) e)->isWingMan() != 0 &&
             (char) (*this->enemies)[i]->field_0x25 != 0) {
-            Gun *gun = (Gun *) ::operator new(0x114);
+            Gun *gun = (Gun *) ::operator new(sizeof(Gun));
             new(gun) Gun(0x12, 0, 4, -1, 3000, 400, 16.0f, Vector{0.0f, 0.0f, 0.0f}, Vector{0.0f, 0.0f, 0.0f});
             gun->setFriendGun(1);
             gun->setLevel(this);

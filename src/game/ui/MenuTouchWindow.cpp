@@ -1339,7 +1339,7 @@ static inline void _mtw_add_text_button(MenuTouchWindow *window, int id, int tex
 }
 
 static inline TouchButton *_mtw_new_text_button(int id, int textId, int x, int y, unsigned char type) {
-    auto *button = new TouchButton(_mtw_text_copy(textId), x, y, 0, type);
+    auto *button = new TouchButton(_mtw_text_copy(textId), 0, x, y, type);
     button->field_0x0 = id;
     button->field_0x4 = 0;
     return button;
