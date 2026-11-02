@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` mission confirmation)
+
+The ARM-backed mode-2 handler for offers **0 and 5** now completes
+the success path after the cargo/passenger capacity checks. Generic
+agents use game text **865** with formatted reward plus bonus at
+`#C` and mission type text at `#M`; in hardcore mode they append
+text **27** and one tenth of that reward. Non-generic agents use
+text **863**. Both paths append text **864** for an active freelance
+mission, open confirmation, and mark `chatActive`. Focused
+`OnTouchEnd` source-shape rose **78.3% → 86.1%** and strict fuzzy
+**27.6% → 28.9%**. Windows and ARM64 static builds pass; ARMv7
+compiles 209/209 units. Full corpus coverage remains **4,323/4,524**
+originals over 4,762 pairs at **96.13% source-shape / 85.93% strict
+fuzzy**, with **2,741 linked-exact / 1,096 byte-exact**, zero
+skipped, 201 missing, and no exact-set losses. Live dialogue remains
+unverified while device testing is deferred. Next offline priority:
+the remaining `OnTouchEnd` branches and mode-specific behavior. See
+[mission confirmation evidence](SPACELOUNGE_MISSION_CONFIRM_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` mission reply/capacity)
 
 The ARM-backed mode-2 handler for offers **0 and 5** now reopens a

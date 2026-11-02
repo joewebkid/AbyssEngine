@@ -442,6 +442,37 @@ int SpaceLounge::OnTouchEnd(int x, int y) {
                                     String(amount), String("#Q", false));
                                 this->choiceWindow->set(prompt, false);
                                 this->choiceVisible = 1;
+                            } else {
+                                String prompt;
+                                if (agent->isGenericAgent() != 0) {
+                                    prompt = *Globals::gameText->getText(865);
+                                    const int reward = mission->getReward() + mission->getBonus();
+                                    prompt = Globals::status->replaceHash(
+                                        prompt, Globals::layout->formatCredits(reward),
+                                        String("#C", false));
+                                    prompt = Globals::status->replaceHash(
+                                        prompt,
+                                        String(*Globals::gameText->getText(
+                                            mission->getType() + 354), false),
+                                        String("#M", false));
+                                    if (Globals::status->hardCoreMode()) {
+                                        const int hardCoreReward =
+                                            (mission->getReward() + mission->getBonus()) / 10;
+                                        prompt += String("\n", false) +
+                                            *Globals::gameText->getText(27) +
+                                            String(": ", false) +
+                                            Globals::layout->formatCredits(hardCoreReward);
+                                    }
+                                } else {
+                                    prompt = *Globals::gameText->getText(863);
+                                }
+                                Mission *freelance = Globals::status->getFreelanceMission();
+                                if (freelance != nullptr && !freelance->isEmpty()) {
+                                    prompt += String(" ", false) +
+                                        *Globals::gameText->getText(864);
+                                }
+                                this->choiceWindow->set(prompt, true);
+                                this->chatActive = 1;
                             }
                         }
                         if (offer == 2 || offer == 3 || offer == 4 ||
