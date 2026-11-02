@@ -903,7 +903,7 @@ void SpaceLounge::onKeyPress(int key) {
     }
 
     if (mode == 2) {
-        void *agent = key_agent(this);
+        Agent *agent = static_cast<Agent *>(key_agent(this));
         if (this->listVisible != 0) {
             if (key == 0x40000) {
                 this->listVisible = 0;
@@ -911,6 +911,37 @@ void SpaceLounge::onKeyPress(int key) {
                     Globals::appManager);
                 auto *engine = static_cast<AbyssEngine::Engine *>(manager->GetEngine());
                 engine->SetPostEffect(0x1400000u, this->savedPostEffect != 0);
+            }
+            return;
+        }
+        if (this->chatActive != 0) {
+            if (key == 0x1000) {
+                this->choiceWindow->left();
+                return;
+            }
+            if (key == 0x2000) {
+                this->choiceWindow->right();
+                return;
+            }
+            if (key == 0x10000 && agent->getOffer() == 4) {
+                auto *random = static_cast<AbyssEngine::AERandom *>(Globals::rnd);
+                String reply(*Globals::gameText->getText(random->nextInt(3) + 850), false);
+                Status *status = Globals::status;
+                status->changeCredits(-agent->getSellItemPrice());
+                status->setSystemVisibility(agent->getSellSystemIndex(), true);
+                this->field_0x18_byte = 1;
+                this->hangarUpdate = 1;
+                Array<Agent *> *allAgents = status->getAgents();
+                const unsigned index = static_cast<unsigned>(agent->getIndex());
+                if (index < allAgents->size()) {
+                    (*allAgents)[index]->setOfferAccepted(true);
+                }
+                agent->setOfferAccepted(true);
+                this->scrollWindow->setText(agent->getName(), reply);
+                this->chatScroll = 0;
+                this->mode = 3;
+                this->chatActive = 0;
+                return;
             }
             return;
         }

@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` offer-4 acceptance)
+
+The ARM-backed mode-2 confirmation path now handles accepted offer
+**4**: it chooses a reply from game texts **850–852**, charges the
+seller's price, reveals the selected system, marks both the indexed
+global agent (when present) and selected agent accepted, sets the
+map and hangar-update flags, displays the reply, and enters mode 3.
+Left/right keys operate the active choice. Focused `onKeyPress`
+source-shape rose **8.8% → 14.6%** and strict fuzzy **4.3% → 5.0%**.
+Windows and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+Full corpus coverage remains **4,323/4,524** originals over 4,762
+pairs at **96.13% source-shape / 85.93% strict fuzzy**, with **2,741
+linked-exact / 1,096 byte-exact**, zero skipped, 201 missing, and no
+exact-set losses. Runtime purchase and map behavior is unverified
+while device testing is deferred. Other mode-2 offer transactions
+and option navigation remain incomplete. Next offline priority:
+restore keyboard option selection and another bounded acceptance
+path. See [offer-4 evidence](SPACELOUNGE_OFFER4_ACCEPT_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` keyboard map/preview)
 
 The ARM-backed `onKeyPress()` now restores the saved post-effect when
