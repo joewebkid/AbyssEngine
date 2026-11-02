@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` keyboard blueprint offer)
+
+The ARM-backed keyboard path now shows offer **3** confirmation with
+the item name and price, blocks insufficient credits with the
+formatted shortfall, and on acceptance charges credits, unlocks the
+matching blueprint, updates the agent flags, and displays the final
+reply. Focused `onKeyPress` source-shape rose **35.5% → 39.6%** and
+strict fuzzy **7.2% → 10.3%**. Windows and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. Full corpus coverage remains
+**4,323/4,524** originals over 4,762 pairs at **96.14%
+source-shape / 85.93% strict fuzzy**, with **2,741 linked-exact /
+1,096 byte-exact**, zero skipped, 201 missing, and no exact-set
+losses. Runtime purchase behavior is unverified while device testing
+is deferred. Next offline priority: offer-2 item purchase or
+mission-text recovery. See
+[blueprint offer evidence](SPACELOUNGE_KEY_OFFER3_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` keyboard offer-4 prompt)
 
 The ARM-backed keyboard option **0** now handles offer **1** by

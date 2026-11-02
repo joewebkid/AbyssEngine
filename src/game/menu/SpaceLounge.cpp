@@ -923,18 +923,33 @@ void SpaceLounge::onKeyPress(int key) {
                 this->choiceWindow->right();
                 return;
             }
-            if (key == 0x10000 && agent->getOffer() == 4) {
+            const int offer = agent->getOffer();
+            if (key == 0x10000 && (offer == 3 || offer == 4)) {
                 auto *random = static_cast<AbyssEngine::AERandom *>(Globals::rnd);
                 String reply(*Globals::gameText->getText(random->nextInt(3) + 850), false);
                 Status *status = Globals::status;
                 status->changeCredits(-agent->getSellItemPrice());
-                status->setSystemVisibility(agent->getSellSystemIndex(), true);
-                this->field_0x18_byte = 1;
-                this->hangarUpdate = 1;
+                if (offer == 3) {
+                    Array<BluePrint *> *blueprints = status->getBluePrints();
+                    for (unsigned i = 0; i < blueprints->size(); ++i) {
+                        BluePrint *blueprint = (*blueprints)[i];
+                        if (blueprint->getIndex() == agent->getSellBlueprintIndex()) {
+                            blueprint->unlock();
+                            break;
+                        }
+                    }
+                } else {
+                    status->setSystemVisibility(agent->getSellSystemIndex(), true);
+                    this->field_0x18_byte = 1;
+                    this->hangarUpdate = 1;
+                }
                 Array<Agent *> *allAgents = status->getAgents();
                 const unsigned index = static_cast<unsigned>(agent->getIndex());
                 if (index < allAgents->size()) {
                     (*allAgents)[index]->setOfferAccepted(true);
+                }
+                if (offer == 3) {
+                    this->hangarUpdate = 1;
                 }
                 agent->setOfferAccepted(true);
                 this->scrollWindow->setText(agent->getName(), reply);
@@ -975,7 +990,7 @@ void SpaceLounge::onKeyPress(int key) {
                     this->mode = 0;
                     return;
                 }
-                if (offer != 4) {
+                if (offer != 3 && offer != 4) {
                     return;
                 }
                 Status *status = Globals::status;
@@ -992,10 +1007,21 @@ void SpaceLounge::onKeyPress(int key) {
                     this->choiceVisible = 1;
                     return;
                 }
-                String prompt(*Globals::gameText->getText(870), false);
-                auto *galaxy = static_cast<Galaxy *>(Globals::galaxy);
-                SolarSystem *system = galaxy->getSystem(agent->getSellSystemIndex());
-                prompt = status->replaceHash(prompt, system->getName(), String("#S", false));
+                String prompt;
+                if (offer == 3) {
+                    prompt = *Globals::gameText->getText(869);
+                    Item *item = (*static_cast<Array<Item *> *>(Globals::items))[
+                        agent->getSellBlueprintIndex()];
+                    prompt = status->replaceHash(prompt,
+                        String(*Globals::gameText->getText(item->getIndex() + 1274), false),
+                        String("#P", false));
+                } else {
+                    prompt = *Globals::gameText->getText(870);
+                    auto *galaxy = static_cast<Galaxy *>(Globals::galaxy);
+                    SolarSystem *system = galaxy->getSystem(agent->getSellSystemIndex());
+                    prompt = status->replaceHash(prompt, system->getName(),
+                        String("#S", false));
+                }
                 prompt = status->replaceHash(prompt,
                     Globals::layout->formatCredits(agent->getSellItemPrice()),
                     String("#C", false));
