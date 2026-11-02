@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (ships 016–036 blend-8 materials). The
+original Android ARM passes diffuse textures **34016–34036** to
+kind-6 materials **34416–34436** with blend 8; all 21 placeholder
+texture links are restored. All 21 diffuse files exist in the
+original OBB. Windows native, ARM64 static, ARMv7 209/209, and
+resource-table checks pass. Focused `BuildResourceList` remains
+nonexact at **77.3%** source-shape; strict fuzzy **19.9% → 19.0%**.
+Full ARM corpus: **4,323/4,524** originals, **4,762** pairs,
+**96.20% / 85.96%**, **2,741 linked-exact / 1,096 byte-exact**,
+zero skipped, 201 missing, and no pair or exact-set losses. Live
+rendering is unverified; the Redmi is still unavailable over ADB.
+Next: inspect the next independently traceable resource family or
+the Redmi resource check when it reconnects. See
+[ships 016–036 evidence](ARM_SHIP_016_036_BLEND8_MATERIALS_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (ships 000–012 blend-8 materials). The
 original Android ARM registers **34400–34412** with diffuse textures
 **34000–34012** and blend 8. All 13 incorrect or placeholder texture
