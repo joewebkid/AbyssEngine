@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge` keyboard offer-4 prompt)
+
+The ARM-backed keyboard option **0** now handles offer **1** by
+returning to mode 0, and offer **4** by checking credits and showing
+either text **203** with the shortfall or text **870** with the
+system name and price. The affordable confirmation connects to the
+previously recovered system-purchase and map path. Focused
+`onKeyPress` source-shape rose **27.0% → 35.5%**, while strict
+fuzzy moved **9.2% → 7.2%**. Windows and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. Full corpus coverage remains
+**4,323/4,524** originals over 4,762 pairs; mean source-shape rose
+**96.13% → 96.14%**, strict fuzzy remains **85.93%**, with **2,741
+linked-exact / 1,096 byte-exact**, zero skipped, 201 missing, and no
+exact-set losses. Runtime purchase and map behavior is unverified
+while device testing is deferred. Keyboard option 0 for other offers
+remains incomplete. Next offline priority: the remaining option-0
+offer families or mission-text recovery. See
+[offer-4 prompt evidence](SPACELOUNGE_KEY_OFFER4_PROMPT_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge` keyboard option 3)
 
 The ARM-backed keyboard option **3** now previews offered items and

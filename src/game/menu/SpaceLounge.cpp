@@ -969,6 +969,40 @@ void SpaceLounge::onKeyPress(int key) {
             return;
         }
         switch (this->chatAnswer) {
+            case 0: {
+                const int offer = agent->getOffer();
+                if (offer == 1) {
+                    this->mode = 0;
+                    return;
+                }
+                if (offer != 4) {
+                    return;
+                }
+                Status *status = Globals::status;
+                const float price = static_cast<float>(agent->getSellItemPrice());
+                const float credits = static_cast<float>(status->getCredits());
+                if (price > credits) {
+                    const int shortfall = static_cast<int>(
+                        static_cast<float>(agent->getSellItemPrice()) -
+                        static_cast<float>(status->getCredits()));
+                    String prompt = status->replaceHash(
+                        String(*Globals::gameText->getText(203), false),
+                        Globals::layout->formatCredits(shortfall), String("#C", false));
+                    this->choiceWindow->set(prompt, false);
+                    this->choiceVisible = 1;
+                    return;
+                }
+                String prompt(*Globals::gameText->getText(870), false);
+                auto *galaxy = static_cast<Galaxy *>(Globals::galaxy);
+                SolarSystem *system = galaxy->getSystem(agent->getSellSystemIndex());
+                prompt = status->replaceHash(prompt, system->getName(), String("#S", false));
+                prompt = status->replaceHash(prompt,
+                    Globals::layout->formatCredits(agent->getSellItemPrice()),
+                    String("#C", false));
+                this->choiceWindow->set(prompt, true);
+                this->chatActive = 1;
+                break;
+            }
             case 1: {
                 auto *random = static_cast<AbyssEngine::AERandom *>(Globals::rnd);
                 this->scrollWindow->setText(agent->getName(),
