@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge::init` light and iPad placement)
+
+The ARM-backed lounge initialization now resets the cut-scene light,
+sets specular color for light `0x4000`, and positions the panel,
+scroll window, and lower buttons for iPad layouts. Two 12-byte focus
+rectangles are typed at original offsets `0x8c` and `0x98`; the
+constructor retains its previous instruction shape. Focused `init`
+source-shape rose **72.6% → 89.2%** and strict fuzzy **33.0% →
+38.8%**. Windows and ARM64 static builds pass; ARMv7 compiles
+209/209 units. Full corpus coverage remains **4,323/4,524**
+originals over 4,762 pairs; mean source-shape rose **96.15% →
+96.16%**, strict fuzzy **85.93% → 85.94%**, and **2,741 linked-exact /
+1,096 byte-exact** matches remain with zero skipped, 201 missing,
+and no exact-set losses. Running-game iPad and light behavior is
+unverified. The mission-24 auto-chat path depends on incomplete
+`startChat()` and remains a priority. See
+[lounge-init evidence](SPACELOUNGE_INIT_LIGHT_IPAD_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`Globals::getAgentMissionText` recovery)
 
 The ARM-backed agent dialogue function now handles generic mission

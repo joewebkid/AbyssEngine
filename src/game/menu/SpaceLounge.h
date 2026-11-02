@@ -77,12 +77,8 @@ public:
     int buttonY0;
     int buttonX;
     int hoverAgent;
-    int field_0x8c;
-    int field_0x90;
-    int field_0x94;
-    int field_0x98;
-    int field_0x9c;
-    int field_0xa0;
+    AbyssEngine::Vector focusRectLeft;
+    AbyssEngine::Vector focusRectRight;
     String title;
     uint8_t initialized;
     uint8_t savedPostEffect;

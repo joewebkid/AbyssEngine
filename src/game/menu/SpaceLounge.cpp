@@ -40,6 +40,8 @@ static_assert(offsetof(SpaceLounge, initialized) == 0xb0, "SpaceLounge initializ
 static_assert(offsetof(SpaceLounge, savedPostEffect) == 0xb1, "SpaceLounge post-effect offset");
 static_assert(offsetof(SpaceLounge, touchDown) == 0xb2, "SpaceLounge touch offset");
 static_assert(offsetof(SpaceLounge, touchX) == 0xb4, "SpaceLounge touch-X offset");
+static_assert(offsetof(SpaceLounge, focusRectLeft) == 0x8c, "SpaceLounge left focus offset");
+static_assert(offsetof(SpaceLounge, focusRectRight) == 0x98, "SpaceLounge right focus offset");
 #endif
 
 // Application module 5 owns the StarMap pointer at ARM offset 0x10.
@@ -1492,23 +1494,89 @@ int SpaceLounge::init() {
     }
     this->introDone = 1;
     this->headBobPhase = 0;
-    this->savedPostEffect = static_cast<AbyssEngine::Engine *>(
-        static_cast<AbyssEngine::ApplicationManager *>(
-            Globals::appManager)->GetEngine())->IsPostEffectActivated();
+    if (this->cutScene != nullptr) {
+        this->cutScene->level->getStarSystem()->initLight();
+    }
+    auto *manager = static_cast<AbyssEngine::ApplicationManager *>(Globals::appManager);
+    auto *engine = static_cast<AbyssEngine::Engine *>(manager->GetEngine());
+    engine->LightSetLightColorSpecular(0.5f, 0.5f, 0.5f, 0x4000u);
+
+    if (Globals::iPad && this->agentRects != nullptr && this->selectedAgent >= 0 &&
+        static_cast<unsigned>(2 * this->selectedAgent) < this->agentRects->size()) {
+        const float iconPadding = Globals::iPadHD ? 14.0f
+            : (Globals::iPadLarge ? 20.0f : 10.0f);
+        const Vector &rectLeft = *(*this->agentRects)[2 * this->selectedAgent];
+        const float leftCandidate = rectLeft.x - iconPadding -
+            static_cast<float>(layout->field_0x68);
+        const float edge = static_cast<float>(layout->field_0x28);
+        float x;
+        if (leftCandidate >= edge) {
+            x = this->focusRectLeft.x - iconPadding -
+                static_cast<float>(layout->field_0x68);
+            if (x < edge) {
+                x = edge;
+            }
+        } else {
+            x = this->focusRectRight.x + iconPadding;
+            const float rightLimit = static_cast<float>(Globals::w - layout->field_0x28);
+            if (x > rightLimit) {
+                x = rightLimit;
+            }
+        }
+        this->panelX = static_cast<int>(x);
+
+        float y = this->focusRectRight.y -
+            static_cast<float>(layout->field_0x6c / 3);
+        const float bottomLimit = static_cast<float>(
+            Globals::h - layout->field_0x10 - layout->field_0x24 -
+            layout->field_0x6c);
+        if (y > bottomLimit) {
+            y = bottomLimit;
+        }
+        const float topLimit = static_cast<float>(layout->field_0xc +
+                                                   layout->field_0x20);
+        if (y < topLimit) {
+            y = topLimit;
+        }
+        this->panelY = static_cast<int>(y);
+
+        delete this->scrollWindow;
+        this->scrollWindow = new ScrollTouchWindow(
+            this->panelX + 2 * layout->field_0x4c + layout->field_0x2d4,
+            this->panelY, this->panelWidth, layout->field_0x6c, false);
+        this->buttonPanelY = this->panelY + layout->field_0x6c +
+                             layout->field_0x2c;
+        this->buttonX = this->panelX + layout->field_0x68 -
+                        layout->field_0x4c - this->panelWidth;
+        this->buttonY1 = this->buttonPanelY + layout->field_0x4c -
+                         layout->field_0x30 / 2 + layout->field_0x2d8 / 2;
+        this->buttonY0 = this->buttonPanelY + layout->field_0x4c;
+        const float buttonPadding = Globals::iPadHD ? 15.469f
+            : (Globals::iPadLarge ? 22.0f : 11.0f);
+        const int buttonGap = static_cast<int>(
+            buttonPadding + static_cast<float>(layout->field_0x34));
+        const int secondY = this->buttonY0 + layout->field_0x30 + buttonGap;
+        (*this->buttons)[2]->setPosition(this->buttonX, secondY);
+        (*this->buttons)[3]->setPosition(this->buttonX, secondY);
+        (*this->buttons)[4]->setPosition(
+            this->buttonX, secondY + layout->field_0x30 + buttonGap);
+    }
+
+    this->savedPostEffect = engine->IsPostEffectActivated();
     this->initialized = 1;
     return 0;
 }
 
 SpaceLounge::SpaceLounge() {
-    this->field_0x8c = 0;
-    this->field_0x90 = 0;
-    this->field_0x94 = 0;
-    this->field_0x98 = 0;
+    this->focusRectLeft.x = 0.0f;
+    this->focusRectLeft.y = 0.0f;
+    this->focusRectLeft.z = 0.0f;
+    this->focusRectRight.x = 0.0f;
     this->silhouettePos.x = 0;
     this->silhouettePos.y = 0;
     this->silhouettePos.z = 0;
-    this->field_0x9c = 0;
-    this->field_0xa0 = 0;
+    this->focusRectRight.y = 0.0f;
+    this->focusRectRight.z = 0.0f;
     this->baseMatrix = AbyssEngine::AEMath::Matrix();
 
     this->initialized = 0;
