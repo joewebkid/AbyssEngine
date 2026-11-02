@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`ModStation::OnKeyPress` hangar and pirate
+dialogues). The ARM-backed keyboard handler now opens the ordinary
+hangar through button 0, applies its campaign gate, refreshes it
+after lounge or missions changes, records tab positions and special
+cargo totals, and restores sound, post-effect and one-time help
+transitions. The two pirate-station paths now open their dedicated
+dialogues and select agent-specific sounds using portrait data
+recovered from the ARM binary. Focused `OnKeyPress` source-shape
+rises **60.7% → 93.1%** and strict fuzzy **34.5% → 48.7%**.
+Windows and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+The full ARM corpus compares **4,323/4,524** originals over **4,762**
+pairs at **96.20%** mean source-shape / **85.95%** strict fuzzy,
+with **2,741 linked-exact / 1,096 byte-exact**, zero skipped,
+201 missing and no pair or exact-set losses.
+Live keyboard, hangar and dialogue behavior remains unverified
+while device work is deferred. The portrait arrays' runtime
+mutation behavior needs further confirmation. See
+[hangar keyboard evidence](MODSTATION_KEY_HANGAR_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`ModStation::OnKeyPress` lounge and map
 routes). The ARM-backed station keyboard handler now applies the
 campaign gates for buttons 1 and 2, opens the ordinary SpaceLounge,

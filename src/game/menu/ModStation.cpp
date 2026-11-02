@@ -3,6 +3,7 @@
 #include "game/core/Globals.h"
 #include "engine/core/GameText.h"
 #include "game/ship/Ship.h"
+#include "game/ship/Agent.h"
 #include "engine/audio/FModSound.h"
 #include "engine/render/PaintCanvas.h"
 #include <new>
@@ -275,10 +276,14 @@ void ModStation::checkPendingProducts() {
 
 
 static bool g_stationMissionsHelpShown = false;
+static bool g_stationHangarHelpShown = false;
 static bool g_stationStatusHelpShown = false;
 static bool g_stationLoungeHelpShown = false;
 static bool g_stationMapHelpShown = false;
 static bool g_stationEarlyMapHelpShown = false;
+// Android .data 0x215690 and zero-initialized .bss 0x217bf8.
+static int g_stationPirateHangarFace[5] = {2, 0, 0, 0, 0};
+static int g_stationPirateLoungeFace[5] = {};
 
 void ModStation::OnKeyPress(long long, long long key) {
     if (this->stationActive == 0)
@@ -344,7 +349,85 @@ void ModStation::OnKeyPress(long long, long long key) {
         return;
 
     int which = this->selectedButton;
-    if (which == 1) {
+    if (which == 0) {
+        const int campaign = Globals::status->getCurrentCampaignMission();
+        if (campaign < 5 || campaign == 48 || campaign == 49 || campaign == 56) {
+            static_cast<ChoiceWindow *>(this->choiceWindow)->set(
+                *Globals::gameText->getText(528));
+            this->m_nStarMapWindowOpen.bytes[3] = 1;
+            return;
+        }
+        Station *station = Globals::status->getStation();
+        if (station->getIndex() == 4 && station->stationHasPirateBase()) {
+            if (this->dialogueWindow == nullptr) {
+                this->dialogueWindow = new DialogueWindow(
+                    Globals::gameText->getText(432),
+                    Globals::gameText->getText(1609),
+                    g_stationPirateHangarFace);
+                this->modalFlags.bytes[1] = 1;
+                Agent *agent = new Agent(0, String("", false), 0, 0, 2,
+                                         true, 0, 0, 0, 0);
+                int soundId = static_cast<Globals *>(Globals::globals)
+                                  ->getDialogueSoundId(432, agent);
+                Globals::sound->play(soundId, nullptr, nullptr, 0.0f);
+                delete agent;
+            }
+            return;
+        }
+
+        HangarWindow *window = static_cast<HangarWindow *>(this->hangarWindow);
+        if (window == nullptr) {
+            window = new HangarWindow();
+            this->hangarWindow = window;
+            window->initialize();
+        }
+        SpaceLounge *lounge = static_cast<SpaceLounge *>(this->spaceLounge);
+        if (lounge != nullptr && lounge->hangarNeedsUpdate()) {
+            delete window;
+            window = new HangarWindow();
+            this->hangarWindow = window;
+            window->initialize();
+            lounge->setHangarUpdate(false);
+        } else if (this->missionsWindow != nullptr && this->missionsWindow->hangarNeedsUpdate()) {
+            delete window;
+            window = new HangarWindow();
+            this->hangarWindow = window;
+            window->initialize();
+            this->missionsWindow->setHangarUpdate(false);
+        }
+
+        for (unsigned int i = 0; i < window->tabButtons->size(); ++i) {
+            if (i < 10) {
+                Globals::sub_menu_buttons_x[i] =
+                    static_cast<int>((*window->tabButtons)[i]->getPosition().x);
+                Globals::sub_menu_buttons_y[i] =
+                    static_cast<int>((*window->tabButtons)[i]->getPosition().y);
+            }
+        }
+        Globals::sub_menu_button_count = static_cast<int>(window->tabButtons->size());
+
+        this->field_0xd0 = 0;
+        Array<Item *> *cargo = Globals::status->getShip()->getCargo();
+        if (cargo != nullptr) {
+            for (unsigned int i = 0; i < cargo->size(); ++i) {
+                Item *item = (*cargo)[i];
+                if (item->getIndex() >= 132 && item->getIndex() <= 153)
+                    this->field_0xd0 += item->getAmount();
+            }
+        }
+        Globals::sound->setParamValue(0, Globals::sound->currentMusicEvent, 1.0f);
+        Globals::sound->stop(122);
+        Globals::sound->play(95, nullptr, nullptr, 0.0f);
+        auto *engine = static_cast<AbyssEngine::Engine *>(
+            static_cast<AbyssEngine::ApplicationManager *>(Globals::appManager)->GetEngine());
+        this->field_0x12c.bytes[0] = engine->IsPostEffectActivated();
+        this->subWindowFlags.bytes[2] = 1;
+        if (!g_stationHangarHelpShown) {
+            g_stationHangarHelpShown = true;
+            Globals::layout->initHelpWindow(
+                String(*Globals::gameText->getText(622), false));
+        }
+    } else if (which == 1) {
         const int campaign = Globals::status->getCurrentCampaignMission();
         if (campaign < 13 || campaign == 49) {
             static_cast<ChoiceWindow *>(this->choiceWindow)->set(
@@ -354,6 +437,19 @@ void ModStation::OnKeyPress(long long, long long key) {
         }
         Station *station = Globals::status->getStation();
         if (station->getIndex() == 88 && station->stationHasPirateBase()) {
+            if (this->dialogueWindow == nullptr) {
+                this->dialogueWindow = new DialogueWindow(
+                    Globals::gameText->getText(433),
+                    Globals::gameText->getText(1597),
+                    g_stationPirateLoungeFace);
+                this->modalFlags.bytes[1] = 1;
+                Agent *agent = new Agent(0, String("", false), 0, 0, 0,
+                                         true, 0, 0, 0, 0);
+                int soundId = static_cast<Globals *>(Globals::globals)
+                                  ->getDialogueSoundId(433, agent);
+                Globals::sound->play(soundId, nullptr, nullptr, 0.0f);
+                delete agent;
+            }
             return;
         }
         if (this->spaceLounge != nullptr) {

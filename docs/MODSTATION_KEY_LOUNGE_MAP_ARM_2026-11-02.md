@@ -16,9 +16,8 @@ help prompt (`0xd9834`–`0xd9866`).
 Station 88 with a pirate base takes a different ARM path: it creates
 a `DialogueWindow` using texts 433 and 1597 and an image-parts
 global, then plays agent-specific dialogue sound (`0xd967c`–
-`0xd9730`). The image-parts global has not yet been recovered. The
-source now keeps this branch separate and does not open the ordinary
-lounge there; the special dialogue remains incomplete.
+`0xd9730`). This route was restored in the subsequent
+[hangar/dialogue pass](MODSTATION_KEY_HANGAR_ARM_2026-11-02.md).
 
 Selected button 2 is unavailable before step 9 and at steps 48/49,
 showing text 528. Excess ship load shows text 204; step 77 with a
@@ -41,9 +40,10 @@ ModStation unit compares 36 symbols and retains **9 linked-exact /
 Focused report:
 `D:/gof2-arm64-crypto/modstation-key-lounge-map-20261102-focused.json`.
 
-The button-0 hangar route and the station-88 pirate dialogue remain
-for separate restoration. Live keyboard, map and lounge behavior
-remain unverified while device work is deferred.
+The button-0 hangar route and the station-88 pirate dialogue were
+restored in the subsequent hangar/dialogue pass. Live keyboard,
+map and lounge behavior remain unverified while device work is
+deferred.
 
 The full ARM corpus compares **4,323/4,524** originals over **4,762**
 pairs at **96.19%** mean source-shape and **85.95%** strict fuzzy.
