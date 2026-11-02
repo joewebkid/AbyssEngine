@@ -65,3 +65,33 @@ APK installation there pending manual confirmation. The cloned OBB uses
 about 1.01 GB of the phone's storage and can be removed after testing.
 The next priority is a fresh unlocked run of the diagnostic APK to locate
 the first frame stall before changing rendering code again.
+
+## Title 3D pass and awake Redmi frame
+
+The original Android ARM `MTitle::OnRender3D` at `0x97bc4` calls
+`ClearBuffer(0xff)`, `Begin3d()` and `End3d()`. The recovered source
+omitted the last call; it is now restored. Focused ARMv7 comparison
+compiled 209/209 units and changed this function from **76.2% to 93.3%**
+source-shape and **71.4% to 73.3%** strict fuzzy. It remains nonexact.
+The full corpus (`_work/mtitle_end3d_full_20261102.json`) compares
+**4,323/4,524** originals in **4,762** pairs at **96.21%** mean
+source-shape and **85.96%** strict fuzzy, with **2,741 linked-exact**,
+**1,096 byte-exact**, 201 missing and zero skipped. Against
+`_work/image2d_title_full_20261102.json`, the comparison pair set and
+both exact sets have zero gains and zero losses. Windows native and
+ARM64 static builds pass.
+
+On an awake, unlocked Redmi, a temporary diagnostic APK with this
+change reached `MTitle::OnRender3D` and `OnRender2D` repeatedly;
+`End3d()` returned on every sampled frame. The five-argument image
+draw received a 378×431 title region, four vertices and six indices.
+The OpenGL program was 3, framebuffer 0, and the sampled center pixel
+after the draw was black (`0,0,0,255`) with `glGetError()==0`.
+The image's `textureId` is an engine handle; `Engine::SetTextures`
+resolves it to the bound OpenGL texture, so differing numeric IDs are
+expected. No visible logo or menu was verified. A follow-up build with
+matrix and color probes was prepared outside Git but could not be
+installed after Redmi disconnected from ADB. All temporary probes were
+removed from the source. Next: inspect that matrix and color state on
+device, then texture content and shader uniforms if the projected
+geometry is valid.

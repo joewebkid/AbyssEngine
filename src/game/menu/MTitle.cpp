@@ -119,6 +119,7 @@ void MTitle::OnRender3D() {
     PaintCanvas *canvas = PaintCanvas::gCanvas;
     canvas->ClearBuffer(0xff);
     canvas->Begin3d();
+    canvas->End3d();
 }
 
 void MTitle::OnTouchEnd(int x, int y) {

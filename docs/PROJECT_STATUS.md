@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (title render pass on Redmi).
+Original Android ARM calls `End3d()` in `MTitle::OnRender3D`; that
+missing call is restored. Focused source-shape for the function rose
+from **76.2% to 93.3%**. The full ARM corpus compiled **209/209** units
+and compared **4,323/4,524** originals in **4,762** pairs at
+**96.21% / 85.96%** mean source-shape / strict fuzzy, with **2,741
+linked-exact / 1,096 byte-exact**, 201 missing, zero skipped and no
+pair or exact-set losses. Native and ARM64 static builds pass. On an
+awake Redmi, title frame callbacks and `End3d()` ran repeatedly, but
+the screen remained black. A sampled pixel after image drawing was
+black without an OpenGL error. Matrix and color probes are prepared
+for the next device run; Redmi disconnected before their installation.
+See [title render evidence](IMAGE2D_TITLE_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (title image draw path).
 Original Android ARM confirms that the five-argument `DrawImage2D`
 uses its first byte for screen placement and its second for region
