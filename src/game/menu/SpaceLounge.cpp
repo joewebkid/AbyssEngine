@@ -26,7 +26,9 @@
 #include "game/mission/Achievements.h"
 #include "game/mission/Item.h"
 #include "game/mission/Status.h"
+#include "game/ship/Ship.h"
 #include "game/ui/TouchButton.h"
+#include "engine/audio/FModSound.h"
 
 #include "engine/render/PaintCanvas.h"
 #include <cstddef>
@@ -71,8 +73,6 @@ namespace AbyssEngine {
 
 // Android .bss at 0x2183d4: five zero-initialized words passed to loadChar.
 static int SpaceLounge_defaultAgentParts[5] = {};
-
-static void *SpaceLounge_start_text_slot;
 
 int SpaceLounge::OnTouchMove(int x, int y) {
     this->touchX = x;
@@ -1681,59 +1681,189 @@ SpaceLounge::SpaceLounge() {
 }
 
 void SpaceLounge::startChat() {
-    String title;
-    String body;
-    String left;
-    String right;
+    if (this->agents == nullptr || this->selectedAgent < 0 ||
+        static_cast<unsigned>(this->selectedAgent) >= this->agents->size()) {
+        return;
+    }
+    Agent *agent = (*this->agents)[this->selectedAgent];
+    Layout *layout = Globals::layout;
+    Status *status = Globals::status;
+    GameText *texts = Globals::gameText;
+    auto *random = static_cast<AbyssEngine::AERandom *>(Globals::rnd);
 
-    if (this->agents == 0 || this->selectedAgent < 0) {
+    if (Globals::iPad && this->agentRects != nullptr &&
+        static_cast<unsigned>(2 * this->selectedAgent + 1) <
+            this->agentRects->size()) {
+        const int padding = static_cast<int>(Globals::iPadHD ? 14.062f
+            : (Globals::iPadLarge ? 20.0f : 10.0f));
+        const Vector &left = *(*this->agentRects)[2 * this->selectedAgent];
+        const Vector &right = *(*this->agentRects)[2 * this->selectedAgent + 1];
+        float x = left.x - static_cast<float>(padding) -
+                  static_cast<float>(layout->field_0x68);
+        if (x < static_cast<float>(layout->field_0x28)) {
+            x = right.x + static_cast<float>(padding);
+            const float limit = static_cast<float>(Globals::w -
+                                                   layout->field_0x28);
+            if (x > limit)
+                x = limit;
+        }
+        this->panelX = static_cast<int>(x);
+
+        float y = right.y - static_cast<float>(layout->field_0x6c / 3);
+        const float bottom = static_cast<float>(
+            Globals::h - layout->field_0x10 - layout->field_0x24 -
+            layout->field_0x6c);
+        if (y > bottom)
+            y = bottom;
+        const float top = static_cast<float>(layout->field_0xc +
+                                             layout->field_0x20);
+        if (y < top)
+            y = top;
+        this->panelY = static_cast<int>(y);
+
+        delete this->scrollWindow;
+        this->scrollWindow = new ScrollTouchWindow(
+            this->panelX + 2 * layout->field_0x4c + layout->field_0x2d4,
+            this->panelY, this->panelWidth, layout->field_0x6c, false);
+        this->buttonPanelY = this->panelY + layout->field_0x6c +
+                             layout->field_0x2c;
+        this->buttonX = this->panelX + layout->field_0x68 -
+                        layout->field_0x4c - this->panelWidth;
+        this->buttonY1 = this->buttonPanelY + layout->field_0x4c -
+                         layout->field_0x30 / 2 + layout->field_0x2d8 / 2;
+        this->buttonY0 = this->buttonPanelY + layout->field_0x4c;
+        const int gap = static_cast<int>(
+            static_cast<float>(layout->field_0x34) +
+            ((Globals::iPadHD || Globals::iPadLarge) ? 0.0f : 11.0f));
+        const int secondY = this->buttonY0 + layout->field_0x30 + gap;
+        (*this->buttons)[2]->setPosition(this->buttonX, secondY);
+        (*this->buttons)[3]->setPosition(this->buttonX, secondY);
+        (*this->buttons)[4]->setPosition(
+            this->buttonX, secondY + layout->field_0x30 + gap);
+        this->focusRectLeft = left;
+        this->focusRectRight = right;
+    }
+
+    const int offer = agent->getOffer();
+    if (!agent->isGenericAgent()) {
+        String message;
+        if (agent->getEvent() >= 1 || agent->hasAcceptedOffer()) {
+            message = *texts->getText(858);
+            if (agent->getEvent() < 1) {
+                const int sound = this->getSoundId(agent);
+                if (sound >= 0)
+                    Globals::sound->play(sound, nullptr, nullptr, 0.0f);
+            }
+            this->scrollWindow->setText(agent->getName(), message);
+            this->mode = 3;
+            this->chatScroll = 0;
+            return;
+        }
+
+        ++status->field_d0;
+        if (offer == 8 &&
+            status->getShip()->hasModInstalled(agent->getSellModIndex())) {
+            message = *texts->getText(858);
+            const int sound = this->getSpecificSoundForRace(
+                random->nextInt(2) + 781, agent->getRace(), agent->isMale());
+            Globals::sound->play(sound, nullptr, nullptr, 0.0f);
+            --status->field_d0;
+            this->scrollWindow->setText(agent->getName(), message);
+            this->mode = 3;
+            this->chatScroll = 0;
+            return;
+        }
+        if (offer == 10 && status->field_114 <= 2) {
+            message = *texts->getText(random->nextInt(6) + 750);
+            const int sound = this->getSpecificSoundForRace(
+                random->nextInt(2) + 781, agent->getRace(), agent->isMale());
+            Globals::sound->play(sound, nullptr, nullptr, 0.0f);
+            --status->field_d0;
+            this->scrollWindow->setText(agent->getName(), message);
+            this->mode = 3;
+            this->chatScroll = 0;
+            return;
+        }
+
+        if (offer == 8 || offer == 4 || (offer != 9 && offer != 10) ||
+            agent->field_0x28 == -1)
+            agent->field_0x28 = random->nextInt(2) + 874;
+        message = *texts->getText(agent->field_0x28);
+        message += String(" ") + *texts->getText(agent->getIndex() + 886);
+
+        if (offer == 8) {
+            Ship *ship = status->getShip();
+            agent->setSellItemPrice(
+                ship->getPrice() * agent->getModPricePercentage() / 100);
+            message += String(" ") + *texts->getText(879);
+            message = status->replaceHash(
+                message, *texts->getText(ship->getIndex() + 913),
+                String("#SHIP_NAME"));
+            static const int modValues[] = {40, 30, 1, 20};
+            message = status->replaceHash(
+                message, String(modValues[agent->getSellModIndex()]),
+                String("#N"));
+        } else if (offer == 9 || offer == 10) {
+            if (agent->field_0x2c == -1)
+                agent->field_0x2c = random->nextInt(2) + 773;
+            message += String("\n") + *texts->getText(agent->field_0x2c);
+            message = status->replaceHash(
+                message, String(offer == 10 ? 1 : agent->getSellItemQuantity()),
+                String("#Q"));
+            message = status->replaceHash(
+                message, *texts->getText(agent->getSellItemIndex() +
+                                         (offer == 10 ? 913 : 1274)),
+                String("#P"));
+        } else if (offer == 4) {
+            message += String(" ") + *texts->getText(877);
+            auto *galaxy = static_cast<Galaxy *>(Globals::galaxy);
+            message = status->replaceHash(
+                message,
+                galaxy->getSystem(agent->getSellSystemIndex())->getName(),
+                String("#S"));
+        } else {
+            message += String(" ") + *texts->getText(876);
+            Item *item = (*static_cast<Array<Item *> *>(Globals::items))[
+                agent->getSellBlueprintIndex()];
+            message = status->replaceHash(
+                message, *texts->getText(item->getIndex() + 1274),
+                String("#N"));
+        }
+        int price = agent->getSellItemPrice();
+        if ((offer == 8 || offer == 9 || offer == 10) &&
+            Globals::options[0x38] == 0)
+            price = static_cast<int>(static_cast<float>(price) * 2.0f);
+        message = status->replaceHash(
+            message, layout->formatCredits(price), String("#C"));
+        if (offer == 9 && agent->getSellItemQuantity() >= 2) {
+            message += String(" ") + *texts->getText(775);
+            message = status->replaceHash(
+                message, layout->formatCredits(agent->getSellItemPrice() /
+                                               agent->getSellItemQuantity()),
+                String("#C"));
+        }
+        message += String("\n") + *texts->getText(random->nextInt(3) + 841);
+        this->scrollWindow->setText(agent->getName(), message);
+        agent->setMissionString(message);
+        this->mode = 2;
+        this->chatScroll = 0;
+        const int sound = this->getSoundId(agent);
+        if (sound >= 0)
+            Globals::sound->play(sound, nullptr, nullptr, 0.0f);
         return;
     }
 
-    void *agent = (*this->agents)[this->selectedAgent];
-    int offer = ((Agent *) (agent))->getOffer();
-    void *mission = ((Agent *) (agent))->getMission();
-    void *texts = *(void **) &SpaceLounge_start_text_slot;
-
-    int titleId = 0x100;
-    int bodyId = 0x101;
-    if (mission != 0) {
-        titleId = 0x120;
-        bodyId = 0x121;
-    } else if (offer == 1) {
-        titleId = 0x130;
-        bodyId = 0x131;
-    } else if (offer == 6) {
-        titleId = 0x132;
-        bodyId = 0x133;
-    }
-
-    title.Set(((String *) ((GameText *) (*(void **) texts))->getText(titleId))->data);
-    body.Set(((String *) ((GameText *) (*(void **) texts))->getText(bodyId))->data);
-    left.Set(((String *) ((GameText *) (*(void **) texts))->getText(0x10))->data);
-    right.Set(((String *) ((GameText *) (*(void **) texts))->getText(0x11))->data);
-
-    this->choiceWindow->set(title, body, true);
-    if (this->choiceWindow->leftButton != nullptr)
-        this->choiceWindow->leftButton->setText(left);
-    if (this->choiceWindow->rightButton != nullptr)
-        this->choiceWindow->rightButton->setText(right);
-
-    if (((Agent *) (agent))->isKnown() == 0 && ((Agent *) (agent))->isStoryAgent() == 0) {
-        if (((Agent *) (agent))->eventCount <= 0)
-            ((Agent *) (agent))->eventCount = 1;
-    }
-    this->getSoundId(static_cast<Agent *>(agent));
-
-    this->choiceVisible = 1;
-    this->chatActive = 1;
+    String message = static_cast<Globals *>(Globals::globals)->
+        getAgentMissionText(agent);
+    this->scrollWindow->setText(agent->getName(), message);
+    agent->setStationName(status->getStation()->getName());
+    agent->setSystemName(status->getSystem()->getName());
+    this->chatScroll = 0;
     this->mode = 1;
-
-    if (offer == 1) {
-        this->mode = 3;
-    } else if (((Agent *) (agent))->isGenericAgent() != 0) {
-        ((Agent *) (agent))->setEvent(1);
-    }
+    this->onKeyPress(0x10000);
+    const int sound = this->getSoundId(agent);
+    if (sound >= 0)
+        Globals::sound->play(sound, nullptr, nullptr, 0.0f);
 }
 
 SpaceLounge::~SpaceLounge() {

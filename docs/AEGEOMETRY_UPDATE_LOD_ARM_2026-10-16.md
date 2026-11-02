@@ -1,7 +1,7 @@
 # AEGeometry LOD selection and transform transfer (Android ARM)
 
 Primary reference: `android_2.0.16_libgof2hdaa.so`, SHA-256
-`6d38fd767ee3b4f8174c371bfc6397cf76e13c1756938b2a94658e3b58`.
+`6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`.
 Original `AEGeometry::updateLod(Vector const&, float)` spans
 `0xa4d80–0xa4f82`. Its ARM instructions, rather than decompiler
 variable names, establish these roles:

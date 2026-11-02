@@ -1,7 +1,7 @@
 # SpaceLounge ARM32 layout and item preview
 
 Date: 2026-11-02. Reference: Android `libgof2hdaa.so`, SHA-256
-`6d38fd767ee3b4f8174c371bfc6397cf76e13c1756938b2a94658e3b58`.
+`6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`.
 Primary functions: `SpaceLounge::SpaceLounge()` at `0x169ae6`–
 `0x169f06`, `init()` at `0x16a774`–`0x16a7e4`, `update()` at
 `0x17075a`, `OnTouchBegin()` at `0x171804`, and `OnTouchEnd()` item

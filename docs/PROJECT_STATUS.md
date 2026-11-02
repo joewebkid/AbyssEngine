@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge::startChat` conversation
+entry). The Android-backed iPad panel movement and non-generic agent
+offer branches now replace a broken text-pointer stub. Focused
+`startChat` source-shape rose **4.8% → 34.9%** and strict fuzzy
+**2.3% → 7.9%**. The generic-agent path is still an approximate
+fallback, and running-game dialogue remains unverified while device
+work is deferred. Windows and ARM64 static builds pass; ARMv7
+compiles 209/209 units. Full corpus coverage is **4,323/4,524**
+originals over **4,762** pairs, with **96.16%** mean source-shape,
+**85.94%** strict fuzzy, **2,741 linked-exact / 1,096 byte-exact**,
+zero skipped and 201 missing. Normalized pair and exact sets have
+no losses. Next priority: recover the generic-agent dialogue
+branches. See [conversation entry evidence](SPACELOUNGE_STARTCHAT_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge::init` light and iPad placement)
 
 The ARM-backed lounge initialization now resets the cut-scene light,

@@ -1,7 +1,7 @@
 # SpaceLounge keyboard item offer 2
 
 Date: 2026-11-02. Primary reference: Android `libgof2hdaa.so`, SHA-256
-`6d38fd767ee3b4f8174c371bfc6397cf76e13c1756938b2a94658e3b58`,
+`6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`,
 `SpaceLounge::onKeyPress(int)`.
 
 Keyboard option **0** routes offer **2** through the same
