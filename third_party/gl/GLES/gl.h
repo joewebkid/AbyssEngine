@@ -41,6 +41,7 @@ void glNormalPointer(GLenum type, GLsizei stride, const GLvoid *pointer);
 void glColorPointer(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
 void glEnableClientState(GLenum array);
 void glDisableClientState(GLenum array);
+void glClientActiveTexture(GLenum texture);
 GL_APICALL void GL_APIENTRY glLineWidth(GLfloat width);
 GL_APICALL void GL_APIENTRY glDrawArrays(GLenum mode, GLint first, GLsizei count);
 GL_APICALL void GL_APIENTRY glActiveTexture(GLenum texture);

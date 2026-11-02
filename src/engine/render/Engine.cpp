@@ -554,11 +554,15 @@ void Engine::RenderMesh(Mesh *mesh) {
         this->AEClientState(0x8074, true);
         bool tex = (mesh->vertexFormat & 2) != 0;
 
-        if (tex && (mesh->material == 0 ||
-                    ((Material *) mesh->material)->textures[1] == -1)) {
-            glTexCoordPointer(2, 0x1406, 0, mesh->texCoords);
+        if (tex) {
+            if (mesh->material == 0 ||
+                ((Material *) mesh->material)->textures[1] == -1) {
+                glTexCoordPointer(2, 0x1406, 0, mesh->texCoords);
+                this->AEClientState(0x8078, true);
+            }
+        } else {
+            this->AEClientState(0x8078, false);
         }
-        this->AEClientState(0x8078, tex);
         bool normals = (mesh->vertexFormat & 4) != 0;
         if (normals) {
             glNormalPointer(0x1406, 0, mesh->normals);
@@ -570,6 +574,16 @@ void Engine::RenderMesh(Mesh *mesh) {
         }
         this->AEClientState(0x8076, colors);
         if ((mesh->vertexFormat & 0x10) != 0) {
+            if (this->statsEnabled != 0) {
+                const int tris = static_cast<unsigned int>(mesh->indexCount) / 3;
+                if (this->statsBucketFlag != 0) {
+                    this->triangleCountClientB += tris;
+                    this->drawCallCountB += 1;
+                } else {
+                    this->triangleCountClientA += tris;
+                    this->drawCallCountA += 1;
+                }
+            }
             glDrawElements(4, mesh->indexCount, 0x1403,
                            mesh->indices);
         } else {
@@ -579,6 +593,7 @@ void Engine::RenderMesh(Mesh *mesh) {
         if (tex && mesh->material != 0 &&
             ((Material *) mesh->material)->textures[1] != -1) {
             this->AEClientState(0x8078, false);
+            glClientActiveTexture(0x84c0);
         }
     } else {
         g_Engine_shaderDrew = 0;

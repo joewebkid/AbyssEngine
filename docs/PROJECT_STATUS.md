@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-03 (fixed-function mesh rendering).
+Original Android ARM shows that `RenderMesh` skips the initial
+texture-coordinate client-state call for two-texture materials,
+conditionally counts fixed-function indexed draws, and resets the
+client texture channel after those materials. These transitions are
+restored. Focused ARM `RenderMesh` source-shape rose **90.0% → 93.0%**
+and strict fuzzy **58.3% → 60.9%**. Windows native and ARM64 static
+builds pass. The full corpus compiled **209/209** units and compared
+**4,323/4,524** originals in **4,762** pairs at **96.23% / 85.99%**
+mean source-shape / strict fuzzy, with **2,741 linked-exact / 1,096
+byte-exact**, 201 missing, zero skipped, and no pair or exact-set
+losses. The corpus mean is unchanged at two decimal places. Visible
+rendering remains unverified; Redmi testing is stopped at the user's
+request. Next: inspect remaining shader-path differences and verify
+visible output on a permitted host. See
+[fixed-function ARM evidence](ENGINE_RENDER_MESH_FIXED_FUNCTION_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (engine mesh vertex flags and draw counters).
 `RenderMesh` used unsigned shifted `< 0` checks, which made its texture,
 normal, color and indexed-draw flags always false. Source-backed direct
