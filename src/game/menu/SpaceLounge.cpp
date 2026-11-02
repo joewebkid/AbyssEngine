@@ -929,7 +929,8 @@ void SpaceLounge::onKeyPress(int key) {
             }
             const int offer = agent->getOffer();
             if (key == 0x10000 &&
-                (offer == 2 || offer == 3 || offer == 4 || offer == 6 || offer == 7 ||
+                (offer == 0 || offer == 2 || offer == 3 || offer == 4 || offer == 5 ||
+                 offer == 6 || offer == 7 ||
                  offer == 8 || offer == 9 || offer == 10)) {
                 auto *random = static_cast<AbyssEngine::AERandom *>(Globals::rnd);
                 String reply(*Globals::gameText->getText(random->nextInt(3) + 850), false);
@@ -940,10 +941,77 @@ void SpaceLounge::onKeyPress(int key) {
                         charge += charge;
                     }
                     status->changeCredits(static_cast<int>(charge));
-                } else {
+                } else if (offer == 2 || offer == 3 || offer == 4) {
                     status->changeCredits(-agent->getSellItemPrice());
                 }
-                if (offer == 2 || offer == 9) {
+                if (offer == 0 || offer == 5) {
+                    Mission *mission = agent->getMission();
+                    if (status->hardCoreMode()) {
+                        const int deposit = (mission->getReward() + mission->getBonus()) / 10;
+                        if (deposit > status->getCredits()) {
+                            String prompt = status->replaceHash(
+                                String(*Globals::gameText->getText(203), false),
+                                Globals::layout->formatCredits(deposit - status->getCredits()),
+                                String("#C", false));
+                            this->choiceWindow->set(prompt, false);
+                            this->choiceVisible = 1;
+                            this->chatActive = 0;
+                            return;
+                        }
+                        status->changeCredits(-deposit);
+                    }
+                    Mission *previous = status->getFreelanceMission();
+                    if (previous != nullptr && !previous->isEmpty()) {
+                        const int previousType = previous->getType();
+                        if (previousType == 0 || previousType == 3 || previousType == 5) {
+                            Array<Item *> *cargo = status->getShip()->getCargo();
+                            if (cargo != nullptr) {
+                                for (unsigned i = 0; i < cargo->size(); ++i) {
+                                    Item *item = (*cargo)[i];
+                                    if (item->isUnsaleable() && item->getIndex() == 116) {
+                                        status->getShip()->removeCargo(item);
+                                        this->hangarUpdate = 1;
+                                        break;
+                                    }
+                                }
+                            }
+                        } else if (previousType == 11) {
+                            status->setPassengers(0);
+                        }
+                        Agent *previousAgent = previous->getAgent();
+                        if (previousAgent != nullptr && !previousAgent->isGenericAgent()) {
+                            previousAgent->setOfferAccepted(false);
+                        }
+                        status->setFreelanceMission(static_cast<Mission *>(Mission::empty));
+                    }
+                    const int missionType = mission->getType();
+                    if (missionType == 0) {
+                        Item *prototype = (*static_cast<Array<Item *> *>(Globals::items))[116];
+                        Item *cargo = prototype->makeItem(mission->getProductionGoodAmount());
+                        cargo->setUnsaleable(true);
+                        status->getShip()->addCargo(cargo);
+                    } else if (missionType == 11) {
+                        status->setPassengers(mission->getProductionGoodAmount());
+                    }
+                    if (missionType == 12) {
+                        reply = *Globals::gameText->getText(856);
+                    } else {
+                        reply += String(" ", false) +
+                            *Globals::gameText->getText(random->nextInt(3) + 853);
+                    }
+                    if (mission->isOutsideMission()) {
+                        if (!agent->wasAskedForDifficulty) {
+                            ++status->field_e8;
+                        }
+                        if (!agent->wasAskedForLocation) {
+                            ++status->field_ec;
+                        }
+                    }
+                    status->setFreelanceMission(mission);
+                    status->getFreelanceMission()->setAgent(agent);
+                    this->init();
+                    this->hangarUpdate = 1;
+                } else if (offer == 2 || offer == 9) {
                     Item *prototype = (*static_cast<Array<Item *> *>(Globals::items))[
                         agent->getSellItemIndex()];
                     Item *purchased = prototype->makeItem(agent->getSellItemQuantity());
@@ -1058,6 +1126,51 @@ void SpaceLounge::onKeyPress(int key) {
                 if (offer == 1) {
                     this->mode = 0;
                     return;
+                }
+                if (offer == 0 || offer == 5) {
+                    Mission *mission = agent->getMission();
+                    const int missionType = mission->getType();
+                    int amount = 0;
+                    int warningText = 0;
+                    if (missionType == 0) {
+                        amount = mission->getProductionGoodAmount();
+                        if (!Globals::status->getShip()->spaceAvailable(amount)) {
+                            warningText = 337;
+                        }
+                    } else if (missionType == 11) {
+                        amount = mission->getProductionGoodAmount();
+                        if (amount > Globals::status->getShip()->getMaxPassengers()) {
+                            warningText = 338;
+                        }
+                    }
+                    if (warningText != 0) {
+                        String warning = Globals::status->replaceHash(
+                            String(*Globals::gameText->getText(warningText), false),
+                            String(amount), String("#Q", false));
+                        this->choiceWindow->set(warning, false);
+                        this->choiceVisible = 1;
+                        return;
+                    }
+                    String prompt;
+                    if (agent->isGenericAgent()) {
+                        prompt = *Globals::gameText->getText(865);
+                        prompt = Globals::status->replaceHash(prompt,
+                            Globals::layout->formatCredits(
+                                mission->getReward() + mission->getBonus()),
+                            String("#C", false));
+                        prompt = Globals::status->replaceHash(prompt,
+                            String(*Globals::gameText->getText(missionType + 354), false),
+                            String("#M", false));
+                    } else {
+                        prompt = *Globals::gameText->getText(863);
+                    }
+                    Mission *previous = Globals::status->getFreelanceMission();
+                    if (previous != nullptr && !previous->isEmpty()) {
+                        prompt += String(" ", false) + *Globals::gameText->getText(864);
+                    }
+                    this->choiceWindow->set(prompt, true);
+                    this->chatActive = 1;
+                    break;
                 }
                 if (offer == 7) {
                     const int cost = agent->getCosts();

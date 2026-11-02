@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge::onKeyPress` mission
+offers and credit correction). The ARM-backed keyboard path now
+checks mission cargo and passenger capacity, offers confirmation,
+handles the hardcore deposit, replaces an existing freelance
+mission, supplies mission cargo or passengers, and records the new
+assignment. A shared precharge that incorrectly affected wingman
+and standing offers was removed. Focused `onKeyPress` source-shape
+rises **60.7% → 75.9%** and strict fuzzy **22.3% → 30.7%**.
+Windows and ARM64 static builds pass; ARMv7 compiles 209/209
+units. The full corpus compares **4,323/4,524** originals over
+**4,762** pairs at **96.18%** mean source-shape / **85.94%**
+strict fuzzy, with **2,741 linked-exact / 1,096 byte-exact**,
+zero skipped, 201 missing and no exact-set losses. Live mission
+effects remain unverified while device work is deferred. Next
+offline priority: review the `onKeyPress` return ABI and remaining
+control-flow/string shapes. See
+[keyboard mission evidence](SPACELOUNGE_KEY_MISSIONS_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge::onKeyPress` wingman
 offer). The ARM-backed keyboard path now handles the wingman
 affordability and already-hired gates, confirmation text, name and
