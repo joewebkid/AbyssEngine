@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`FModSound::getPlayingProgress` and current
+ARM64 packaging). ARM disassembly confirms event position divided by
+length, replacing the old zero-return stub. Focused source-shape rises
+**72.6% → 100%**, strict fuzzy **52.3% → 89.8%**; the function is
+not exact. Windows, ARMv7, ARM64 static and strict ARM64 shared builds
+pass. The full ARM corpus compares **4,323/4,524** originals over
+**4,762** pairs at **96.20%** source-shape / **85.96%** strict fuzzy,
+with **2,741 linked-exact / 1,096 byte-exact**, zero skipped, 201
+missing, and no pair or exact-set losses. A current-source test APK
+and original OBB copy are on the Redmi, but Android still lists only
+the older original-package build; manual installation of the separate
+test package is pending. Current-source shader behavior and gameplay
+remain unverified. See [FMOD progress evidence](FMOD_PLAYING_PROGRESS_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (Redmi ARM64 runtime checks). On the
 physical Android 16 `25053RT47C`, the installed October 28 test APK
 starts with the original OBB but renders almost black and logs 20

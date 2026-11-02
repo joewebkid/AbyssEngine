@@ -36,6 +36,12 @@ FMOD_RESULT Event::getState(FMOD_EVENT_STATE *out) {
     if (out) *out = 0;
     return FMOD_OK;
 }
+FMOD_RESULT Event::getInfo(int *index, char **name, FMOD_EVENT_INFO *info) {
+    if (index) *index = 0;
+    if (name) *name = nullptr;
+    if (info) *info = FMOD_EVENT_INFO();
+    return FMOD_ERR_EVENT_NOTFOUND;
+}
 FMOD_RESULT Event::getCategory(EventCategory **out) {
     if (out) *out = nullptr;
     return FMOD_ERR_EVENT_NOTFOUND;
@@ -85,10 +91,6 @@ void FMOD_EventCategory_setVolume(FMOD::EventCategory *, float) {}
 void FMOD_EventCategory_stopAllEvents(FMOD::EventCategory *) {}
 int FMOD_EventCategory_getInfo(FMOD::EventCategory *, int *index, char **name) {
     if (index) *index = 0;
-    if (name) *name = nullptr;
-    return FMOD_ERR_EVENT_NOTFOUND;
-}
-int FMOD_Event_getInfo(FMOD::Event *, char **name, unsigned char *) {
     if (name) *name = nullptr;
     return FMOD_ERR_EVENT_NOTFOUND;
 }

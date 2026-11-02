@@ -58,8 +58,6 @@ static inline int FMOD_Event_getCategory(FMOD::Event *event, FMOD::EventCategory
 
 void FMOD_play(FModSound *self, int a, unsigned char *b, float v);
 
-int FMOD_Event_getInfo(FMOD::Event *event, char **name, unsigned char *info);
-
 int FMOD_EventSystem_getEventBySystemID(unsigned int system, int id, FMOD::Event **out);
 
 int FMOD_Event_set3DAttributes(FMOD::Event *event, Vector *pos, Vector *vel);
@@ -72,8 +70,6 @@ int FMOD_EventSystem_set3DListenerAttributes(int system, unsigned char *zero, Ve
 static inline int FMOD_EventSystem_update(int system) {
     return ((FMOD::EventSystem *) (uintptr_t) system)->update();
 }
-
-float VectorSignedToFloat(int v, int mode);
 
 void FMOD_MusicSystem_promptCue(FMOD::MusicSystem *music, int cueId);
 
@@ -264,16 +260,18 @@ void FModSound::enableReverb(int p1) {
 }
 
 float FModSound::getPlayingProgress(int idx) {
+    float progress = 0.0f;
     if (this->initialized != 0 && this->system != 0 &&
         this->categoryEnabled[0] != 0 &&
         this->events[idx] != 0) {
-        char *name = 0;
-        int info[8];
-        FMOD_Event_getInfo(this->events[idx], &name, (unsigned char *) info);
-        VectorSignedToFloat(info[2], 0);
-        VectorSignedToFloat(info[1], 0);
+        FMOD_EVENT_INFO info;
+        int eventIndex;
+        char *name;
+        this->events[idx]->getInfo(&eventIndex, &name, &info);
+        progress = static_cast<float>(info.positionms) /
+                   static_cast<float>(info.lengthms);
     }
-    return 0.0f;
+    return progress;
 }
 
 void FModSound::play(int idx, Vector *pos, Vector *vel, float pitch) {
