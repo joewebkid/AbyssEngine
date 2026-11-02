@@ -1584,27 +1584,61 @@ void Engine::ResetLightParam() {
     this->materialDiffuse[0] = 0.8f;
     this->materialDiffuse[1] = 0.8f;
     this->materialDiffuse[2] = 0.8f;
-    this->materialDiffuse[3] = 0x3f800000;
+    this->materialDiffuse[3] = 1.0f;
     this->materialAmbient[0] = 0.2f;
     this->materialAmbient[1] = 0.2f;
     this->materialAmbient[2] = 0.2f;
-    this->materialAmbient[3] = 0x3f800000;
-    this->materialSpecular[0] = 0;
-    this->materialSpecular[2] = 0x3f800000ULL;
-    this->materialShininess = 0;
+    this->materialAmbient[3] = 1.0f;
+    this->materialSpecular[0] = 0.0f;
+    this->materialSpecular[1] = 0.0f;
+    this->materialSpecular[2] = 0.0f;
+    this->materialSpecular[3] = 1.0f;
+    this->materialShininess = 0.0f;
     this->lightAmbient.r = 0.0f;
     this->lightAmbient.g = 0.0f;
     this->lightAmbient.b = 0.0f;
     this->lightAmbient.a = 1.0f;
 
-    Vector up;
-    up.x = 0.0f;
-    up.y = 1.0f;
-    up.z = 0.0f;
-    this->field_0x468 = up;
-    this->field_0x474 = up;
-    this->lightDirty[0] = 0.0f;
-    this->lightDirty[1] = 0.0f;
+    // The intervening 16-byte slots have the same RGBA defaults in ARM.
+    const LightColor secondaryLight = {0.0f, 0.0f, 0.0f, 1.0f};
+    memcpy(this->_pad0x238, &secondaryLight, sizeof(secondaryLight));
+    memcpy(this->_pad0x258, &secondaryLight, sizeof(secondaryLight));
+    memcpy(this->_pad0x278, &secondaryLight, sizeof(secondaryLight));
+    this->sceneAmbient[0] = 0.0f;
+    this->sceneAmbient[1] = 0.0f;
+    this->sceneAmbient[2] = 0.0f;
+    this->sceneAmbient[3] = 1.0f;
+
+    this->lightDiffuse.r = 1.0f;
+    this->lightDiffuse.g = 1.0f;
+    this->lightDiffuse.b = 1.0f;
+    this->lightDiffuse.a = 1.0f;
+    this->lightSpecular.r = 1.0f;
+    this->lightSpecular.g = 1.0f;
+    this->lightSpecular.b = 1.0f;
+    this->lightSpecular.a = 1.0f;
+
+    this->lightAmbientShaded.x = 0.0f;
+    this->lightAmbientShaded.y = 0.0f;
+    this->lightAmbientShaded.z = 0.0f;
+    this->lightSpecularShaded.x = 0.0f;
+    this->lightSpecularShaded.y = 0.0f;
+    this->lightSpecularShaded.z = 0.0f;
+    this->lightDiffuseShaded.x = 0.0f;
+    this->lightDiffuseShaded.y = 0.0f;
+    this->lightDiffuseShaded.z = 0.0f;
+    this->particleAmbient.x = 0.0f;
+    this->particleAmbient.y = 0.0f;
+    this->particleAmbient.z = 0.0f;
+    this->field_0x2fc.x = 0.8f;
+    this->field_0x2fc.y = 0.8f;
+    this->field_0x2fc.z = 0.8f;
+    this->field_0x308.x = 0.0f;
+    this->field_0x308.y = 0.0f;
+    this->field_0x308.z = 0.0f;
+    this->field_0x314.x = 0.0f;
+    this->field_0x314.y = 0.0f;
+    this->field_0x314.z = 0.0f;
 
     if (g_Engine_useShaders == 0) {
         glLightfv(0x4000, 0x1200, &this->lightAmbient.r);
@@ -1615,6 +1649,16 @@ void Engine::ResetLightParam() {
         glMaterialfv(0x408, 0x1202, this->materialSpecular);
         glMaterialf(0x408, 0x1601, this->materialShininess);
     }
+
+    Vector up;
+    up.x = 0.0f;
+    up.y = 1.0f;
+    up.z = 0.0f;
+    this->field_0x468 = up;
+    this->field_0x474 = up;
+    this->lightDirty[0] = 0.0f;
+    this->lightDirty[1] = 0.0f;
+
     return;
 }
 

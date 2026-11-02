@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-03 (engine light defaults).
+Original Android ARM `ResetLightParam` initializes material alpha and
+RGB, two sets of light RGBA values, scene ambient, and shading vectors
+before fixed-function GL calls. The reconstruction converted the integer
+`0x3f800000` to an enormous float instead of storing `1.0f` in some
+material channels and omitted several resets. The source-backed defaults
+and key ARM32 offset checks are restored. Focused source-shape rose
+**78.8% → 86.6%** and strict fuzzy **28.0% → 30.9%**. Windows native,
+ARM64 static and ARMv7 **209/209** builds pass. Full corpus:
+**4,323/4,524** originals in **4,762** pairs, **96.23% / 85.99%** mean
+source-shape / strict fuzzy, **2,741 linked-exact / 1,096 byte-exact**,
+201 missing, zero skipped and no pair or exact-set losses. Live lighting
+and visible output remain unverified; Redmi testing is stopped at the
+user's request. Next: inspect consumers of these defaults and test
+visible output on a permitted host. See
+[ARM light-default evidence](ENGINE_RESET_LIGHT_PARAM_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (fixed-function mesh rendering).
 Original Android ARM shows that `RenderMesh` skips the initial
 texture-coordinate client-state call for two-texture materials,

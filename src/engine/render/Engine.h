@@ -629,6 +629,18 @@ namespace AbyssEngine {
         static float nearPlane;
     };
 #if __SIZEOF_POINTER__ == 4
+    static_assert(__builtin_offsetof(Engine, lightDiffuse) == 0x228, "ARM diffuse light offset");
+    static_assert(__builtin_offsetof(Engine, _pad0x238) == 0x238, "ARM 0x238 light slot offset");
+    static_assert(__builtin_offsetof(Engine, lightSpecular) == 0x248, "ARM specular light offset");
+    static_assert(__builtin_offsetof(Engine, _pad0x258) == 0x258, "ARM 0x258 light slot offset");
+    static_assert(__builtin_offsetof(Engine, lightAmbient) == 0x268, "ARM ambient light offset");
+    static_assert(__builtin_offsetof(Engine, _pad0x278) == 0x278, "ARM 0x278 light slot offset");
+    static_assert(__builtin_offsetof(Engine, sceneAmbient) == 0x288, "ARM scene ambient offset");
+    static_assert(__builtin_offsetof(Engine, materialDiffuse) == 0x298, "ARM diffuse material offset");
+    static_assert(__builtin_offsetof(Engine, materialAmbient) == 0x2a8, "ARM ambient material offset");
+    static_assert(__builtin_offsetof(Engine, materialSpecular) == 0x2b8, "ARM specular material offset");
+    static_assert(__builtin_offsetof(Engine, lightAmbientShaded) == 0x2cc, "ARM shaded light offset");
+    static_assert(__builtin_offsetof(Engine, field_0x2fc) == 0x2fc, "ARM light vector offset");
     static_assert(__builtin_offsetof(Engine, triangleCountClientA) == 0x58, "ARM client triangle A offset");
     static_assert(__builtin_offsetof(Engine, triangleCountClientB) == 0x5c, "ARM client triangle B offset");
     static_assert(__builtin_offsetof(Engine, drawCallCountB) == 0x60, "ARM draw call B offset");
