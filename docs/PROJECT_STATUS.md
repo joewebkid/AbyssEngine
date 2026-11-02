@@ -9,12 +9,12 @@ pass. Focused `BuildResourceList` stays **77.0%** source-shape; strict
 fuzzy changes **20.2% → 18.8%**, and the function remains nonexact.
 Full ARM corpus: **4,323/4,524** originals, **4,762** pairs,
 **96.20% / 85.96%**, **2,741 linked-exact / 1,096 byte-exact**, zero
-skipped, 201 missing and no pair or exact-set losses. The staged Redmi
-APK contains an earlier revision and its separate package is not
-installed: Play Protect rejected the ADB installation. The reported
+skipped, 201 missing and no pair or exact-set losses. A current-source
+APK is staged on the Redmi, but its separate package is not installed:
+Play Protect rejected an earlier ADB attempt. The reported
 resource-download screen came from the original GOF2 package; current
 runtime behavior remains unverified. Next: Supernova ships 046–049
-and a current-source APK test after device installation is accepted.
+and the staged APK test after device installation is accepted.
 See [ships 044–045 evidence](ARM_SHIP_044_045_MATERIAL_LINKS_2026-11-02.md).
 
 Last reviewed: 2026-11-02 (ships 041–043 mesh material links). Android

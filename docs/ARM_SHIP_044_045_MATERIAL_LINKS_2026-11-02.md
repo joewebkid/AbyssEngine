@@ -39,11 +39,13 @@ Normalized comparison-pair, linked-exact and byte-exact sets are
 identical to the ships-041–043 baseline; no exact matches are lost.
 Full report: `D:/gof2-arm64-crypto/ship044-045-material-full-20261102.json`.
 
-The separately packaged ARM64 APK on the Redmi was staged from an
-earlier source revision. Android rejected its ADB installation with
+A separately packaged ARM64 APK with this source revision is staged at
+`/sdcard/Download/gof2-arm64-current-test.apk` on the Redmi. Its
+signature and embedded library hash were verified. An earlier ADB
+installation attempt was rejected with
 `INSTALL_FAILED_VERIFICATION_FAILURE` after Play Protect verification;
-the package is not installed. The user's resource-download screen is
-therefore from the separately installed original GOF2 package. Live
-loading and rendering of the newly linked meshes remain unverified.
-Next: trace Supernova ships 046–049 and test an APK built from current
-source after its installation is accepted on the device.
+the separate test package was not installed at this checkpoint. The
+user's resource-download screen was from the installed original GOF2
+package. Live loading and rendering of the newly linked meshes remain
+unverified. Next: trace Supernova ships 046–049 and test the current
+APK after manual installation is accepted on the device.
