@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (ships 000–012 blend-8 materials). The
+original Android ARM registers **34400–34412** with diffuse textures
+**34000–34012** and blend 8. All 13 incorrect or placeholder texture
+arguments are restored, and all 13 textures exist in the original OBB.
+Windows native, ARM64 static and strict shared builds, resource-table
+checks, and ARMv7 verification pass. Focused `BuildResourceList`
+source-shape **77.2% → 77.3%** and strict fuzzy **18.7% → 19.9%**;
+it remains nonexact. Full ARM corpus: **4,323/4,524** originals,
+**4,762** pairs, **96.20% / 85.96%**, **2,741 linked-exact /
+1,096 byte-exact**, zero skipped, 201 missing, and no pair or exact-set
+losses. Material 34605's texture value and live rendering remain
+unverified. Redmi reached resource checking, but ADB currently sees
+only Poco. Next: trace 34605's stack value or another source-backed
+material family, then inspect the Redmi runtime when connected. See
+[ships 000–012 evidence](ARM_SHIP_000_012_BLEND8_MATERIALS_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (pirate glow material 34602). Original
 Android ARM registers **34602 → texture 34502, blend 2** and supplies
 34602 to 15 pirate ship/station meshes in addition to the previously
