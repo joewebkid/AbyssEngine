@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge::onKeyPress` standing
+offer). The ARM-backed keyboard path now shows the full price or
+shortfall for offer 7 and, after confirmation, restores reputation,
+charges credits, and marks the offer accepted. Focused `onKeyPress`
+source-shape rises **49.8% → 52.4%** and strict fuzzy **13.7% →
+14.3%**. Windows and ARM64 static builds pass; ARMv7 compiles
+209/209 units. The full corpus compares **4,323/4,524** originals
+over **4,762** pairs at **96.17%** mean source-shape / **85.94%**
+strict fuzzy, with **2,741 linked-exact / 1,096 byte-exact**,
+zero skipped, 201 missing and no exact-set losses. Live purchase
+behavior remains unverified while device work is deferred. Next
+offline priority: keyboard acceptance of offers 0, 5 and 6, plus
+the `onKeyPress` return ABI. See
+[standing keyboard evidence](SPACELOUNGE_KEY_OFFER7_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge::startChat` ore, wingman
 and standing offers). The Android-backed generic first-encounter
 branches now track unvisited ore requests, build the wingman offer

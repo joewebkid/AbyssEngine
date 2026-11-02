@@ -929,7 +929,8 @@ void SpaceLounge::onKeyPress(int key) {
             }
             const int offer = agent->getOffer();
             if (key == 0x10000 &&
-                (offer == 2 || offer == 3 || offer == 4 || offer == 8 || offer == 9 || offer == 10)) {
+                (offer == 2 || offer == 3 || offer == 4 || offer == 7 ||
+                 offer == 8 || offer == 9 || offer == 10)) {
                 auto *random = static_cast<AbyssEngine::AERandom *>(Globals::rnd);
                 String reply(*Globals::gameText->getText(random->nextInt(3) + 850), false);
                 Status *status = Globals::status;
@@ -985,6 +986,9 @@ void SpaceLounge::onKeyPress(int key) {
                             break;
                         }
                     }
+                } else if (offer == 7) {
+                    status->getStanding()->rehabilitate(agent->getRace());
+                    status->changeCredits(-agent->getCosts());
                 } else {
                     status->setSystemVisibility(agent->getSellSystemIndex(), true);
                     this->field_0x18_byte = 1;
@@ -1040,6 +1044,23 @@ void SpaceLounge::onKeyPress(int key) {
                 if (offer == 1) {
                     this->mode = 0;
                     return;
+                }
+                if (offer == 7) {
+                    const int cost = agent->getCosts();
+                    const int credits = Globals::status->getCredits();
+                    const bool canAfford = credits >= cost;
+                    String prompt = Globals::status->replaceHash(
+                        String(*Globals::gameText->getText(canAfford ? 885 : 203), false),
+                        Globals::layout->formatCredits(canAfford ? cost : cost - credits),
+                        String("#C", false));
+                    this->choiceWindow->set(prompt, canAfford);
+                    if (canAfford) {
+                        this->chatActive = 1;
+                    } else {
+                        this->choiceVisible = 1;
+                        return;
+                    }
+                    break;
                 }
                 if (offer != 2 && offer != 3 && offer != 4 && offer != 8 && offer != 9 && offer != 10) {
                     return;
