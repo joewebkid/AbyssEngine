@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`SpaceLounge::onKeyPress` wingman
+offer). The ARM-backed keyboard path now handles the wingman
+affordability and already-hired gates, confirmation text, name and
+image-part state, 600,000 timer, and medal-dependent credit change.
+Focused `onKeyPress` source-shape rises **52.4% → 60.7%** and strict
+fuzzy **14.3% → 22.3%**. Windows and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. The full corpus compares
+**4,323/4,524** originals over **4,762** pairs at **96.18%** mean
+source-shape / **85.94%** strict fuzzy, with **2,741 linked-exact /
+1,096 byte-exact**, zero skipped, 201 missing and no exact-set
+losses. Live hiring remains unverified while device work is
+deferred. Next offline priority: keyboard mission offers 0 and 5
+and the `onKeyPress` return ABI. See
+[wingman keyboard evidence](SPACELOUNGE_KEY_OFFER6_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge::onKeyPress` standing
 offer). The ARM-backed keyboard path now shows the full price or
 shortfall for offer 7 and, after confirmation, restores reputation,

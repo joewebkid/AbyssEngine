@@ -929,7 +929,7 @@ void SpaceLounge::onKeyPress(int key) {
             }
             const int offer = agent->getOffer();
             if (key == 0x10000 &&
-                (offer == 2 || offer == 3 || offer == 4 || offer == 7 ||
+                (offer == 2 || offer == 3 || offer == 4 || offer == 6 || offer == 7 ||
                  offer == 8 || offer == 9 || offer == 10)) {
                 auto *random = static_cast<AbyssEngine::AERandom *>(Globals::rnd);
                 String reply(*Globals::gameText->getText(random->nextInt(3) + 850), false);
@@ -989,6 +989,20 @@ void SpaceLounge::onKeyPress(int key) {
                 } else if (offer == 7) {
                     status->getStanding()->rehabilitate(agent->getRace());
                     status->changeCredits(-agent->getCosts());
+                } else if (offer == 6) {
+                    status->field_d4 += agent->getWingmanFriendsCount() + 1;
+                    status->setWingmen(agent->getWingmanNames());
+                    status->field_0x2c = agent->getRace();
+                    status->field_0x30 = 600000;
+                    int *parts = new int[5];
+                    int *agentParts = agent->getImageParts();
+                    for (int i = 0; i < 5; ++i) {
+                        parts[i] = agentParts[i];
+                    }
+                    status->setWingmenStats(parts);
+                    auto *achievements = static_cast<Achievements *>(Globals::achievements);
+                    status->changeCredits(
+                        achievements->gotAllMedals() ? agent->getCosts() : -agent->getCosts());
                 } else {
                     status->setSystemVisibility(agent->getSellSystemIndex(), true);
                     this->field_0x18_byte = 1;
@@ -1060,6 +1074,35 @@ void SpaceLounge::onKeyPress(int key) {
                         this->choiceVisible = 1;
                         return;
                     }
+                    break;
+                }
+                if (offer == 6) {
+                    Status *status = Globals::status;
+                    auto *achievements = static_cast<Achievements *>(Globals::achievements);
+                    const bool allMedals = achievements->gotAllMedals();
+                    if (!allMedals && status->getCredits() < agent->getCosts()) {
+                        String prompt = status->replaceHash(
+                            String(*Globals::gameText->getText(203), false),
+                            Globals::layout->formatCredits(
+                                agent->getCosts() - status->getCredits()),
+                            String("#C", false));
+                        this->choiceWindow->set(prompt, false);
+                        this->choiceVisible = 1;
+                        return;
+                    }
+                    if (status->getWingmen() != nullptr) {
+                        this->choiceWindow->set(*Globals::gameText->getText(785), false);
+                        this->choiceVisible = 1;
+                        return;
+                    }
+                    String prompt(*Globals::gameText->getText(allMedals ? 867 : 866), false);
+                    prompt = status->replaceHash(prompt,
+                        String(agent->getWingmanFriendsCount() + 1), String("#Q", false));
+                    prompt = status->replaceHash(prompt,
+                        Globals::layout->formatCredits(agent->getCosts()),
+                        String("#C", false));
+                    this->choiceWindow->set(prompt, true);
+                    this->chatActive = 1;
                     break;
                 }
                 if (offer != 2 && offer != 3 && offer != 4 && offer != 8 && offer != 9 && offer != 10) {
