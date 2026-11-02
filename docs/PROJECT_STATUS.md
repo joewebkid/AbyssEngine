@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (`ModStation::OnKeyPress` missions and
+status routes). The ARM-backed station keyboard handler now checks
+for level-up through the real Status method, sends medal confirmation
+to `checkMedals`, binds departure to `leaveStation`, leaves the main
+menu untouched when the secondary menu is open, and opens Missions
+or Status from buttons 3 and 4 with their campaign gate and one-time
+help. Unbound fragment calls on invalid selection were removed.
+Focused `OnKeyPress` source-shape rises **14.2% → 35.4%** and strict
+fuzzy **5.4% → 18.0%**. Windows and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. The full corpus compares
+**4,323/4,524** originals over **4,762** pairs at **96.18%** mean
+source-shape / **85.94%** strict fuzzy, with **2,741 linked-exact /
+1,096 byte-exact**, zero skipped, 201 missing and no exact-set
+losses. Live keyboard behavior remains unverified while device
+work is deferred. Next offline priority: station keyboard routes
+0–2. See [station keyboard evidence](MODSTATION_KEY_WINDOWS_ARM_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`SpaceLounge::getSoundId` special
 texts). The ARM-backed sound path now compares texts 820, 824, 827
 and 833 only for offer 1; a 30% generic sound override for other

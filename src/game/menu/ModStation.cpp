@@ -274,20 +274,14 @@ void ModStation::checkPendingProducts() {
 }
 
 
-static int *g_okp_stack = 0;
-
-void Status_checkForLevelUp_okp();
-
-void leaveStation();
-int GameText_getText_frag(int id);
-void ChoiceWindow_set1_frag(void *cw, int textStr);
-int GameText_root_frag();
+static bool g_stationMissionsHelpShown = false;
+static bool g_stationStatusHelpShown = false;
 
 void ModStation::OnKeyPress(long long, long long key) {
     if (this->stationActive == 0)
         return;
 
-    Status_checkForLevelUp_okp();
+    Globals::status->checkForLevelUp();
 
     int t34 = this->accumTimeHi.word;
     bool banner = 999 < (uint32_t) this->accumTime;
@@ -307,7 +301,7 @@ void ModStation::OnKeyPress(long long, long long key) {
 
     if (this->modalFlags.bytes[2] != 0) {
         if (key == 0x10000)
-            leaveStation();
+            this->checkMedals();
         return;
     }
 
@@ -315,14 +309,11 @@ void ModStation::OnKeyPress(long long, long long key) {
     char sub = this->m_nStarMapWindowOpen.bytes[2];
     if (held == 0) {
         if (key == 0x40000 && sub == 0)
-            leaveStation();
+            this->leaveStation();
         return;
     }
 
     if (sub != 0) {
-        if (key == 0x20000)
-            this->m_nStarMapWindowOpen.bytes[1] = (unsigned char) (
-                this->m_nStarMapWindowOpen.bytes[1] ^ 1);
         return;
     }
 
@@ -350,12 +341,40 @@ void ModStation::OnKeyPress(long long, long long key) {
         return;
 
     int which = this->selectedButton;
-    if (which < 0 || which > 4) {
-        ChoiceWindow_set1_frag(this->choiceWindow, GameText_getText_frag(GameText_root_frag()));
-        return;
+    if (which == 3) {
+        if (Globals::status->getCurrentCampaignMission() <= 8) {
+            static_cast<ChoiceWindow *>(this->choiceWindow)->set(
+                *Globals::gameText->getText(528));
+            this->m_nStarMapWindowOpen.bytes[3] = 1;
+            return;
+        }
+        if (this->missionsWindow != nullptr) {
+            this->missionsWindow->init();
+        } else {
+            this->missionsWindow = new MissionsWindow();
+        }
+        this->subWindowFlags.bytes[0] = 1;
+        Globals::sound->setParamValue(0, Globals::sound->currentMusicEvent, 0.6f);
+        if (!g_stationMissionsHelpShown) {
+            g_stationMissionsHelpShown = true;
+            Globals::layout->initHelpWindow(
+                String(*Globals::gameText->getText(635), false));
+        }
+    } else if (which == 4) {
+        StatusWindow *window = static_cast<StatusWindow *>(this->statusWindow);
+        if (window == nullptr) {
+            window = new StatusWindow();
+            this->statusWindow = window;
+        }
+        window->reInit();
+        this->modalFlags.bytes[0] = 1;
+        Globals::sound->setParamValue(0, Globals::sound->currentMusicEvent, 0.6f);
+        if (!Globals::iPad && !g_stationStatusHelpShown) {
+            g_stationStatusHelpShown = true;
+            Globals::layout->initHelpWindow(
+                String(*Globals::gameText->getText(640), false));
+        }
     }
-    if (((which >= 0 && which <= 4) ? 1 : 0) == 0)
-        ChoiceWindow_set1_frag(this->choiceWindow, GameText_getText_frag(GameText_root_frag()));
 }
 
 long long ModStation::OnKeyRelease(long long, long long key) {
