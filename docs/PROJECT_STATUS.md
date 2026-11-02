@@ -1,6 +1,22 @@
 # Project Status
 
 Last reviewed: 2026-11-02 (`SpaceLounge::startChat` first generic
+production mission). The Android-backed first-encounter offer-5 path
+now creates and assigns a new mission, draws greeting, introduction
+and interlude text, and expands the new mission's quantity, good and
+reward before storing the offer string. Focused `startChat`
+source-shape rises **54.0% → 62.1%**; strict fuzzy falls **12.3% →
+10.7%** as alignment changes in this still-incomplete function.
+Windows and ARM64 static builds pass; ARMv7 compiles 209/209 units.
+The full corpus compares **4,323/4,524** originals over **4,762**
+pairs at **96.17%** mean source-shape / **85.94%** strict fuzzy.
+All **2,741 linked-exact / 1,096 byte-exact** symbols remain, with
+zero skipped and 201 missing. Live mission creation and dialogue
+remain unverified while device work is deferred. Next offline
+priority: the generic offer-0 mission-description branch. See
+[conversation entry evidence](SPACELOUNGE_STARTCHAT_ARM_2026-11-02.md).
+
+Last reviewed: 2026-11-02 (`SpaceLounge::startChat` first generic
 item offer). The ARM-backed first-encounter branch now draws greeting
 and introduction text, selects and stores item-offer text, applies
 the campaign-24 station/item override, and shows price and quantity

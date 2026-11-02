@@ -111,3 +111,38 @@ strict fuzzy remains **85.94%**. The normalized pair, **2,741
 linked-exact**, and **1,096 byte-exact** sets are unchanged, with zero
 skipped and 201 missing originals. Full report:
 `D:/gof2-arm64-crypto/space-startchat-trade-20261102-full.json`.
+
+## First encounter: production mission offer
+
+For an unknown generic agent with offer 5, Android ARM creates a new
+`Generator`, calls `createMission(agent, galaxy->getSystems())`, and
+assigns the returned mission to the agent even if a mission pointer
+was already present (`0x16b00e`–`0x16b026`,
+`0x16b814`–`0x16b826`). The previous fallback only created a
+mission when the pointer was null.
+
+The recovered path draws greeting `750`–`755`, introduction
+`756`–`757`, and interlude `758`–`763`; replaces `#N` with
+the agent name; selects offer text `777` or `778`; and expands
+`#Q`, `#P`, and `#C` from the newly created mission
+(`0x16ad76`–`0x16b006`, `0x16b834`–`0x16b9d8`). It stores
+the offer string, appends a random reply `841`–`843`, and reaches
+the shared station, system, keypress, and sound tail
+(`0x16c4f2`–`0x16c8d0`). Creation, reward, and rendered text
+remain unverified in the running game while device work is deferred.
+
+Focused `startChat()` source-shape rises **54.0% → 62.1%**.
+Strict fuzzy falls **12.3% → 10.7%** as the incomplete function's
+alignment changes; this branch is accepted for its sourced behavior.
+The ARM function has 2,560 instructions versus 4,856 original.
+The focused unit keeps 22 linked-exact and 7 byte-exact matches
+over 42 comparisons. ARMv7 compiles 209/209 translation units;
+Windows and ARM64 static builds pass. Focused report:
+`D:/gof2-arm64-crypto/space-startchat-mission5-20261102-focused.json`.
+
+The full ARM corpus remains **4,323/4,524** originals and **4,762**
+pairs at **96.17%** mean source-shape / **85.94%** strict fuzzy.
+The normalized pair and exact-symbol sets are unchanged:
+**2,741 linked-exact**, **1,096 byte-exact**, zero skipped,
+201 missing. Full report:
+`D:/gof2-arm64-crypto/space-startchat-mission5-20261102-full.json`.

@@ -23,6 +23,7 @@
 #include "engine/render/ImageFactory.h"
 #include "game/ui/Layout.h"
 #include "game/mission/Mission.h"
+#include "game/mission/Generator.h"
 #include "game/mission/Achievements.h"
 #include "game/mission/Item.h"
 #include "game/mission/Status.h"
@@ -1908,6 +1909,36 @@ void SpaceLounge::startChat() {
         agent->setMissionString(offerText);
         message = greeting + String(" ") + introduction + String(" ") +
             offerText + String("\n") +
+            *texts->getText(random->nextInt(3) + 841);
+    } else if (!agent->isKnown() && offer == 5) {
+        ++status->field_d0;
+        String greeting = *texts->getText(random->nextInt(6) + 750);
+        String introduction = *texts->getText(random->nextInt(2) + 756);
+        String interlude = *texts->getText(random->nextInt(6) + 758);
+        introduction = status->replaceHash(
+            introduction, agent->getName(), String("#N"));
+
+        auto *galaxy = static_cast<Galaxy *>(Globals::galaxy);
+        Generator *generator = new Generator();
+        Mission *newMission = generator->createMission(
+            agent, galaxy->getSystems());
+        agent->setMission(newMission);
+        agent->field_0x28 = random->nextInt(2) + 777;
+        String offerText = *texts->getText(agent->field_0x28);
+        offerText = status->replaceHash(
+            offerText, String(newMission->getProductionGoodAmount()),
+            String("#Q"));
+        offerText = status->replaceHash(
+            offerText,
+            *texts->getText(newMission->getProductionGoodIndex() + 1274),
+            String("#P"));
+        offerText = status->replaceHash(
+            offerText, layout->formatCredits(newMission->getReward()),
+            String("#C"));
+        delete generator;
+        agent->setMissionString(offerText);
+        message = greeting + String(" ") + introduction + String(" ") +
+            interlude + offerText + String("\n") +
             *texts->getText(random->nextInt(3) + 841);
     } else {
         Mission *mission = agent->getMission();
