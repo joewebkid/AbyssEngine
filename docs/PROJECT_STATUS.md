@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-11-02 (ship 000 material links). Original Android
+ARM passes material resource **34200** to ship 000's main and two LOD
+meshes; the three zero placeholders are restored. This closes a
+specific missing link in the player ship's material path, while a live
+fix for the old null-material crash remains unverified. `BuildResourceList`
+source-shape remains **77.0%**, strict fuzzy rises **20.2% → 23.9%**.
+Windows native, ARMv7, ARM64 static and strict shared builds pass; the
+resource-table checks pass. Full ARM corpus: **4,323/4,524** originals,
+**4,762** pairs, **96.20%** source-shape, **85.96%** strict fuzzy,
+**2,741 linked-exact / 1,096 byte-exact**, zero skipped, 201 missing,
+and no pair or exact-set losses. An updated signed APK is on the Redmi
+but its separate package has not yet been installed manually. See
+[ship 000 material evidence](ARM_SHIP_000_MATERIAL_LINK_2026-11-02.md).
+
 Last reviewed: 2026-11-02 (`FModSound::getPlayingProgress` and current
 ARM64 packaging). ARM disassembly confirms event position divided by
 length, replacing the old zero-return stub. Focused source-shape rises

@@ -3727,12 +3727,12 @@ void BuildResourceList(AbyssEngine::Engine *engine) {
                                   "data/assets/main/3d/meshes/ships/ship_063_vossk_prototype_engine_glow_add.aem",
                                   32563, false));
     ADD_RES(resources[1960], 
-        17000, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_000_midorian.aem", 0, false));
+        17000, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_000_midorian.aem", 34200, false));
     ADD_RES(resources[1961], 
-        17100, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_000_midorian_lod_1.aem", 0,
+        17100, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_000_midorian_lod_1.aem", 34200,
                                                 false));
     ADD_RES(resources[1962], 
-        17101, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_000_midorian_lod_2.aem", 0,
+        17101, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_000_midorian_lod_2.aem", 34200,
                                                 false));
     ADD_RES(resources[1963], 
         18000, 4, new AbyssEngine::ResourceMesh("data/assets/main/3d/meshes/ships/ship_000_midorian_engine_add.aem",
