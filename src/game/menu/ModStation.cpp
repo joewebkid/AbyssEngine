@@ -1461,10 +1461,6 @@ void ModStation::checkHints() {
 }
 
 
-static Layout **g_ModStation_tm_layout = 0;
-
-static void **g_ModStation_tm_screenH = 0;
-
 void ModStation::OnTouchMove(int x, int y, void *touch) {
     if (this->activeTouch != touch)
         return;
@@ -1473,8 +1469,7 @@ void ModStation::OnTouchMove(int x, int y, void *touch) {
     if (this->m_nStarMapWindowOpen.bytes[0] != 0)
         return;
 
-    Layout **layoutHolder = g_ModStation_tm_layout;
-    Layout *layoutObj = *layoutHolder;
+    Layout *&layoutObj = Globals::layout;
     if (layoutObj->choiceWindowOpen != 0) {
         layoutObj->OnTouchMove(x, y);
         return;
@@ -1512,7 +1507,7 @@ void ModStation::OnTouchMove(int x, int y, void *touch) {
         return;
     }
     if (this->m_nStarMapWindowOpen.bytes[2] != 0) {
-        ((MenuTouchWindow *) (this->dlcMenu))->OnTouchMove(x, y, nullptr);
+        ((MenuTouchWindow *) (this->dlcMenu))->OnTouchMove(x, y, touch);
         return;
     }
     if (this->m_nStarMapWindowOpen.bytes[1] == 0)
@@ -1527,7 +1522,7 @@ void ModStation::OnTouchMove(int x, int y, void *touch) {
     Layout *layout = layoutObj;
     if (y <= layout->field_0xc)
         return;
-    if (*(int *) *g_ModStation_tm_screenH - layout->field_0x10 <= y)
+    if (Globals::h - layout->field_0x10 <= y)
         return;
     if (x <= static_cast<int>(this->hangarLeftX))
         return;

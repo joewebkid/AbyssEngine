@@ -7,6 +7,21 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation::OnTouchMove`).
+Station touch motion now reads `Globals::layout` and `Globals::h`
+instead of two unwritten private pointers, reloads the current
+layout after window calls, and forwards the active touch pointer to
+the DLC window. Function source-shape improves **3.6% → 78.2%**;
+strict fuzzy improves **1.3% → 87.2%**. The production-body smoke
+passes at `-O0/-O2`; Windows native, ARM64 static and ARMv7
+**209/209** builds pass. Full corpus: **4,323/4,524** originals in
+**4,764** pairs, **96.42% / 86.29%** mean source-shape / strict fuzzy,
+**2,757 linked-exact / 1,098 byte-exact**, 201 missing, zero skipped,
+no pair or exact-set losses. Main-window button-row behavior and live
+touch routing remain unverified. Next inspect `ModStation::OnTouchBegin`
+and its private pointer placeholders; Redmi testing stays stopped.
+See [touch-move evidence](MODSTATION_TOUCH_MOVE_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ScrollTouchBox` global bindings).
 The constructor, text setters and draw now use the original exported
 font, layout, canvas, display and reverse-text state instead of
