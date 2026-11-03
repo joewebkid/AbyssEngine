@@ -1823,20 +1823,20 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                     if (this->hangarWindow != nullptr)
                                         static_cast<HangarWindow *>(this->hangarWindow)->initialize();
                                 }
-                            } else if (campaign == 0 && Mission_getType_ote() == 0xb) {
-                                Status_setPassengers_ote(*status, 0);
-                                if (Mission_isCampaignMission_ote(mission) == 0)
-                                    ((Status *) (intptr_t) *status)->field_b8 += Mission_getProductionGoodAmount_ote();
-                                Status_getShip_ote();
-                                Array<Item *> *cargo = (Array<Item *> *) (intptr_t) Ship_getCargo_ote();
-                                if (cargo != 0) {
+                            } else if (campaign == 0 && mission->getType() == 0xb) {
+                                Status *statusObj = Globals::status;
+                                statusObj->setPassengers(0);
+                                if (!mission->isCampaignMission())
+                                    statusObj->field_b8 += mission->getProductionGoodAmount();
+                                Array<Item *> *cargo = statusObj->getShip()->getCargo();
+                                if (cargo != nullptr) {
                                     for (unsigned i = 0; i < cargo->size(); i = i + 1) {
-                                        if (Item_isUnsaleable_ote((*cargo)[i]) != 0 &&
-                                            (Item_getIndex_ote((*cargo)[i]) == 0x74 ||
-                                             Item_getIndex_ote((*cargo)[i]) == 0x75)) {
-                                            Ship_removeCargo1_ote((Item *) Status_getShip_ote());
-                                            if ((int) (intptr_t) this->hangarWindow != 0)
-                                                HangarWindow_initialize_ote();
+                                        if ((*cargo)[i]->isUnsaleable() &&
+                                            ((*cargo)[i]->getIndex() == 0x74 ||
+                                             (*cargo)[i]->getIndex() == 0x75)) {
+                                            statusObj->getShip()->removeCargo((*cargo)[i]);
+                                            if (this->hangarWindow != nullptr)
+                                                static_cast<HangarWindow *>(this->hangarWindow)->initialize();
                                             break;
                                         }
                                     }
