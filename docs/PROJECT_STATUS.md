@@ -7,6 +7,19 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation` radio fade).
+The original ARM literal at `0xdbf0c` is `-6000.0f`; the radio
+fade from timer `-6000` to `-1` now divides by that value.
+At timer `-3000`, the corrected alpha is `0.5` instead of `1.5`.
+Windows native, ARM64 static, and ARMv7 **209/209** builds pass.
+Focused `OnRender2D` source-shape **89.1% -> 89.2%** and strict
+fuzzy **20.6% -> 12.9%**. Full corpus: **4,323/4,524** originals,
+**4,769** pairs, **96.53% / 86.40%** mean source-shape / strict
+fuzzy, **2,763 linked-exact**, **1,099 byte-exact**, 201 missing,
+zero skipped, no pair or exact-set losses. Live radio fade behavior
+is unverified. Next audit its remaining timing boundaries from ARM.
+See [radio fade evidence](MODSTATION_RADIO_FADE_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation` module-field ABI).
 Original ARM `SetApplicationManager` writes Canvas and manager to
 module `+0x04/+0x08` during registration. `ModStation` now reads

@@ -2650,7 +2650,7 @@ void ModStation::OnRender2D() {
         } else if (timer < -6000) {
             alpha = static_cast<float>(timer + 12000) / 6000.0f;
         } else if (timer <= -1) {
-            alpha = static_cast<float>(timer + 6000) / 6000.0f + 1.0f;
+            alpha = static_cast<float>(timer + 6000) / -6000.0f + 1.0f;
         } else {
             fill = false;
         }

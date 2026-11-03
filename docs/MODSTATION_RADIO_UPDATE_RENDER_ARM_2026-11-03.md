@@ -41,6 +41,8 @@ application-manager fields at `+0x04` and `+0x08` are typed and
 asserted on ARM32. The subsequent module-field audit confirmed that
 `RegisterApplicationModule` calls `SetApplicationManager`, which
 fills both fields; `OnUpdate` and `OnRender2D` now read them directly.
+The later fade-denominator audit corrected the `-6000..-1` interval
+to divide by the ARM literal `-6000.0f`.
 
 ## Verification
 
