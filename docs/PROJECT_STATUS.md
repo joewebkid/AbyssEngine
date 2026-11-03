@@ -8,6 +8,21 @@ Pending device cleanup (user request, 2026-11-03):
   Keep the original `net.fishlabs.gof2hdallandroid2012` app and its
   OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`Status::calcCargoPrices`). Original ARM
+uses each item's minimum-price system as the source, the station's
+system as the local destination, and `Globals::globalPriceRaise` for
+the optional percentage. The reconstruction used the item and station
+indices instead and dereferenced a null modifier pointer. All three
+sources now match ARM. Focused source-shape improves **86.3% → 90.2%**;
+strict fuzzy changes **42.5% → 41.4%**. Windows native, ARM64 static
+and ARMv7 **209/209** builds pass. Full corpus: **4,323/4,524**
+originals in **4,769** pairs, mean **96.75% / 86.74%**,
+**2,779 linked-exact**, **1,108 byte-exact**, 201 missing, zero
+skipped, no pair or exact-set losses. Live price behavior and the
+nonzero modifier's producer remain unverified; next trace that producer
+and compare representative price inputs. See
+[cargo-price evidence](STATUS_CARGO_PRICE_SOURCES_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`RecordHandler` save-list slot count).
 Both record-list readers dereferenced a permanently null count
 pointer. Original ARM uses `Globals::recordSlots`; the reconstruction

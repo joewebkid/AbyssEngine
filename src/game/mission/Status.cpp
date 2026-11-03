@@ -485,8 +485,6 @@ int Status::getFreighterMissionStationBit(int station) {
     return 0;
 }
 
-static int **g_ccpPriceMod = nullptr;
-
 void Status::calcCargoPrices() {
     Galaxy *gal = Galaxy::gGalaxy;
     Array<SolarSystem *> *systems = gal->getSystems();
@@ -515,12 +513,12 @@ void Status::calcCargoPrices() {
             if (item == 0)
                 continue;
 
-            SolarSystem *itemSys = (*systems)[item->getIndex()];
+            SolarSystem *itemSys = (*systems)[item->getMinPriceSystem()];
             SolarSystem *maxSys = (*systems)[item->getMaxPriceSystem()];
             int dItem = gal->distancePercent(itemSys->getX(), itemSys->getY(),
                                              maxSys->getX(), maxSys->getY());
 
-            SolarSystem *curSys = (*systems)[station->getIndex()];
+            SolarSystem *curSys = (*systems)[station->getSystem()];
             int dHere = gal->distancePercent(itemSys->getX(), itemSys->getY(),
                                              curSys->getX(), curSys->getY());
 
@@ -540,8 +538,8 @@ void Status::calcCargoPrices() {
                         jitterMax = 1;
                     price = (base - jitterMax) + rng->nextInt((jitterMax << 1) | 1);
                 }
-                if (*g_ccpPriceMod != 0 && **g_ccpPriceMod != 0) {
-                    price = (int) ((float) price + (float) price * (float) (**g_ccpPriceMod) * 0.01f);
+                if (Globals::globalPriceRaise != 0) {
+                    price = (int) ((float) price + (float) price * (float) Globals::globalPriceRaise * 0.01f);
                 }
                 item->setPrice(price);
             }
