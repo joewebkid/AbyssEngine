@@ -17,15 +17,15 @@ struct Status {
     Ship ship;
     Station station;
     bool alienOrbit = false;
-    int gammaBits = 0;
+    float gammaRate = 0.0f;
     int mission = 106;
     Ship *getShip() { return &ship; }
     Station *getStation() { return &station; }
     bool inAlienOrbit() { return alienOrbit; }
     int getCurrentCampaignMission() { return mission; }
-    int getGammaRayDamagePerSecond(int stationIndex, int campaignMission) {
+    float getGammaRayDamagePerSecond(int stationIndex, int campaignMission) {
         assert(stationIndex == 109 && campaignMission == mission);
-        return gammaBits;
+        return gammaRate;
     }
 };
 struct FModSound {
@@ -85,7 +85,7 @@ int main() {
     status.alienOrbit = false;
     ego.PlayEngineSound();
     assert(sound.playCount == 0 && player.starts == 3);
-    status.gammaBits = 0x3f800000;
+    status.gammaRate = 1.0f;
     ego.engineSoundId = -1;
     ego.PlayEngineSound();
     assert(sound.playCount == 0 && player.starts == 4);
@@ -100,7 +100,7 @@ int main() {
     ego.dockingPointIndex = 0;
     ego.StopEngineSound();
     assert(sound.playCount == 2 && sound.lastId == 2260 && player.stops == 2);
-    status.gammaBits = 0;
+    status.gammaRate = 0.0f;
     ego.StopEngineSound();
     assert(sound.playCount == 2 && player.stops == 3);
 }

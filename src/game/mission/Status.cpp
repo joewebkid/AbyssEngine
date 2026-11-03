@@ -999,14 +999,14 @@ void Status::unlockBluePrint(int index) {
     }
 }
 
-static const int g_gammaTableA[5] = {
-    0x3f333333, 0x3ecccccd, 0x3ecccccd, 0x3e99999a, 0x3e4ccccd,
+static const float g_gammaTableA[5] = {
+    0.7f, 0.4f, 0.4f, 0.3f, 0.2f,
 };
-static const int g_gammaTableB[5] = {
-    0x40400000, 0x40000000, 0x3f800000, 0x3f000000, 0x3e99999a,
+static const float g_gammaTableB[5] = {
+    3.0f, 2.0f, 1.0f, 0.5f, 0.3f,
 };
 
-int Status::getGammaRayDamagePerSecond(int station, int campaignMission) {
+float Status::getGammaRayDamagePerSecond(int station, int campaignMission) {
     const unsigned int index = static_cast<unsigned int>(station - 0x6d);
     if (index > 4)
         return 0;
@@ -1014,7 +1014,7 @@ int Status::getGammaRayDamagePerSecond(int station, int campaignMission) {
         return g_gammaTableA[index];
     if (currentCampaignMission <= 0x9d)
         return g_gammaTableB[index];
-    return station == 0x6d ? 0x3f800000 : 0;
+    return station == 0x6d ? 1.0f : 0.0f;
 }
 
 int Status::addStationToStack(Station *s) {

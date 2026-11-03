@@ -1182,11 +1182,8 @@ void PlayerEgo::StopEngineSound() {
             && !Globals::status->inAlienOrbit()) {
             int idx = Globals::status->getStation()->getIndex();
             int cm = Globals::status->getCurrentCampaignMission();
-            union {
-                int bits;
-                float value;
-            } gammaRate = {Globals::status->getGammaRayDamagePerSecond(idx, cm)};
-            if (0.0f < gammaRate.value && this->engineSoundId != -1) {
+            float gammaRate = Globals::status->getGammaRayDamagePerSecond(idx, cm);
+            if (0.0f < gammaRate && this->engineSoundId != -1) {
                 Globals::sound->play(this->engineSoundId, nullptr, nullptr, 0.0f);
             }
         }
@@ -1897,11 +1894,8 @@ void PlayerEgo::PlayEngineSound() {
         && !Globals::status->inAlienOrbit()) {
         int idx = Globals::status->getStation()->getIndex();
         int cm = Globals::status->getCurrentCampaignMission();
-        union {
-            int bits;
-            float value;
-        } gammaRate = {Globals::status->getGammaRayDamagePerSecond(idx, cm)};
-        if (0.0f < gammaRate.value && this->engineSoundId != -1) {
+        float gammaRate = Globals::status->getGammaRayDamagePerSecond(idx, cm);
+        if (0.0f < gammaRate && this->engineSoundId != -1) {
             Globals::sound->play(this->engineSoundId, nullptr, nullptr, 0.0f);
         }
     }

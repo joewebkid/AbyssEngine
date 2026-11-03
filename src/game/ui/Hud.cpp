@@ -637,12 +637,9 @@ void Hud::draw(long long t0, long long t1, PlayerEgo *ego, bool letterbox,
 
         Status *status = Globals::status;
         Station *station = status->getStation();
-        union {
-            int bits;
-            float value;
-        } gammaRate = {status->getGammaRayDamagePerSecond(
-            station->getIndex(), status->getCurrentCampaignMission())};
-        if (gammaRate.value > 0.0f) {
+        float gammaRate = status->getGammaRayDamagePerSecond(
+            station->getIndex(), status->getCurrentCampaignMission());
+        if (gammaRate > 0.0f) {
             const int gammaFrameBase = static_cast<int>(this->field_0x444);
             const int gammaFrameY = gammaFrameBase -
                                     static_cast<int>(this->field_0x442) + gammaFrameBase;

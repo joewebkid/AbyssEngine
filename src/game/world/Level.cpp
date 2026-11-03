@@ -4865,15 +4865,12 @@ void Level::update(long long time, bool param) {
     }
 
     Station *st2 = Status::gStatus->getStation();
-    union {
-        int bits;
-        float value;
-    } gammaRate = {Status::gStatus->getGammaRayDamagePerSecond(
-        st2->getIndex(), Status::gStatus->getCurrentCampaignMission())};
+    float gammaRate = Status::gStatus->getGammaRayDamagePerSecond(
+        st2->getIndex(), Status::gStatus->getCurrentCampaignMission());
     PlayerEgo *ego = this->player;
-    if (gammaRate.value > 0.0f && ego != nullptr) {
+    if (gammaRate > 0.0f && ego != nullptr) {
         Item *equipment = Status::gStatus->getShip()->getFirstEquipmentOfSort(0x26);
-        float damageRate = gammaRate.value;
+        float damageRate = gammaRate;
         if (equipment != nullptr) {
             int attr = equipment->getAttribute(0x34);
             if (attr > 0)

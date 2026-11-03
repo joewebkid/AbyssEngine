@@ -1772,13 +1772,10 @@ ambient_dispatch_complete:
             gammaWarning = static_cast<RadioMessage *>(
                 (*this->level->getMessages())[4])->isOver();
         } else if (Status::gStatus->getCurrentCampaignMission() != 91) {
-            union {
-                int bits;
-                float value;
-            } gammaRate = {Status::gStatus->getGammaRayDamagePerSecond(
+            float gammaRate = Status::gStatus->getGammaRayDamagePerSecond(
                 Status::gStatus->getStation()->getIndex(),
-                Status::gStatus->getCurrentCampaignMission())};
-            gammaWarning = gammaRate.value > 0.0f;
+                Status::gStatus->getCurrentCampaignMission());
+            gammaWarning = gammaRate > 0.0f;
         }
         if (gammaWarning) {
             mgame_show_choice(this, 600);
@@ -2553,11 +2550,8 @@ int MGame::OnInitialize() {
             Status *status = Status::gStatus;
             int stIdx = status->getStation()->getIndex();
             int cm = Status::gStatus->getCurrentCampaignMission();
-            union {
-                int bits;
-                float value;
-            } gammaRate = {status->getGammaRayDamagePerSecond(stIdx, cm)};
-            if (gammaRate.value == 0.0f)
+            float gammaRate = status->getGammaRayDamagePerSecond(stIdx, cm);
+            if (gammaRate == 0.0f)
                 ((Player *) self->player->player)->setGammaHP(100);
         }
     }
