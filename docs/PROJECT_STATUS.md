@@ -7,6 +7,22 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation::OnTouchEnd` DLC open route).
+Opening the DLC menu now constructs or reuses the real
+`MenuTouchWindow`, checks level-up through `Globals::status`, and
+copies up to ten positions from that window's buttons into the
+original global submenu arrays. The whole function improves
+**69.1% → 70.2% source-shape**; strict fuzzy changes **21.9% →
+18.0%**. Production branch smokes pass at `-O0/-O2`; Windows native,
+ARM64 static and ARMv7 **209/209** builds pass. Full corpus:
+**4,323/4,524** originals in **4,764** pairs, **96.45% / 86.32%**
+mean source-shape / strict fuzzy, **2,757 linked-exact / 1,098
+byte-exact**, 201 missing, zero skipped, no pair or exact-set losses.
+Live DLC behavior and adjacent station button dispatch remain
+unverified. Next inspect the main station button routing; Redmi
+testing stays stopped. See
+[DLC open evidence](MODSTATION_DLC_OPEN_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation::OnTouchEnd` DLC close route).
 Closing the DLC menu now forwards the original touch arguments to
 `MenuTouchWindow`, clears the open flag on acceptance, and stores

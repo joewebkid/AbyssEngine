@@ -1706,7 +1706,6 @@ void Status_incMissionCount_ote(int status);
 
 void Status_setPassengers_ote(int status, int n);
 
-void Status_checkForLevelUp_ote();
 
 void Status_activateNewWanted_ote();
 
@@ -1781,10 +1780,6 @@ void HangarWindow_setSellMode_ote(int w);
 int SpaceLounge_hangarNeedsUpdate_ote();
 
 void SpaceLounge_refresh_ote();
-
-int MenuTouchWindow_OnTouchEnd_ote(MenuTouchWindow *w, int p1, int p2, void *p3);
-
-void MenuTouchWindow_ctor_ote(MenuTouchWindow *w, int kind);
 
 int TouchButton_OnTouchEnd_ote(int btn, int p1);
 
@@ -2515,25 +2510,20 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                 }
 
                 if (Layout_OnTouchEndR_ote((Layout *) *help, x, y) != 0) {
-                    if (this->dlcMenu == 0) {
-                        MenuTouchWindow *w = (MenuTouchWindow *) ::operator new(0x240);
-                        MenuTouchWindow_ctor_ote(w, 2);
-                        this->dlcMenu = w;
+                    MenuTouchWindow *win = static_cast<MenuTouchWindow *>(this->dlcMenu);
+                    if (win == nullptr) {
+                        win = new MenuTouchWindow(2);
+                        this->dlcMenu = win;
                     }
-                    Status_checkForLevelUp_ote();
+                    Globals::status->checkForLevelUp();
                     this->m_nStarMapWindowOpen.bytes[2] = 1;
-                    {
-                        int *row = (int *) ModStation_ote_buttonRow(this);
-                        if (row != nullptr) {
-                            int *btns = (int *) row[1];
-                            int n = row[0];
-                            int *xs = this->buttonCacheX;
-                            int *ys = this->buttonCacheY;
-                            for (int i = 0; i < n && i < 5; ++i) {
-                                void *b = (void *) btns[i];
-                                xs[i] = TouchButton_getX_ote(b);
-                                ys[i] = TouchButton_getY_ote(b);
-                            }
+                    for (unsigned i = 0; i < win->buttons->size(); ++i) {
+                        if (i < 10) {
+                            Globals::sub_menu_buttons_x[i] = static_cast<int>(
+                                static_cast<TouchButton *>((*win->buttons)[i])->getPosition().x);
+                            win = static_cast<MenuTouchWindow *>(this->dlcMenu);
+                            Globals::sub_menu_buttons_y[i] = static_cast<int>(
+                                static_cast<TouchButton *>((*win->buttons)[i])->getPosition().y);
                         }
                     }
                     return;
