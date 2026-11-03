@@ -8,6 +8,21 @@ Pending device cleanup (user request, 2026-11-03):
   Keep the original `net.fishlabs.gof2hdallandroid2012` app and its
   OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`Status::nextCampaignMission`, steps 0–9).
+The original ARM creates campaign missions on all ten opening steps.
+The reconstruction skipped step 0, misclassified several missions,
+missed status values on steps 1 and 3, used owned-item prices on step
+7, and called `makeItem` through null on step 9. These paths now
+follow the original; a source-extracted host smoke covers all ten
+steps at `-O0/-O2`. Target source-shape improves **7.5% -> 9.8%**,
+strict fuzzy **4.4% -> 4.7%**. Windows native, ARM64 static, and ARMv7
+**209/209** builds pass. Full corpus: **4,323/4,524** originals in
+**4,769** pairs, mean **96.75% / 86.74%**, **2,779 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped, no pair or exact-set
+losses. Later campaign steps and live play remain unverified. Next
+reconcile subsequent bounded steps. See
+[opening transition evidence](STATUS_CAMPAIGN_OPENING_STEPS_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`Status::getGammaRayDamagePerSecond`).
 The original function returns `float`; the reconstruction had an `int`
 declaration, integer bit-pattern tables, and six union-based callers.

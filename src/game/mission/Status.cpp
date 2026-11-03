@@ -1079,10 +1079,10 @@ struct Step {
 };
 
 static const Step kSteps[] = {
-    /*0x00*/ {0, 0, 0, 0},
-    /*0x01*/ {0x9a, 0, 0x4e, 1}, /*0x02*/ {0xb, 0, 0x4e, 0}, /*0x03*/ {0x9a, 0, 0x4e, 1},
-    /*0x04*/ {0xb, 0, 0x4e, 0}, /*0x05*/ {0x9e, 0, 0x4e, 0}, /*0x06*/ {0x4, 0, 0x4e, 0},
-    /*0x07*/ {0xb, 0, 0x4e, 0}, /*0x08*/ {0xb, 0, 0x4e, 0}, /*0x09*/ {0xb, 0, 0x4f, 0},
+    /*0x00*/ {0xb, 0, 0x4e, 1},
+    /*0x01*/ {0x9a, 0, 0x4e, 1}, /*0x02*/ {0xb, 0, 0x4e, 1}, /*0x03*/ {0x9a, 0, 0x4e, 1},
+    /*0x04*/ {0xb, 0, 0x4e, 1}, /*0x05*/ {0x9e, 0, 0x4e, 1}, /*0x06*/ {0x4, 0, 0x4e, 1},
+    /*0x07*/ {0xb, 0, 0x4e, 1}, /*0x08*/ {0xb, 0, 0x4e, 1}, /*0x09*/ {0xb, 0, 0x4f, 1},
     /*0x0a*/ {0xb, 0, 0x4c, 0}, /*0x0b*/ {0xb, 0, 0x4f, 0}, /*0x0c*/ {0x96, 0, 0, 1},
     /*0x0d*/ {0x4, 0, 0x4f, 0}, /*0x0e*/ {0xb, 0, 0x62, 0}, /*0x0f*/ {0x4, 0, 0x62, 0},
     /*0x10*/ {0xb, 0, 0x62, 0}, /*0x11*/ {0x9c, 0, 0x38, 0}, /*0x12*/ {0x9c, 0, 0x37, 0},
@@ -1129,21 +1129,25 @@ void Status::nextCampaignMission(bool advance) {
     this->field_0x100 = prevTimeLo;
     this->field_0x104 = prevTimeHi;
 
-    if (step == 0)
+    if (step == 0) {
+        setCampaignMission(new Mission(0xb, 0, 0x4e));
+        this->mission = (*missions)[0];
         return;
+    }
 
     if (step == 3) {
         this->ship->setCargo(0);
     } else if (step == 5) {
         this->ship->removeAllCargo();
     } else if (step == 7) {
+        Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
         Array<Item *> *eq = this->ship->getEquipment();
         if (eq != 0)
             for (unsigned i = 0; i < eq->size(); i = i + 1) {
                 Item *it = (*eq)[i];
                 if (it != 0) {
                     it->setUnsaleable(false);
-                    it->setPrice(it->getSinglePrice());
+                    it->setPrice((*items)[i]->getSinglePrice());
                 }
             }
         Array<Item *> *cg = this->ship->getCargo();
@@ -1152,13 +1156,14 @@ void Status::nextCampaignMission(bool advance) {
                 Item *it = (*cg)[i];
                 if (it != 0) {
                     it->setUnsaleable(false);
-                    it->setPrice(it->getSinglePrice());
+                    it->setPrice((*items)[i]->getSinglePrice());
                 }
             }
     } else if (step == 9) {
-        Item *old = this->ship->getFirstEquipmentOfSort(0);
+        Item *old = this->ship->getFirstEquipmentOfSort(0x13);
         this->ship->removeEquipment(old);
-        this->ship->addEquipment(((Item *) 0)->makeItem());
+        Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
+        this->ship->addEquipment((*items)[0x56]->makeItem(1));
     }
 
     Mission *tailMission;
@@ -1172,6 +1177,10 @@ void Status::nextCampaignMission(bool advance) {
         }
         if (s.campaign) {
             setCampaignMission(m);
+            if (step == 1)
+                m->setStatusValue(10);
+            else if (step == 3)
+                m->setStatusValue(25);
             return;
         }
         tailMission = m;
