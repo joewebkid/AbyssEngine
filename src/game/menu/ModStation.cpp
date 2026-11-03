@@ -204,30 +204,21 @@ void ModStation::setGameLoaded() {
 }
 
 
-static void **g_ModStation_suspendObj = 0;
-
 void ModStation::OnSuspend() {
     this->activeTouch = 0;
-    void **holder = g_ModStation_suspendObj;
-    void *obj = *holder;
-    if (obj != 0)
-        ((RecordHandler *) obj)->saveOptions();
+    RecordHandler *recordHandler = static_cast<RecordHandler *>(Globals::recordHandler);
+    if (recordHandler != nullptr)
+        recordHandler->saveOptions();
 }
 
 
-static void **g_ModStation_resumeObj = 0;
-
-static void **g_ModStation_resumeArg = 0;
-
 void ModStation::OnResume() {
-    void **holder = g_ModStation_resumeObj;
-    void *obj = *holder;
-    if (obj == 0)
+    FModSound *&sound = Globals::sound;
+    if (sound == nullptr)
         return;
-    if (FModSound_tryToStopMusicForBGMusic() != 0)
+    if (sound->tryToStopMusicForBGMusic() != 0)
         return;
-    int arg = *(int *) *g_ModStation_resumeArg;
-    ((FModSound *) *holder)->setVolume(1, (float) arg);
+    sound->setVolume(1, *reinterpret_cast<float *>(Globals::options));
 }
 
 

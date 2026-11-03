@@ -7,6 +7,19 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation::OnSuspend` and `OnResume`).
+Suspend now conditionally saves options through the real record handler;
+resume checks the real sound object and restores volume from the raw
+float at `Globals::options` offset zero. Both methods reach **100%**
+source-shape and strict fuzzy and become linked-exact. Windows native,
+ARM64 static and ARMv7 **209/209** builds pass. Full corpus:
+**4,323/4,524** originals in **4,767** pairs, **96.47% / 86.35%**
+mean source-shape / strict fuzzy, **2,761 linked-exact / 1,098
+byte-exact**, 201 missing, zero skipped and no pair or exact-set
+losses. Live suspend/resume and option persistence remain unverified;
+next inspect the initial status-dependent `OnTouchEnd` branch. Redmi
+testing stays stopped. See [lifecycle evidence](MODSTATION_SUSPEND_RESUME_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation::OnRelease` globals). Release
 now uses the real sound, layout and image-factory globals to stop
 effects, reload interface resources and free sound events in the
