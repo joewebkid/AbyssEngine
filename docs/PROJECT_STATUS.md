@@ -7,6 +7,20 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (submenu virtual-key predicate).
+`IsSubMenuActive` now reads the live `Globals` menu state and queries
+the current application module, matching the original ARM control
+conditions. Its source-shape improves **9.9% → 92.8%** and strict
+fuzzy **6.3% → 54.2%**; it remains non-exact. Production-body smoke
+passes at `-O0/-O2`, and Windows native, ARM64 static and ARMv7
+**209/209** builds pass. Full corpus: **4,323/4,524** originals in
+**4,763** pairs, **96.37% / 86.22%** mean source-shape / strict fuzzy,
+**2,754 linked-exact / 1,098 byte-exact**, 201 missing, zero skipped,
+and no pair or exact-set losses. Live state producers remain
+unverified. Next audit the remaining `IsInPrimaryMenu` control-flow
+difference and menu-state writers. Redmi testing stays stopped. See
+[submenu evidence](VIRTUALINPUT_SUBMENU_ACTIVE_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (menu-input predicates).
 Seven input predicates in `NFC.cpp` read unwritten private variables
 instead of the game's `Globals` state. They now use the original

@@ -137,13 +137,6 @@ namespace {
 
     constexpr int kTouchWindowBase = 0x578;
 
-    int *g_touchWindowCount;
-
-    int *g_touchWindowMode;
-    int *g_touchWindowFlags;
-
-    int *g_touchWindowFocus;
-
     const unsigned int *const *g_hashTable;
 
     constexpr float kAxisCenter = 0.5f;
@@ -281,21 +274,22 @@ void SetKeyCode(const char *name, int slot, int code) {
 int IsSubMenuActive(int player) {
     const int handle = g_virtualKeys[player].touchWindowHandle;
     if (handle <= kTouchWindowBase)
-        return false;
+        return 0;
 
     const int window = handle - (kTouchWindowBase + 1);
-    if (window >= *g_touchWindowCount)
-        return false;
+    if (window >= Globals::sub_menu_button_count)
+        return 0;
 
-    if (*g_touchWindowMode != 0) {
-        const unsigned int mode = static_cast<unsigned int>(*g_touchWindowFlags - 1);
+    if (Globals::is_menu_visible != 0) {
+        const unsigned int mode = static_cast<unsigned int>(Globals::topMenuIndex - 1);
         return mode > 1u ? 1 : 0;
     }
 
-    if (*g_touchWindowFocus != -1)
-        return true;
+    if (Globals::subMenuIndex != -1)
+        return 1;
 
-    return ApplicationManager::gAppManager->currentModuleId == 5 ? 1 : 0;
+    return reinterpret_cast<std::intptr_t>(
+               static_cast<ApplicationManager *>(Globals::appManager)->GetCurrentApplicationModule()) == 5;
 }
 
 void keyReleased(AbyssEngine::Engine *engine, int key) {
