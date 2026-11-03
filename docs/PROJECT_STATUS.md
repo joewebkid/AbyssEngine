@@ -9,6 +9,20 @@ Pending device cleanup (user request, 2026-11-03):
   OBB. Do not resume Redmi testing for this cleanup.
 
 Last reviewed: 2026-11-03 (`Status::nextCampaignMission`, steps
+17–20). Original ARM assigns all four missions to the campaign slot,
+changes the ship's race to zero on step 17, and sets mission status 6
+on step 19. Three reconstructed steps added non-campaign missions and
+both side effects were absent. These paths are corrected; the
+source-extracted smoke now covers steps 0–20 at `-O0/-O2`.
+`nextCampaignMission` source-shape improves **10.3% -> 10.6%**, strict
+fuzzy **5.1% -> 5.8%**. Windows native, ARM64 static, and ARMv7
+**209/209** builds pass. Full corpus: **4,323/4,524** originals in
+**4,769** pairs, mean **96.75% / 86.74%**, **2,779 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped, no pair or exact-set
+losses. Live progression remains unverified; next inspect steps 21–23.
+See [steps 17–20 evidence](STATUS_CAMPAIGN_STEPS_17_20_ARM_2026-11-03.md).
+
+Last reviewed: 2026-11-03 (`Status::nextCampaignMission`, steps
 10–16). Original ARM assigns all seven missions to the campaign slot;
 the reconstruction put six outside it and omitted step-12 status and
 visibility updates. These paths now match the observed ARM sequence.

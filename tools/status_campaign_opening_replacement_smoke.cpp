@@ -47,6 +47,8 @@ struct Ship {
     int requestedSort = -1;
     int cargoSetCount = 0;
     int cargoClearCount = 0;
+    int race = 1;
+    int raceSetCount = 0;
     Array<Item *> equipment;
     Array<Item *> cargo;
     void setCargo(int value) { assert(value == 0); ++cargoSetCount; }
@@ -59,6 +61,7 @@ struct Ship {
     }
     void removeEquipment(Item *item) { removed = item; }
     void addEquipment(Item *item) { added = item; }
+    void setRace(int value) { race = value; ++raceSetCount; }
 };
 
 struct Globals { static void *items; };
@@ -125,11 +128,11 @@ int main() {
     prototypes[0].price = 110;
     ship.equipment.values.push_back(&equipped);
     ship.cargo.values.push_back(&carried);
-    const int types[17] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11,
-                           11, 11, 150, 4, 11, 4, 11};
-    const int stations[17] = {78, 78, 78, 78, 78, 78, 78, 78, 78, 79,
-                              76, 79, 0, 79, 98, 98, 98};
-    for (int step = 1; step <= 16; ++step) {
+    const int types[21] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11,
+                           11, 11, 150, 4, 11, 4, 11, 156, 156, 189, 4};
+    const int stations[21] = {78, 78, 78, 78, 78, 78, 78, 78, 78, 79,
+                              76, 79, 0, 79, 98, 98, 98, 56, 55, 55, 55};
+    for (int step = 1; step <= 20; ++step) {
         status.currentCampaignMission = step;
         status.nextCampaignMission(true);
         assert(status.currentCampaignMission == step + 1);
@@ -137,7 +140,8 @@ int main() {
         assert(missions[0]->type == types[step] && missions[0]->param == 0);
         assert(missions[0]->station == stations[step]);
         assert(missions[0]->statusValue ==
-               (step == 1 ? 10 : step == 3 ? 25 : step == 12 ? 42 : -1));
+               (step == 1 ? 10 : step == 3 ? 25 : step == 12 ? 42 :
+                step == 19 ? 6 : -1));
         assert(missions[0]->visible == (step != 12));
         if (step == 3) assert(ship.cargoSetCount == 1);
         if (step == 5) assert(ship.cargoClearCount == 1);
@@ -150,8 +154,10 @@ int main() {
             assert(ship.added != nullptr && ship.added->prototypeIndex == 86);
             assert(ship.added->amount == 1);
         }
+        if (step == 17) assert(ship.race == 0 && ship.raceSetCount == 1);
         delete missions[0];
         missions[0] = nullptr;
     }
+    assert(ship.raceSetCount == 1);
     delete ship.added;
 }
