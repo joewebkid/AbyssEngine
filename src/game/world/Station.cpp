@@ -11,31 +11,31 @@ static const int kHiddenBlueprints[5] = {132, 133, 134, 129, 123};
 static const int kPirateStations[4] = {1, 33, 47, 86};
 
 Station::Station()
-    : name("Station"),
-      index(-1),
-      systemIndex(-1),
-      planet(0),
-      textureIndex(0),
-      visited(0),
-      techLevel(0),
-      attackedFriends(0),
-      items(nullptr),
-      ships(nullptr),
-      agents(nullptr) {
+    : planet(0) {
+    name = String("");
+    index = -1;
+    systemIndex = -1;
+    techLevel = 0;
+    textureIndex = 0;
+    visited = 0;
+    attackedFriends = 0;
+    items = nullptr;
+    ships = nullptr;
+    agents = nullptr;
 }
 
 Station::Station(String name, int index, int systemIndex, int techLevel, int textureIndex)
-    : name(name),
-      index(index),
-      systemIndex(systemIndex),
-      planet(0),
-      textureIndex(textureIndex),
-      visited(0),
-      techLevel(techLevel),
-      attackedFriends(0),
-      items(nullptr),
-      ships(nullptr),
-      agents(nullptr) {
+    : planet(0) {
+    this->name = name;
+    this->index = index;
+    this->systemIndex = systemIndex;
+    this->techLevel = techLevel;
+    this->textureIndex = textureIndex;
+    visited = 0;
+    attackedFriends = 0;
+    items = nullptr;
+    ships = nullptr;
+    agents = nullptr;
 }
 
 Station::~Station() {
