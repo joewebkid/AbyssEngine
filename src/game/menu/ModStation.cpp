@@ -1514,8 +1514,9 @@ void ModStation::OnTouchMove(int x, int y, void *touch) {
         return;
     ((TouchButton *) (this->buttonLaunch))->OnTouchMove(x, y);
     ((TouchButton *) (this->buttonCredits))->OnTouchMove(x, y);
+    auto *row = reinterpret_cast<Array<TouchButton *> *>(this->buttonRow);
     for (int i = 0; i != 5; i++)
-        (((TouchButton **) (intptr_t) this->buttonRow[1])[i])->OnTouchMove(x, y);
+        (*row)[i]->OnTouchMove(x, y);
     layoutObj->OnTouchMove(x, y);
     if (((NewsTicker *) (this->newsTicker))->OnTouchMove(x, y) != 0)
         return;
@@ -2581,8 +2582,9 @@ void ModStation::OnTouchBegin(int x, int y, void *touch) {
         return;
     ((TouchButton *) (this->buttonLaunch))->OnTouchBegin(x, y);
     ((TouchButton *) (this->buttonCredits))->OnTouchBegin(x, y);
+    auto *row = reinterpret_cast<Array<TouchButton *> *>(this->buttonRow);
     for (int i = 0; i != 5; i++)
-        (((TouchButton **) (intptr_t) this->buttonRow[1])[i])->OnTouchBegin(x, y);
+        (*row)[i]->OnTouchBegin(x, y);
     layoutObj->OnTouchBegin(x, y);
     if (((NewsTicker *) (this->newsTicker))->OnTouchBegin(x, y) != 0)
         return;
@@ -2894,16 +2896,17 @@ void ModStation::OnInitialize() {
             CutScene_replacePlayerShip_oi((int) (intptr_t) this->cutScene, Ship_getIndex_oi());
         }
 
+        auto *row = reinterpret_cast<Array<TouchButton *> *>(this->buttonRow);
         int camp = Status_getCurrentCampaignMission_oi();
         bool special = false;
         if (camp < 5) {
-            TouchButton_setHalfTransparent_oi(((int *) (intptr_t) this->buttonRow[1])[0]);
-            TouchButton_setHalfTransparent_oi(((int *) (intptr_t) this->buttonRow[1])[(8) / 4]);
-            TouchButton_setHalfTransparent_oi(((int *) (intptr_t) this->buttonRow[1])[(0xc) / 4]);
+            (*row)[0]->setHalfTransparent(true);
+            (*row)[2]->setHalfTransparent(true);
+            (*row)[3]->setHalfTransparent(true);
         } else if (camp < 9 || camp == 0xf) {
             special = camp == 0xf;
-            TouchButton_setHalfTransparent_oi(((int *) (intptr_t) this->buttonRow[1])[(8) / 4]);
-            TouchButton_setHalfTransparent_oi(((int *) (intptr_t) this->buttonRow[1])[(0xc) / 4]);
+            (*row)[2]->setHalfTransparent(true);
+            (*row)[3]->setHalfTransparent(true);
         }
         bool showShop = camp < 0xc || special;
         if (!showShop) {
@@ -2915,7 +2918,7 @@ void ModStation::OnInitialize() {
             }
         }
         if (showShop)
-            TouchButton_setHalfTransparent_oi(((int *) (intptr_t) this->buttonRow[1])[(4) / 4]);
+            (*row)[1]->setHalfTransparent(true);
 
         int race;
         Station *st = (Station *) Status_getStation_oi();
