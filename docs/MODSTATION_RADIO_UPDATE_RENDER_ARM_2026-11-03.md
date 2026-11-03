@@ -37,10 +37,10 @@ last message it draws image `+0x5c` with placement flags `20,68`
 and the centered scroll box. The screen fade uses the original
 timer ranges and `FillRectangle(0,0,Globals::w,Globals::h)`; the cut
 scene renders for timer values greater than `-6000`. The canvas and
-application-manager fields at `+0x04` and `+0x08` are now typed and
-asserted on ARM32. The source uses the corresponding initialized
-`Globals` objects at runtime because injection of these fields in
-the independent native host has not been verified.
+application-manager fields at `+0x04` and `+0x08` are typed and
+asserted on ARM32. The subsequent module-field audit confirmed that
+`RegisterApplicationModule` calls `SetApplicationManager`, which
+fills both fields; `OnUpdate` and `OnRender2D` now read them directly.
 
 ## Verification
 

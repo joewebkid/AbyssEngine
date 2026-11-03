@@ -7,6 +7,23 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation` module-field ABI).
+Original ARM `SetApplicationManager` writes Canvas and manager to
+module `+0x04/+0x08` during registration. `ModStation` now reads
+those members directly in update/render; cross-type offset checks
+pass on host and ARM. The style-2 station box uses an integer X field
+at `+0xa0`, with typed Y and height fields. Windows native, ARM64
+static, and ARMv7 **209/209** builds pass. Focused `OnRender2D`
+source-shape **89.4% -> 89.1%**, strict fuzzy **10.8% -> 20.6%**;
+`OnUpdate` holds **76.4%** source-shape and improves strict fuzzy
+**26.7% -> 27.1%**. Full corpus: **4,323/4,524** originals,
+**4,769** pairs, **96.53% / 86.41%** mean source-shape / strict
+fuzzy, **2,763 linked-exact**, **1,099 byte-exact**, 201 missing,
+zero skipped, no pair or exact-set losses. Live station behavior and
+the rest of the module vtable ABI remain unverified. Next refine
+remaining render String lifetimes and check host behavior. See
+[module-field evidence](MODSTATION_MODULE_FIELDS_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation::OnRender2D` main screen).
 The ARM-confirmed station header, system and technology text, owner
 badge and faction line, five menu buttons, launch and credits buttons,
@@ -18,9 +35,9 @@ temporary String lifetimes and instruction order remain different.
 Full corpus: **4,323/4,524** originals, **4,769** pairs,
 **96.53%** mean source-shape, **86.40%** strict fuzzy,
 **2,763 linked-exact**, **1,099 byte-exact**, 201 missing and zero
-skipped. No pair or exact-set losses. Live screen behavior and the
-host's provisional station box-X field remain unverified. Next
-verify host lifecycle and refine the function from ARM evidence.
+skipped. No pair or exact-set losses. Live screen behavior remains
+unverified; a later module-field audit types the box-X field.
+Next refine the function from ARM evidence.
 See [main-screen evidence](MODSTATION_MAIN_RENDER_ARM_2026-11-03.md).
 
 Last reviewed: 2026-11-03 (`ModStation::OnRender2D` child windows).

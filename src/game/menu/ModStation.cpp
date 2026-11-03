@@ -966,7 +966,7 @@ void Engine_setHangarLightIntensity_ou(float v);
 void ModStation::OnUpdate() {
     int statusHandle = static_cast<int>(reinterpret_cast<intptr_t>(Globals::status));
     int *status = &statusHandle;
-    auto *manager = static_cast<ApplicationManager *>(Globals::appManager);
+    auto *manager = this->manager;
 
     int elapsed;
     int e = static_cast<int>(manager->GetElapsedTimeMillis());
@@ -2613,7 +2613,7 @@ int ModStation::OnTouchMove(int x, int y) { return x; }
 
 
 void ModStation::OnRender2D() {
-    PaintCanvas *canvas = Globals::Canvas;
+    PaintCanvas *canvas = this->canvas;
     canvas->Begin2d();
     canvas->SetColor(0xffffffffu);
 
@@ -2671,9 +2671,9 @@ void ModStation::OnRender2D() {
         layout->drawHeader(stationName);
 
         if (this->m_nStarMapWindowOpen.bytes[1] != 0) {
-            layout->drawBox(2, static_cast<int>(reinterpret_cast<intptr_t>(this->hangarShipGeom)),
-                            this->field_0xa4, static_cast<int>(this->hangarLeftX),
-                            this->field_0xac, String(""));
+            layout->drawBox(2, static_cast<int>(this->stationBoxX),
+                            this->stationBoxY, static_cast<int>(this->hangarLeftX),
+                            this->stationBoxHeight, String(""));
 
             SolarSystem *system = status->getSystem();
             int badge = this->departPending;
@@ -3376,9 +3376,9 @@ void ModStation::OnInitialize() {
         this->m_nStarMapWindowOpen.bytes[3] = 0;
         Layout *layout = Globals::layout;
         this->hangarLeftX = layout->field_0xcc;
-        this->hangarShipGeom = nullptr;
-        this->field_0xa4 = layout->field_0xc;
-        this->field_0xac = Globals::h - layout->field_0xc - layout->field_0x10;
+        this->stationBoxX = 0;
+        this->stationBoxY = layout->field_0xc;
+        this->stationBoxHeight = Globals::h - layout->field_0xc - layout->field_0x10;
 
         this->buttonLaunch = new TouchButton(String(""), 12, Globals::w, Globals::h, 0x22);
         String credits = layout->formatCredits(Globals::status->getCredits());

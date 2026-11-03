@@ -4,6 +4,7 @@
 #include <cstdint>
 #include "../../engine/core/AEString.h"
 #include "engine/core/Array.h"
+#include "engine/core/IApplicationModule.h"
 #include "engine/math/EaseInOutMatrix.h"
 #include "engine/math/Vector.h"
 #include "game/core/CutScene.h"
@@ -99,11 +100,10 @@ public:
         FlagWord scrollBoxFlags;
     };
     Mission *dialogueMission; // 0x9c on ARM32: active dialogue mission
-    void *hangarShipGeom;     // 0xa0
-
-    int field_0xa4;           // 0xa4 (trailing pad after hangarShipGeom)
+    intptr_t stationBoxX;     // 0xa0 on ARM32
+    int stationBoxY;          // 0xa4 on ARM32
     intptr_t hangarLeftX;     // 0xa8  (Layout+0xcc; station touch/ticker boundary)
-    int field_0xac;           // 0xac
+    int stationBoxHeight;     // 0xac on ARM32
     FlagWord cameraFlags;     // 0xb0  bytes [0]=camActive [1]=? [3]=camArmed
     int field_0xb4;           // 0xb4 radio scene timer
     int field_0xb8;           // 0xb8 radio scroll hold timer
@@ -202,6 +202,13 @@ public:
     void showMapWindow();
 };
 
+static_assert(offsetof(ModStation, canvas) ==
+              offsetof(AbyssEngine::IApplicationModule, paintCanvas),
+              "ModStation canvas must match the registered module ABI");
+static_assert(offsetof(ModStation, manager) ==
+              offsetof(AbyssEngine::IApplicationModule, applicationManager),
+              "ModStation manager must match the registered module ABI");
+
 #if __SIZEOF_POINTER__ == 4
 static_assert(offsetof(ModStation, closeHangarAfterCredits) == 0x18,
               "ModStation::closeHangarAfterCredits @ 0x18");
@@ -215,6 +222,12 @@ static_assert(offsetof(ModStation, departPending) == 0x4c,
               "ModStation::ticker faction image @ 0x4c");
 static_assert(offsetof(ModStation, hangarLeftX) == 0xa8,
               "ModStation::station ticker/touch X @ 0xa8");
+static_assert(offsetof(ModStation, stationBoxX) == 0xa0,
+              "ModStation::station box X @ 0xa0");
+static_assert(offsetof(ModStation, stationBoxY) == 0xa4,
+              "ModStation::station box Y @ 0xa4");
+static_assert(offsetof(ModStation, stationBoxHeight) == 0xac,
+              "ModStation::station box height @ 0xac");
 static_assert(offsetof(ModStation, dlcMenu) == 0x50, "ModStation::dlcMenu @ 0x50");
 static_assert(offsetof(ModStation, choiceWindow) == 0x70, "ModStation::choiceWindow @ 0x70");
 static_assert(offsetof(ModStation, spaceLounge) == 0x74, "ModStation::spaceLounge @ 0x74");

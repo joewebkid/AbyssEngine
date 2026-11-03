@@ -55,9 +55,10 @@ no lost linked-exact matches (2,763 retained), and no lost byte-exact
 matches (1,099 retained). Full report:
 `_work/modstation_main_full_20261103.json`.
 
-This path has not been exercised in live gameplay. The standalone
-host still stores the ARM `+0xa0` box-X value in a provisional pointer
-field, and no runtime test has confirmed the text layouts or image
-assets. The next priority is to verify the station host lifecycle and
-the remaining `OnRender2D` String/field shape without changing the
-confirmed behavior to improve a metric. Redmi testing remains stopped.
+This path has not been exercised in live gameplay. A subsequent
+module-field audit typed the ARM `+0xa0` box-X value as an integer
+and confirmed Canvas/manager injection through module registration.
+No runtime test has confirmed the text layouts or image assets. The
+next priority is the remaining `OnRender2D` String/field shape without
+changing the confirmed behavior to improve a metric. Redmi testing
+remains stopped.
