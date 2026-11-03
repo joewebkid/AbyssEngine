@@ -7,6 +7,20 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`EaseInOutMatrix::SetRange` rotation delta).
+Original Android ARM converts the starting quaternion to a matrix,
+reconstructs a quaternion from that matrix, and subtracts this
+reconstructed value from the target quaternion. The source had
+subtracted the original value directly; that missing round trip is
+restored. Focused `SetRange` source-shape improves **83.1% → 96.0%**;
+strict fuzzy changes **43.9% → 40.9%**. Windows native, ARM64 static
+and ARMv7 **209/209** builds pass. Full corpus: **4,323/4,524**
+originals in **4,769** pairs, mean **96.60% / 86.49%** source-shape /
+strict fuzzy, **2,767 linked-exact**, **1,099 byte-exact**, 201
+missing, zero skipped, with no pair or exact-set losses. Live
+interpolation remains unverified. Next audit `UpdateCurrentValue`.
+See [rotation evidence](EASEINOUTMATRIX_SETRANGE_ROTATION_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`EaseInOutMatrix` parameterized constructor).
 Original Android ARM zeroes position and delta vector members in
 their construction order before `SetRange`; the reconstruction

@@ -51,11 +51,19 @@ namespace AbyssEngine {
 
         m_q0.Set(mn);
 
+        AEMath::Matrix rotation(1.0f, 0.0f, 0.0f, 0.0f,
+                                0.0f, 1.0f, 0.0f, 0.0f,
+                                0.0f, 0.0f, 1.0f, 0.0f,
+                                1.0f, 1.0f, 1.0f);
+        m_q0.Convert(rotation);
+        Quaternion baseRotation;
+        baseRotation.Set(rotation);
+
         AEMath::Vector minPos = AEMath::MatrixGetPosition(mn);
         this->m_minPos = minPos;
 
         Quaternion qMax(mx);
-        m_q1 = qMax - m_q0;
+        m_q1 = qMax - baseRotation;
 
         AEMath::Vector maxPos = AEMath::MatrixGetPosition(mx);
         this->m_posDelta = maxPos - minPos;
