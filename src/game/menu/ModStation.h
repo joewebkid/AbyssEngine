@@ -13,6 +13,7 @@
 class CutScene;
 class DialogueWindow;
 class MissionsWindow;
+class Mission;
 class NewsTicker;
 class StarMap;
 namespace AbyssEngine { 
@@ -62,7 +63,7 @@ public:
         FlagWord departPendingFlags;
     };
     void *dlcMenu;
-    int activeMission;
+    int activeMission; // 0x54: radio/credits holder, not the dialogue mission
     void *radioMessages;
     int field_0x5c;
     // Android +0x60..+0x63: [0]=radio/cutscene, [1]=station main UI,
@@ -95,7 +96,7 @@ public:
         void *scrollBox;                             // 0x88
         FlagWord scrollBoxFlags;
     };
-    int introTimer;
+    Mission *dialogueMission; // 0x9c on ARM32: active dialogue mission
     void *hangarShipGeom;     // 0xa0
 
     int field_0xa4;           // 0xa4 (trailing pad after hangarShipGeom)
@@ -211,6 +212,8 @@ static_assert(offsetof(ModStation, departPending) == 0x4c,
 static_assert(offsetof(ModStation, hangarLeftX) == 0xa8,
               "ModStation::station ticker/touch X @ 0xa8");
 static_assert(offsetof(ModStation, dlcMenu) == 0x50, "ModStation::dlcMenu @ 0x50");
+static_assert(offsetof(ModStation, dialogueMission) == 0x9c,
+              "ModStation::dialogueMission @ 0x9c");
 static_assert(offsetof(ModStation, m_nStarMapWindowOpen) == 0x60,
               "ModStation::DLC open flags @ 0x60");
 static_assert(offsetof(ModStation, subWindowFlags) == 0x64,

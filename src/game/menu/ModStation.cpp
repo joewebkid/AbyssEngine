@@ -1201,7 +1201,7 @@ void ModStation::OnUpdate() {
                        sidx == 0x60 && Status_getCurrentCampaignMission_ou() <= 0x96) {
                 Status_setCurrentCampaignMission_ou(*status);
                 DialogueWindow *dw = new DialogueWindow();
-                this->activeMission = (int) (intptr_t) m;
+                this->dialogueMission = m;
                 this->dialogueWindow = dw;
                 this->dialogueWindow->set(m, 1, -1);
                 this->modalFlags.bytes[1] = 1;
@@ -1237,7 +1237,7 @@ void ModStation::OnUpdate() {
                     }
                 }
             } else {
-                this->activeMission = (int) (intptr_t) m;
+                this->dialogueMission = m;
                 DialogueWindow *dw = new DialogueWindow(m, (Level *) 0, 1);
                 this->modalFlags.bytes[1] = 1;
                 this->dialogueWindow = dw;
@@ -1802,21 +1802,21 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
     int *status = *(int **) g_ote_status;
     if (this->modalFlags.bytes[1] != 0) {
         if (this->dialogueWindow->OnTouchEnd(x, y) != 0) {
-            if (this->activeMission != 0) {
+            if (this->dialogueMission != 0) {
                 {
-                        Mission *mission = (Mission *) this->activeMission;
+                        Mission *mission = this->dialogueMission;
 
                         if (mission != 0) {
-                            int type = Mission_getType_ote();
-                            int campaign = Mission_isCampaignMission_ote(mission);
+                            int type = mission->getType();
+                            int campaign = mission->isCampaignMission();
                             if (type == 8) {
                                 if (campaign == 0) {
-                                    int ship = Status_getShip_ote();
-                                    int good = Mission_getProductionGoodIndex_ote(mission);
-                                    Mission_getProductionGoodAmount_ote();
-                                    Ship_removeCargo_ote(ship, good);
-                                    if ((int) (intptr_t) this->hangarWindow != 0)
-                                        HangarWindow_initialize_ote();
+                                    Ship *ship = Globals::status->getShip();
+                                    int good = mission->getProductionGoodIndex();
+                                    int amount = mission->getProductionGoodAmount();
+                                    ship->removeCargo(good, amount);
+                                    if (this->hangarWindow != nullptr)
+                                        static_cast<HangarWindow *>(this->hangarWindow)->initialize();
                                 }
                             } else if (campaign == 0 && Mission_getType_ote() == 0xb) {
                                 Status_setPassengers_ote(*status, 0);
@@ -1883,7 +1883,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                     Status_getCurrentCampaignMission_ote();
                                 Status_changeCredits_ote(*status);
                                 Status_removeMission_ote(*status);
-                                this->activeMission = 0;
+                                this->dialogueMission = 0;
                                 if ((int) (intptr_t) this->spaceLounge != 0)
                                     SpaceLounge_refresh_ote();
                                 this->modalFlags.bytes[1] = 0;
@@ -1936,7 +1936,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                     Status_getCurrentCampaignMission_ote();
                                 Status_changeCredits_ote(*status);
                                 Status_removeMission_ote(*status);
-                                this->activeMission = 0;
+                                this->dialogueMission = 0;
                                 if ((int) (intptr_t) this->spaceLounge != 0)
                                     SpaceLounge_refresh_ote();
                                 this->modalFlags.bytes[1] = 0;
@@ -1946,7 +1946,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                             }
                             if (d == 1) {
                                 Status_removeMission_ote(*status);
-                                this->activeMission = 0;
+                                this->dialogueMission = 0;
                                 Status_setMission_ote(*status);
                                 this->selectedButton = 1;
                                 this->modalFlags.bytes[1] = 0;
@@ -1969,7 +1969,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                 if (cm == 0x12) {
                                     Status_removeMission_ote(*status);
                                     this->modalFlags.bytes[1] = 0;
-                                    this->activeMission = 0;
+                                    this->dialogueMission = 0;
                                     return;
                                 }
 
@@ -1987,7 +1987,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                             Status_getCurrentCampaignMission_ote();
                                         Status_changeCredits_ote(*status);
                                         Status_removeMission_ote(*status);
-                                        this->activeMission = 0;
+                                        this->dialogueMission = 0;
                                         if ((int) (intptr_t) this->spaceLounge != 0)
                                             SpaceLounge_refresh_ote();
                                         this->modalFlags.bytes[1] = 0;
@@ -2014,7 +2014,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                             Status_getCurrentCampaignMission_ote();
                                         Status_changeCredits_ote(*status);
                                         Status_removeMission_ote(*status);
-                                        this->activeMission = 0;
+                                        this->dialogueMission = 0;
                                         if ((int) (intptr_t) this->spaceLounge != 0)
                                             SpaceLounge_refresh_ote();
                                         this->modalFlags.bytes[1] = 0;
@@ -2042,7 +2042,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                             Status_getCurrentCampaignMission_ote();
                                         Status_changeCredits_ote(*status);
                                         Status_removeMission_ote(*status);
-                                        this->activeMission = 0;
+                                        this->dialogueMission = 0;
                                         if ((int) (intptr_t) this->spaceLounge != 0)
                                             SpaceLounge_refresh_ote();
                                         this->modalFlags.bytes[1] = 0;
@@ -2075,7 +2075,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                             Status_getCurrentCampaignMission_ote();
                                         Status_changeCredits_ote(*status);
                                         Status_removeMission_ote(*status);
-                                        this->activeMission = 0;
+                                        this->dialogueMission = 0;
                                         if ((int) (intptr_t) this->spaceLounge != 0)
                                             SpaceLounge_refresh_ote();
                                         this->modalFlags.bytes[1] = 0;
@@ -2094,7 +2094,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                             Status_getCurrentCampaignMission_ote();
                                         Status_changeCredits_ote(*status);
                                         Status_removeMission_ote(*status);
-                                        this->activeMission = 0;
+                                        this->dialogueMission = 0;
                                         if ((int) (intptr_t) this->spaceLounge != 0)
                                             SpaceLounge_refresh_ote();
                                         this->modalFlags.bytes[1] = 0;
@@ -2110,7 +2110,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                         Status_getCurrentCampaignMission_ote();
                                     Status_changeCredits_ote(*status);
                                     Status_removeMission_ote(*status);
-                                    this->activeMission = 0;
+                                    this->dialogueMission = 0;
                                     if ((int) (intptr_t) this->spaceLounge != 0)
                                         SpaceLounge_refresh_ote();
                                     this->modalFlags.bytes[1] = 0;
@@ -2121,7 +2121,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                         }
 
                         Status_removeMission_ote(*status);
-                        this->activeMission = 0;
+                        this->dialogueMission = 0;
                         Status_setMission_ote(*status);
                         this->modalFlags.bytes[1] = 0;
                         ((Status *) (intptr_t) *status)->wanted = 0; /* cutscene slot (+0x0) */
@@ -2834,7 +2834,7 @@ void ChoiceWindow_set1_oiImpl(void *cw, int textStr);
 void ModStation::OnInitialize() {
     int *status = *(int **) g_oi_status;
 
-    this->introTimer = 0;
+    this->dialogueMission = 0;
 
     if ((int) (intptr_t) this->cutScene == 0) {
         CutScene *cs = (CutScene *) ::operator new(0xa0);
