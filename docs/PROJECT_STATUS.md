@@ -7,6 +7,22 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (FBO texture filter argument).
+Original ARM `FBOContainer::Create` uses its first boolean argument
+to select linear versus nearest texture filtering; the recovered
+implementation used the second, reversing both existing call sites.
+The parameter and branch shape are restored. Focused `Create` rose
+from **97.4% source-shape / 91.9% strict fuzzy** to **100% / 100%**
+and gained a linked-exact match. Windows native, ARM64 static and
+ARMv7 **209/209** builds pass. The full ARM corpus compared
+**4,323/4,524** originals in **4,762** pairs at **96.24% mean
+source-shape / 86.00% strict fuzzy**, with **2,742 linked-exact /
+1,096 byte-exact**, 201 missing and zero skipped. The comparison-pair
+and byte-exact sets have no losses; the sole linked-exact gain is
+`FBOContainer::Create`. Live GLES output remains unverified; Redmi
+testing remains stopped. Next inspect FBO release/capture lifecycle.
+See [FBO filter evidence](FBO_CONTAINER_CREATE_FILTER_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (startup refractive framebuffer).
 Original ARM `Engine::InitGL` checks `enableShader` and
 `EnablePostEffect` before creating `refractFBO` with
@@ -21,8 +37,8 @@ originals in **4,762** pairs at **96.24% mean source-shape / 85.99%
 strict fuzzy**, with **2,741 linked-exact / 1,096 byte-exact**, 201
 missing, zero skipped and no pair or exact-set losses. Live FBO
 creation and visible output remain unverified; Redmi testing is
-stopped. Next: inspect `FBOContainer::Create` flags and attachments,
-then test on a permitted host. See
+stopped. The `Create` argument roles were resolved in the subsequent
+[FBO filter audit](FBO_CONTAINER_CREATE_FILTER_ARM_2026-11-03.md). See
 [InitGL FBO evidence](ENGINE_INITGL_REFRACT_FBO_ARM_2026-11-03.md).
 
 Last reviewed: 2026-11-03 (material-alpha GL call target).

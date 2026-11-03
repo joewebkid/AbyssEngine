@@ -24,7 +24,7 @@ namespace AbyssEngine {
 
         ~FBOContainer();
 
-        void Create(int width, int height, bool a, bool linear);
+        void Create(int width, int height, bool linear, bool unused);
 
         void Release();
 

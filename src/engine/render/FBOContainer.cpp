@@ -19,7 +19,7 @@ namespace AbyssEngine {
         Release();
     }
 
-    void FBOContainer::Create(int width, int height, bool a, bool linear) {
+    void FBOContainer::Create(int width, int height, bool linear, bool /*unused*/) {
         this->width = width;
         this->height = height;
         glGenFramebuffers(1, &this->framebuffer);
@@ -29,15 +29,13 @@ namespace AbyssEngine {
         glPixelStorei(0xcf5, 1);
         glTexParameteri(0xde1, 0x2802, 0x812f);
         glTexParameteri(0xde1, 0x2803, 0x812f);
-        int filter;
         if (linear) {
             glTexParameteri(0xde1, 0x2800, 0x2601);
-            filter = 0x2601;
+            glTexParameteri(0xde1, 0x2801, 0x2601);
         } else {
             glTexParameteri(0xde1, 0x2800, 0x2600);
-            filter = 0x2600;
+            glTexParameteri(0xde1, 0x2801, 0x2600);
         }
-        glTexParameteri(0xde1, 0x2801, filter);
         glTexImage2D(0xde1, 0, 0x1908, this->width, this->height, 0, 0x1908, 0x1401, 0);
         glFramebufferTexture2D(0x8d40, 0x8ce0, 0xde1, this->texture, 0);
         glGenRenderbuffers(1, &this->renderbuffer);

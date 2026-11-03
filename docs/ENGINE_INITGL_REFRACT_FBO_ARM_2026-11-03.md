@@ -16,11 +16,13 @@ local `g_Engine_supportsFBO` integer that had no writer. It passed
 recovered source now follows the original gate, data default, name
 and call arguments. The unused local gate was removed.
 
-The second `Create` flag controls texture filtering in the current
-`FBOContainer` implementation, so this changes the refractive texture
-from linear to nearest filtering. The first flag is currently unused
-inside that method; its original call value is restored, but any
-intended effect of that flag remains unverified.
+The original `Create` body copies the first boolean argument from ARM
+register `r3` and uses it to choose the texture filter. The second
+boolean argument is passed on the stack and is unused there. The
+reconstruction had these roles reversed; the subsequent
+[container audit](FBO_CONTAINER_CREATE_FILTER_ARM_2026-11-03.md)
+restores the original filter selection. With this call, the refractive
+texture uses linear filtering.
 
 Windows native and ARM64 static builds pass. The rebuilt native object
 places `EnablePostEffect` in initialized data. Live FBO creation and
