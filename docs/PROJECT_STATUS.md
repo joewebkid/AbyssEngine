@@ -7,6 +7,27 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (embedded Engine shader arrays).
+Original Android ARM constructs the triangle-count and shader arrays
+inside `Engine` at offsets `0x3d8` and `0x510`. The reconstruction
+used pointers to separate arrays, changing the object ABI. Both
+arrays are now embedded at the confirmed offsets with ARM layout
+assertions; `ShaderRegister` uses `delete[]` for its temporary name
+buffer and the destructor calls the original `ArrayReleaseClasses`.
+Focused `ShaderRegister` source-shape improves **97.5% → 99.2%**,
+`DoPostEffect` **97.8% → 98.4%**, and the destructor **88.0% → 93.9%**.
+`SwapBuffer` and `ReloadShaders` became byte-exact. Windows native,
+ARM64 static, ARMv7 **209/209** and `-O0/-O2` post-effect routing
+smokes pass. Full ARM coverage is **4,323/4,524** originals in
+**4,763** pairs at **96.25% mean source-shape / 86.04% strict fuzzy**,
+with **2,746 linked-exact / 1,098 byte-exact**, 201 missing and zero
+skipped. One comparison pair, four linked-exact and two byte-exact
+matches were gained; no pair or exact match was lost. Live shader
+registration and GLES rendering remain unverified. Next audit the
+remaining `Engine` constructor differences and visible effect output
+on a permitted host. Redmi testing remains stopped. See
+[embedded array evidence](ENGINE_INLINE_SHADER_ARRAYS_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (post-effect shader dispatch and routing).
 Original ARM `DoPostEffect` selects `GlowPPShader`, `BloomShader`
 and `BlurShader` by their real static indices; the reconstruction

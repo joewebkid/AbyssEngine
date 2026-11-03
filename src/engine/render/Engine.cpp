@@ -343,19 +343,19 @@ void Engine::SetGravValue(double x, double y, double z) {
 
 void Engine::SwapBuffer() {
     uint32_t index = 0;
-    while (index < this->triangleCounts->size()) {
-        (*this->triangleCounts)[index] = 0;
+    while (index < this->triangleCounts.size()) {
+        this->triangleCounts[index] = 0;
         index += 1;
     }
 }
 
 void Engine::ReloadShaders() {
     uint32_t index = 0;
-    while (index < this->shaders->size()) {
-        ShaderBaseStruct *shader = (*this->shaders)[index];
+    while (index < this->shaders.size()) {
+        ShaderBaseStruct *shader = this->shaders[index];
         shader->DeleteShader();
 
-        shader = (*this->shaders)[index];
+        shader = this->shaders[index];
         shader->Init(this);
         index += 1;
     }
@@ -420,8 +420,8 @@ void Engine::SetAddData(void *data, int size) {
 
 void Engine::ShaderUpdate() {
     uint32_t index = 0;
-    while (index < this->shaders->size()) {
-        (*this->shaders)[index]->Update();
+    while (index < this->shaders.size()) {
+        this->shaders[index]->Update();
         index += 1;
     }
 }
@@ -739,10 +739,7 @@ Engine::~Engine() {
     this->fileInterface = 0;
 
     AEFile::Release();
-    for (uint32_t i = 0; i < this->shaders->size(); ++i) {
-        delete (*this->shaders)[i];
-    }
-    ArrayRemoveAll(*(this->shaders));
+    ArrayReleaseClasses(this->shaders);
 
     delete this->postEffectFBO;
     this->postEffectFBO = 0;
@@ -752,8 +749,6 @@ Engine::~Engine() {
 
     AbyssEngine::MeshRelease(this, &this->quadMesh);
     this->ReleaseGL();
-    delete this->shaders;
-    delete this->triangleCounts;
 }
 
 void Engine::ReleaseGL() {
@@ -776,20 +771,23 @@ void Engine::AfterGLInit() {
 
 void Engine::DrawCloakFBO(FBOContainer *fbo) {
     if (g_Engine_useShaders != 0) {
-        ShaderBaseStruct *shader = (*this->shaders)[g_Engine_cloakShader];
+        ShaderBaseStruct *shader = this->shaders[g_Engine_cloakShader];
         shader->RenderEffect(fbo, this);
     }
 }
 
 void Engine::ShaderRegister(ShaderBaseStruct *shader) {
     if (shader != 0) {
-        String name = shader->GetShaderName();
-        char *text = name.GetAEChar();
+        char *text;
+        {
+            String name = shader->GetShaderName();
+            text = name.GetAEChar();
+        }
 
         shader->Init(this);
-        ArrayAdd(shader, *(this->shaders));
-        ArrayAdd(0, *(this->triangleCounts));
-        ::operator delete(text);
+        ArrayAdd(shader, this->shaders);
+        ArrayAdd(0, this->triangleCounts);
+        ::operator delete[](text);
     }
 }
 
@@ -908,7 +906,7 @@ void Engine::ShaderSetActive(int shaderIndex, Mesh *mesh) {
     }
 
     bool hasExtra = mesh != 0 && mesh->hasAnimation != 0;
-    ShaderBaseStruct *shader = (*this->shaders)[shaderIndex];
+    ShaderBaseStruct *shader = this->shaders[shaderIndex];
     if (shader == 0) {
         return;
     }
@@ -917,17 +915,17 @@ void Engine::ShaderSetActive(int shaderIndex, Mesh *mesh) {
 
     if (shader->program != this->currentProgram) {
         shader->UseShader(hasExtra);
-        shader = (*this->shaders)[shaderIndex];
+        shader = this->shaders[shaderIndex];
         this->currentProgram = shader->program;
         g_Engine_currentShader = shaderIndex;
         g_Engine_activeShader = shaderIndex;
     }
     shader->UseShader(hasExtra);
-    shader = (*this->shaders)[shaderIndex];
+    shader = this->shaders[shaderIndex];
     shader->UpdateMeshData(mesh, this);
     if (mesh != 0) {
         uint32_t triangles = ((unsigned) (mesh->indexCount) / (unsigned) (3));
-        (*this->triangleCounts)[shaderIndex] += triangles;
+        this->triangleCounts[shaderIndex] += triangles;
     }
 }
 
@@ -939,7 +937,7 @@ void Engine::DoPostEffect() {
         FBOContainer *slot = current;
         if ((flags & 2) != 0) {
             flags &= ~2u;
-            ShaderBaseStruct *shader = (*this->shaders)[GlowPPShader::ShaderIndex];
+            ShaderBaseStruct *shader = this->shaders[GlowPPShader::ShaderIndex];
             if (flags == 0) {
                 shader->RenderEffect(current, this);
             } else {
@@ -950,7 +948,7 @@ void Engine::DoPostEffect() {
         }
         if ((this->postEffectFlags & 1) != 0) {
             flags &= ~1u;
-            ShaderBaseStruct *shader = (*this->shaders)[BloomShader::ShaderIndex];
+            ShaderBaseStruct *shader = this->shaders[BloomShader::ShaderIndex];
             if (flags == 0) {
                 shader->RenderEffect(slot, this);
             } else {
@@ -961,7 +959,7 @@ void Engine::DoPostEffect() {
             }
         }
         if ((this->postEffectFlags & 4) != 0) {
-            ShaderBaseStruct *shader = (*this->shaders)[BlurShader::ShaderIndex];
+            ShaderBaseStruct *shader = this->shaders[BlurShader::ShaderIndex];
             float strength;
             Vector center;
             std::memcpy(&strength, &this->field_0x3c8, sizeof(strength));
@@ -1222,7 +1220,7 @@ void Engine::LightSetLightColorAmbient(float red, float green, float blue, unsig
 }
 
 void Engine::ShaderSetInActive() {
-    ShaderBaseStruct *shader = (*this->shaders)[g_Engine_activeShader];
+    ShaderBaseStruct *shader = this->shaders[g_Engine_activeShader];
     shader->SetInActive();
 }
 
@@ -1269,12 +1267,10 @@ Engine::Engine() {
     up.y = 0.0f;
     up.z = 0.0f;
     self->lightDir = up;
-    self->triangleCounts = new Array<int>();
     self->field_0x478 = 0;
     self->field_0x400 = 0;
     self->field_0x468 = up;
     self->fogColor = up;
-    self->shaders = new Array<ShaderBaseStruct *>();
     self->quadMesh = nullptr;
     self->viewFramebuffer = 0;
     self->postEffectFlags = 0;

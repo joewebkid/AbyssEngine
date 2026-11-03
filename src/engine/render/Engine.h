@@ -288,9 +288,7 @@ namespace AbyssEngine {
         uint32_t field_0x3cc;
         uint32_t field_0x3d0;
         uint32_t field_0x3d4;
-        uint32_t field_0x3d8;
-        Array<int> *triangleCounts;
-        uint32_t field_0x3e0;
+        Array<int> triangleCounts;
 
         union {
             int currentProgram;
@@ -387,8 +385,7 @@ namespace AbyssEngine {
             };
         };
 
-        uint32_t shaderCount;
-        Array<ShaderBaseStruct *> *shaders;
+        Array<ShaderBaseStruct *> shaders;
 #if __SIZEOF_POINTER__ == 8
         // Keep the original 32-bit field layout while retaining a full port pointer.
         float *lineVerticesPort;
@@ -641,6 +638,8 @@ namespace AbyssEngine {
     static_assert(__builtin_offsetof(Engine, materialSpecular) == 0x2b8, "ARM specular material offset");
     static_assert(__builtin_offsetof(Engine, lightAmbientShaded) == 0x2cc, "ARM shaded light offset");
     static_assert(__builtin_offsetof(Engine, field_0x2fc) == 0x2fc, "ARM light vector offset");
+    static_assert(__builtin_offsetof(Engine, triangleCounts) == 0x3d8, "ARM triangle count array offset");
+    static_assert(__builtin_offsetof(Engine, shaders) == 0x510, "ARM shader array offset");
     static_assert(__builtin_offsetof(Engine, triangleCountClientA) == 0x58, "ARM client triangle A offset");
     static_assert(__builtin_offsetof(Engine, triangleCountClientB) == 0x5c, "ARM client triangle B offset");
     static_assert(__builtin_offsetof(Engine, drawCallCountB) == 0x60, "ARM draw call B offset");

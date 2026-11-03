@@ -60,7 +60,7 @@ struct Engine {
     uint32_t postEffectFlags = 0;
     FBOContainer *postEffectFBO = nullptr;
     FBOContainer *refractFBO = nullptr;
-    std::vector<ShaderBaseStruct *> *shaders = nullptr;
+    std::vector<ShaderBaseStruct *> shaders;
     uint32_t field_0x3c8 = 0;
     uint32_t field_0x3cc = 0, field_0x3d0 = 0, field_0x3d4 = 0;
     uint32_t clearedCode = 0;
@@ -83,7 +83,7 @@ static void check(uint32_t flags, std::vector<Event> expected,
     engine.postEffectFlags = flags;
     engine.postEffectFBO = &post;
     engine.refractFBO = &refract;
-    engine.shaders = &shaders;
+    engine.shaders = shaders;
     const float strength = 0.75f;
     const Vector center{0.25f, 0.5f, 0.75f};
     std::memcpy(&engine.field_0x3c8, &strength, sizeof(strength));
@@ -124,7 +124,7 @@ int main() {
     engine.postEffectFlags = 4;
     engine.postEffectFBO = &post;
     engine.refractFBO = &refract;
-    engine.shaders = &shaders;
+    engine.shaders = shaders;
     g_Engine_postEffectFlag = 1;
     events.clear();
     engine.DoPostEffect();
