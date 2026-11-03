@@ -1841,33 +1841,31 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                                         }
                                     }
                                 }
-                            } else if (Mission_getType_ote() != 3 && Mission_getType_ote() != 5 &&
-                                       Mission_getType_ote() != 0xb) {
-                                if (Mission_getType_ote() == 0) {
-                                    Status_getShip_ote();
-                                    Array<Item *> *cargo = (Array<Item *> *) (intptr_t) Ship_getCargo_ote();
-                                    if (cargo != 0) {
+                            } else if (mission->getType() != 3 && mission->getType() != 5 &&
+                                       mission->getType() != 0xb) {
+                                if (mission->getType() == 0) {
+                                    Array<Item *> *cargo = Globals::status->getShip()->getCargo();
+                                    if (cargo != nullptr) {
                                         for (unsigned i = 0; i < cargo->size(); i = i + 1) {
-                                            if (Item_isUnsaleable_ote((*cargo)[i]) != 0 &&
-                                                (Item_getIndex_ote((*cargo)[i]) == 0x74 ||
-                                                 Item_getIndex_ote((*cargo)[i]) == 0x75)) {
-                                                Ship_removeCargo1_ote((Item *) Status_getShip_ote());
-                                                if ((int) (intptr_t) this->hangarWindow != 0)
-                                                    HangarWindow_initialize_ote();
+                                            if ((*cargo)[i]->isUnsaleable() &&
+                                                ((*cargo)[i]->getIndex() == 0x74 ||
+                                                 (*cargo)[i]->getIndex() == 0x75)) {
+                                                Globals::status->getShip()->removeCargo((*cargo)[i]);
+                                                if (this->hangarWindow != nullptr)
+                                                    static_cast<HangarWindow *>(this->hangarWindow)->initialize();
                                                 break;
                                             }
                                         }
                                     }
-                                    ((Status *) (intptr_t) *status)->field_9c += Mission_getProductionGoodAmount_ote();
-                                } else if (Mission_getType_ote() == 0xe) {
-                                    Status_getShip_ote();
-                                    Array<Item *> *cargo = (Array<Item *> *) (intptr_t) Ship_getCargo_ote();
-                                    if (cargo != 0) {
+                                    Globals::status->field_9c += mission->getProductionGoodAmount();
+                                } else if (mission->getType() == 0xe) {
+                                    Array<Item *> *cargo = Globals::status->getShip()->getCargo();
+                                    if (cargo != nullptr) {
                                         for (unsigned i = 0; i < cargo->size(); i = i + 1) {
-                                            if (Item_getIndex_ote((*cargo)[i]) == 0x73) {
-                                                Ship_removeCargo1_ote((Item *) Status_getShip_ote());
-                                                if ((int) (intptr_t) this->hangarWindow != 0)
-                                                    HangarWindow_initialize_ote();
+                                            if ((*cargo)[i]->getIndex() == 0x73) {
+                                                Globals::status->getShip()->removeCargo((*cargo)[i]);
+                                                if (this->hangarWindow != nullptr)
+                                                    static_cast<HangarWindow *>(this->hangarWindow)->initialize();
                                                 break;
                                             }
                                         }

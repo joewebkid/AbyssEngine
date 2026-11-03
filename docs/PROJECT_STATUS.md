@@ -7,6 +7,20 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation::OnTouchEnd` type-0/type-14
+cargo). Type 0 now removes the first unsaleable `0x74`/`0x75` item and
+updates `Status+0x9c` even if cargo is null; type 14 removes the first
+`0x73` item without an unsaleability check. Both use the actual
+`Item*` and conditionally refresh the hangar. Windows native, ARM64
+static and ARMv7 **209/209** builds pass. `OnTouchEnd` source-shape
+**76.4% → 76.9%**, strict fuzzy **15.2% → 13.0%**. Full corpus:
+**4,323/4,524** originals in **4,767** pairs, **96.47% / 86.35%**
+mean source-shape / strict fuzzy, **2,761 linked-exact / 1,098
+byte-exact**, 201 missing, zero skipped and no pair or exact-set
+losses. Live cargo/status behavior remains unverified. Next restore
+the campaign mission continuation; Redmi testing stays stopped. See
+[cargo evidence](MODSTATION_TYPE0_14_CARGO_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation::OnTouchEnd` type-11
 completion). The non-campaign passenger mission now clears passengers,
 updates the status word at `0xb8`, finds the first unsaleable cargo
