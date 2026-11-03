@@ -2850,7 +2850,6 @@ int GameText_getText_oiImpl(int id);
 void ChoiceWindow_setFee_oiImpl(void *cw, int credits, int templateId);
 void ChoiceWindow_set6_oiImpl(void *cw, int a, int b, int c, int d, int e, int f);
 void ChoiceWindow_set1_oiImpl(void *cw, int textStr);
-void DlcMenu_build_oiImpl(void *self);
 
 void ModStation::OnInitialize() {
     int *status = *(int **) g_oi_status;
@@ -3311,8 +3310,37 @@ void ModStation::OnInitialize() {
         this->field_0x12c.bytes[0] = 0;
         this->closeHangarAfterCredits = 0;
         this->m_nStarMapWindowOpen.bytes[3] = 0;
-        this->hangarLeftX = Globals::layout->field_0xcc;
-        DlcMenu_build_oiImpl(this);
+        Layout *layout = Globals::layout;
+        this->hangarLeftX = layout->field_0xcc;
+        this->hangarShipGeom = nullptr;
+        this->field_0xa4 = layout->field_0xc;
+        this->field_0xac = Globals::h - layout->field_0xc - layout->field_0x10;
+
+        this->buttonLaunch = new TouchButton(String(""), 12, Globals::w, Globals::h, 0x22);
+        String credits = layout->formatCredits(Globals::status->getCredits());
+        this->buttonCredits = new TouchButton(
+            credits, 11,
+            Globals::w - static_cast<TouchButton *>(this->buttonLaunch)->getWidth(),
+            Globals::h, 0x22);
+
+        auto *row = new Array<TouchButton *>();
+        this->buttonRow = reinterpret_cast<int *>(row);
+        ArraySetLength<TouchButton *>(5, *row);
+        const int rowY = Globals::h - layout->field_0x10 - layout->field_0x24
+                         - 5 * layout->field_0x30 - 4 * layout->field_0x34;
+        const int rowWidth = static_cast<int>(this->hangarLeftX)
+                             - layout->field_0x28 - layout->field_0x4c;
+        const int rowStep = layout->field_0x30 + layout->field_0x34;
+        (*row)[0] = new TouchButton(*Globals::gameText->getText(167), 0,
+                                    layout->field_0x28, rowY, rowWidth, 0x11, 1);
+        (*row)[1] = new TouchButton(*Globals::gameText->getText(398), 0,
+                                    layout->field_0x28, rowY + rowStep, rowWidth, 0x11, 1);
+        (*row)[2] = new TouchButton(*Globals::gameText->getText(177), 0,
+                                    layout->field_0x28, rowY + 2 * rowStep, rowWidth, 0x11, 1);
+        (*row)[3] = new TouchButton(*Globals::gameText->getText(129), 0,
+                                    layout->field_0x28, rowY + 3 * rowStep, rowWidth, 0x11, 1);
+        (*row)[4] = new TouchButton(*Globals::gameText->getText(169), 0,
+                                    layout->field_0x28, rowY + 4 * rowStep, rowWidth, 0x11, 1);
         next = 0x3c;
     } else if (state == 100) {
         int *sound = *(int **) g_oi_sound;
