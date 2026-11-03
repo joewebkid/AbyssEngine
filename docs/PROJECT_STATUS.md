@@ -7,6 +7,19 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`Radio::update`/`draw`). The 63-entry
+character description table and the real wanted, image factory,
+text, font, layout, sound, canvas, and globals paths are restored.
+Windows native and ARM64 static builds pass; ARMv7 builds **209/209**.
+Focused source-shape rises **50.3% -> 91.0%** for `update` and
+**23.6% -> 91.7%** for `draw`. Full corpus: **4,323/4,524** originals
+in **4,769** pairs, **96.52% / 86.40%** mean source-shape / strict
+fuzzy, **2,763 linked-exact / 1,099 byte-exact**, 201 missing,
+zero skipped, no pair or exact-set losses. Live radio behavior and
+runtime writes to table entry zero remain unverified. Next restore
+the station radio timer, scroll, rendering, and exit route. Redmi
+testing remains stopped. See [radio evidence](RADIO_UPDATE_DRAW_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation` campaign step `0x2b` radio).
 The ARM-backed branch now removes the mission, starts event `0x90`,
 creates four conditioned radio messages, positions the radio image and

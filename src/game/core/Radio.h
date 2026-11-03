@@ -25,7 +25,7 @@ public:
     uint8_t lastMessageShownFlag;
     uint8_t soundPending;
     int soundId;
-    String *font;
+    unsigned int font;
     int boxWidth;
     int boxX;
     int boxY;
