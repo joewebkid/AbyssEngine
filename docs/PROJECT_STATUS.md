@@ -7,6 +7,21 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ScrollTouchBox` global bindings).
+The constructor, text setters and draw now use the original exported
+font, layout, canvas, display and reverse-text state instead of
+unwritten private pointers. Wrapped text appends the original newline.
+`draw` source-shape improves **15.8% → 88.8%**; `setText(String,int)`
+improves **49.5% → 96.9%**. Both constructor variants become
+linked-exact. The production-body smoke passes at `-O0/-O2`; Windows
+native, ARM64 static and ARMv7 **209/209** builds pass. Full corpus:
+**4,323/4,524** originals in **4,764** pairs, **96.41% / 86.27%**
+mean source-shape / strict fuzzy, **2,757 linked-exact / 1,098
+byte-exact**, 201 missing, zero skipped, no pair or exact-set losses.
+Live font resources and rendering remain unverified. Next inspect
+`ModStation::OnTouchMove` and its input state; Redmi testing stays
+stopped. See [ScrollTouchBox evidence](SCROLL_TOUCH_BOX_GLOBALS_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (submenu virtual-key predicate).
 `IsSubMenuActive` now reads the live `Globals` menu state and queries
 the current application module, matching the original ARM control
