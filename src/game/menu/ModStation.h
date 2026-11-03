@@ -157,37 +157,22 @@ public:
 
     virtual ~ModStation();
 
-    void OnInitialize();
-
-    void OnKeyPress(long long unused, long long key);
-
-    long long OnKeyRelease(long long unused, long long key);
-
-    int ShowLoadingScreen();
-
-    void OnRelease();
-
-    void OnRender2D();
-
-    void OnRender3D();
-
-    void OnResume();
-
-    void OnSuspend();
-
-    void OnTouchBegin(int x, int y, void *touch);
-
-    void OnTouchEnd(int x, int y, void *touch);
-
-    void OnTouchMove(int x, int y, void *touch);
-
-    int OnTouchBegin(int x, int y);
-
-    int OnTouchEnd(int x, int y);
-
-    int OnTouchMove(int x, int y);
-
-    void OnUpdate();
+    virtual void OnInitialize();
+    virtual void OnRelease();
+    virtual void OnKeyPress(long long key, long long unused);
+    virtual long long OnKeyRelease(long long unused, long long key);
+    virtual int OnTouchBegin(int x, int y);
+    virtual int OnTouchMove(int x, int y);
+    virtual int OnTouchEnd(int x, int y);
+    virtual void OnTouchBegin(int x, int y, void *touch);
+    virtual void OnTouchMove(int x, int y, void *touch);
+    virtual void OnTouchEnd(int x, int y, void *touch);
+    virtual void OnUpdate();
+    virtual void OnRender3D();
+    virtual void OnRender2D();
+    virtual void OnSuspend();
+    virtual void OnResume();
+    virtual int ShowLoadingScreen();
 
     void addAchievement(int medalId, int kind);
 

@@ -7,6 +7,27 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation::OnTouchEnd` station buttons).
+The launch and credit buttons now receive both touch coordinates
+through their real object fields. Launch calls `leaveStation`; credit
+entry saves the original option flag and initializes or reuses its
+Hangar window. The five-button row reads the actual `Array`, stores
+the selected index and dispatches key `0x10000` through the restored
+`ModStation` vtable. The key is now the first 64-bit `OnKeyPress`
+argument, as in original ARM. Layout/help/news-ticker routing also
+uses the original globals and x/y arguments. Whole-function
+`OnTouchEnd` source-shape improves **70.2% → 72.2%**, strict fuzzy
+changes **18.0% → 4.4%**; `OnKeyPress` source-shape changes **93.1% →
+92.0%**, strict fuzzy **48.7% → 47.3%**. Production branch smokes
+pass at `-O0/-O2`; Windows native, ARM64 static and ARMv7 **209/209**
+builds pass. Full corpus: **4,323/4,524** originals in **4,764** pairs,
+**96.45% / 86.32%** mean source-shape / strict fuzzy,
+**2,757 linked-exact / 1,098 byte-exact**, 201 missing, zero skipped,
+no pair or exact-set losses. Live station and purchase behavior remain
+unverified. Next inspect Hangar/SpaceLounge close paths; Redmi
+testing stays stopped. See
+[station button evidence](MODSTATION_STATION_BUTTONS_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation::OnTouchEnd` DLC open route).
 Opening the DLC menu now constructs or reuses the real
 `MenuTouchWindow`, checks level-up through `Globals::status`, and

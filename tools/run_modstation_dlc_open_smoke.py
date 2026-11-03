@@ -21,12 +21,12 @@ def main():
 
     source = (ROOT / "src/game/menu/ModStation.cpp").read_text()
     body = function(source, "void ModStation::OnTouchEnd(int x, int y, void *touch)")
-    first = body.index("                if (Layout_OnTouchEndR_ote((Layout *) *help, x, y) != 0) {")
-    last = body.index("                if (Layout_helpPressed_ote", first)
+    first = body.index("                if (help->OnTouchEnd(x, y) != 0) {")
+    last = body.index("                if (help->helpPressed() != 0)", first)
     fixture = (ROOT / "tools/modstation_dlc_open_smoke.cpp").read_text()
     fixture = fixture.replace("// PRODUCTION_DLC_OPEN",
                               "void ModStation::testDlcOpen(int x, int y) {\n"
-                              "    std::intptr_t helpValue = 0;\n    std::intptr_t *help = &helpValue;\n"
+                              "    Layout layout;\n    Layout *help = &layout;\n"
                               + body[first:last] + "}\n")
     with tempfile.TemporaryDirectory(prefix="modstation-dlc-open-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "modstation_dlc_open_smoke.cpp"

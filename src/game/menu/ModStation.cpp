@@ -285,7 +285,7 @@ static bool g_stationEarlyMapHelpShown = false;
 static int g_stationPirateHangarFace[5] = {2, 0, 0, 0, 0};
 static int g_stationPirateLoungeFace[5] = {};
 
-void ModStation::OnKeyPress(long long, long long key) {
+void ModStation::OnKeyPress(long long key, long long) {
     if (this->stationActive == 0)
         return;
 
@@ -1755,12 +1755,6 @@ void Galaxy_getStation_ote(int index);
 
 void Layout_OnTouchEnd_ote(Layout *l, int p1, int p2);
 
-int Layout_OnTouchEndR_ote(Layout *l, int p1, int p2);
-
-int Layout_helpPressed_ote(Layout * l);
-
-void Layout_initHelpWindow_ote(int l, int textStr);
-
 void Layout_showMissionRewardMessage_ote(int l, int flag);
 
 void ChoiceWindow_set_ote(int cw, int textStr, int flag);
@@ -1780,8 +1774,6 @@ void HangarWindow_setSellMode_ote(int w);
 int SpaceLounge_hangarNeedsUpdate_ote();
 
 void SpaceLounge_refresh_ote();
-
-int TouchButton_OnTouchEnd_ote(int btn, int p1);
 
 void FModSound_play_ote(int sound, int id, void *p, float vol);
 
@@ -2475,41 +2467,38 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
     }
     if (this->m_nStarMapWindowOpen.bytes[1] != 0) {
         {
-                int *help = *(int **) g_ote_helpLayout;
+                Layout *help = Globals::layout;
 
-                if (TouchButton_OnTouchEnd_ote((int) (intptr_t) this->dlcMenu, x) != 0)
+                if (static_cast<TouchButton *>(this->buttonLaunch)->OnTouchEnd(x, y) != 0) {
+                    this->leaveStation();
                     return;
+                }
 
-                if (TouchButton_OnTouchEnd_ote(this->activeMission, x) != 0) {
-                    RecordHandler *rh = (RecordHandler *) **(int **) g_ote_status;
-                    ((Status *) (intptr_t) *(int *) g_ote_status)->byte_0x4e = 1;
-                    RecordHandler_saveOptions_ote(rh);
-                    if (this->hangarWindow == 0) {
-                        HangarWindow *hw = (HangarWindow *) ::operator new(0x134);
-                        HangarWindow_ctor_ote(hw);
-                        this->hangarWindow = hw;
+                if (static_cast<TouchButton *>(this->buttonCredits)->OnTouchEnd(x, y) != 0) {
+                    Globals::options[0x4e] = 1;
+                    static_cast<RecordHandler *>(Globals::recordHandler)->saveOptions();
+                    HangarWindow *hangar = static_cast<HangarWindow *>(this->hangarWindow);
+                    if (hangar == nullptr) {
+                        hangar = new HangarWindow();
+                        this->hangarWindow = hangar;
                     }
-                    HangarWindow_initialize_ote();
+                    hangar->initialize();
                     this->closeHangarAfterCredits = 1;
                     this->subWindowFlags.bytes[2] = 1;
-                    HangarWindow_showCreditsBuyWindow_ote((HangarWindow *) this->hangarWindow);
+                    hangar->showCreditsBuyWindow();
                 }
 
                 this->selectedButton = -1;
+                auto *row = reinterpret_cast<Array<TouchButton *> *>(this->buttonRow);
                 for (unsigned i = 0; i < 5; i = i + 1) {
-                    if (TouchButton_OnTouchEnd_ote(this->buttonRow[i], x) != 0) {
+                    if ((*row)[i]->OnTouchEnd(x, y) != 0) {
                         this->selectedButton = (int) i;
-
-                        {
-                            int module = **(int **) g_ote_module;
-                            if (module != 0)
-                                ((void (*)(int, int)) module)(module, 0x10000);
-                        }
+                        this->OnKeyPress(0x10000LL, 0);
                         return;
                     }
                 }
 
-                if (Layout_OnTouchEndR_ote((Layout *) *help, x, y) != 0) {
+                if (help->OnTouchEnd(x, y) != 0) {
                     MenuTouchWindow *win = static_cast<MenuTouchWindow *>(this->dlcMenu);
                     if (win == nullptr) {
                         win = new MenuTouchWindow(2);
@@ -2529,10 +2518,10 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                     return;
                 }
 
-                if (Layout_helpPressed_ote((Layout *) *help) != 0)
-                    Layout_initHelpWindow_ote(*help, GameText_getText_ote(**g_ote_textRoot));
+                if (help->helpPressed() != 0)
+                    help->initHelpWindow(*Globals::gameText->getText(0x284));
 
-                if (this->newsTicker->OnTouchEnd(x, 0) == 0) {
+                if (this->newsTicker->OnTouchEnd(x, y) == 0) {
                     float dx = VectorSignedToFloat(this->idleDeltaX, 0);
                     float dy = VectorSignedToFloat(this->idleDeltaY, 0);
                     this->camCoordX += dx * 0.01f;

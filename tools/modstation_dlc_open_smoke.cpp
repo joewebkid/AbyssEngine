@@ -1,5 +1,4 @@
 #include <cassert>
-#include <cstdint>
 
 struct Vector { float x, y; };
 struct TouchButton {
@@ -40,14 +39,15 @@ int MenuTouchWindow::constructions = 0;
 int MenuTouchWindow::lastKind = -1;
 Array<void *> *MenuTouchWindow::nextButtons = nullptr;
 
-struct Layout {};
 int layoutResult = 0, layoutCalls = 0, layoutX = -1, layoutY = -1;
-int Layout_OnTouchEndR_ote(Layout *, int x, int y) {
-    ++layoutCalls;
-    layoutX = x;
-    layoutY = y;
-    return layoutResult;
-}
+struct Layout {
+    int OnTouchEnd(int x, int y) {
+        ++layoutCalls;
+        layoutX = x;
+        layoutY = y;
+        return layoutResult;
+    }
+};
 struct ModStation {
     struct Flags { unsigned char bytes[4] = {}; } m_nStarMapWindowOpen;
     void *dlcMenu = nullptr;
