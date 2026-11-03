@@ -40,7 +40,7 @@ public:
     int target[6];
     int current[6];
     int working[6];
-    int tileImages[48];
+    unsigned int tileImages[48];
     unsigned int topImage;
     unsigned int mainImage;
     unsigned int bottomImage;

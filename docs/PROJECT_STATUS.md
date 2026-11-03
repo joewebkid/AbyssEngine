@@ -7,6 +7,18 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`HackingGame` image creation). Original
+Android ARM writes image handles directly into object slots during
+`PaintCanvas::Image2DCreate`; the reconstruction used a stack
+temporary and copied the handles afterward. Both constructor symbols
+now reach **100% source-shape, 100% strict fuzzy, linked-exact** in
+focused ARMv7 verification (209/209 translation units). Windows
+native and ARM64 static builds pass. Full corpus: **4,323/4,524**
+originals in **4,769** pairs, mean **96.65% / 86.60%**, **2,778
+linked-exact**, **1,107 byte-exact**, 201 missing, zero skipped; no
+pair or exact-set loss. Live graphics remain unverified.
+See [constructor evidence](HACKINGGAME_CONSTRUCTOR_IMAGE_OUTPUT_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`HackingGame::render2D` tile geometry).
 Original Android ARM offsets current tile rows by `(row - 2) *
 tileHeight` and places both rotation arrows one full tile height
