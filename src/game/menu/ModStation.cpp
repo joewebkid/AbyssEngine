@@ -2698,7 +2698,6 @@ static int **g_oi_canvas = 0;
 
 static int **g_oi_settings = 0;
 
-static int **g_oi_sound = 0;
 
 static int **g_oi_textRoot = 0;
 
@@ -2740,7 +2739,6 @@ int Status_gameWon_oi();
 
 int Status_dlc1Won_oi();
 
-int Status_getPlayingTime_lo_oi();
 
 int Status_activateNewWanted_oi();
 
@@ -2790,7 +2788,6 @@ int Station_getShips_oi();
 
 int Station_getItems_oi();
 
-int Station_getName_oi();
 
 int Station_hasItem_oi(int station);
 
@@ -2840,7 +2837,6 @@ void FModSound_setDownPitch_oi(int sound);
 
 void Generator_ctor_oi(Generator * g);
 void Generator_dtor_oi(Generator * g);
-void Generator_computerTradeGoods_oi(Generator * g, Station * s);
 int Generator_getShipBuyList_oi(Station * s);
 
 unsigned ModStation_oi_cameraHandle();
@@ -3342,32 +3338,26 @@ void ModStation::OnInitialize() {
                                     layout->field_0x28, rowY + 4 * rowStep, rowWidth, 0x11, 1);
         next = 0x3c;
     } else if (state == 100) {
-        int *sound = *(int **) g_oi_sound;
-        reinterpret_cast<Globals *>(*sound)->startNewSoundResourceList();
+        Globals *globals = static_cast<Globals *>(Globals::globals);
+        globals->startNewSoundResourceList();
         static const int snd[] = {
             0x5f, 0x7a, 0x6c, 0x60, 0x61, 0x62, 99, 0x65, 100,
             0x66, 0x68, 0x69, 0x6a, 0x6b, 0x67, 0x7e
         };
         for (unsigned i = 0; i < sizeof(snd) / sizeof(snd[0]); i = i + 1)
-            ((Globals *) (*sound))->addSoundResourceToList(snd[i]);
+            globals->addSoundResourceToList(snd[i]);
 
         this->introCountdown = 0x32;
-        int *st = *(int **) g_oi_status;
         this->dragFlags.bytes[1] = 1;
-        Status_getStation_oi();
-        Station_getName_oi();
-
-        Status *stRec = (Status *) (intptr_t) *st;
-        long long enterTime = (long long) (uint32_t) stRec->field_70 |
-                              ((long long) stRec->field_74 << 32);
-        long long now = (long long) (unsigned) Status_getPlayingTime_lo_oi();
-        if (now - enterTime >= 0x7531) {
-            Station *here = (Station *) Status_getStation_oi();
-            if (Station_getIndex_oi(here) != 0x6c) {
-                Generator *g = (Generator *) ::operator new(1);
-                Generator_ctor_oi(g);
-                Status_getStation_oi();
-                Generator_computerTradeGoods_oi(g, (Station *) g);
+        Status *status = Globals::status;
+        this->stationName = status->getStation()->getName();
+        int64_t enterTime = static_cast<int64_t>(
+            static_cast<uint64_t>(static_cast<uint32_t>(status->field_70)) |
+            (static_cast<uint64_t>(static_cast<uint32_t>(status->field_74)) << 32));
+        if (status->getPlayingTime() - enterTime >= 0x7531) {
+            if (status->getStation()->getIndex() != 0x6c) {
+                Generator *g = new Generator();
+                g->computerTradeGoods(status->getStation());
             }
         }
         next = 0x50;
