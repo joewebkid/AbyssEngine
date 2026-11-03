@@ -7,6 +7,21 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`EaseInOutMatrix::UpdateCurrentValue`).
+Original Android ARM uses the float literal `0x40c90fdb` (`2π`)
+for interpolation phase and evaluates the sine weight in double
+before converting it back to float. The reconstruction used `π` and
+float-only arithmetic; at the minimum setting its idealized weight
+was about `0.854` instead of approximately zero. Both differences
+are corrected. Focused source-shape improves **92.5% → 94.6%** and
+strict fuzzy **46.5% → 52.2%**. Windows native, ARM64 static and
+ARMv7 **209/209** builds pass. Full corpus: **4,323/4,524** originals
+in **4,769** pairs, mean **96.60% / 86.49%**, **2,767 linked-exact**,
+**1,099 byte-exact**, 201 missing, zero skipped, with no pair or
+exact-set losses. Live easing remains unverified. Next recover a
+separate incomplete area, beginning with `HackingGame::render2D`.
+See [phase evidence](EASEINOUTMATRIX_UPDATE_PHASE_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`EaseInOutMatrix::SetRange` rotation delta).
 Original Android ARM converts the starting quaternion to a matrix,
 reconstructs a quaternion from that matrix, and subtracts this

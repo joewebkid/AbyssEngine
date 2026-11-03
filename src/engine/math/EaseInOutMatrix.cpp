@@ -80,9 +80,9 @@ namespace AbyssEngine {
             return;
         }
 
-        static const float kSweep = 3.14159265f;
+        static const float kSweep = 6.2831855f;
         float s = AEMath::Sinf(this->m_t * kSweep);
-        float w = s * 0.5f + 0.5f;
+        float w = static_cast<float>(static_cast<double>(s) * 0.5 + 0.5);
 
         Quaternion blended = m_q1 * w + m_q0;
         blended.Convert(current);
