@@ -7,6 +7,21 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation` campaign step `0x2b` radio).
+The ARM-backed branch now removes the mission, starts event `0x90`,
+creates four conditioned radio messages, positions the radio image and
+centered scroll text, and sets the original station fields. `Radio`
+layout and constructor are corrected; its `lastMessageShown` is now
+linked-exact and byte-exact. Windows native and ARM64 static builds
+pass; ARMv7 builds **209/209**. Focused `OnTouchEnd` source-shape
+**76.9% -> 83.1%** and strict fuzzy **13.0% -> 22.8%**. Full corpus:
+**4,323/4,524** originals in **4,769** pairs, **96.49% / 86.39%**
+mean source-shape / strict fuzzy, **2,763 linked-exact / 1,099
+byte-exact**, 201 missing, zero skipped, with no pair or exact-set
+losses. Live radio behavior is unverified; next audit its update/render
+and step-43 exit paths. Redmi testing remains stopped. See
+[radio evidence](MODSTATION_CAMPAIGN43_RADIO_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`Status::removeMission` sentinel). A
 null-initialized pointer holder that could crash on every matching
 mission has been replaced with the ARM-confirmed `Mission::empty`

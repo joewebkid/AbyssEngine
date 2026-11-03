@@ -20,6 +20,7 @@ public:
     Array<ImagePart *> *imageParts;
     int *imagePartBuffer;
     int64_t startTime;
+    int64_t field_0x20;
     int displayDuration;
     uint8_t lastMessageShownFlag;
     uint8_t soundPending;
@@ -28,7 +29,7 @@ public:
     int boxWidth;
     int boxX;
     int boxY;
-    uint8_t _unknown_tail_0x40[8];
+    uint8_t _unknown_tail_0x44[4];
 
     Radio();
 
@@ -51,5 +52,9 @@ public:
 
 #if __SIZEOF_POINTER__ == 4
 static_assert(sizeof(Radio) == 0x48, "Android Radio allocation is 0x48 bytes");
+static_assert(__builtin_offsetof(Radio, lastMessageShownFlag) == 0x2c,
+              "Android Radio::lastMessageShownFlag @ 0x2c");
+static_assert(__builtin_offsetof(Radio, boxY) == 0x40,
+              "Android Radio::boxY @ 0x40");
 #endif
 #endif

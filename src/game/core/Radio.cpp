@@ -43,13 +43,17 @@ Radio::Radio() {
     this->startTime = 0;
     this->displayDuration = 0;
     this->lastMessageShownFlag = 0;
+    this->soundPending = 0;
     this->imagePartBuffer = 0;
     this->soundId = -1;
     this->messages = 0;
+    this->currentMessage = 0;
+    this->textLines = 0;
+    this->imageParts = 0;
 
-    Layout *layout = *g_Radio_layout;
+    Layout *layout = Globals::layout;
     int width = layout->field_0x98;
-    int screenWidth = **g_Radio_screenWidth;
+    int screenWidth = Globals::w;
     this->boxWidth = width;
     this->boxX = (screenWidth - width) >> 1;
     this->boxY = layout->field_0x9c;

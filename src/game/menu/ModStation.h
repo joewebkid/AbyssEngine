@@ -5,6 +5,7 @@
 #include "../../engine/core/AEString.h"
 #include "engine/core/Array.h"
 #include "engine/math/EaseInOutMatrix.h"
+#include "engine/math/Vector.h"
 #include "game/core/CutScene.h"
 #include "game/ui/DialogueWindow.h"
 #include "game/world/NewsTicker.h"
@@ -63,7 +64,7 @@ public:
         FlagWord departPendingFlags;
     };
     void *dlcMenu;
-    int activeMission; // 0x54: radio/credits holder, not the dialogue mission
+    intptr_t activeMission; // 0x54 on ARM32: radio/credits holder
     void *radioMessages;
     int field_0x5c;
     // Android +0x60..+0x63: [0]=radio/cutscene, [1]=station main UI,
@@ -93,7 +94,7 @@ public:
         FlagWord buttonCreditsFlags;
     };
     union {
-        void *scrollBox;                             // 0x88
+        void *scrollBox;                             // 0x98 on ARM32
         FlagWord scrollBoxFlags;
     };
     Mission *dialogueMission; // 0x9c on ARM32: active dialogue mission
@@ -123,9 +124,7 @@ public:
     int field_0xf8;           // 0xf8
     int field_0xfc;           // 0xfc
     FlagWord dragFlags;       // 0x100 byte [0]=dragging [1]=touchActive
-    void *idleBox;            // 0x104
-    int field_0x108;          // 0x108
-    int field_0x10c;          // 0x10c
+    AbyssEngine::AEMath::Vector radioScrollAnchor; // 0x104 on ARM32
     union { int touchX; float touchXf; };          // 0x110 (radio reveal: float scroll-current)
     union { int touchY; float touchYf; };          // 0x114 (radio reveal: float scroll-target)
     union {
@@ -214,6 +213,12 @@ static_assert(offsetof(ModStation, hangarLeftX) == 0xa8,
 static_assert(offsetof(ModStation, dlcMenu) == 0x50, "ModStation::dlcMenu @ 0x50");
 static_assert(offsetof(ModStation, dialogueMission) == 0x9c,
               "ModStation::dialogueMission @ 0x9c");
+static_assert(offsetof(ModStation, activeMission) == 0x54,
+              "ModStation::activeMission @ 0x54");
+static_assert(offsetof(ModStation, scrollBox) == 0x98,
+              "ModStation::scrollBox @ 0x98");
+static_assert(offsetof(ModStation, radioScrollAnchor) == 0x104,
+              "ModStation::radioScrollAnchor @ 0x104");
 static_assert(offsetof(ModStation, m_nStarMapWindowOpen) == 0x60,
               "ModStation::DLC open flags @ 0x60");
 static_assert(offsetof(ModStation, subWindowFlags) == 0x64,

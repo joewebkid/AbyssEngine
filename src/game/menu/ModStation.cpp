@@ -23,6 +23,7 @@
 #include "game/ui/DialogueWindow.h"
 #include "engine/render/ImageFactory.h"
 #include "game/core/Radio.h"
+#include "game/core/RadioMessage.h"
 #include "game/ui/Layout.h"
 #include "game/mission/RecordHandler.h"
 #include "game/menu/SpaceLounge.h"
@@ -34,6 +35,7 @@
 #include "game/world/SolarSystem.h"
 #include "game/ui/TouchButton.h"
 #include "game/ui/MenuTouchWindow.h"
+#include "game/ui/ScrollTouchBox.h"
 #include "game/world/Wanted.h"
 #include "engine/math/AEMath.h"
 
@@ -985,7 +987,7 @@ void ModStation::OnUpdate() {
     if (this->accumTimeLo.bytes[2] == 0)
         Status_incPlayingTime_ou((long long) (unsigned) **(int **) g_ou_status);
 
-    int creditsBtn = this->activeMission;
+    int creditsBtn = static_cast<int>(this->activeMission);
     Status_getCredits_ou();
     Layout_formatCredits_ou(this);
     TouchButton_setText_ou(creditsBtn);
@@ -1804,7 +1806,8 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
         return;
     }
 
-    int *status = *(int **) g_ote_status;
+    int statusHandle = static_cast<int>(reinterpret_cast<intptr_t>(Globals::status));
+    int *status = &statusHandle;
     if (this->modalFlags.bytes[1] != 0) {
         if (this->dialogueWindow->OnTouchEnd(x, y) != 0) {
             if (this->dialogueMission != 0) {
@@ -1898,25 +1901,40 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                             return;
                         }
 
-                        int camp = Status_getCurrentCampaignMission_ote();
+                        int camp = Globals::status->getCurrentCampaignMission();
                         if (camp == 0x2b) {
-                            Status_removeMission_ote(*status);
-                            Status_setMission_ote(*status);
+                            Globals::status->removeMission(this->dialogueMission);
+                            Globals::status->setMission(static_cast<Mission *>(Mission::empty));
                             this->modalFlags.bytes[1] = 0;
-                            int snd = **(int **) g_ote_sound;
-                            FModSound_stop_ote(snd);
-                            FModSound_play_ote(snd, 0x90, 0, 0.0f);
-                            {
-                                void *radio = ::operator new(0x40);
-                                Radio_ctor_ote(radio);
-                                for (int id = 0x817; id <= 0x81a; ++id)
-                                    Radio_addMessage_ote(radio, id);
-                                this->activeMission = (int) (intptr_t) radio;
+                            Globals::sound->stop(Globals::sound->currentMusicEvent);
+                            Globals::sound->play(0x90, nullptr, nullptr, 0.0f);
 
-                                void *box = ::operator new(0x80);
-                                ScrollTouchBox_initRadio_ote(box, radio);
-                                this->idleBox = box;
-                            }
+                            Radio *radio = new Radio();
+                            this->activeMission = reinterpret_cast<intptr_t>(radio);
+                            auto *messages = new Array<RadioMessage *>();
+                            this->radioMessages = messages;
+                            ArraySetLength(4, *messages);
+                            (*messages)[0] = new RadioMessage(0x817, 1, 5, 4000);
+                            (*messages)[1] = new RadioMessage(0x818, 1, 6, 0);
+                            (*messages)[2] = new RadioMessage(0x819, 1, 6, 1);
+                            (*messages)[3] = new RadioMessage(0x81a, 1, 6, 2);
+                            radio->setMessages(messages);
+
+                            Globals::Canvas->Image2DCreate(0x1b5a,
+                                                           reinterpret_cast<unsigned int &>(this->field_0x5c));
+                            int imageHeight = Globals::Canvas->GetImage2DHeight(this->field_0x5c);
+                            AbyssEngine::AEMath::Vector anchor = {
+                                50.0f, static_cast<float>(imageHeight + Globals::h + Globals::h / 2 + 10), 0.0f};
+                            this->radioScrollAnchor = anchor;
+                            auto *box = new ScrollTouchBox(
+                                static_cast<int>(anchor.x), static_cast<int>(anchor.y),
+                                static_cast<int>(static_cast<float>(Globals::w) - anchor.x * 2.0f),
+                                5000);
+                            this->scrollBox = box;
+                            box->setText(*Globals::gameText->getText(0x30));
+                            box->setTextCentered(true);
+                            this->field_0xb4 = 1000001;
+                            this->field_0xb8 = 0;
                             this->m_nStarMapWindowOpen.bytes[0] = 1;
                             return;
                         }
