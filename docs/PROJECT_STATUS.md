@@ -7,6 +7,18 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`Status::removeMission` sentinel). A
+null-initialized pointer holder that could crash on every matching
+mission has been replaced with the ARM-confirmed `Mission::empty`
+global. Windows native, ARM64 static and ARMv7 **209/209** builds
+pass. `removeMission` source-shape **82.2% → 85.6%**, strict fuzzy
+**30.9% → 29.7%**. Full corpus: **4,323/4,524** originals in
+**4,767** pairs, **96.47% / 86.35%** mean source-shape / strict fuzzy,
+**2,761 linked-exact / 1,098 byte-exact**, 201 missing, zero skipped
+and no pair or exact-set losses. Runtime removal and ownership remain
+unverified. Next restore the campaign-step `0x2b` radio continuation;
+Redmi testing stays stopped. See [sentinel evidence](STATUS_REMOVE_MISSION_SENTINEL_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation::OnTouchEnd` type-0/type-14
 cargo). Type 0 now removes the first unsaleable `0x74`/`0x75` item and
 updates `Status+0x9c` even if cargo is null; type 14 removes the first

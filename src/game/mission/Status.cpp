@@ -1052,10 +1052,7 @@ int Status::addStationToStack(Station *s) {
     return 1;
 }
 
-static int *g_missionSentinel = nullptr;
-
 void Status::removeMission(Mission *mission) {
-    int *sentinel = g_missionSentinel;
     Mission **slots = missions->data();
     for (unsigned i = 0; i < missions->size(); i = i + 1) {
         if (slots[i] == mission) {
@@ -1071,7 +1068,7 @@ void Status::removeMission(Mission *mission) {
             if (slots[i] != 0) {
                 delete slots[i];
             }
-            slots[i] = (Mission *) (intptr_t) * sentinel;
+            slots[i] = static_cast<Mission *>(Mission::empty);
         }
     }
 }
