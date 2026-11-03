@@ -7,6 +7,22 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation::OnRender2D` main screen).
+The ARM-confirmed station header, system and technology text, owner
+badge and faction line, five menu buttons, launch and credits buttons,
+news ticker, reward message, and timed prompt now draw through real
+objects with their original gates. Windows native, ARM64 static, and
+ARMv7 **209/209** builds pass. Focused `OnRender2D` source-shape rises
+**35.9% -> 89.4%** while strict fuzzy falls **21.8% -> 10.8%**;
+temporary String lifetimes and instruction order remain different.
+Full corpus: **4,323/4,524** originals, **4,769** pairs,
+**96.53%** mean source-shape, **86.40%** strict fuzzy,
+**2,763 linked-exact**, **1,099 byte-exact**, 201 missing and zero
+skipped. No pair or exact-set losses. Live screen behavior and the
+host's provisional station box-X field remain unverified. Next
+verify host lifecycle and refine the function from ARM evidence.
+See [main-screen evidence](MODSTATION_MAIN_RENDER_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation::OnRender2D` child windows).
 ARM-confirmed window routing now calls the real Hangar, Space Lounge,
 Missions, Star Map, Status and DLC child objects; medal and primary

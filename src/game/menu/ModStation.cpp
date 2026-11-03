@@ -2661,7 +2661,71 @@ void ModStation::OnRender2D() {
         if (timer > -6000)
             this->cutScene->render2D();
     } else {
-        Globals::layout->drawFooterStation();
+        Layout *layout = Globals::layout;
+        Status *status = Globals::status;
+        layout->drawFooterStation();
+
+        String stationName = status->getStation()->getName();
+        if (status->getStation()->getIndex() != 101)
+            stationName = stationName + (String(" ") + *Globals::gameText->getText(136));
+        layout->drawHeader(stationName);
+
+        if (this->m_nStarMapWindowOpen.bytes[1] != 0) {
+            layout->drawBox(2, static_cast<int>(reinterpret_cast<intptr_t>(this->hangarShipGeom)),
+                            this->field_0xa4, static_cast<int>(this->hangarLeftX),
+                            this->field_0xac, String(""));
+
+            SolarSystem *system = status->getSystem();
+            int badge = this->departPending;
+            int textX = canvas->GetImage2DWidth(badge) + layout->field_0x28 + layout->field_0x4c;
+            int rowY = layout->field_0xc + layout->field_0x20 + 2 * layout->field_0x2c;
+            if (system->hasNoOwner() == 0)
+                canvas->DrawImage2D(badge, layout->field_0x28, rowY);
+
+            String systemName = system->getName();
+            String systemLine = systemName + String(" ") + *Globals::gameText->getText(137);
+            int availableWidth = static_cast<int>(this->hangarLeftX) -
+                                 2 * layout->field_0x28 - layout->field_0x4c -
+                                 canvas->GetImage2DWidth(badge);
+            if (canvas->GetTextWidth(Globals::font, systemLine) > availableWidth)
+                systemLine = system->getName();
+            canvas->DrawString(Globals::font, systemLine, textX, rowY, false);
+
+            String techLevel = *Globals::gameText->getText(133) + String(": ") +
+                               String(status->getStation()->getTecLevel());
+            int techY = layout->field_0xc + layout->field_0x20 +
+                        layout->field_0x4 + 4 * layout->field_0x2c;
+            canvas->DrawString(Globals::font, techLevel, textX, techY, false);
+
+            if (layout->field_0x286 != 0 && system->hasNoOwner() == 0) {
+                int factionY = layout->field_0xc + layout->field_0x20 +
+                               2 * layout->field_0x4 + 6 * layout->field_0x2c;
+                canvas->DrawString(Globals::font,
+                                   *Globals::gameText->getText(system->getRace() + 406),
+                                   textX, factionY, false);
+            }
+
+            auto *row = reinterpret_cast<Array<TouchButton *> *>(this->buttonRow);
+            for (unsigned i = 0; i < 5; ++i)
+                (*row)[i]->draw();
+            static_cast<TouchButton *>(this->buttonLaunch)->draw();
+            static_cast<TouchButton *>(this->buttonCredits)->draw();
+
+            int stationIndex = status->getStation()->getIndex();
+            if (stationIndex != 101 && stationIndex != 108 &&
+                status->getSystem()->getIndex() != 25 && this->newsTicker != nullptr)
+                this->newsTicker->draw();
+            layout->drawMissionRewardMessage(true);
+        }
+
+        if (this->accumTime > 2999) {
+            this->cameraFlags.bytes[0] = 0;
+        } else {
+            int textId = this->cameraFlags.bytes[0] ? 54 : 50;
+            canvas->DrawString(Globals::font, *Globals::gameText->getText(textId),
+                               layout->field_0x28 + static_cast<int>(this->hangarLeftX),
+                               layout->field_0x18, false);
+        }
     }
 
     if (this->modalFlags.bytes[2] != 0)
