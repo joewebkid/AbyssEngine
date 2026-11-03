@@ -19,8 +19,6 @@ Status *Status::gStatus = nullptr;
 #include "game/world/Level.h"
 #include "game/ship/Ship.h"
 
-static int *g_campaignSentinel = nullptr;
-
 struct Generator {
     Generator();
 
@@ -177,7 +175,7 @@ void Status::setCampaignMission(Mission *m) {
     m->setCampaignMission(true);
     Mission **slot = missions->data();
     Mission *cur = slot[0];
-    if (cur != 0 && (int *) cur != g_campaignSentinel) {
+    if (cur != nullptr && cur != static_cast<Mission *>(Mission::empty)) {
         delete cur;
         slot[0] = 0;
     }

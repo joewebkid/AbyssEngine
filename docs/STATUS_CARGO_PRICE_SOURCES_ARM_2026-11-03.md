@@ -28,8 +28,12 @@ matches, with no exact-set loss. Focused report:
 Windows native and ARM64 static `gof2` builds pass. Actual prices
 have not been compared against a live original game or a captured
 fixture. The producer of nonzero `Globals::globalPriceRaise` remains
-unverified in the reconstruction. Next trace that producer and check
-the price calculation with representative system and item data.
+unverified in the reconstruction. The original exported symbol is at
+`0x2182e8`. REA/IDA found code references only at `0xacc54–0xacc56`
+and `0x17556e–0x175570`; both load the value, in `calcCargoPrices`
+and `Ship::adjustPrice`. No in-library store was observed. Indirect
+or external writes remain possible. Next check the price calculation
+with representative system and item data.
 
 The full ARM corpus compares **4,323/4,524** original functions in
 **4,769** pairs, with 201 missing and zero skipped. Mean source-shape
