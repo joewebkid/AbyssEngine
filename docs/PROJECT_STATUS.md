@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-03 (material-alpha GL call target).
+`Engine::LightSetMaterialColorAlpha` matched original ARM instructions
+at **100% source-shape / 100% strict fuzzy** and was linked-exact, yet
+its local `glMaterialfv` call pointer was uninitialized in `.bss`.
+Original ARM calls a resolved `glMaterialfv` target. The local pointer
+now binds the existing GL compatibility function; ARM object data has
+an `R_ARM_ABS32` relocation to it. Windows native, ARM64 static and
+ARMv7 **209/209** builds pass. The full corpus remains **4,323/4,524**
+originals in **4,762** pairs at **96.23% mean source-shape / 85.99%
+strict fuzzy**, with **2,741 linked-exact / 1,096 byte-exact**, 201
+missing, zero skipped and no pair or exact-set losses. This is a
+behavioral data fix that code metrics cannot measure. The lit path is
+not live-tested; Redmi testing remains stopped. Next: inspect other
+rendering call targets and data initialization, then test on a
+permitted host. See
+[GL target evidence](ENGINE_LIGHT_MATERIAL_ALPHA_GL_TARGET_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (engine light defaults).
 Original Android ARM `ResetLightParam` initializes material alpha and
 RGB, two sets of light RGBA values, scene ambient, and shading vectors

@@ -260,9 +260,10 @@ void Engine::ActivateRender2TextureFBO() {
     }
 }
 
-typedef void Materialfv(unsigned int face, unsigned int pname, const void *params);
+using Materialfv = decltype(glMaterialfv);
 
-static Materialfv *volatile g_Engine_glMaterialfv;
+// Keep the original indirect call shape while binding the GL compatibility stub.
+static Materialfv *volatile g_Engine_glMaterialfv = glMaterialfv;
 
 void Engine::LightSetMaterialColorAlpha(float alpha) {
     if (this->lightingEnabled == 0) {
