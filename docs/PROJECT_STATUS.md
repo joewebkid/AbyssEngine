@@ -8,6 +8,20 @@ Pending device cleanup (user request, 2026-11-03):
   Keep the original `net.fishlabs.gof2hdallandroid2012` app and its
   OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`Status::moveWanted` host fixture).
+The broad asset-backed test failed because it set the player station
+equal to the current station before movement; the original
+`inAlienOrbit()` guard then correctly skipped the route. The test now
+asserts the non-alien precondition and passes at `-O0/-O2` with real
+catalogs and **179/179** balanced file lifetimes per run. Production
+code did not change, so the latest ARM baseline remains
+**4,323/4,524** originals in **4,769** pairs, mean
+**96.75% / 86.74%**, **2,779 linked-exact**, **1,108 byte-exact**,
+201 missing, zero skipped. Live movement and stochastic rerouting
+remain unverified; next use the restored gate to test another bounded
+status or route behavior. See
+[wanted fixture evidence](STATUS_MOVE_WANTED_SAVED_ROUTE_ARM_2026-10-17.md).
+
 Last reviewed: 2026-11-03 (`Status::setCampaignMission`). Original
 ARM preserves the `Mission::empty` singleton when replacing the
 campaign slot; the reconstruction compared against an unrelated null

@@ -491,8 +491,7 @@ int main(int argc, char **argv) {
         ArrayReleaseClasses(*marketItems);
         delete marketItems;
         Globals::rnd = nullptr;
-        Station *savedPlayerStation = status.playerStation;
-        status.playerStation = status.station;
+        assert(!status.inAlienOrbit());
         Station programmed(String("route guard"), 62, 20, 0, 0);
         Wanted *moving = (*status.wanted)[0];
         assert(std::all_of(status.wanted->begin(), status.wanted->end(),
@@ -562,7 +561,6 @@ int main(int argc, char **argv) {
         assert(moving->getCurrentLocation() == expectedGate);
         assert(interface.opens() == 66 && interface.closes() == 66);
         moving->setActive(false);
-        status.playerStation = savedPlayerStation;
         Station *openingStation = status.station;
         Station *marketStation = galaxy.getStation(41);
         assert(marketStation && marketStation->index == 41 && marketStation != openingStation);

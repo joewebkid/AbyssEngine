@@ -1,5 +1,21 @@
 # Saved-route wanted movement (2026-10-17)
 
+Revalidated 2026-11-03: the expanded weapon-file-stack fixture had
+started assigning `status.playerStation = status.station` immediately
+before its wanted-movement checks. `Status::inAlienOrbit()` then
+returned true, so original ARM control flow correctly skipped the
+movement and the fixture failed at its station-59 assertion. The same
+failure occurred with and without the later campaign-sentinel fix.
+The fixture now keeps the existing player-station state and asserts
+the non-alien precondition. Source-extracted production code passes
+at `-O0` and `-O2` with the real Android catalogs and **179/179**
+balanced file lifetimes in each run. No production code changed in
+this revalidation. The current full ARM baseline remains
+**4,323/4,524** originals in **4,769** pairs, mean **96.75% / 86.74%**,
+**2,779 linked-exact / 1,108 byte-exact**, 201 missing, zero skipped.
+Actual Android runtime movement and stochastic rerouting remain
+unverified.
+
 Android 2.0.16 ARM `libgof2hdaa.so` (SHA-256
 `6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`)
 places `Status::moveWanted` at `0x0a9684`. At `0x0a9722` it checks
