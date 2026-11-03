@@ -54,7 +54,7 @@ public:
 
     int getTextureIndex();
 
-    bool isPlanet();
+    uint8_t isPlanet();
 
     String getName();
 

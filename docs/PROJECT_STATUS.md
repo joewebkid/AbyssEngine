@@ -7,6 +7,17 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`Station::isPlanet` return ABI). Original
+ARM returns the raw `planet` byte; the reconstruction declared `bool`
+and normalized nonzero values to `1`. The return type is now
+`uint8_t`, yielding **100% source-shape, 100% strict fuzzy and
+byte-exact** for this symbol. Windows native, ARM64 static and ARMv7
+**209/209** builds pass. Full corpus: **4,323/4,524** originals in
+**4,769** pairs, mean **96.70% / 86.67%**, **2,779 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped; no pair or exact-set
+loss. The byte's producer and runtime use remain unverified. See
+[ABI evidence](STATION_ISPLANET_BYTE_ABI_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`Station` constructors). The original
 default constructor assigns an **empty** name; the reconstruction
 used `"Station"`. Both constructors now default-construct and assign
