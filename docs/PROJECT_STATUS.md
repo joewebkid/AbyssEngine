@@ -7,6 +7,21 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation::OnInitialize` station activation).
+The activation route now calls the real sound object, passes the
+pending music mode, and copies up to ten station-button positions
+and the full row count into globals. This removes a compiler trap
+caused by null placeholder pointers, allowing the route to appear in
+the ARMv7 object. Production-route smoke passes at `-O0/-O2`;
+Windows native, ARM64 static and ARMv7 **209/209** builds pass.
+`OnInitialize` source-shape improves **69.4% → 71.5%**, while strict
+fuzzy changes **15.0% → 14.7%**. Full corpus: **4,323/4,524**
+originals in **4,767** pairs, **96.45% / 86.31%** mean source-shape /
+strict fuzzy, **2,759 linked-exact / 1,098 byte-exact**, 201 missing,
+zero skipped and no pair or exact-set losses. Live sound and UI remain
+unverified. Next restore the separate state-100 sound-resource route;
+Redmi testing stays stopped. See [activation evidence](MODSTATION_ACTIVE_BUTTONS_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation::OnInitialize` station buttons).
 State 80 now creates the launch and credits buttons plus a five-button
 station row with ARM-confirmed text IDs, dimensions and Layout-derived

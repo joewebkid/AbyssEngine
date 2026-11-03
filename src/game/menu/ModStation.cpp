@@ -2704,7 +2704,6 @@ static int **g_oi_textRoot = 0;
 
 static char **g_oi_demoFlag = 0;
 
-static int *g_oi_musicId = 0;
 
 
 
@@ -3373,23 +3372,25 @@ void ModStation::OnInitialize() {
         }
         next = 0x50;
     } else {
-        int *sound = *(int **) g_oi_sound;
-        FModSound_play_oi(*sound, 0x7a, 0, 0.0f);
-        FModSound_enableReverb_oi(*sound);
-        FModSound_setDownPitch_oi(*sound);
-
-        int *music = g_oi_musicId;
-        if (*music != -1)
-            Globals::gGlobals->playMusicAndFadeOutCurrent(**(int **) g_oi_sound);
-        *music = -1;
+        Globals::sound->play(0x7a, nullptr, nullptr, 0.0f);
+        Globals::sound->enableReverb(0);
+        Globals::sound->setDownPitch(false);
+        int music = Globals::switch_to_target_setting;
+        if (music != -1)
+            static_cast<Globals *>(Globals::globals)->playMusicAndFadeOutCurrent(music);
+        Globals::switch_to_target_setting = -1;
         this->stationActive = 1;
         this->state = 100;
 
-        Array<void *> *btns = (Array<void *> *) (intptr_t) this->buttonRow;
-        if (btns != 0) {
-            for (unsigned i = 0; i < btns->size(); i = i + 1) {
-                (void) i;
+        auto *row = reinterpret_cast<Array<TouchButton *> *>(this->buttonRow);
+        if (row != nullptr) {
+            for (unsigned i = 0; i < row->size(); i = i + 1) {
+                if (i < 10) {
+                    Globals::sub_menu_buttons_x[i] = static_cast<int>((*row)[i]->getPosition().x);
+                    Globals::sub_menu_buttons_y[i] = static_cast<int>((*row)[i]->getPosition().y);
+                }
             }
+            Globals::sub_menu_button_count = static_cast<int>(row->size());
         }
         return;
     }
