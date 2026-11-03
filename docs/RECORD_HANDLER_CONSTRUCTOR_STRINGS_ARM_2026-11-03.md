@@ -14,11 +14,16 @@ bytes and original Android path use were previously checked in
 `RECORD_ANDROID_SAVE_PATHS_ARM_LIVE_2026-10-24.md`.
 
 The original constructor does not write the first two pointer fields,
-`currentMission` and `currentAgent`. The native reconstruction keeps
-their zero initialization. Both are read when writing nested agent
-and mission data; removing the zero before proving their producer
-would introduce an uninitialized read. This is the remaining
-two-instruction source difference, not an exact match claim.
+`currentMission` and `currentAgent`. In the original `recordStoreWrite`
+at `0xce8ac`, the first mission serialization calls `writeMission` at
+`0xcf840`. For a nonempty mission with an agent, that function writes
+`currentMission` and then compares its agent with `currentAgent`; it
+does not initialize `currentAgent` first.
+The reverse path, `writeAgent` at `0xcf9f0`, writes `currentAgent` and
+then compares the mission with `currentMission`. The native
+reconstruction keeps both fields zero-initialized to avoid an
+uninitialized read on the first nested serialization. This is the
+remaining two-instruction source difference, not an exact match claim.
 
 Focused ARMv7 verification builds 209/209 translation units and
 compares 63 `RecordHandler` symbols. Both constructor variants improve
@@ -31,8 +36,8 @@ linked-exact and one byte-exact comparison. Focused reports:
 
 Windows native and ARM64 static `gof2` builds pass. The recovered
 save/load path has not been exercised with a genuine fixture or on
-a permitted device. Next trace when the two pointer fields are first
-read and assigned in the original save writer.
+a permitted device. Next inspect the original allocation path for
+any zeroing before construction and test a genuine save fixture.
 
 The full ARM corpus compares 4,323/4,524 original functions in 4,769
 pairs, with 201 missing and zero skipped. Mean source-shape rises from

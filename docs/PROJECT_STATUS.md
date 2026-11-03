@@ -1,11 +1,12 @@
 # Project Status
 
-Pending device cleanup (user request, 2026-11-03): remove only the
-extra GOF2 test build on Redmi, package
-`net.fishlabs.gof2hdallandroiddevx`, and its matching OBB directory
-`Android/obb/net.fishlabs.gof2hdallandroiddevx/` when the phone is
-available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
-and its OBB. Do not resume Redmi testing for this cleanup.
+Pending device cleanup (user request, 2026-11-03):
+
+- [ ] When Redmi is available, remove the extra GOF2 test build,
+  package `net.fishlabs.gof2hdallandroiddevx`, and its matching OBB
+  directory `Android/obb/net.fishlabs.gof2hdallandroiddevx/`.
+  Keep the original `net.fishlabs.gof2hdallandroid2012` app and its
+  OBB. Do not resume Redmi testing for this cleanup.
 
 Last reviewed: 2026-11-03 (`RecordHandler` constructor). Original
 ARM default-constructs three save-path strings, then assigns separate
@@ -18,7 +19,11 @@ Windows native, ARM64 static and ARMv7 **209/209** builds pass. Full
 corpus: **4,323/4,524** originals in **4,769** pairs, mean
 **96.73% / 86.72%**, **2,779 linked-exact**, **1,108 byte-exact**, 201
 missing, zero skipped; no pair or exact-set loss. Genuine save/load
-remains unverified; next trace pointer initialization in the writer.
+remains unverified. For a nonempty mission with an agent, the original
+writer can read `currentAgent` after assigning `currentMission`,
+without initializing `currentAgent` there. Keep native zero
+initialization; next inspect allocation and
+test a genuine save fixture on a permitted host.
 See [constructor evidence](RECORD_HANDLER_CONSTRUCTOR_STRINGS_ARM_2026-11-03.md).
 
 Last reviewed: 2026-11-03 (`RecordHandler::convertSDVersionSaves`
