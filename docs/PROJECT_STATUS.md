@@ -7,6 +7,21 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (menu-input predicates).
+Seven input predicates in `NFC.cpp` read unwritten private variables
+instead of the game's `Globals` state. They now use the original
+exported flags; `IsInGameSubMenuNotActive` checks the star map instead
+of an unrelated top-menu index. Six predicates reach **100% / 100%**
+source-shape / strict fuzzy and gain linked-exact. `IsInPrimaryMenu`
+improves **37.9% / 9.1% → 88.0% / 66.7%**. Native smoke tests pass at
+`-O0/-O2`; Windows native, ARM64 static and ARMv7 **209/209** builds
+pass. Full corpus: **4,323/4,524** originals in **4,763** pairs,
+**96.35% / 86.21%** mean source-shape / strict fuzzy, **2,754
+linked-exact / 1,098 byte-exact**, 201 missing, zero skipped, no
+pair or exact losses. Live menu state updates remain unverified.
+Next audit `IsSubMenuActive` and its state inputs; Redmi testing
+remains stopped. See [predicate evidence](NFC_MENU_PREDICATES_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (NFC DeviceInfo getter call shape).
 Original ARM reloads the global JNI environment for each getter call
 and uses one shared exception-check/clear helper. Restoring those

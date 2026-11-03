@@ -63,19 +63,19 @@ public:
 // set by the Android back-button JNI hook.
 extern int g_android_back_button_pressed;
 
-bool IsDialogVisible(int);
+int IsDialogVisible(int);
 
-bool IsDialogNotVisible(int);
+int IsDialogNotVisible(int);
 
-bool IsDialogNotVisible2(int);
+int IsDialogNotVisible2(int);
 
-bool IsStarMapNotVisible(int);
+int IsStarMapNotVisible(int);
 
-bool IsInGameSubMenuNotActive(int);
+int IsInGameSubMenuNotActive(int);
 
-bool IsInGameSubMenuActive(int);
+int IsInGameSubMenuActive(int);
 
-bool IsInPrimaryMenu(int);
+int IsInPrimaryMenu(int);
 
 int HideMouse();
 

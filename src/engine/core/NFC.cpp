@@ -1,5 +1,6 @@
 #include "engine/core/NFC.h"
 #include "engine/input/VirtualInput.h"
+#include "game/core/Globals.h"
 
 #if defined(__ANDROID__)
 #include <jni.h>
@@ -295,49 +296,43 @@ int NFC::getHeight() {
 #endif
 }
 
-static int is_dialogue_window_visible;
-static int is_choice_window_visible;
-static int is_menu_visible;
-static bool isStarMapVisible;
-static int subMenuIndex;
-static int topMenuIndex;
-static int menu_touch_window_type;
 int g_android_back_button_pressed = 0;
 
-bool IsDialogVisible(int) {
-    return is_dialogue_window_visible != 0 || is_choice_window_visible != 0;
+int IsDialogVisible(int) {
+    return (Globals::is_dialogue_window_visible | Globals::is_choice_window_visible) != 0;
 }
 
-bool IsDialogNotVisible(int) {
-    return is_dialogue_window_visible == 0 && is_choice_window_visible == 0;
+int IsDialogNotVisible(int) {
+    return (Globals::is_dialogue_window_visible | Globals::is_choice_window_visible) == 0;
 }
 
-bool IsDialogNotVisible2(int) {
-    return is_dialogue_window_visible == 0 && is_choice_window_visible == 0 &&
-           is_menu_visible == 0;
+int IsDialogNotVisible2(int) {
+    return (Globals::is_dialogue_window_visible | Globals::is_choice_window_visible |
+            Globals::is_menu_visible) == 0;
 }
 
-bool IsStarMapNotVisible(int) {
-    return !isStarMapVisible;
+int IsStarMapNotVisible(int) {
+    return Globals::isStarMapVisible ^ 1;
 }
 
-bool IsInGameSubMenuNotActive(int) {
-    if (subMenuIndex == -1 && topMenuIndex == 0)
-        return is_menu_visible == 0;
-    return false;
-}
-
-bool IsInGameSubMenuActive(int) {
-    return subMenuIndex != -1;
-}
-
-bool IsInPrimaryMenu(int) {
-    if (is_menu_visible == 0)
+int IsInGameSubMenuNotActive(int) {
+    if (Globals::subMenuIndex != -1 || Globals::is_menu_visible != 0)
         return false;
-    if (topMenuIndex != 0 || menu_touch_window_type != 0 ||
-        is_dialogue_window_visible != 0 || is_choice_window_visible != 0)
-        return false;
-    return !isStarMapVisible;
+    return Globals::isStarMapVisible ^ 1;
+}
+
+int IsInGameSubMenuActive(int) {
+    return Globals::subMenuIndex != -1;
+}
+
+int IsInPrimaryMenu(int) {
+    int result = 0;
+    if (Globals::is_menu_visible != 0) {
+        if ((Globals::topMenuIndex | Globals::menu_touch_window_type |
+             Globals::is_dialogue_window_visible | Globals::is_choice_window_visible) == 0)
+            result = Globals::isStarMapVisible ^ 1;
+    }
+    return result;
 }
 
 int g_mouseCaptured __attribute__((visibility("hidden")));

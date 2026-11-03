@@ -54,7 +54,7 @@ struct VirtualKey {
         int field_0x48;
         int action;
         int field_0x50;
-        bool (*predicate)(int);
+        int (*predicate)(int);
 };
 
 #if UINTPTR_MAX == 0xffffffffu
@@ -278,7 +278,7 @@ void SetKeyCode(const char *name, int slot, int code) {
     }
 }
 
-bool IsSubMenuActive(int player) {
+int IsSubMenuActive(int player) {
     const int handle = g_virtualKeys[player].touchWindowHandle;
     if (handle <= kTouchWindowBase)
         return false;

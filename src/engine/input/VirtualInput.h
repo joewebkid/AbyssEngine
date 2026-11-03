@@ -34,7 +34,7 @@ void MouseWheel(float delta, float residual);
 
 void SetKeyCode(const char *name, int slot, int code);
 
-bool IsSubMenuActive(int player);
+int IsSubMenuActive(int player);
 
 bool ArrowKeyPressed();
 
