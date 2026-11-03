@@ -98,13 +98,9 @@ namespace {
     int g_Engine_shaderDrew;
     int g_Engine_shaderDirty;
 
-    int g_Engine_shaderPostA;
-    int g_Engine_shaderPostB;
-    int g_Engine_shaderPostC;
-
-    uint32_t g_Engine_postEffectBW;
-    uint32_t g_Engine_postEffectBlur;
-    int g_Engine_postEffectFlag;
+    constexpr uint32_t kPostEffectType1 = 0x01400001;
+    constexpr uint32_t kPostEffectType2 = 0x01400002;
+    uint8_t g_Engine_postEffectFlag;
     int g_Engine_postEffectCounter;
     int g_Engine_postEffectPending;
 
@@ -940,12 +936,12 @@ void Engine::DoPostEffect() {
     FBOContainer *current = this->postEffectFBO;
     FBOContainer *other = this->refractFBO;
     if (g_Engine_useShaders != 0) {
-        FBOContainer *slot = other;
+        FBOContainer *slot = current;
         if ((flags & 2) != 0) {
-            ShaderBaseStruct *shader = (*this->shaders)[g_Engine_shaderPostA];
-            if ((flags & ~2u) == 0) {
+            flags &= ~2u;
+            ShaderBaseStruct *shader = (*this->shaders)[GlowPPShader::ShaderIndex];
+            if (flags == 0) {
                 shader->RenderEffect(current, this);
-                flags = 0;
             } else {
                 shader->RenderEffect(current, other, this);
                 slot = other;
@@ -953,25 +949,33 @@ void Engine::DoPostEffect() {
             }
         }
         if ((this->postEffectFlags & 1) != 0) {
-            ShaderBaseStruct *shader = (*this->shaders)[g_Engine_shaderPostB];
-            if ((flags & ~1u) == 0) {
+            flags &= ~1u;
+            ShaderBaseStruct *shader = (*this->shaders)[BloomShader::ShaderIndex];
+            if (flags == 0) {
                 shader->RenderEffect(slot, this);
-                flags = 0;
             } else {
+                FBOContainer *previous = slot;
                 shader->RenderEffect(slot, other, this);
                 slot = other;
+                other = previous;
             }
         }
         if ((this->postEffectFlags & 4) != 0) {
-            ShaderBaseStruct *shader = (*this->shaders)[g_Engine_shaderPostC];
+            ShaderBaseStruct *shader = (*this->shaders)[BlurShader::ShaderIndex];
+            float strength;
+            Vector center;
+            std::memcpy(&strength, &this->field_0x3c8, sizeof(strength));
+            std::memcpy(&center.x, &this->field_0x3cc, sizeof(center.x));
+            std::memcpy(&center.y, &this->field_0x3d0, sizeof(center.y));
+            std::memcpy(&center.z, &this->field_0x3d4, sizeof(center.z));
             if ((flags & ~4u) == 0) {
-                shader->RenderEffect(slot, this);
+                shader->RenderEffect(slot, this, strength, center);
             } else {
-                shader->RenderEffect(slot, other, this);
+                shader->RenderEffect(slot, other, this, strength, center);
             }
         }
         if (g_Engine_postEffectFlag == 1) {
-            this->SetPostEffect(g_Engine_postEffectBW, false);
+            this->SetPostEffect(kPostEffectType2, false);
         }
     }
     return;
@@ -1035,7 +1039,7 @@ void Engine::SetPostEffect(uint32_t effect, bool enable) {
     }
 
     uint32_t flags = this->postEffectFlags;
-    if (effect == (uint32_t) g_Engine_postEffectBW) {
+    if (effect == kPostEffectType2) {
         if (enable) {
             if (g_Engine_postEffectCounter > 0) {
                 g_Engine_postEffectCounter -= 1;
@@ -1049,7 +1053,7 @@ void Engine::SetPostEffect(uint32_t effect, bool enable) {
         } else {
             g_Engine_postEffectFlag = g_Engine_postEffectCounter < 1;
         }
-    } else if (effect == (uint32_t) g_Engine_postEffectBlur) {
+    } else if (effect == kPostEffectType1) {
         g_Engine_postEffectFlag = enable;
         flags = enable ? (flags | 2) : (flags & ~2u);
     } else if (effect == 0x1400000) {

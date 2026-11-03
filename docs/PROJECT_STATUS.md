@@ -7,6 +7,28 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (post-effect shader dispatch and routing).
+Original ARM `DoPostEffect` selects `GlowPPShader`, `BloomShader`
+and `BlurShader` by their real static indices; the reconstruction
+used three unwritten zero-valued indices. Blur now receives the
+original strength and center fields through the correct virtual
+overload. The source FBO, remaining effect bits and source/target
+swap now follow the original route for combined effects.
+`SetPostEffect` now compares the original numeric effect codes,
+and the one-shot flag uses the original byte width. Focused
+`DoPostEffect` improves **83.9% → 97.8% source-shape** and
+**45.3% → 87.9% strict fuzzy**. `SetPostEffect` improves
+**80.1% → 87.5% source-shape** while strict fuzzy changes
+**55.2% → 48.5%**. Windows native, ARM64 static, ARMv7 **209/209**
+and source-extracted `-O0/-O2` routing smokes pass. Full ARM coverage
+remains **4,323/4,524** originals and **4,762** pairs, at **96.24%
+mean source-shape / 86.00% strict fuzzy**, with **2,742 linked-exact /
+1,096 byte-exact**, 201 missing, zero skipped and no exact-set or
+pair losses. Live effect rendering and shader registration order
+remain unverified; Redmi testing remains stopped. Next audit effect
+shader registration and the remaining nonmatching control flow. See
+[post-effect dispatch evidence](ENGINE_POSTEFFECT_DISPATCH_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (post-effect FBO creation flags).
 Original ARM `Engine::SetPostEffect` passes `true, false` to
 `FBOContainer::Create`; the reconstruction passed `false, true`.
