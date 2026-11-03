@@ -1,7 +1,7 @@
 # ModStation non-campaign mission reward (Android ARM)
 
 Primary source: Android 2.0.16 `libgof2hdaa.so`, SHA-256
-`6d38fd767ee3b4f8174c371bfc6397cf76e13c1756938b2a94658e3b58`.
+`6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`.
 `ModStation::OnTouchEnd(int,int,void*)` begins at `0xd7600`. Its
 non-campaign reward continuation is `0xd7b50–0xd7c2a`.
 

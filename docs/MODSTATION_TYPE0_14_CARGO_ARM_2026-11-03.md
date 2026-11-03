@@ -1,7 +1,7 @@
 # ModStation type-0 and type-14 cargo completion (Android ARM)
 
 Primary source: Android 2.0.16 `libgof2hdaa.so`, SHA-256
-`6d38fd767ee3b4f8174c371bfc6397cf76e13c1756938b2a94658e3b58`.
+`6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`.
 The relevant `ModStation::OnTouchEnd(int,int,void*)` path is
 `0xd77ba–0xd7962`.
 

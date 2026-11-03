@@ -1,7 +1,7 @@
 # Station button-row release
 
 Reference: original Android ARMv7 `libgof2hdaa.so`, SHA-256
-`6d38fd767ee3b4f8174c371bfc6397cf76e13c1756938b2a94658e3b58`.
+`6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`.
 The `ModStation::OnRelease` block at `0xd9086–0xd90a4` was checked
 against the original NDK ARM objdump.
 

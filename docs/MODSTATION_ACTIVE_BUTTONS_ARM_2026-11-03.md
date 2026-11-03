@@ -1,7 +1,7 @@
 # Station activation audio and button positions
 
 Reference: original Android ARMv7 `libgof2hdaa.so`, SHA-256
-`6d38fd767ee3b4f8174c371bfc6397cf76e13c1756938b2a94658e3b58`.
+`6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`.
 The `ModStation::OnInitialize` station-activation route at
 `0xd5e78–0xd5f36` was checked against the original NDK ARM objdump
 and REA/IDA pseudocode. Decompiled text was used as an interpretation

@@ -1,7 +1,7 @@
 # ModStation dialogue mission slot and production cargo (Android ARM)
 
 Primary source: Android 2.0.16 `libgof2hdaa.so`, SHA-256
-`6d38fd767ee3b4f8174c371bfc6397cf76e13c1756938b2a94658e3b58`.
+`6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`.
 `ModStation::OnTouchEnd(int,int,void*)` starts at `0xd7600`; its first
 dialogue mission branch is at `0xd768c–0xd76e4`. The original reads
 the `Mission*` from station offset `0x9c`, calls `Mission::getType`

@@ -1,7 +1,7 @@
 # Station button creation
 
 Reference: original Android ARMv7 `libgof2hdaa.so`, SHA-256
-`6d38fd767ee3b4f8174c371bfc6397cf76e13c1756938b2a94658e3b58`.
+`6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`.
 REA/IDA pseudocode was cross-checked with NDK ARM objdump for the
 `ModStation::OnInitialize` state-80 block at `0xd5a68–0xd5d06`.
 The decompiler output is an aid to interpreting the original

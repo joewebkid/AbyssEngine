@@ -1,7 +1,7 @@
 # Campaign step 43 radio continuation (Android ARMv7)
 
 Source: `libgof2hdaa.so` from Android 2.0.16, SHA-256
-`6d38fd767ee3b4f8174c371bfc6397cf76e13c1756938b2a94658e3b58`.
+`6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`.
 The evidence below is original ARM disassembly and dynamic ELF relocations;
 live gameplay behavior remains unverified.
 

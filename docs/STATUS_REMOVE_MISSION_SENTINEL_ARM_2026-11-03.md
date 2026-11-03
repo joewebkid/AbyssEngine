@@ -1,7 +1,7 @@
 # Status::removeMission empty sentinel (Android ARM)
 
 Primary source: Android 2.0.16 `libgof2hdaa.so`, SHA-256
-`6d38fd767ee3b4f8174c371bfc6397cf76e13c1756938b2a94658e3b58`.
+`6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`.
 `Status::removeMission(Mission*)` is at `0xac518–0xac5b4`. Its GOT
 load at `0xac522–0xac52e` resolves to the relocation for
 `Mission::empty` at `0x2102bc`. After deleting a matching mission,

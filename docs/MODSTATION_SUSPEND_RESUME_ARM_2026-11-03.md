@@ -1,7 +1,7 @@
 # ModStation suspend and resume (Android ARM)
 
 Source: Android 2.0.16 `libgof2hdaa.so`, SHA-256
-`6d38fd767ee3b4f8174c371bfc6397cf76e13c1756938b2a94658e3b58`.
+`6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`.
 `ModStation::OnResume` is at `0xdc29c–0xdc2ce` and `OnSuspend` at
 `0xdc2d0–0xdc2ea`.
 

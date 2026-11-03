@@ -1,7 +1,7 @@
 # ModStation release globals (Android ARM)
 
 The original Android `libgof2hdaa.so` (2.0.16, SHA-256
-`6d38fd767ee3b4f8174c371bfc6397cf76e13c1756938b2a94658e3b58`)
+`6d38fd767ee3b4f8174c371bce371bfc6397cf76e13c1756938b2a94658e3b58`)
 places `ModStation::OnRelease` at `0xd9050–0xd9226`. At `0xd9062–0xd9070`
 it reads the global sound pointer, conditionally calls
 `FModSound::disableReverb` and `stopAllSoundFXEvents`, and then disables
