@@ -2374,51 +2374,37 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
     }
     if (this->subWindowFlags.bytes[2] != 0) {
         if (static_cast<HangarWindow *>(this->hangarWindow)->OnTouchEnd(x, y) != 0) {
-            int *st = *(int **) g_ote_status;
-
-            Status_getShip_ote();
-            Array<Item *> *cargo = (Array<Item *> *) (intptr_t) Ship_getCargo_ote();
+            Array<Item *> *cargo = Globals::status->getShip()->getCargo();
             int sold = 0;
             if (cargo != 0) {
                 for (unsigned i = 0; i < cargo->size(); i = i + 1) {
-                    int idx = Item_getIndex_ote((*cargo)[i]);
-                    if (0x83 < idx && Item_getIndex_ote((*cargo)[i]) < 0x9a)
-                        sold += Item_getAmount_ote();
+                    int idx = (*cargo)[i]->getIndex();
+                    if (idx >= 0x84 && (*cargo)[i]->getIndex() <= 0x99)
+                        sold += (*cargo)[i]->getAmount();
                 }
             }
-            if ((int) (intptr_t) this->buttonLaunch < sold)
-                ((Status *) (intptr_t) *st)->field_a8 += sold - (int) (intptr_t) this->buttonLaunch;
-            HangarWindow_setSellMode_ote((int) (intptr_t) this->hangarWindow);
+            if (sold > this->field_0xd0)
+                Globals::status->field_a8 += sold - this->field_0xd0;
+            HangarWindow *hangar = static_cast<HangarWindow *>(this->hangarWindow);
+            hangar->setSellMode(false);
             this->resetIdleCamForHangar();
-            HangarWindowHead *hw = (HangarWindowHead *) this->hangarWindow;
             this->subWindowFlags.bytes[2] = 0;
-            if (hw->shipChanged != 0) {
-                hw->shipChanged = 0;
-                int cs = (int) (intptr_t) this->cutScene;
-                Status_getShip_ote();
-                int shipIndex = Ship_getIndex_ote();
-                Ship *sh = (Ship *) Status_getShip_ote();
-                Ship_getRace_ote(sh);
-                CutScene_replacePlayerShip_ote(cs, shipIndex);
+            if (hangar->field_0x0 != 0) {
+                hangar->field_0x0 = 0;
+                int shipIndex = Globals::status->getShip()->getIndex();
+                int shipRace = Globals::status->getShip()->getRace();
+                this->cutScene->replacePlayerShip(shipIndex, shipRace);
             }
-            if ((int) (intptr_t) this->cutScene != 0)
-                CutScene_checkForTurret_ote((int) (intptr_t) this->cutScene);
-            int snd = **(int **) g_ote_sound;
-            FModSound_stop_ote(snd);
-            FModSound_play_ote(snd, 0x7a, 0, 0.0f);
-            FModSound_setParamValue_ote(snd, 0, snd, 0.0f);
-            {
-                int *row = (int *) ModStation_ote_buttonRow(this);
-                if (row != nullptr) {
-                    int *btns = (int *) row[1];
-                    int n = row[0];
-                    int *xs = this->buttonCacheX;
-                    int *ys = this->buttonCacheY;
-                    for (int i = 0; i < n && i < 5; ++i) {
-                        void *b = (void *) btns[i];
-                        xs[i] = TouchButton_getX_ote(b);
-                        ys[i] = TouchButton_getY_ote(b);
-                    }
+            if (this->cutScene != nullptr)
+                this->cutScene->checkForTurret();
+            Globals::sound->stop(0x5f);
+            Globals::sound->play(0x7a, nullptr, nullptr, 0.0f);
+            Globals::sound->setParamValue(0, Globals::sound->currentMusicEvent, 0.0f);
+            auto *row = reinterpret_cast<Array<TouchButton *> *>(this->buttonRow);
+            for (unsigned i = 0; i < row->size(); ++i) {
+                if (i < 10) {
+                    Globals::sub_menu_buttons_x[i] = static_cast<int>((*row)[i]->getPosition().x);
+                    Globals::sub_menu_buttons_y[i] = static_cast<int>((*row)[i]->getPosition().y);
                 }
             }
         }

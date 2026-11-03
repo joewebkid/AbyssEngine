@@ -7,6 +7,20 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation::OnTouchEnd` Hangar close).
+Closing Hangar now compares current cargo items 132–153 with the
+opening baseline, credits only a positive increase, handles a changed
+ship, resets the camera, updates sound and refreshes up to ten global
+submenu coordinates. The production-branch smoke passes at `-O0/-O2`;
+Windows native, ARM64 static and ARMv7 **209/209** builds pass.
+Whole-function source-shape improves **72.5% → 73.5%** and strict
+fuzzy **4.4% → 15.0%**. Full corpus: **4,323/4,524** originals in
+**4,764** pairs, **96.45% / 86.32%** mean source-shape / strict fuzzy,
+**2,757 linked-exact / 1,098 byte-exact**, 201 missing, zero skipped,
+no pair or exact-set losses. Live Hangar behavior remains unverified.
+Next inspect another bounded station touch route; Redmi testing stays
+stopped. See [Hangar close evidence](MODSTATION_HANGAR_CLOSE_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation::OnTouchEnd` SpaceLounge close).
 Closing SpaceLounge now resets the camera and light, sets the current
 music-event parameter to zero, stops sound event `0x6c`, starts
