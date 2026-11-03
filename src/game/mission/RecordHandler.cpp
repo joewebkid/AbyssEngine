@@ -286,16 +286,13 @@ bool RecordHandler::notEnoughMemory() {
 }
 
 
-static int *g_CSV_count = nullptr;
-
 void RecordHandler::convertSDVersionSaves() {
     Array<signed char *> *a0 = new Array<signed char *>();
-    int *cnt = g_CSV_count;
-    ArraySetLength(*cnt, *a0);
+    ArraySetLength((unsigned int) (std::uintptr_t) Globals::recordSlots, *a0);
     Array<signed char *> *a1 = new Array<signed char *>();
-    ArraySetLength(*cnt, *a1);
+    ArraySetLength((unsigned int) (std::uintptr_t) Globals::recordSlots, *a1);
 
-    unsigned n = *cnt;
+    unsigned n = (unsigned int) (std::uintptr_t) Globals::recordSlots;
     int *sizes0 = new int[n];
     int *sizes1 = new int[n];
 
@@ -311,7 +308,7 @@ void RecordHandler::convertSDVersionSaves() {
         num.Set((long long) (i));
         path = this->backupDir + num;
         AEFile::FileDelete(path);
-        n = *cnt;
+        n = (unsigned int) (std::uintptr_t) Globals::recordSlots;
     }
 
     int i = 0;
@@ -333,7 +330,7 @@ void RecordHandler::convertSDVersionSaves() {
             if (lastRec != 0) {
                 this->writeByteArrayAsRecord(lastRec, sizes0[last], 0, false);
                 this->addHash(0);
-                int idx = (int) (*cnt) - 1;
+                int idx = (int) (std::uintptr_t) Globals::recordSlots - 1;
                 this->writeByteArrayAsRecord((*a1)[idx], sizes1[idx], 0, true);
             }
             break;
@@ -343,7 +340,7 @@ void RecordHandler::convertSDVersionSaves() {
         this->addHash(next);
         this->writeByteArrayAsRecord((*a1)[j], sizes1[j], next, true);
         i = next;
-        n = *cnt;
+        n = (unsigned int) (std::uintptr_t) Globals::recordSlots;
     }
 
     ArrayReleaseArrays(*a0);

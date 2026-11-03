@@ -10,10 +10,6 @@ from run_particle_control_smoke import function
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def before(source, start, end):
-    return source[source.index(start):source.index(end, source.index(start))]
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out-dir", type=Path, required=True)
@@ -28,10 +24,8 @@ def main():
         "namespace AbyssEngine {\n"
         + function(engine, "String operator+(const String &a, const String &b) {")
         + "\n}\n"
-        + before(record, "static int *g_CSV_count = nullptr;", "void RecordHandler::convertSDVersionSaves() {")
         + function(record, "void RecordHandler::convertSDVersionSaves() {").replace(
             "void RecordHandler::convertSDVersionSaves", "void RecordMigration::convertSDVersionSaves", 1)
-        + before(record, "static int *g_RH_csd_count = nullptr;", "void RecordHandler::changeSaveDirectoryToBackupDirectory() {")
         + function(record, "void RecordHandler::changeSaveDirectoryToBackupDirectory() {").replace(
             "void RecordHandler::changeSaveDirectoryToBackupDirectory",
             "void RecordMigration::changeSaveDirectoryToBackupDirectory", 1)

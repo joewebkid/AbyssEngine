@@ -7,6 +7,19 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`RecordHandler::convertSDVersionSaves`
+slot count). The original reads `Globals::recordSlots`; the
+reconstruction dereferenced a permanently null `g_CSV_count` pointer.
+The migration now uses the original global. Two-slot host tests pass
+at `-O0/-O2`; Windows native, ARM64 static and ARMv7 **209/209**
+builds pass. Focused source-shape improves **46.9% → 88.3%**, strict
+fuzzy **18.0% → 57.1%**. Full corpus: **4,323/4,524** originals in
+**4,769** pairs, mean **96.71% / 86.68%**, **2,779 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped, without pair or
+exact-set loss. Real saves, absent slots and file failures remain
+unverified; next audit temporary string lifetime. See
+[slot-count evidence](RECORD_SD_SLOT_COUNT_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`Station::isPlanet` return ABI). Original
 ARM returns the raw `planet` byte; the reconstruction declared `bool`
 and normalized nonzero values to `1`. The return type is now
