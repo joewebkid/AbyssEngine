@@ -7,6 +7,23 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`HackingGame` globals and object ABI).
+Original Android ARM uses `Globals::Canvas/w/h/layout` for the
+hacking renderer, `Globals::Canvas` for image creation, and
+`Globals::sound` for rotation and win audio. Unwritten private
+pointer slots and the unused `PaintCanvas::gCanvas` are replaced.
+Two extra words in the reconstructed object had shifted its fields;
+the 0x320-byte original layout is restored and asserted. Focused
+`render2D` source-shape improves **18.7% → 79.2%**, strict fuzzy
+**4.5% → 16.5%**; both constructor symbols improve **50.2% →
+78.6%** source-shape. Windows native, ARM64 static and ARMv7
+**209/209** builds pass. Full corpus: **4,323/4,524** originals in
+**4,769** pairs, mean **96.64% / 86.58%**, **2,776 linked-exact**,
+**1,107 byte-exact**, 201 missing, zero skipped, with no pair or
+exact-set losses. Live hacking graphics and audio remain unverified.
+Next audit tile placement and solved-state drawing in `render2D`.
+See [HackingGame evidence](HACKINGGAME_GLOBALS_ABI_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`EaseInOutMatrix::UpdateCurrentValue`).
 Original Android ARM uses the float literal `0x40c90fdb` (`2π`)
 for interpolation phase and evaluates the sine weight in double

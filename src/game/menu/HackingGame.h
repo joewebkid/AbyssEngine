@@ -37,18 +37,16 @@ public:
     int update(int dt);
 
     int difficulty;
-    uint32_t reserved_14;
-    uint32_t reserved_18;
     int target[6];
     int current[6];
     int working[6];
     int tileImages[48];
-    int topImage;
-    int mainImage;
-    int bottomImage;
-    int arrowActive;
-    int arrowIdle;
-    int markImage;
+    unsigned int topImage;
+    unsigned int mainImage;
+    unsigned int bottomImage;
+    unsigned int arrowActive;
+    unsigned int arrowIdle;
+    unsigned int markImage;
     int type;
     bool rotatingLeft;
     bool rotatingRight;
@@ -60,4 +58,12 @@ public:
     int dockingIndex;
     uint8_t trailingState[0x320 - 0x140];
 };
+
+static_assert(__builtin_offsetof(HackingGame, target) == 0x04, "HackingGame target offset");
+static_assert(__builtin_offsetof(HackingGame, current) == 0x1c, "HackingGame current offset");
+static_assert(__builtin_offsetof(HackingGame, tileImages) == 0x4c, "HackingGame tile offset");
+static_assert(__builtin_offsetof(HackingGame, type) == 0x124, "HackingGame type offset");
+static_assert(__builtin_offsetof(HackingGame, wonTimer) == 0x130, "HackingGame wonTimer offset");
+static_assert(__builtin_offsetof(HackingGame, dockingIndex) == 0x13c, "HackingGame docking offset");
+static_assert(sizeof(HackingGame) == 0x320, "HackingGame size");
 #endif
