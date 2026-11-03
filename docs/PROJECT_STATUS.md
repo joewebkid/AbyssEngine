@@ -7,6 +7,19 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation::OnRelease` globals). Release
+now uses the real sound, layout and image-factory globals to stop
+effects, reload interface resources and free sound events in the
+original ARM call order. Windows native, ARM64 static and ARMv7
+**209/209** builds pass. `OnRelease` source-shape improves **83.5% →
+92.4%**, strict fuzzy **59.9% → 74.9%**. Full corpus:
+**4,323/4,524** originals in **4,767** pairs, **96.46% / 86.32%**
+mean source-shape / strict fuzzy, **2,759 linked-exact / 1,098
+byte-exact**, 201 missing, zero skipped and no pair or exact-set
+losses. Live release behavior remains unverified; next restore a
+bounded station interaction path. Redmi testing stays stopped. See
+[release-global evidence](MODSTATION_RELEASE_GLOBALS_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation::OnInitialize` sound resources).
 State 100 now initializes the original 16 sound resources, copies the
 station name and uses full 64-bit time before updating trade goods

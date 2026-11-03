@@ -1535,17 +1535,11 @@ void ModStation::OnTouchMove(int x, int y, void *touch) {
 }
 
 
-static FModSound **g_ModStation_or_sound = 0;
-
-static Layout **g_ModStation_or_reload = 0;
-
-static ImageFactory **g_ModStation_or_imgfac = 0;
-
 void ModStation::OnRelease() {
-    FModSound **soundHolder = g_ModStation_or_sound;
-    if (*soundHolder != 0) {
-        (*soundHolder)->disableReverb();
-        (*soundHolder)->stopAllSoundFXEvents();
+    FModSound *&sound = Globals::sound;
+    if (sound != nullptr) {
+        sound->disableReverb();
+        sound->stopAllSoundFXEvents();
     }
     PaintCanvas::gCanvas->FogEnable(0, AbyssEngine::FogMode_dummy);
 
@@ -1609,11 +1603,11 @@ void ModStation::OnRelease() {
     PaintCanvas::gCanvas->ReleaseAllResources();
     Globals::gGlobals->loadFont(GameText::getLanguage());
 
-    Layout **reloadHolder = g_ModStation_or_reload;
-    if (*reloadHolder != 0) {
-        (*reloadHolder)->reload();
-        (*g_ModStation_or_imgfac)->reload();
-        (*reloadHolder)->initTip();
+    Layout *&layout = Globals::layout;
+    if (layout != nullptr) {
+        layout->reload();
+        static_cast<ImageFactory *>(Globals::imageFactory)->reload();
+        layout->initTip();
     }
 
     delete this->cameraTween;
@@ -1637,8 +1631,8 @@ void ModStation::OnRelease() {
     this->scrollBox = 0;
 
     this->cameraFlags.halfword = 0;
-    if (*soundHolder != 0)
-        (*g_ModStation_or_sound)->freeAllEvents();
+    if (sound != nullptr)
+        sound->freeAllEvents();
 }
 
 
