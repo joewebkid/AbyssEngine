@@ -7,6 +7,22 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (Engine constructor defaults).
+Original ARM confirms `0.3f` for the post-effect center's third
+component, `0.7f` for the cube-shader parameter and `50000.0f` for
+the initial fog maximum. Several zeroed fields were missing in the
+reconstruction; the statistics-enable byte was initialized at the
+wrong offset. These values and ARM layout assertions are restored.
+Focused constructor source-shape improves **88.9% → 90.1%** and strict
+fuzzy **38.7% → 55.7%**. Windows native, ARM64 static and ARMv7
+**209/209** builds pass. Full corpus: **4,323/4,524** originals,
+**4,763** pairs, **96.25% / 86.04%** mean source-shape / strict fuzzy,
+**2,746 linked-exact / 1,098 byte-exact**, 201 missing, zero skipped.
+Comparison and exact sets have no gains or losses. Live rendering and
+the remaining constructor shape are unverified; next inspect its
+construction order on an allowed host. Redmi testing remains stopped.
+See [constructor evidence](ENGINE_CONSTRUCTOR_DEFAULTS_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (embedded Engine shader arrays).
 Original Android ARM constructs the triangle-count and shader arrays
 inside `Engine` at offsets `0x3d8` and `0x510`. The reconstruction

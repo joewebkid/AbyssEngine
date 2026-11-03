@@ -638,7 +638,11 @@ namespace AbyssEngine {
     static_assert(__builtin_offsetof(Engine, materialSpecular) == 0x2b8, "ARM specular material offset");
     static_assert(__builtin_offsetof(Engine, lightAmbientShaded) == 0x2cc, "ARM shaded light offset");
     static_assert(__builtin_offsetof(Engine, field_0x2fc) == 0x2fc, "ARM light vector offset");
+    static_assert(__builtin_offsetof(Engine, field_0xcc) == 0xcc, "ARM cube shader parameter offset");
+    static_assert(__builtin_offsetof(Engine, statsBucketFlag) == 0xfd, "ARM statistics bucket offset");
+    static_assert(__builtin_offsetof(Engine, statsEnabled) == 0xfe, "ARM statistics enable offset");
     static_assert(__builtin_offsetof(Engine, triangleCounts) == 0x3d8, "ARM triangle count array offset");
+    static_assert(__builtin_offsetof(Engine, fogMaxDist) == 0x3ec, "ARM fog maximum offset");
     static_assert(__builtin_offsetof(Engine, shaders) == 0x510, "ARM shader array offset");
     static_assert(__builtin_offsetof(Engine, triangleCountClientA) == 0x58, "ARM client triangle A offset");
     static_assert(__builtin_offsetof(Engine, triangleCountClientB) == 0x5c, "ARM client triangle B offset");
