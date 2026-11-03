@@ -7,6 +7,21 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation::OnTouchEnd` SpaceLounge close).
+Closing SpaceLounge now resets the camera and light, sets the current
+music-event parameter to zero, stops sound event `0x6c`, starts
+`0x7a`, checks the turret and destroys a stale Hangar window when
+the lounge requests it. The production branch smoke passes at
+`-O0/-O2`; Windows native, ARM64 static and ARMv7 **209/209** builds
+pass. Whole-function `OnTouchEnd` source-shape improves **72.2% →
+72.5%**, with **4.4%** strict fuzzy unchanged. Full corpus:
+**4,323/4,524** originals in **4,764** pairs, **96.45% / 86.32%**
+mean source-shape / strict fuzzy, **2,757 linked-exact / 1,098
+byte-exact**, 201 missing, zero skipped, no pair or exact-set losses.
+Live audio and lounge behavior remain unverified. Next inspect the
+Hangar close route; Redmi testing stays stopped. See
+[lounge close evidence](MODSTATION_LOUNGE_CLOSE_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation::OnTouchEnd` station buttons).
 The launch and credit buttons now receive both touch coordinates
 through their real object fields. Launch calls `leaveStation`; credit

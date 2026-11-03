@@ -2429,17 +2429,14 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
             this->subWindowFlags.bytes[1] = 0;
             this->resetIdleCamForHangar();
             this->resetLight();
-            int snd = **(int **) g_ote_sound;
-            FModSound_setParamValue_ote(snd, 0, snd, 0.0f);
-            FModSound_stop_ote(snd);
-            FModSound_play_ote(snd, 0x7a, 0, 0.0f);
-            CutScene_checkForTurret_ote((int) (intptr_t) this->cutScene);
-            if ((int) (intptr_t) this->spaceLounge != 0 && SpaceLounge_hangarNeedsUpdate_ote() != 0) {
-                if (this->hangarWindow != 0) {
-                    HangarWindow_dtor_ote((HangarWindow *) this->hangarWindow);
-                    ::operator delete(this->hangarWindow);
-                }
-                this->hangarWindow = 0;
+            Globals::sound->setParamValue(0, Globals::sound->currentMusicEvent, 0.0f);
+            Globals::sound->stop(0x6c);
+            Globals::sound->play(0x7a, nullptr, nullptr, 0.0f);
+            this->cutScene->checkForTurret();
+            SpaceLounge *lounge = static_cast<SpaceLounge *>(this->spaceLounge);
+            if (lounge != nullptr && lounge->hangarNeedsUpdate() != 0) {
+                delete static_cast<HangarWindow *>(this->hangarWindow);
+                this->hangarWindow = nullptr;
             }
         }
         return;
