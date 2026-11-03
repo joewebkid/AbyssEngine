@@ -8,6 +8,19 @@ Pending device cleanup (user request, 2026-11-03):
   Keep the original `net.fishlabs.gof2hdallandroid2012` app and its
   OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`RecordHandler` save-list slot count).
+Both record-list readers dereferenced a permanently null count
+pointer. Original ARM uses `Globals::recordSlots`; the reconstruction
+now does too. Focused source-shape improves **65.4% → 98.2%** and
+strict fuzzy **24.5% → 76.5%** for each function. Windows native,
+ARM64 static and ARMv7 **209/209** builds pass; the existing synthetic
+preview round trip passes at `-O0/-O2`. Full corpus:
+**4,323/4,524** originals in **4,769** pairs, mean **96.74% / 86.74%**,
+**2,779 linked-exact**, **1,108 byte-exact**, 201 missing, zero
+skipped, no pair or exact-set losses. Genuine list population remains
+unverified; next use real save files and audit list path handling. See
+[slot-count evidence](RECORD_ALL_SLOTS_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`RecordHandler` preview difficulty).
 Original ARM writes the global game difficulty into save previews.
 The reconstruction dereferenced a permanently null placeholder at

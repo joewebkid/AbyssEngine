@@ -261,13 +261,11 @@ void loadingScreen(AbyssEngine::PaintCanvas *canvas, int progress, void *resourc
 }
 
 
-static int *g_RH_recordCount = nullptr;
-
 void *RecordHandler::readAllRecords() {
     Array<void *> *arr = new Array<void *>();
-    int *cnt = g_RH_recordCount;
-    ArraySetLength(*cnt, *arr);
-    for (int i = 0; i < *cnt; i++) {
+    int count = static_cast<int>(reinterpret_cast<std::uintptr_t>(Globals::recordSlots));
+    ArraySetLength(count, *arr);
+    for (int i = 0; i < count; i++) {
         void *r = this->recordStoreRead(i);
         (*arr)[i] = r;
     }
@@ -277,9 +275,9 @@ void *RecordHandler::readAllRecords() {
 
 void *RecordHandler::readAllPreviewRecords() {
     Array<GameRecord *> *arr = new Array<GameRecord *>();
-    int *cnt = g_RH_recordCount;
-    ArraySetLength(*cnt, *arr);
-    for (int i = 0; i < *cnt; i++) {
+    int count = static_cast<int>(reinterpret_cast<std::uintptr_t>(Globals::recordSlots));
+    ArraySetLength(count, *arr);
+    for (int i = 0; i < count; i++) {
         void *r = this->recordStoreReadPreview(i);
         (*arr)[i] = (GameRecord *) r;
     }
