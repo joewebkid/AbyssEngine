@@ -23,7 +23,12 @@ sets the vector at `+0x104` to `(50, imageHeight + h + h/2 + 10, 0)`.
 The `ScrollTouchBox` allocation is `0x40` bytes at station `+0x98`;
 its width derives from `Globals::w - 100`, and its height is `5000`.
 It receives text `0x30` and centered alignment. Station words `+0xb4`
-and `+0xb8` become `1000001` and `0`; flag byte `+0x60` becomes `1`.
+and `+0xb8` become `-12000` and `0`; flag byte `+0x60` becomes `1`.
+The ARM `ldr`/`strd` pair at `0xd7b44–0xd7b4a` loads the signed
+literal `0xffffd120` from `0xd7d64` and stores both words together.
+An earlier reading incorrectly used the separate reward threshold
+`1,000,001` as this timer value; the later radio-timing audit corrected
+the source and this note.
 The `Globals::Canvas`, `Globals::h`, `Globals::w`, and
 `Globals::gameText` GOT relocations are at `0x2101f4`, `0x210280`,
 `0x210278`, and `0x2102a0`.

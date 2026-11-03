@@ -1080,7 +1080,7 @@ void ModStation::OnUpdate() {
             float halfHeight = static_cast<float>(Globals::h / 2);
             float scrollY = this->radioScrollAnchor.y;
             if (scrollY > halfHeight) {
-                float nextY = scrollY - static_cast<float>(this->dt) * 0.03f;
+                float nextY = scrollY + static_cast<float>(this->dt) * -0.03f;
                 if (nextY <= halfHeight) {
                     this->radioScrollAnchor.y = nextY;
                     this->field_0xb8 = 4000;
@@ -1090,7 +1090,7 @@ void ModStation::OnUpdate() {
             if (this->field_0xb8 > 0) {
                 this->field_0xb8 -= this->dt;
             } else {
-                scrollY += static_cast<float>(this->dt) * 0.03f;
+                scrollY += static_cast<float>(this->dt) * -0.03f;
                 this->radioScrollAnchor.y = scrollY;
                 int imageHeight = Globals::Canvas->GetImage2DHeight(this->field_0x5c);
                 static_cast<ScrollTouchBox *>(this->scrollBox)->setPosition(
@@ -1930,7 +1930,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                             this->scrollBox = box;
                             box->setText(*Globals::gameText->getText(0x30));
                             box->setTextCentered(true);
-                            this->field_0xb4 = 1000001;
+                            this->field_0xb4 = -12000;
                             this->field_0xb8 = 0;
                             this->m_nStarMapWindowOpen.bytes[0] = 1;
                             return;

@@ -7,6 +7,21 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation` radio scroll and campaign
+timer). Android ARM confirms that radio text keeps moving upward
+after the 4,000 ms hold (`-0.03f` per millisecond) and campaign step
+43 initializes timer `+0xb4` to `-12000`, not the separate reward
+threshold `1,000,001`. Both source errors are corrected. Windows
+native, ARM64 static, and ARMv7 **209/209** builds pass. Focused
+`OnUpdate` source-shape is **76.3%**, strict fuzzy **27.1%**;
+`OnTouchEnd(int,int,void*)` rises to **83.2% / 23.0%**. Full ARM
+corpus: **4,323/4,524** originals, **4,769** pairs, **96.53% /
+86.40%** mean source-shape / strict fuzzy, **2,763 linked-exact**,
+**1,099 byte-exact**, 201 missing, zero skipped, with no pair or
+exact-set losses. Live radio behavior remains unverified. Next
+validate the sequence on a non-Redmi device when available. See
+[radio timing evidence](MODSTATION_RADIO_SCROLL_DIRECTION_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation` radio fade).
 The original ARM literal at `0xdbf0c` is `-6000.0f`; the radio
 fade from timer `-6000` to `-1` now divides by that value.
@@ -77,9 +92,10 @@ Focused source-shape rises **66.8% -> 76.4%** for `OnUpdate` and
 **26.7%** and **20.3%**). Full corpus: **4,323/4,524** originals in
 **4,769** pairs, **96.52% / 86.40%** mean source-shape / strict fuzzy,
 **2,763 linked-exact / 1,099 byte-exact**, 201 missing, zero skipped,
-no pair or exact-set losses. Live scene behavior is unverified; the
-step-43 timer starts above its exit threshold. Next restore non-radio
-station render routes. Redmi testing remains stopped. See
+no pair or exact-set losses. Live scene behavior is unverified. A
+later ARM literal audit corrected the previously misassigned step-43
+timer to `-12000`. Next restore non-radio station render routes.
+Redmi testing remains stopped. See
 [station radio evidence](MODSTATION_RADIO_UPDATE_RENDER_ARM_2026-11-03.md).
 
 Last reviewed: 2026-11-03 (`Radio::update`/`draw`). The 63-entry

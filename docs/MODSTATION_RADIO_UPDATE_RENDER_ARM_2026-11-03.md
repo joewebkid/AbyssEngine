@@ -22,7 +22,7 @@ mode `2` and sets rotation speed `0.00003f` (literal `0xda2d8`).
 It updates the cut scene with the frame delta and reads
 `Radio::lastMessageShown()` from the object at `+0x54`. When the
 last message has shown, it adjusts the Y component of the vector at
-`+0x104` with speed `0.03` per millisecond, uses the hold timer at
+`+0x104` with displacement `-0.03` per millisecond, uses the hold timer at
 `+0xb8`, and repositions the `ScrollTouchBox` at `+0x98` using the
 height of image `+0x5c` and half the screen height. At timer
 `136001` (literal `0xda664`), it calls
@@ -43,6 +43,8 @@ asserted on ARM32. The subsequent module-field audit confirmed that
 fills both fields; `OnUpdate` and `OnRender2D` now read them directly.
 The later fade-denominator audit corrected the `-6000..-1` interval
 to divide by the ARM literal `-6000.0f`.
+The later scroll audit corrected the post-hold direction to use the
+same negative ARM displacement as the approach to the midpoint.
 
 ## Verification
 
@@ -63,11 +65,11 @@ Reports: `_work/radio_runtime_full_20261103.json`,
 
 ## Limits and next priority
 
-The campaign step-43 branch initializes timer `+0xb4` to
-`1,000,001`, already above the `136001` exit threshold. Static ARM
-therefore implies a transition once the station update passes its
-1,000-ms gate; what the player sees is unverified. Other station
-update and render routes still contain provisional shims, and the
-full radio scene has not been exercised. Next recover the non-radio
-`OnRender2D` window routing and its direct draw calls, without Redmi
-testing.
+The campaign step-43 branch initializes timer `+0xb4` to `-12000`,
+as confirmed later by the ARM literal at `0xd7d64`. An earlier
+reading had wrongly assigned the separate reward threshold
+`1,000,001` to this field. The `136001` exit threshold is reached
+only after the timer advances. Other station update and render routes
+still contain provisional shims, and the full radio scene has not
+been exercised. Next validate the radio sequence at runtime on a
+non-Redmi device when available.
