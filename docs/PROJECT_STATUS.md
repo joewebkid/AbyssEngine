@@ -7,6 +7,16 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`HackingGame::reInit` random source).
+Original ARM reads `Globals::rnd` for target shuffling and rotations;
+the reconstruction read the separate `AERandom::gRandom` global.
+All six calls now use the original source. Focused ARMv7 (209/209),
+Windows native and ARM64 static builds pass. Full corpus remains
+**4,323/4,524** originals in **4,769** pairs, mean **96.65% /
+86.60%**, **2,778 linked-exact**, **1,107 byte-exact**, 201 missing,
+zero skipped; no pair or exact-set loss. Live minigame behavior is
+unverified. See [random-source evidence](HACKINGGAME_RANDOM_SOURCE_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`HackingGame` image creation). Original
 Android ARM writes image handles directly into object slots during
 `PaintCanvas::Image2DCreate`; the reconstruction used a stack
