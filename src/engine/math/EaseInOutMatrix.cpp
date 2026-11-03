@@ -108,13 +108,18 @@ namespace AbyssEngine {
         this->m_duration = (float) duration;
     }
 
-    EaseInOutMatrix::EaseInOutMatrix() {
-        this->m_minPos = AEMath::Vector{0, 0, 0};
-        this->m_posDelta = AEMath::Vector{0, 0, 0};
-
-        AEMath::Matrix ident;
-        AEMath::MatrixIdentity(ident);
-        SetRange(ident, ident);
+    EaseInOutMatrix::EaseInOutMatrix()
+        : m_minPos{0.0f, 0.0f, 0.0f},
+          m_posDelta{0.0f, 0.0f, 0.0f} {
+        SetRange(
+            AEMath::Matrix(1.0f, 0.0f, 0.0f, 0.0f,
+                           0.0f, 1.0f, 0.0f, 0.0f,
+                           0.0f, 0.0f, 1.0f, 0.0f,
+                           1.0f, 1.0f, 1.0f),
+            AEMath::Matrix(1.0f, 0.0f, 0.0f, 0.0f,
+                           0.0f, 1.0f, 0.0f, 0.0f,
+                           0.0f, 0.0f, 1.0f, 0.0f,
+                           1.0f, 1.0f, 1.0f));
         this->m_duration = 0.0f;
     }
 }

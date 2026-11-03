@@ -7,6 +7,20 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`EaseInOutMatrix` default constructor).
+Original Android ARM initializes the two vector members between
+their neighboring quaternion and matrix constructors, then passes
+two direct identity matrices to `SetRange`. The source now follows
+that order and removes a redundant local matrix and identity call.
+Both constructor symbols improve **59.4% / 19.4% → 100% / 100%**
+source-shape / strict fuzzy and become linked-exact. Windows native,
+ARM64 static and ARMv7 **209/209** builds pass. Full corpus:
+**4,323/4,524** originals in **4,769** pairs, mean **96.58% /
+86.47%**, **2,765 linked-exact**, **1,099 byte-exact**, 201 missing,
+zero skipped, with no pair or exact-set losses. Live camera easing
+remains unverified. Next audit the separate parameterized constructor.
+See [constructor evidence](EASEINOUTMATRIX_DEFAULT_CTOR_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`EaseInOutMatrix::Increase/Decrease`).
 Original Android ARM clamps the interpolation parameter with
 `vmin.f32` at `1.25f` and `vmax.f32` at `0.75f`. Equivalent direct
