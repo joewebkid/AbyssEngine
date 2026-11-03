@@ -964,16 +964,17 @@ void Engine_setHangarLightIntensity_ou(float v);
 
 
 void ModStation::OnUpdate() {
-    int *status = *(int **) g_ou_status;
-    int *sound = *(int **) g_ou_sound;
+    int statusHandle = static_cast<int>(reinterpret_cast<intptr_t>(Globals::status));
+    int *status = &statusHandle;
+    auto *manager = static_cast<ApplicationManager *>(Globals::appManager);
 
     int elapsed;
-    int e = ApplicationManager_GetElapsedTimeMillis_ou();
-    if (e < 0x97 && ApplicationManager_GetElapsedTimeMillis_ou() < 0) {
+    int e = static_cast<int>(manager->GetElapsedTimeMillis());
+    if (e < 0x97 && static_cast<int>(manager->GetElapsedTimeMillis()) < 0) {
         elapsed = 0;
     } else {
-        if (ApplicationManager_GetElapsedTimeMillis_ou() < 0x97)
-            elapsed = ApplicationManager_GetElapsedTimeMillis_ou();
+        if (static_cast<int>(manager->GetElapsedTimeMillis()) < 0x97)
+            elapsed = static_cast<int>(manager->GetElapsedTimeMillis());
         else
             elapsed = 0x96;
     }
@@ -981,34 +982,28 @@ void ModStation::OnUpdate() {
     this->dt = elapsed;
     this->accumTime += (long long) elapsed;
 
-    FModSound_updateAll_ou(*sound);
-    int *layout = *(int **) g_ou_layout;
-    Layout_update_ou(*layout);
-    if (this->accumTimeLo.bytes[2] == 0)
-        Status_incPlayingTime_ou((long long) (unsigned) **(int **) g_ou_status);
+    Globals::sound->updateAll(nullptr, nullptr, nullptr, nullptr);
+    Globals::layout->update(elapsed);
+    if (this->m_nStarMapWindowOpen.bytes[2] == 0)
+        Globals::status->incPlayingTime(elapsed);
 
-    int creditsBtn = static_cast<int>(this->activeMission);
-    Status_getCredits_ou();
-    Layout_formatCredits_ou(this);
-    TouchButton_setText_ou(creditsBtn);
-
-    Achievements_updateCredits_ou((void *) **(int **) g_ou_achievements, Status_getCredits_ou());
+    String credits = Globals::layout->formatCredits(Globals::status->getCredits());
+    static_cast<TouchButton *>(this->buttonCredits)->setText(credits);
+    static_cast<Achievements *>(Globals::achievements)->updateCredits(
+        Globals::status->getCredits());
 
     if (this->stationActive != 0) {
-        char *flag = *g_ou_spaceLoungeFlag;
-        if (*flag != 0) {
-            this->buttonCreditsFlags.bytes[0] = 1;
-            *flag = 0;
+        if (Globals::enterSpaceLounge != 0) {
+            this->alarmFlags.bytes[0] = 1;
+            Globals::enterSpaceLounge = 0;
             if (this->spaceLounge == 0) {
-                SpaceLounge *sl = (SpaceLounge *) ::operator new(0x10c);
-                SpaceLounge_ctor_ou(sl);
-                this->spaceLounge = sl;
+                this->spaceLounge = new SpaceLounge();
             } else {
-                SpaceLounge_init_ou(this->spaceLounge);
+                static_cast<SpaceLounge *>(this->spaceLounge)->init();
             }
-            FModSound_setParamValue_ou(*sound, 0, *sound, 0.0f);
-            FModSound_stop_ou(*sound);
-            FModSound_play_ou(*sound, 0x6c, 0, 0.0f);
+            Globals::sound->setParamValue(0, Globals::sound->currentMusicEvent, 2.0f);
+            Globals::sound->stop(0x7a);
+            Globals::sound->play(0x6c, nullptr, nullptr, 0.0f);
             this->subWindowFlags.bytes[1] = 1;
             goto epilogue;
         }
@@ -1066,47 +1061,49 @@ void ModStation::OnUpdate() {
         }
     }
 
-    if (this->accumTime < (long long) ((int) this->accumTime < 1000 ? 1 : 0))
+    if (this->accumTime < 1000)
         goto epilogue;
 
     if (this->m_nStarMapWindowOpen.bytes[0] != 0) {
-        int t = (int) (intptr_t) this->spaceLounge;
-        if (t < 1 + 0 && 0 < this->dt + t) {
-            if (this->cutScene != 0) {
-                ::operator delete(this->cutScene);
-            }
-            this->cutScene = 0;
-            CutScene *cs = (CutScene *) ::operator new(0xa0);
-            CutScene_ctor_ou(cs, 2);
-            this->cutScene = cs;
-            CutScene_initialize_ou(cs);
-            cs->rotationSpeed = 0;
-            t = (int) (intptr_t) this->spaceLounge;
+        int t = this->field_0xb4;
+        if (t < -6000 && t + this->dt > -6001) {
+            delete this->cutScene;
+            this->cutScene = new CutScene(2);
+            this->cutScene->initialize();
+            this->cutScene->rotationSpeed = 0.00003f;
             this->m_nStarMapWindowOpen.bytes[0] = 1;
         }
-        this->spaceLounge = (void *) (intptr_t) (t + this->dt);
-        CutScene_update_ou((int) (intptr_t) this->cutScene);
+        this->field_0xb4 = t + this->dt;
+        this->cutScene->update(this->dt);
 
-        if (Radio_lastMessageShown_ou() != 0) {
-            float scroll = this->touchXf;
-            float target = this->touchYf;
-
-            float step = VectorSignedToFloat(elapsed, 0) * 0.004f;
-            if (scroll < target) {
-                scroll += (target - scroll) * step;
-                if (scroll > target) scroll = target;
-            } else if (scroll > target) {
-                scroll -= (scroll - target) * step;
-                if (scroll < target) scroll = target;
+        if (reinterpret_cast<Radio *>(this->activeMission)->lastMessageShown() != 0) {
+            float halfHeight = static_cast<float>(Globals::h / 2);
+            float scrollY = this->radioScrollAnchor.y;
+            if (scrollY > halfHeight) {
+                float nextY = scrollY - static_cast<float>(this->dt) * 0.03f;
+                if (nextY <= halfHeight) {
+                    this->radioScrollAnchor.y = nextY;
+                    this->field_0xb8 = 4000;
+                    scrollY = nextY;
+                }
             }
-            this->touchXf = scroll;
+            if (this->field_0xb8 > 0) {
+                this->field_0xb8 -= this->dt;
+            } else {
+                scrollY += static_cast<float>(this->dt) * 0.03f;
+                this->radioScrollAnchor.y = scrollY;
+                int imageHeight = Globals::Canvas->GetImage2DHeight(this->field_0x5c);
+                static_cast<ScrollTouchBox *>(this->scrollBox)->setPosition(
+                    static_cast<int>(this->radioScrollAnchor.x),
+                    static_cast<int>(scrollY + imageHeight + halfHeight));
+            }
         }
 
-        if ((int) (intptr_t) this->spaceLounge >= 0 /* cutscene countdown elapsed */) {
+        if (this->field_0xb4 >= 136001) {
             this->stationActive = 0;
-            Status_nextCampaignMission_ou(*status);
-            int nextModule = **(int **) g_ou_appData;
-            ApplicationManager_SetCurrentApplicationModule_ou(nextModule);
+            Globals::status->nextCampaignMission(true);
+            Globals::switch_to_target_setting = 0;
+            manager->SetCurrentApplicationModule(5);
             this->m_nStarMapWindowOpen.bytes[0] = 0;
             goto epilogue;
         }
@@ -1222,7 +1219,7 @@ void ModStation::OnUpdate() {
                 Station *st = (Station *) Status_getStation_ou();
                 int sidx = Station_getIndex_ou(st);
                 int slot = (sidx == 0x5e) ? 3 : (sidx - 0x5a);
-                FModSound_play_ou(*sound, slot + 0x619, 0, 0.0f);
+                Globals::sound->play(slot + 0x619, nullptr, nullptr, 0.0f);
                 int kind = (slot == 1) ? 0x39 : 0x3a;
                 if (slot == 0 || slot == 2) kind = 0;
                 DialogueWindow *dw = new DialogueWindow(
@@ -2641,8 +2638,9 @@ void *ModStation_r2d_layout();
 void Layout_drawCredits_r2d(void *layout);
 
 void ModStation::OnRender2D() {
-    PaintCanvas::gCanvas->Begin2d();
-    PaintCanvas::gCanvas->SetColor(this->fadeColor);
+    PaintCanvas *canvas = Globals::Canvas;
+    canvas->Begin2d();
+    canvas->SetColor(0xffffffffu);
 
     if (this->stationActive == 0) {
         return;
@@ -2661,8 +2659,32 @@ void ModStation::OnRender2D() {
     } else if (this->m_nStarMapWindowOpen.bytes[2] != 0) {
         MenuTouchWindow_draw_r2d(this);
     } else if (this->m_nStarMapWindowOpen.bytes[0] != 0) {
-        Radio_draw_r2d(this);
-        CutScene_render2D_r2d();
+        auto *radio = reinterpret_cast<Radio *>(this->activeMission);
+        radio->draw(static_cast<int64_t>(this->field_0xb4), nullptr, nullptr);
+        if (radio->lastMessageShown() != 0) {
+            canvas->DrawImage2D(this->field_0x5c, 0,
+                                static_cast<int>(this->radioScrollAnchor.y), 20, 68);
+            static_cast<ScrollTouchBox *>(this->scrollBox)->draw();
+        }
+
+        int timer = this->field_0xb4;
+        bool fill = true;
+        float alpha;
+        if (timer >= 130001) {
+            alpha = static_cast<float>(timer - 130000) / 6000.0f;
+        } else if (timer < -6000) {
+            alpha = static_cast<float>(timer + 12000) / 6000.0f;
+        } else if (timer <= -1) {
+            alpha = static_cast<float>(timer + 6000) / 6000.0f + 1.0f;
+        } else {
+            fill = false;
+        }
+        if (fill) {
+            canvas->SetColor(static_cast<unsigned int>(static_cast<int>(alpha * 255.0f)));
+            canvas->FillRectangle(0, 0, Globals::w, Globals::h);
+        }
+        if (timer > -6000)
+            this->cutScene->render2D();
     } else {
         void *layout = this->buttonState;
         if (layout == nullptr) layout = ModStation_r2d_layout();
@@ -2677,21 +2699,21 @@ void ModStation::OnRender2D() {
             this->dialogueWindow->draw();
     }
 
-    Layout **help = (Layout **) g_r2d_helpLayout;
-    if ((*help)->choiceWindowOpen != 0)
-        Layout_drawHelpWindow_r2d((Layout *) *help);
+    Layout *help = Globals::layout;
+    if (help->choiceWindowOpen != 0)
+        help->drawHelpWindow();
 
-    PaintCanvas::gCanvas->End2d();
+    canvas->End2d();
 
-    if ((*help)->choiceWindowOpen == 0) {
+    if (help->choiceWindowOpen == 0) {
         if (this->subWindowFlags.bytes[2] != 0) {
             HangarWindow_render3D_r2d();
         }
-        if ((*help)->choiceWindowOpen == 0 && this->subWindowFlags.bytes[1] != 0)
+        if (help->choiceWindowOpen == 0 && this->subWindowFlags.bytes[1] != 0)
             SpaceLounge_draw3DShip_r2d();
     }
 
-    PaintCanvas::gCanvas->SwapBuffer();
+    canvas->SwapBuffer();
 }
 
 

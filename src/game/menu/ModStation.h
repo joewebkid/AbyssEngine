@@ -17,6 +17,7 @@ class MissionsWindow;
 class Mission;
 class NewsTicker;
 class StarMap;
+namespace AbyssEngine { class PaintCanvas; class ApplicationManager; }
 namespace AbyssEngine { 
     class EaseInOutMatrix;
  }
@@ -32,8 +33,8 @@ public:
         uint8_t bytes[4];
     };
 
-    unsigned fadeColor;
-    int *field_0x08;
+    AbyssEngine::PaintCanvas *canvas;                 // 0x04 on ARM32
+    AbyssEngine::ApplicationManager *manager;         // 0x08 on ARM32
     int state;
     StarMap *starMap;
     CutScene *cutScene;
@@ -104,8 +105,8 @@ public:
     intptr_t hangarLeftX;     // 0xa8  (Layout+0xcc; station touch/ticker boundary)
     int field_0xac;           // 0xac
     FlagWord cameraFlags;     // 0xb0  bytes [0]=camActive [1]=? [3]=camArmed
-    int field_0xb4;           // 0xb4
-    int field_0xb8;           // 0xb8
+    int field_0xb4;           // 0xb4 radio scene timer
+    int field_0xb8;           // 0xb8 radio scroll hold timer
     Array<int *> *medalArray; // 0xbc
     int medalIndex;           // 0xc0
     int medalCount;           // 0xc4
@@ -204,6 +205,10 @@ public:
 #if __SIZEOF_POINTER__ == 4
 static_assert(offsetof(ModStation, closeHangarAfterCredits) == 0x18,
               "ModStation::closeHangarAfterCredits @ 0x18");
+static_assert(offsetof(ModStation, canvas) == 0x04,
+              "ModStation::canvas @ 0x04");
+static_assert(offsetof(ModStation, manager) == 0x08,
+              "ModStation::manager @ 0x08");
 static_assert(offsetof(ModStation, newsTicker) == 0x1c,
               "ModStation::newsTicker @ 0x1c");
 static_assert(offsetof(ModStation, departPending) == 0x4c,
