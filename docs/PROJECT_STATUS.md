@@ -7,6 +7,19 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`HackingGame::render2D` dimension queries).
+Original ARM queries image sizes again for mirrored top and bottom
+panels and the second target mark; those six source-level queries are
+restored. Focused `render2D` source-shape improves **79.4% → 80.3%**,
+strict fuzzy **14.8% → 16.1%**, with **532/685** generated/original
+instructions. The call-count metric falls **87.2% → 82.1%**, so call
+shape remains incomplete. Windows native, ARM64 static and ARMv7
+**209/209** builds pass. Full corpus remains **4,323/4,524** originals
+in **4,769** pairs, mean **96.65% / 86.60%**, **2,778 linked-exact**,
+**1,107 byte-exact**, 201 missing, zero skipped, without pair or
+exact-set loss. Live graphics remain unverified. Next compare the
+remaining draw-call order. See [dimension-query evidence](HACKINGGAME_RENDER_DIMENSION_QUERIES_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`HackingGame::reInit` random source).
 Original ARM reads `Globals::rnd` for target shuffling and rotations;
 the reconstruction read the separate `AERandom::gRandom` global.

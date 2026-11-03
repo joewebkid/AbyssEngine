@@ -191,8 +191,10 @@ void HackingGame::render2D() {
 
         Globals::Canvas->DrawImage2D((unsigned) topImage, half_i(screenW) - topWidth,
                              half_i(screenH) - half_i(titleH) - topH + layoutOffset(layout, 0x30c));
+        int mirroredTitleH = Globals::Canvas->GetImage2DHeight((unsigned) this->mainImage);
+        int mirroredTopH = Globals::Canvas->GetImage2DHeight((unsigned) this->topImage);
         Globals::Canvas->DrawImage2D((unsigned) (topImage), half_i(screenW),
-                             half_i(screenH) - half_i(titleH) - topH + layoutOffset(layout, 0x30c),
+                             half_i(screenH) - half_i(mirroredTitleH) - mirroredTopH + layoutOffset(layout, 0x30c),
                              (unsigned char) (true));
 
         if (!solved) {
@@ -201,8 +203,9 @@ void HackingGame::render2D() {
             int bottomH = Globals::Canvas->GetImage2DHeight((unsigned) (this->mainImage));
             Globals::Canvas->DrawImage2D((unsigned) bottomImage, half_i(screenW) - bottomW,
                                  half_i(bottomH) + half_i(screenH) + layoutOffset(layout, 0x314));
+            int mirroredBottomH = Globals::Canvas->GetImage2DHeight((unsigned) this->mainImage);
             Globals::Canvas->DrawImage2D((unsigned) bottomImage, half_i(screenW),
-                                 half_i(bottomH) + half_i(screenH) + layoutOffset(layout, 0x314),
+                                 half_i(mirroredBottomH) + half_i(screenH) + layoutOffset(layout, 0x314),
                                  (unsigned char) true);
         }
 
@@ -261,10 +264,13 @@ void HackingGame::render2D() {
                                  half_i(screenW) - half_i(tileW) - half_i(markW),
                                  half_i(Globals::h) + half_i(tileH) +
                                  half_i(titleH2) - half_i(markH) + layoutOffset(layout, 0x318));
+            int mirroredMarkW = Globals::Canvas->GetImage2DWidth((unsigned) mark);
+            int mirroredTitleH2 = Globals::Canvas->GetImage2DHeight((unsigned) this->mainImage);
+            int mirroredMarkH = Globals::Canvas->GetImage2DHeight((unsigned) mark);
             Globals::Canvas->DrawImage2D((unsigned) mark,
-                                 half_i(screenW) + half_i(tileW) - half_i(markW),
+                                 half_i(screenW) + half_i(tileW) - half_i(mirroredMarkW),
                                  half_i(Globals::h) + half_i(tileH) +
-                                 half_i(titleH2) - half_i(markH) + layoutOffset(layout, 0x318));
+                                 half_i(mirroredTitleH2) - half_i(mirroredMarkH) + layoutOffset(layout, 0x318));
         }
     }
 
