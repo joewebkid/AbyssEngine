@@ -7,6 +7,21 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation::OnTouchEnd` DLC close route).
+Closing the DLC menu now forwards the original touch arguments to
+`MenuTouchWindow`, clears the open flag on acceptance, and stores
+positions for up to ten station buttons in the original global
+submenu arrays. The whole function improves **67.1% → 69.1%
+source-shape** and **15.8% → 21.9% strict fuzzy**. A production
+branch smoke passes at `-O0/-O2`; Windows native, ARM64 static and
+ARMv7 **209/209** builds pass. Full corpus: **4,323/4,524** originals
+in **4,764** pairs, **96.45% / 86.32%** mean source-shape / strict
+fuzzy, **2,757 linked-exact / 1,098 byte-exact**, 201 missing, zero
+skipped, no pair or exact-set losses. Live behavior and surrounding
+station button flows remain unverified. Next restore the DLC-open
+button-position initialization; Redmi testing stays stopped. See
+[DLC close evidence](MODSTATION_DLC_CLOSE_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation::OnTouchEnd` window audio routes).
 Closing Status, StarMap or Missions windows now resets the current
 music-event parameter through `Globals::sound` with the original

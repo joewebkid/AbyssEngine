@@ -2466,21 +2466,13 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
         return;
     }
     if (this->m_nStarMapWindowOpen.bytes[2] != 0) {
-        if (MenuTouchWindow_OnTouchEnd_ote((MenuTouchWindow *) this->dlcMenu,
-                                           x, y, touch) != 0) {
+        if (static_cast<MenuTouchWindow *>(this->dlcMenu)->OnTouchEnd(x, y, touch) != 0) {
             this->m_nStarMapWindowOpen.bytes[2] = 0;
-            {
-                int *row = (int *) ModStation_ote_buttonRow(this);
-                if (row != nullptr) {
-                    int *btns = (int *) row[1];
-                    int n = row[0];
-                    int *xs = this->buttonCacheX;
-                    int *ys = this->buttonCacheY;
-                    for (int i = 0; i < n && i < 5; ++i) {
-                        void *b = (void *) btns[i];
-                        xs[i] = TouchButton_getX_ote(b);
-                        ys[i] = TouchButton_getY_ote(b);
-                    }
+            auto *row = reinterpret_cast<Array<TouchButton *> *>(this->buttonRow);
+            for (unsigned i = 0; i < row->size(); ++i) {
+                if (i < 10) {
+                    Globals::sub_menu_buttons_x[i] = static_cast<int>((*row)[i]->getPosition().x);
+                    Globals::sub_menu_buttons_y[i] = static_cast<int>((*row)[i]->getPosition().y);
                 }
             }
         }
