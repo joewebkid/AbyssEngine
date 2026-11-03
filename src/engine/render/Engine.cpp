@@ -1031,7 +1031,7 @@ void Engine::SetPostEffect(uint32_t effect, bool enable) {
             width = this->displayHeight;
             height = this->displayWidth;
         }
-        this->postEffectFBO->Create(width, height, false, true);
+        this->postEffectFBO->Create(width, height, true, false);
     }
 
     uint32_t flags = this->postEffectFlags;

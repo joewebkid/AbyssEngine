@@ -19,8 +19,9 @@ which inverted the effective behavior of the restored `InitGL` call
 `Create(width, height, true, false)`. It also hoisted the second
 `glTexParameteri` outside the branch. The code now uses the first
 boolean, ignores the last one, and keeps both calls in each branch.
-The refractive FBO therefore requests linear filtering; the
-`SetPostEffect` call with `false, true` requests nearest filtering.
+The refractive FBO therefore requests linear filtering. A subsequent
+caller audit found that the original `SetPostEffect` also passes
+`true, false`; that call has now been restored as well.
 
 Focused ARM verification on the prechange object gave `Create` **97.4%
 source-shape / 91.9% strict fuzzy**, nonexact. Duplicating the filter

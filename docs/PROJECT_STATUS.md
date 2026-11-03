@@ -7,10 +7,27 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (post-effect FBO creation flags).
+Original ARM `Engine::SetPostEffect` passes `true, false` to
+`FBOContainer::Create`; the reconstruction passed `false, true`.
+With the restored `Create` argument roles, this incorrectly selected
+nearest instead of linear filtering. The call now matches the
+original. Focused `SetPostEffect` remains **80.1% source-shape**;
+strict fuzzy rises **53.4% → 55.2%**. Windows native, ARM64 static
+and ARMv7 **209/209** builds pass. The full ARM corpus remains
+**4,323/4,524** originals, **4,762** pairs, **96.24% mean
+source-shape / 86.00% strict fuzzy**, **2,742 linked-exact / 1,096
+byte-exact**, 201 missing and zero skipped. Comparison-pair and exact
+sets have no losses. Live GLES output remains unverified; Redmi
+testing remains stopped. Next audit `SetPostEffect` control flow and
+FBO release lifetime. See
+[post-effect call evidence](ENGINE_SET_POSTEFFECT_FBO_FLAGS_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (FBO texture filter argument).
 Original ARM `FBOContainer::Create` uses its first boolean argument
 to select linear versus nearest texture filtering; the recovered
-implementation used the second, reversing both existing call sites.
+implementation used the second, reversing the effective filtering
+for the refractive FBO. A subsequent audit fixed the post-effect caller.
 The parameter and branch shape are restored. Focused `Create` rose
 from **97.4% source-shape / 91.9% strict fuzzy** to **100% / 100%**
 and gained a linked-exact match. Windows native, ARM64 static and
