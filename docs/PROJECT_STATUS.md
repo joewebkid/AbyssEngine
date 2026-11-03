@@ -1,5 +1,30 @@
 # Project Status
 
+Pending device cleanup (user request, 2026-11-03): remove only the
+extra GOF2 test build on Redmi, package
+`net.fishlabs.gof2hdallandroiddevx`, and its matching OBB directory
+`Android/obb/net.fishlabs.gof2hdallandroiddevx/` when the phone is
+available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
+and its OBB. Do not resume Redmi testing for this cleanup.
+
+Last reviewed: 2026-11-03 (startup refractive framebuffer).
+Original ARM `Engine::InitGL` checks `enableShader` and
+`EnablePostEffect` before creating `refractFBO` with
+`Create(width, height, true, false)`. The original one-byte
+`EnablePostEffect` starts at `1`; the reconstruction set it to false
+and used a separate unwritten gate, so the startup FBO branch could
+not run. The original default, gate, name and call arguments are now
+restored. Focused `InitGL` source-shape rose **76.4% → 98.1%** and
+strict fuzzy **56.9% → 76.0%**. Windows native, ARM64 static and ARMv7
+**209/209** builds pass. The full ARM corpus compared **4,323/4,524**
+originals in **4,762** pairs at **96.24% mean source-shape / 85.99%
+strict fuzzy**, with **2,741 linked-exact / 1,096 byte-exact**, 201
+missing, zero skipped and no pair or exact-set losses. Live FBO
+creation and visible output remain unverified; Redmi testing is
+stopped. Next: inspect `FBOContainer::Create` flags and attachments,
+then test on a permitted host. See
+[InitGL FBO evidence](ENGINE_INITGL_REFRACT_FBO_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (material-alpha GL call target).
 `Engine::LightSetMaterialColorAlpha` matched original ARM instructions
 at **100% source-shape / 100% strict fuzzy** and was linked-exact, yet

@@ -14,7 +14,7 @@ bool AbyssEngine::Engine::vfc = false;
 float AbyssEngine::Engine::lodBiasDiffuse = 0.0f;
 float AbyssEngine::Engine::lodBiasNormal = 0.0f;
 unsigned int AbyssEngine::Engine::countryCode = 0;
-bool AbyssEngine::Engine::EnablePostEffect = false;
+bool AbyssEngine::Engine::EnablePostEffect = true;
 bool AbyssEngine::Engine::CheckForOrientationChange;
 bool AbyssEngine::Engine::fogEnabled = false;
 bool AbyssEngine::PostEffectFlag;
@@ -90,8 +90,6 @@ float g_Engine_texEnv;
 bool g_Engine_texEnvDirty;
 
 namespace {
-    int g_Engine_supportsFBO;
-
     int g_Engine_defaultShader;
     int g_Engine_altShader;
     int g_Engine_cloakShader;
@@ -1153,10 +1151,10 @@ int Engine::InitGL(bool shaders, int width, int height) {
     this->depthBits = 0;
     glGetIntegerv(0xd33, (GLint *) &this->depthBits);
 
-    if (g_Engine_useShaders != 0 && g_Engine_supportsFBO != 0) {
-        FBOContainer *fbo = new FBOContainer(this, String("refract"));
+    if (enableShader && EnablePostEffect) {
+        FBOContainer *fbo = new FBOContainer(this, String("refractFBO"));
         this->refractFBO = fbo;
-        fbo->Create(this->displayWidth, this->displayHeight, false, true);
+        fbo->Create(this->displayWidth, this->displayHeight, true, false);
     }
 
     return 1;
