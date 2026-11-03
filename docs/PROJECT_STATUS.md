@@ -7,6 +7,21 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`Engine::GetDeviceInfo` call ABI).
+Original ARM calls `NFC::isPad/getWidth/getHeight` without an object
+receiver and writes their results to the returned structure at offsets
+`+8/+0/+4`. The recovered code created three temporary `NFC` objects;
+these getters now use the original receiver-free call shape.
+`GetDeviceInfo` improves **48.7% / 31.1% → 100% / 100%** source-shape /
+strict fuzzy and becomes linked-exact. Windows native, ARM64 static
+and ARMv7 **209/209** builds pass. Full corpus: **4,323/4,524**
+originals in **4,763** pairs, **96.26% / 86.06%** mean source-shape /
+strict fuzzy, **2,747 linked-exact / 1,098 byte-exact**, 201 missing,
+zero skipped. One linked-exact gain, with no pair or exact losses.
+Live JNI values remain unverified; next audit the individual `NFC`
+getter paths on a permitted host. Redmi testing remains stopped. See
+[device-information ABI evidence](ENGINE_DEVICE_INFO_STATIC_NFC_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (Engine constructor defaults).
 Original ARM confirms `0.3f` for the post-effect center's third
 component, `0.7f` for the cube-shader parameter and `50000.0f` for

@@ -48,11 +48,12 @@ public:
 
     void openPrivacyPolicy();
 
-    bool isPad();
+    // Original Engine::GetDeviceInfo calls these without an NFC receiver.
+    static bool isPad();
 
-    int getWidth();
+    static int getWidth();
 
-    int getHeight();
+    static int getHeight();
 
     // Static data members present in the original binary (defined for symbol parity).
     static const char *interface_path;

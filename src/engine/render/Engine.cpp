@@ -370,9 +370,9 @@ void Engine::DeactivateRender2TextureFBO() {
 
 DeviceInfo Engine::GetDeviceInfo() {
     DeviceInfo info;
-    info.isPad = NFC().isPad();
-    info.width = NFC().getWidth();
-    info.height = NFC().getHeight();
+    info.isPad = NFC::isPad();
+    info.width = NFC::getWidth();
+    info.height = NFC::getHeight();
     return info;
 }
 
