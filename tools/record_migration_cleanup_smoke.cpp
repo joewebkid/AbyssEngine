@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstdio>
+#include <string>
 #include <vector>
 
 int GameText::getLanguage() { std::abort(); }
@@ -30,10 +31,18 @@ struct RecordMigration {
 struct WriteEvent { int sourceSlot, targetSlot; bool backup; };
 static std::vector<WriteEvent> writes;
 static std::vector<int> hashes;
+static std::vector<std::string> deletedPaths;
 static int reads = 0;
 static int deletes = 0;
 
-uint32_t AEFile::FileDelete(const String &) { ++deletes; return 1; }
+uint32_t AEFile::FileDelete(const String &path) {
+    std::string name;
+    for (uint32_t i = 0; i < path.size(); ++i)
+        name.push_back(static_cast<char>(path.text()[i]));
+    deletedPaths.push_back(name);
+    ++deletes;
+    return 1;
+}
 
 int RecordMigration::readRecordAsByteArray(signed char **out, int slot, bool backup) {
     assert(slot >= 0 && slot < 2);
@@ -58,6 +67,7 @@ int main() {
 
     migration.convertSDVersionSaves();
     assert(reads == 4 && deletes == 4 && writes.size() == 4);
+    assert((deletedPaths == std::vector<std::string>{"save/", "preview/", "save/1", "preview/1"}));
     assert(writes[0].sourceSlot == 0 && writes[0].targetSlot == 1 && !writes[0].backup);
     assert(writes[1].sourceSlot == 0 && writes[1].targetSlot == 1 && writes[1].backup);
     assert(writes[2].sourceSlot == 1 && writes[2].targetSlot == 0 && !writes[2].backup);
@@ -68,6 +78,7 @@ int main() {
     hashes.clear();
     reads = 0;
     deletes = 0;
+    deletedPaths.clear();
     migration.changeSaveDirectoryToBackupDirectory();
     assert(reads == 4 && deletes == 0 && writes.size() == 4 && AbyssEngine::Engine::backupSaveGames == 1);
     assert(writes[0].sourceSlot == 0 && writes[0].targetSlot == 0 && !writes[0].backup);

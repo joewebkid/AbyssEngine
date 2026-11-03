@@ -300,14 +300,8 @@ void RecordHandler::convertSDVersionSaves() {
         sizes0[i] = this->readRecordAsByteArray(&(*a0)[i], i, false);
         sizes1[i] = this->readRecordAsByteArray(&(*a1)[i], i, true);
 
-        String num, path;
-        num.Set((long long) (i));
-        path = this->recordDir + num;
-        AEFile::FileDelete(path);
-
-        num.Set((long long) (i));
-        path = this->backupDir + num;
-        AEFile::FileDelete(path);
+        AEFile::FileDelete(this->recordDir + String(i));
+        AEFile::FileDelete(this->backupDir + String(i));
         n = (unsigned int) (std::uintptr_t) Globals::recordSlots;
     }
 
