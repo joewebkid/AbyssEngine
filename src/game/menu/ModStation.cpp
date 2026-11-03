@@ -68,6 +68,11 @@ constexpr float kStationCameraYawPhone[9] = {
     -3.36f, -3.75f, -2.05f, 2.57f, 0.0f, 0.0f, 0.0f, 3.00f, 2.50f,
 };
 
+// Android rodata 0x1fe0e0: credit overrides for campaign steps 55..61.
+constexpr int kNonCampaignRewardCredits[7] = {
+    200000, 6666, 6666, 100000, 6666, 6666, 50000,
+};
+
 const int *modStationCameraCoordinates() {
     return Globals::iPad ? &kStationCameraCoordinatesIPad[0][0]
                          : &kStationCameraCoordinatesPhone[0][0];
@@ -1871,24 +1876,27 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                             }
                         }
 
-                        if (Mission_isCampaignMission_ote(mission) == 0) {
-                            Status_incMissionCount_ote(*status);
-                            int reward = Mission_getReward_ote();
-                            int bonus = Mission_getBonus_ote();
-                            Layout_showMissionRewardMessage_ote(*(int *) *(int **) g_ote_helpLayout, (char) (bonus + reward));
-                            {
-                                Mission_getReward_ote();
-                                int bonus = Mission_getBonus_ote();
-                                if ((unsigned) bonus >= 0)
-                                    Status_getCurrentCampaignMission_ote();
-                                Status_changeCredits_ote(*status);
-                                Status_removeMission_ote(*status);
-                                this->dialogueMission = 0;
-                                if ((int) (intptr_t) this->spaceLounge != 0)
-                                    SpaceLounge_refresh_ote();
-                                this->modalFlags.bytes[1] = 0;
-                                this->checkHints();
+                        if (!mission->isCampaignMission()) {
+                            Status *statusObj = Globals::status;
+                            statusObj->incMissionCount();
+                            unsigned shown = static_cast<unsigned>(mission->getReward()) +
+                                             static_cast<unsigned>(mission->getBonus());
+                            Globals::layout->showMissionRewardMessage(static_cast<int>(shown), false);
+
+                            unsigned credited = static_cast<unsigned>(mission->getReward()) +
+                                                static_cast<unsigned>(mission->getBonus());
+                            if (credited >= 1000001u) {
+                                unsigned step = static_cast<unsigned>(
+                                    statusObj->getCurrentCampaignMission() - 55);
+                                credited = step < 7 ? kNonCampaignRewardCredits[step] : 6666;
                             }
+                            statusObj->changeCredits(static_cast<int>(credited));
+                            statusObj->removeMission(mission);
+                            this->dialogueMission = nullptr;
+                            if (this->spaceLounge != nullptr)
+                                static_cast<SpaceLounge *>(this->spaceLounge)->refresh();
+                            this->modalFlags.bytes[1] = 0;
+                            this->checkHints();
                             return;
                         }
 

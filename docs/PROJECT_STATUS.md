@@ -7,6 +7,21 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation::OnTouchEnd` non-campaign
+reward). The mission completion route now displays the original
+reward, applies the ARM-confirmed `1,000,001` unsigned threshold and
+seven-value campaign override table, credits the result, removes the
+mission and closes the dialogue through real objects. Windows native,
+ARM64 static and ARMv7 **209/209** builds pass. `OnTouchEnd`
+source-shape **74.0% → 75.7%**; strict fuzzy **13.9% → 13.6%**.
+Full corpus: **4,323/4,524** originals in **4,767** pairs,
+**96.47% / 86.35%** mean source-shape / strict fuzzy,
+**2,761 linked-exact / 1,098 byte-exact**, 201 missing, zero skipped
+and no pair or exact-set losses. Live reward and subsequent hint
+behavior remain unverified. Next restore the type-11 passenger and
+cargo completion branch; Redmi testing stays stopped. See
+[reward evidence](MODSTATION_NONCAMPAIGN_REWARD_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation` dialogue mission slot and
 production cargo). Original ARM stores the dialogue `Mission*` at
 station offset `0x9c`, separate from the radio at `0x54`; the recovered
