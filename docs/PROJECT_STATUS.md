@@ -7,6 +7,21 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`EaseInOutMatrix::Increase/Decrease`).
+Original Android ARM clamps the interpolation parameter with
+`vmin.f32` at `1.25f` and `vmax.f32` at `0.75f`. Equivalent direct
+conditionals replace `std::min/max`, whose reference form had added
+stack setup in the reconstructed ARM build. Both functions improve
+from about **21% source-shape / 22% strict fuzzy** to **100% / 100%**
+without changing their bounds or NaN comparison behavior. Windows
+native, ARM64 static and ARMv7 **209/209** builds pass. Full corpus:
+**4,323/4,524** originals in **4,769** pairs, mean **96.57% /
+86.44%** source-shape / strict fuzzy, **2,763 linked-exact** and
+**1,099 byte-exact**, 201 missing, zero skipped, with no pair or
+exact-set losses. Live matrix interpolation is unverified. Next
+audit the default constructor's ARM initialization order. See
+[clamp evidence](EASEINOUTMATRIX_CLAMP_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation` radio scroll and campaign
 timer). Android ARM confirms that radio text keeps moving upward
 after the 4,000 ms hold (`-0.03f` per millisecond) and campaign step

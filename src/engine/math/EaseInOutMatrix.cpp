@@ -1,5 +1,4 @@
 #include "engine/math/EaseInOutMatrix.h"
-#include <algorithm>
 #include <new>
 
 namespace AbyssEngine {
@@ -86,7 +85,7 @@ namespace AbyssEngine {
 
     void EaseInOutMatrix::Increase(float dt) {
         float t = this->m_t + (dt * 0.5f) / this->m_duration;
-        this->m_t = std::min(t, 1.25f);
+        this->m_t = t > 1.25f ? 1.25f : t;
         UpdateCurrentValue();
     }
 
@@ -97,7 +96,7 @@ namespace AbyssEngine {
 
     void EaseInOutMatrix::Decrease(float dt) {
         float t = this->m_t + (dt * -0.5f) / this->m_duration;
-        this->m_t = std::max(t, 0.75f);
+        this->m_t = t < 0.75f ? 0.75f : t;
         UpdateCurrentValue();
     }
 
