@@ -56,7 +56,11 @@ struct OptionsBuffer {
     };
     int32_t  i32_0x24;       // 0x24
     int32_t  i32_0x28;       // 0x28
-    uint8_t  pad_0x2c[6];    // 0x2c..0x31
+    union {                  // 0x2c  difficulty, also stored in save preview
+        float   difficulty;
+        int32_t difficultyBits;
+    };
+    uint8_t  pad_0x30[2];    // 0x30..0x31
     uint8_t  byte_0x32;      // 0x32
     uint8_t  byte_0x33;      // 0x33
     uint8_t  byte_0x34;      // 0x34
@@ -100,6 +104,7 @@ struct OptionsBuffer {
 static_assert(offsetof(OptionsBuffer, volumeSfx) == 0x08, "OptionsBuffer.volumeSfx");
 static_assert(offsetof(OptionsBuffer, byte_0x11) == 0x11, "OptionsBuffer.byte_0x11");
 static_assert(offsetof(OptionsBuffer, volumeMusic) == 0x20, "OptionsBuffer.volumeMusic");
+static_assert(offsetof(OptionsBuffer, difficulty) == 0x2c, "OptionsBuffer.difficulty");
 static_assert(offsetof(OptionsBuffer, byte_0x32) == 0x32, "OptionsBuffer.byte_0x32");
 static_assert(offsetof(OptionsBuffer, volumeAmbient) == 0x44, "OptionsBuffer.volumeAmbient");
 static_assert(offsetof(OptionsBuffer, i32_0x50) == 0x50, "OptionsBuffer.i32_0x50");
@@ -568,15 +573,6 @@ void RecordHandler::writeByteArrayAsOptionsFile(signed char *buf, int n) {
 }
 
 
-static int *g_RH_wp_float = nullptr;
-
-// g_RH_wp_float points at a slot holding a pointer to an object whose float
-// field at +0x2c (the player's current rank) is serialised into the preview.
-struct RankHolder {
-    uint8_t  _pad[0x2c];
-    int32_t  rankBits;   // 0x2c (float stored as raw bits, written via WriteFloat)
-};
-
 void RecordHandler::recordStoreWritePreview(int slot) {
     String path;
     String num;
@@ -600,7 +596,8 @@ void RecordHandler::recordStoreWritePreview(int slot) {
 
     AEFile_Write_i32(Status::gStatus->getCurrentCampaignMission(), fd);
     AEFile_Write_i32(Status::gStatus->getLevel(), fd);
-    AEFile_Write_f32(reinterpret_cast<RankHolder *>(*reinterpret_cast<void **>(g_RH_wp_float))->rankBits, fd);
+    const OptionsBuffer *settings = reinterpret_cast<const OptionsBuffer *>(Globals::options);
+    AEFile_Write_f32(settings->difficultyBits, fd);
 
     AEFile_Write_i32(((Ship *) (Status::gStatus->getShip()))->getIndex(), fd);
     AEFile::Close(fd);

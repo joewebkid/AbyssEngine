@@ -8,6 +8,20 @@ Pending device cleanup (user request, 2026-11-03):
   Keep the original `net.fishlabs.gof2hdallandroid2012` app and its
   OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`RecordHandler` preview difficulty).
+Original ARM writes the global game difficulty into save previews.
+The reconstruction dereferenced a permanently null placeholder at
+that field; it now writes the difficulty bits from the confirmed
+options offset `0x2c`. Focused strict fuzzy improves **45.6% → 66.1%**;
+source-shape changes **88.2% → 87.2%** as the previously eliminated
+writer tail is emitted. Windows native, ARM64 static and ARMv7
+**209/209** builds pass. Full corpus: **4,323/4,524** originals in
+**4,769** pairs, mean **96.73% / 86.72%**, **2,779 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped, no pair or exact-set
+losses. Genuine preview I/O remains unverified; next audit preview
+read/write correspondence and exercise a real fixture. See
+[preview evidence](RECORD_PREVIEW_DIFFICULTY_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`RecordHandler` constructor). Original
 ARM default-constructs three save-path strings, then assigns separate
 temporary strings for options, full saves and previews. The recovered
