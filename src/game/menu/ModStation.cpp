@@ -1550,9 +1550,9 @@ void ModStation::OnRelease() {
     PaintCanvas::gCanvas->FogEnable(0, AbyssEngine::FogMode_dummy);
 
     if (this->buttonRow != 0) {
-        ArrayReleaseClasses_TouchButton(this->buttonRow);
-        if (this->buttonRow != 0)
-            ms_op_delete(Array_TB_dtor(this->buttonRow));
+        auto *row = reinterpret_cast<Array<TouchButton *> *>(this->buttonRow);
+        ArrayReleaseClasses<TouchButton *>(*row);
+        delete row;
     }
     this->buttonRow = 0;
 

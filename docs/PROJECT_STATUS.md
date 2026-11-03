@@ -7,6 +7,20 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation::OnRelease` button row).
+The station now releases the actual `Array<TouchButton*>` and its
+button objects through the ARM-confirmed specialization and C++
+destructor. Windows native, ARM64 static and ARMv7 **209/209** builds
+pass. `OnRelease` source-shape changes **84.2% → 83.5%**, strict fuzzy
+**77.0% → 59.9%**; the opaque-wrapper removal accounts for the
+measured decline. Full corpus: **4,323/4,524** originals in **4,765**
+pairs, **96.45% / 86.32%** mean source-shape / strict fuzzy,
+**2,758 linked-exact / 1,098 byte-exact**, 201 missing, zero skipped,
+no pair or exact-set losses. The array destructor adds one new
+linked-exact match. Next reconstruct the five-button creation in
+`OnInitialize`; live cleanup remains unverified. Redmi testing stays
+stopped. See [button-row release evidence](MODSTATION_BUTTONROW_RELEASE_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation` button-row ABI).
 The five station buttons now receive touch begin and move through
 the actual `Array<TouchButton *>`, avoiding a 32-bit pointer read in
