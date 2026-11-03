@@ -14,6 +14,12 @@ extern int gi_iap_buy_credit_pack2_pressed;
 extern int gi_iap_buy_credit_pack3_pressed;
 extern int gi_iap_buy_credit_pack4_pressed;
 extern int gi_iap_buy_credit_pack5_pressed;
+
+// Original ARM calls this shared exception path after each DeviceInfo JNI call.
+__attribute__((noinline)) static void nfcClearException(JNIEnv *env) {
+    if (env->ExceptionCheck())
+        env->ExceptionClear();
+}
 #endif
 
 NFC::NFC() {
@@ -251,12 +257,12 @@ void NFC::openPrivacyPolicy() {
 
 bool NFC::isPad() {
 #if defined(__ANDROID__)
-    JNIEnv *env = g_pEnv;
-    jclass cls = env->FindClass("net/fishlabs/ow_utils/DeviceInfo");
-    jmethodID method = env->GetStaticMethodID(cls, "isPad", "()Z");
-    jboolean value = env->CallStaticBooleanMethod(cls, method);
-    if (env->ExceptionCheck())
-        env->ExceptionClear();
+    // The original reloads g_pEnv from its global slot before each JNI call.
+    JNIEnv **envSlot = &g_pEnv;
+    jclass cls = (*envSlot)->FindClass("net/fishlabs/ow_utils/DeviceInfo");
+    jmethodID method = (*envSlot)->GetStaticMethodID(cls, "isPad", "()Z");
+    jboolean value = (*envSlot)->CallStaticBooleanMethod(cls, method);
+    nfcClearException(*envSlot);
     return value != JNI_FALSE;
 #else
     return false;
@@ -265,12 +271,11 @@ bool NFC::isPad() {
 
 int NFC::getWidth() {
 #if defined(__ANDROID__)
-    JNIEnv *env = g_pEnv;
-    jclass cls = env->FindClass("net/fishlabs/ow_utils/DeviceInfo");
-    jmethodID method = env->GetStaticMethodID(cls, "getDisplayWidth", "()I");
-    jint value = env->CallStaticIntMethod(cls, method);
-    if (env->ExceptionCheck())
-        env->ExceptionClear();
+    JNIEnv **envSlot = &g_pEnv;
+    jclass cls = (*envSlot)->FindClass("net/fishlabs/ow_utils/DeviceInfo");
+    jmethodID method = (*envSlot)->GetStaticMethodID(cls, "getDisplayWidth", "()I");
+    jint value = (*envSlot)->CallStaticIntMethod(cls, method);
+    nfcClearException(*envSlot);
     return value;
 #else
     return 0;
@@ -279,12 +284,11 @@ int NFC::getWidth() {
 
 int NFC::getHeight() {
 #if defined(__ANDROID__)
-    JNIEnv *env = g_pEnv;
-    jclass cls = env->FindClass("net/fishlabs/ow_utils/DeviceInfo");
-    jmethodID method = env->GetStaticMethodID(cls, "getDisplayHeight", "()I");
-    jint value = env->CallStaticIntMethod(cls, method);
-    if (env->ExceptionCheck())
-        env->ExceptionClear();
+    JNIEnv **envSlot = &g_pEnv;
+    jclass cls = (*envSlot)->FindClass("net/fishlabs/ow_utils/DeviceInfo");
+    jmethodID method = (*envSlot)->GetStaticMethodID(cls, "getDisplayHeight", "()I");
+    jint value = (*envSlot)->CallStaticIntMethod(cls, method);
+    nfcClearException(*envSlot);
     return value;
 #else
     return 0;

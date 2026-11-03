@@ -7,6 +7,21 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (NFC DeviceInfo getter call shape).
+Original ARM reloads the global JNI environment for each getter call
+and uses one shared exception-check/clear helper. Restoring those
+forms brings `NFC::isPad`, `getWidth` and `getHeight` to **100% / 100%**
+source-shape / strict fuzzy; `getWidth` gains linked-exact. Windows
+native, ARM64 static and ARMv7 **209/209** builds pass. Full corpus:
+**4,323/4,524** originals in **4,763** pairs, **96.28% / 86.09%**
+mean source-shape / strict fuzzy, **2,748 linked-exact / 1,098
+byte-exact**, 201 missing, zero skipped, no pair or exact losses.
+The original shared helper was unnamed; its recovered local symbol
+increases the extra-symbol count from 144 to 145. Live JNI values
+remain unverified. Next inspect another bounded NFC wrapper family;
+Redmi testing remains stopped. See
+[getter evidence](NFC_DEVICE_INFO_CALL_SHAPE_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`Engine::GetDeviceInfo` call ABI).
 Original ARM calls `NFC::isPad/getWidth/getHeight` without an object
 receiver and writes their results to the returned structure at offsets
