@@ -7,6 +7,20 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`EaseInOutMatrix` parameterized constructor).
+Original Android ARM zeroes position and delta vector members in
+their construction order before `SetRange`; the reconstruction
+assigned temporary vectors afterward. Member initializers restore
+the observed order. Both parameterized constructor symbols improve
+**78.2% / 54.3% → 100% / 100%** source-shape / strict fuzzy and
+become linked-exact. Windows native, ARM64 static and ARMv7 **209/209**
+builds pass. Full corpus: **4,323/4,524** originals in **4,769**
+pairs, mean **96.59% / 86.49%**, **2,767 linked-exact**,
+**1,099 byte-exact**, 201 missing, zero skipped, with no pair or
+exact-set losses. Live camera easing remains unverified. Next audit
+`SetRange` interpolation setup. See
+[constructor evidence](EASEINOUTMATRIX_PARAMETER_CTOR_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`EaseInOutMatrix` default constructor).
 Original Android ARM initializes the two vector members between
 their neighboring quaternion and matrix constructors, then passes

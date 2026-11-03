@@ -100,10 +100,9 @@ namespace AbyssEngine {
         UpdateCurrentValue();
     }
 
-    EaseInOutMatrix::EaseInOutMatrix(AEMath::Matrix mn, AEMath::Matrix mx, int duration) {
-        this->m_minPos = AEMath::Vector{0, 0, 0};
-        this->m_posDelta = AEMath::Vector{0, 0, 0};
-
+    EaseInOutMatrix::EaseInOutMatrix(AEMath::Matrix mn, AEMath::Matrix mx, int duration)
+        : m_minPos{0.0f, 0.0f, 0.0f},
+          m_posDelta{0.0f, 0.0f, 0.0f} {
         SetRange(mn, mx);
         this->m_duration = (float) duration;
     }
