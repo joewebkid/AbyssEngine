@@ -7,6 +7,21 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`HackingGame::render2D` tile geometry).
+Original Android ARM offsets current tile rows by `(row - 2) *
+tileHeight` and places both rotation arrows one full tile height
+above the screen midpoint. The reconstruction omitted the `-2` and
+subtracted half a tile height for arrows; both coordinates are
+corrected. The solved-state image-flash branch was checked and kept.
+Focused `render2D` source-shape **79.2% → 79.4%**, strict fuzzy
+**16.5% → 14.8%**. Windows native, ARM64 static and ARMv7 **209/209**
+builds pass. Full corpus: **4,323/4,524** originals in **4,769**
+pairs, mean **96.64% / 86.58%**, **2,776 linked-exact**,
+**1,107 byte-exact**, 201 missing, zero skipped, with no pair or
+exact-set losses. Live tile and arrow placement remains unverified.
+Next audit the remaining `render2D` draw calls and resource sizing.
+See [tile geometry evidence](HACKINGGAME_TILE_GEOMETRY_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`HackingGame` globals and object ABI).
 Original Android ARM uses `Globals::Canvas/w/h/layout` for the
 hacking renderer, `Globals::Canvas` for image creation, and

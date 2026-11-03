@@ -221,7 +221,7 @@ void HackingGame::render2D() {
                            (float) delta[i * 2]);
             int imageH = Globals::Canvas->GetImage2DHeight((unsigned) (this->mainImage));
             Globals::Canvas->DrawImage2D((unsigned) image, y,
-                                 row * tileH + half_i(Globals::h) - half_i(imageH) +
+                                 (static_cast<int>(row) - 2) * tileH + half_i(Globals::h) - half_i(imageH) +
                                  delta[i * 2 + 1] + layoutOffset(layout, 0x310));
         }
 
@@ -231,7 +231,7 @@ void HackingGame::render2D() {
         int arrowH = Globals::Canvas->GetImage2DHeight((unsigned) (leftArrow));
         Globals::Canvas->DrawImage2D((unsigned) leftArrow,
                              half_i(screenW) - half_i(tileW) - half_i(arrowW),
-                             half_i(Globals::h) - half_i(tileH) -
+                             half_i(Globals::h) - tileH -
                              half_i(arrowTitleH) - half_i(arrowH) + layoutOffset(layout, 0x310));
 
         int rightArrow = this->rotatingRight ? this->arrowActive : this->arrowIdle;
@@ -240,7 +240,7 @@ void HackingGame::render2D() {
         arrowH = Globals::Canvas->GetImage2DHeight((unsigned) (rightArrow));
         Globals::Canvas->DrawImage2D((unsigned) rightArrow,
                              half_i(screenW) + half_i(tileW) - half_i(arrowW),
-                             half_i(Globals::h) - half_i(tileH) -
+                             half_i(Globals::h) - tileH -
                              half_i(arrowTitleH) - half_i(arrowH) + layoutOffset(layout, 0x310));
 
         if (!solved) {
