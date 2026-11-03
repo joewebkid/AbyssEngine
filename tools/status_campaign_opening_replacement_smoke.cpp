@@ -18,9 +18,11 @@ struct Mission {
     int station;
     int statusValue = -1;
     bool campaign = false;
+    bool visible = true;
     Mission() : Mission(0, 0, 0) {}
     Mission(int t, int p, int s) : type(t), param(p), station(s) {}
     void setStatusValue(int value) { statusValue = value; }
+    void setVisible(bool value) { visible = value; }
 };
 
 struct Item {
@@ -67,6 +69,7 @@ struct Status {
     int field_0x100 = 0;
     int field_0x104 = 0;
     int currentCampaignMission = 0;
+    int missionCount = 0;
     unsigned char field_0x17c = 0;
     Ship *ship = nullptr;
     Mission *mission = nullptr;
@@ -96,6 +99,7 @@ int main() {
     Ship ship;
     Status status;
     status.playingTime = 0x1234567887654321LL;
+    status.missionCount = 41;
     status.ship = &ship;
     status.missions = &missions;
 
@@ -121,15 +125,20 @@ int main() {
     prototypes[0].price = 110;
     ship.equipment.values.push_back(&equipped);
     ship.cargo.values.push_back(&carried);
-    const int types[10] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11};
-    for (int step = 1; step <= 9; ++step) {
+    const int types[17] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11,
+                           11, 11, 150, 4, 11, 4, 11};
+    const int stations[17] = {78, 78, 78, 78, 78, 78, 78, 78, 78, 79,
+                              76, 79, 0, 79, 98, 98, 98};
+    for (int step = 1; step <= 16; ++step) {
         status.currentCampaignMission = step;
         status.nextCampaignMission(true);
         assert(status.currentCampaignMission == step + 1);
         assert(missions[0] != nullptr && missions[0]->campaign);
         assert(missions[0]->type == types[step] && missions[0]->param == 0);
-        assert(missions[0]->station == (step == 9 ? 79 : 78));
-        assert(missions[0]->statusValue == (step == 1 ? 10 : step == 3 ? 25 : -1));
+        assert(missions[0]->station == stations[step]);
+        assert(missions[0]->statusValue ==
+               (step == 1 ? 10 : step == 3 ? 25 : step == 12 ? 42 : -1));
+        assert(missions[0]->visible == (step != 12));
         if (step == 3) assert(ship.cargoSetCount == 1);
         if (step == 5) assert(ship.cargoClearCount == 1);
         if (step == 7) {

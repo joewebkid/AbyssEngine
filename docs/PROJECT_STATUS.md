@@ -8,6 +8,19 @@ Pending device cleanup (user request, 2026-11-03):
   Keep the original `net.fishlabs.gof2hdallandroid2012` app and its
   OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`Status::nextCampaignMission`, steps
+10–16). Original ARM assigns all seven missions to the campaign slot;
+the reconstruction put six outside it and omitted step-12 status and
+visibility updates. These paths now match the observed ARM sequence.
+The source-extracted smoke covers steps 0–16 at `-O0/-O2`.
+`nextCampaignMission` source-shape improves **9.8% -> 10.3%**, strict
+fuzzy **4.7% -> 5.1%**. Windows native, ARM64 static, and ARMv7
+**209/209** builds pass. Full corpus: **4,323/4,524** originals in
+**4,769** pairs, mean **96.75% / 86.74%**, **2,779 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped, no pair or exact-set
+losses. Live campaign progression remains unverified; next reconcile
+steps 17–20. See [steps 10–16 evidence](STATUS_CAMPAIGN_STEPS_10_16_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`Status::nextCampaignMission`, steps 0–9).
 The original ARM creates campaign missions on all ten opening steps.
 The reconstruction skipped step 0, misclassified several missions,
