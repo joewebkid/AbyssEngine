@@ -1,4 +1,4 @@
-"""Compile the production station touch-move body and check dispatch precedence."""
+"""Compile production station touch handlers and check dispatch precedence."""
 
 import argparse
 from pathlib import Path
@@ -21,6 +21,7 @@ def main():
 
     source = (ROOT / "src/game/menu/ModStation.cpp").read_text()
     fixture = (ROOT / "tools/modstation_touch_move_smoke.cpp").read_text()
+    fixture = fixture.replace("// PRODUCTION_BEGIN", function(source, "void ModStation::OnTouchBegin(int x, int y, void *touch)"))
     fixture = fixture.replace("// PRODUCTION_FUNCTION", function(source, "void ModStation::OnTouchMove(int x, int y, void *touch)"))
     with tempfile.TemporaryDirectory(prefix="modstation-touch-move-smoke-", dir=ROOT / "_work") as temp:
         generated = Path(temp) / "modstation_touch_move_smoke.cpp"

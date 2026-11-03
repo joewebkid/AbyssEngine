@@ -7,6 +7,21 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation::OnTouchBegin`).
+Station touch capture now reads the original `Globals` status, layout,
+screen-height, module-manager and switch-setting state. Completing a
+radio message clears the switch setting and selects module **5**, as
+the original ARM does. Function source-shape improves **18.0% →
+83.2%** and strict fuzzy **15.5% → 89.9%**. Production-body touch
+smoke passes at `-O0/-O2`; Windows native, ARM64 static and ARMv7
+**209/209** builds pass. Full corpus: **4,323/4,524** originals in
+**4,764** pairs, **96.44% / 86.31%** mean source-shape / strict fuzzy,
+**2,757 linked-exact / 1,098 byte-exact**, 201 missing, zero skipped,
+and no pair or exact-set losses. Live touch routing and the main
+button-row path remain unverified. Next inspect the larger
+`ModStation::OnTouchEnd` dispatch; Redmi testing stays stopped. See
+[touch-begin evidence](MODSTATION_TOUCH_BEGIN_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation::OnTouchMove`).
 Station touch motion now reads `Globals::layout` and `Globals::h`
 instead of two unwritten private pointers, reloads the current

@@ -2564,12 +2564,6 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
 
 
 
-static Layout **g_ModStation_tb_layout = 0;
-
-static void **g_ModStation_tb_screenH = 0;
-
-static void **g_ModStation_tb_clear = 0;
-
 void ModStation::OnTouchBegin(int x, int y, void *touch) {
     if (this->activeTouch != 0)
         return;
@@ -2581,17 +2575,14 @@ void ModStation::OnTouchBegin(int x, int y, void *touch) {
     if (flag != 0) {
         if (((Radio *) (intptr_t) this->activeMission)->lastMessageShown() != 0) {
             (unsigned char &) this->stationActive = 0;
-            Status::gStatus->nextCampaignMission(true);
-            unsigned int mod = *(unsigned int *) ApplicationManager::gAppManager;
-            *(int *) *g_ModStation_tb_clear = 0;
-
-            ApplicationManager::gAppManager->SetCurrentApplicationModule(mod);
+            Globals::status->nextCampaignMission(true);
+            Globals::switch_to_target_setting = 0;
+            static_cast<ApplicationManager *>(Globals::appManager)->SetCurrentApplicationModule(5);
             this->m_nStarMapWindowOpen.bytes[0] = 0;
         }
         return;
     }
-    Layout **layoutHolder = g_ModStation_tb_layout;
-    Layout *layoutObj = *layoutHolder;
+    Layout *&layoutObj = Globals::layout;
     if (layoutObj->choiceWindowOpen != 0) {
         layoutObj->OnTouchBegin(x, y);
         return;
@@ -2644,7 +2635,7 @@ void ModStation::OnTouchBegin(int x, int y, void *touch) {
     Layout *layout = layoutObj;
     if (y <= layout->field_0xc)
         return;
-    if (*(int *) *g_ModStation_tb_screenH - layout->field_0x10 <= y)
+    if (Globals::h - layout->field_0x10 <= y)
         return;
     if (x <= static_cast<int>(this->hangarLeftX))
         return;
