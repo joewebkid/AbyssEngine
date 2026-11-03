@@ -480,29 +480,23 @@ void *RecordHandler::readWanted(unsigned int fd) {
 }
 
 
-static int *g_RH_csd_count = nullptr;
-
-
-static char **g_RH_csd_flag = nullptr;
-
 void RecordHandler::changeSaveDirectoryToBackupDirectory() {
     Array<signed char *> *a0 = new Array<signed char *>();
-    int *cnt = g_RH_csd_count;
-    ArraySetLength(*cnt, *a0);
+    ArraySetLength((unsigned int) (std::uintptr_t) Globals::recordSlots, *a0);
     Array<signed char *> *a1 = new Array<signed char *>();
-    ArraySetLength(*cnt, *a1);
+    ArraySetLength((unsigned int) (std::uintptr_t) Globals::recordSlots, *a1);
 
-    unsigned int n = *cnt;
+    unsigned int n = (unsigned int) (std::uintptr_t) Globals::recordSlots;
     int *sizes0 = new int[n];
     int *sizes1 = new int[n];
 
     for (int i = 0; i < (int) n; i++) {
         sizes0[i] = this->readRecordAsByteArray(&(*a0)[i], i, false);
         sizes1[i] = this->readRecordAsByteArray(&(*a1)[i], i, true);
-        n = *cnt;
+        n = (unsigned int) (std::uintptr_t) Globals::recordSlots;
     }
 
-    **g_RH_csd_flag = 1;
+    AbyssEngine::Engine::backupSaveGames = 1;
     int i = 0;
     while (i < (int) n) {
         signed char *rec = (*a0)[i];
@@ -513,7 +507,7 @@ void RecordHandler::changeSaveDirectoryToBackupDirectory() {
             int next = i + 1;
             this->addHash(next);
             this->writeByteArrayAsRecord((*a1)[i], sizes1[i], i, true);
-            n = *cnt;
+            n = (unsigned int) (std::uintptr_t) Globals::recordSlots;
             i = next;
         }
     }

@@ -7,6 +7,21 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (record backup transfer).
+`RecordHandler::changeSaveDirectoryToBackupDirectory` now reads the
+original `Globals::recordSlots` count and sets
+`Engine::backupSaveGames` before copying records, replacing two
+unwritten private pointers. Function source-shape improves **34.6%
+→ 92.4%** and strict fuzzy **19.1% → 80.5%**. A production-body
+in-memory smoke passes at `-O0/-O2`; Windows native, ARM64 static and
+ARMv7 **209/209** builds pass. Full corpus: **4,323/4,524** originals
+in **4,764** pairs, **96.45% / 86.32%** mean source-shape / strict
+fuzzy, **2,757 linked-exact / 1,098 byte-exact**, 201 missing, zero
+skipped, and no pair or exact-set losses. Actual save-file I/O is
+unverified. Next map one later `ModStation::OnTouchEnd` route and its
+global aliases; Redmi testing stays stopped. See
+[backup-transfer evidence](RECORD_BACKUP_TRANSFER_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation::OnTouchEnd` early layout branch).
 Matching touch release and the active choice-window path now use the
 original `Globals::layout` slot and `Layout::OnTouchEnd`; a provisional
