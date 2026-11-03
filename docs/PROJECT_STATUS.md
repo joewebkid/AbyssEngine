@@ -7,6 +7,20 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`RecordHandler` constructor). Original
+ARM default-constructs three save-path strings, then assigns separate
+temporary strings for options, full saves and previews. The recovered
+constructor now follows that order with the previously confirmed
+path literals. Both constructor variants improve **47.4% → 99.0%**
+source-shape and **28.3% → 98.8%** strict fuzzy. Two pointer-field
+zero stores remain for native safety and are absent in original ARM.
+Windows native, ARM64 static and ARMv7 **209/209** builds pass. Full
+corpus: **4,323/4,524** originals in **4,769** pairs, mean
+**96.73% / 86.72%**, **2,779 linked-exact**, **1,108 byte-exact**, 201
+missing, zero skipped; no pair or exact-set loss. Genuine save/load
+remains unverified; next trace pointer initialization in the writer.
+See [constructor evidence](RECORD_HANDLER_CONSTRUCTOR_STRINGS_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`RecordHandler::convertSDVersionSaves`
 temporary paths). Original ARM creates and destroys separate index
 and combined-path strings for each primary/backup deletion. The

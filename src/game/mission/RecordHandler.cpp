@@ -546,10 +546,10 @@ static const char RH_lit2[] = "gof2_save_game_preview_";
 
 RecordHandler::RecordHandler()
     : currentMission(0),
-      currentAgent(0),
-      optionsPath(RH_lit0),
-      recordDir(RH_lit1),
-      backupDir(RH_lit2) {
+      currentAgent(0) {
+    optionsPath = String(RH_lit0);
+    recordDir = String(RH_lit1);
+    backupDir = String(RH_lit2);
 }
 
 RecordHandler::~RecordHandler() {
