@@ -2612,31 +2612,6 @@ int ModStation::OnTouchEnd(int x, int y) { return x; }
 int ModStation::OnTouchMove(int x, int y) { return x; }
 
 
-static int *g_r2d_stack = 0;
-
-static int **g_r2d_helpLayout = 0;
-
-void HangarWindow_render_r2d(ModStation * self);
-
-void HangarWindow_render3D_r2d();
-
-void SpaceLounge_draw_r2d(ModStation * self);
-
-void SpaceLounge_draw3DShip_r2d();
-
-void StarMap_draw_r2d(ModStation * self);
-void StatusWindow_draw_r2d(ModStation * self);
-void MenuTouchWindow_draw_r2d(ModStation * self);
-void Radio_draw_r2d(ModStation * self);
-
-void CutScene_render2D_r2d();
-
-void ChoiceWindow_draw_r2d(ModStation * self);
-void Layout_drawHelpWindow_r2d(Layout * l);
-
-void *ModStation_r2d_layout();
-void Layout_drawCredits_r2d(void *layout);
-
 void ModStation::OnRender2D() {
     PaintCanvas *canvas = Globals::Canvas;
     canvas->Begin2d();
@@ -2647,17 +2622,17 @@ void ModStation::OnRender2D() {
     }
 
     if (this->subWindowFlags.bytes[2] != 0) {
-        HangarWindow_render_r2d(this);
+        static_cast<HangarWindow *>(this->hangarWindow)->render();
     } else if (this->subWindowFlags.bytes[1] != 0) {
-        SpaceLounge_draw_r2d(this);
+        static_cast<SpaceLounge *>(this->spaceLounge)->draw();
     } else if (this->subWindowFlags.bytes[0] != 0) {
         this->missionsWindow->draw();
     } else if (this->subWindowFlags.bytes[3] != 0) {
-        StarMap_draw_r2d(this);
+        this->starMap->draw();
     } else if (this->modalFlags.bytes[0] != 0) {
-        StatusWindow_draw_r2d(this);
+        static_cast<StatusWindow *>(this->statusWindow)->draw();
     } else if (this->m_nStarMapWindowOpen.bytes[2] != 0) {
-        MenuTouchWindow_draw_r2d(this);
+        static_cast<MenuTouchWindow *>(this->dlcMenu)->draw();
     } else if (this->m_nStarMapWindowOpen.bytes[0] != 0) {
         auto *radio = reinterpret_cast<Radio *>(this->activeMission);
         radio->draw(static_cast<int64_t>(this->field_0xb4), nullptr, nullptr);
@@ -2686,14 +2661,13 @@ void ModStation::OnRender2D() {
         if (timer > -6000)
             this->cutScene->render2D();
     } else {
-        void *layout = this->buttonState;
-        if (layout == nullptr) layout = ModStation_r2d_layout();
-        if (layout != nullptr)
-            Layout_drawCredits_r2d(layout);
+        Globals::layout->drawFooterStation();
     }
 
-    if (this->modalFlags.bytes[2] != 0 || this->m_nStarMapWindowOpen.bytes[3] != 0)
-        ChoiceWindow_draw_r2d(this);
+    if (this->modalFlags.bytes[2] != 0)
+        static_cast<ChoiceWindow *>(this->medalChoiceWindow)->draw();
+    else if (this->m_nStarMapWindowOpen.bytes[3] != 0)
+        static_cast<ChoiceWindow *>(this->choiceWindow)->draw();
     if (this->modalFlags.bytes[1] != 0) {
         if (this->dialogueWindow != 0)
             this->dialogueWindow->draw();
@@ -2707,10 +2681,10 @@ void ModStation::OnRender2D() {
 
     if (help->choiceWindowOpen == 0) {
         if (this->subWindowFlags.bytes[2] != 0) {
-            HangarWindow_render3D_r2d();
+            static_cast<HangarWindow *>(this->hangarWindow)->render3D();
         }
         if (help->choiceWindowOpen == 0 && this->subWindowFlags.bytes[1] != 0)
-            SpaceLounge_draw3DShip_r2d();
+            static_cast<SpaceLounge *>(this->spaceLounge)->draw3DShip();
     }
 
     canvas->SwapBuffer();

@@ -79,7 +79,7 @@ public:
     FlagWord modalFlags;
     FlagWord screenFlags;
     union {
-        void *choiceWindow;                          // 0x68
+        void *choiceWindow;                          // 0x70 on ARM32
         FlagWord choiceWindowFlags;
     };
     void *spaceLounge;
@@ -91,7 +91,7 @@ public:
     int *buttonRow;
     void *buttonLaunch;
     union {
-        void *buttonCredits;                         // 0x84
+        void *buttonCredits;                         // 0x94 on ARM32
         FlagWord buttonCreditsFlags;
     };
     union {
@@ -216,6 +216,14 @@ static_assert(offsetof(ModStation, departPending) == 0x4c,
 static_assert(offsetof(ModStation, hangarLeftX) == 0xa8,
               "ModStation::station ticker/touch X @ 0xa8");
 static_assert(offsetof(ModStation, dlcMenu) == 0x50, "ModStation::dlcMenu @ 0x50");
+static_assert(offsetof(ModStation, choiceWindow) == 0x70, "ModStation::choiceWindow @ 0x70");
+static_assert(offsetof(ModStation, spaceLounge) == 0x74, "ModStation::spaceLounge @ 0x74");
+static_assert(offsetof(ModStation, hangarWindow) == 0x78, "ModStation::hangarWindow @ 0x78");
+static_assert(offsetof(ModStation, statusWindow) == 0x7c, "ModStation::statusWindow @ 0x7c");
+static_assert(offsetof(ModStation, missionsWindow) == 0x80, "ModStation::missionsWindow @ 0x80");
+static_assert(offsetof(ModStation, dialogueWindow) == 0x84, "ModStation::dialogueWindow @ 0x84");
+static_assert(offsetof(ModStation, medalChoiceWindow) == 0x88, "ModStation::medalChoiceWindow @ 0x88");
+static_assert(offsetof(ModStation, buttonCredits) == 0x94, "ModStation::buttonCredits @ 0x94");
 static_assert(offsetof(ModStation, dialogueMission) == 0x9c,
               "ModStation::dialogueMission @ 0x9c");
 static_assert(offsetof(ModStation, activeMission) == 0x54,
