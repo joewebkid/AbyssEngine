@@ -7,6 +7,21 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation::OnTouchEnd` window audio routes).
+Closing Status, StarMap or Missions windows now resets the current
+music-event parameter through `Globals::sound` with the original
+arguments and the correct `resetLight` behavior for each route.
+The whole `OnTouchEnd` function improves **66.2% → 67.1%
+source-shape** and **13.2% → 15.8% strict fuzzy**. Production branch
+smokes pass at `-O0/-O2`; Windows native, ARM64 static and ARMv7
+**209/209** builds pass. Full corpus: **4,323/4,524** originals in
+**4,764** pairs, **96.45% / 86.32%** mean source-shape / strict fuzzy,
+**2,757 linked-exact / 1,098 byte-exact**, 201 missing, zero skipped,
+no pair or exact-set losses. Live sound and surrounding mission flows
+remain unverified. Next examine the DLC-window close route and its
+submenu button positions; Redmi testing stays stopped. See
+[audio-route evidence](MODSTATION_TOUCH_END_AUDIO_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (record backup transfer).
 `RecordHandler::changeSaveDirectoryToBackupDirectory` now reads the
 original `Globals::recordSlots` count and sets

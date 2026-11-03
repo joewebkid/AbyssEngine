@@ -2373,7 +2373,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
     if (this->modalFlags.bytes[0] != 0) {
         if (static_cast<StatusWindow *>(this->statusWindow)->OnTouchEnd(x, y) != 0) {
             this->modalFlags.bytes[0] = 0;
-            this->resetLight();
+            Globals::sound->setParamValue(0, Globals::sound->currentMusicEvent, 0.0f);
         }
         return;
     }
@@ -2381,6 +2381,7 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
         if (this->starMap->OnTouchEnd(x, y) != 0) {
             this->subWindowFlags.bytes[3] = 0;
             this->resetLight();
+            Globals::sound->setParamValue(0, Globals::sound->currentMusicEvent, 0.0f);
         }
         return;
     }
@@ -2459,8 +2460,8 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
     if (this->subWindowFlags.bytes[0] != 0) {
         if (this->missionsWindow->OnTouchEnd(x, y) != 0) {
             this->subWindowFlags.bytes[0] = 0;
-            int snd = **(int **) g_ote_sound;
-            FModSound_setParamValue_ote(snd, 0, snd, 0.0f);
+            Globals::sound->setParamValue(0, Globals::sound->currentMusicEvent, 0.0f);
+            this->resetLight();
         }
         return;
     }
