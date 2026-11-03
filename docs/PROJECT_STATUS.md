@@ -7,6 +7,22 @@ extra GOF2 test build on Redmi, package
 available. Keep the original `net.fishlabs.gof2hdallandroid2012` app
 and its OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-03 (`ModStation::OnTouchEnd` early layout branch).
+Matching touch release and the active choice-window path now use the
+original `Globals::layout` slot and `Layout::OnTouchEnd`; a provisional
+status-pointer read is deferred past the early exits. The whole
+1,925-instruction function improves **65.7% → 66.2% source-shape** and
+**12.4% → 13.2% strict fuzzy**. A production-prefix smoke passes at
+`-O0/-O2`; Windows native, ARM64 static and ARMv7 **209/209** builds
+pass. Full corpus: **4,323/4,524** originals in **4,764** pairs,
+**96.44% / 86.31%** mean source-shape / strict fuzzy, **2,757
+linked-exact / 1,098 byte-exact**, 201 missing, zero skipped, and no
+pair or exact-set losses. Later mission and purchase branches remain
+unverified and contain provisional pointer aliases. Next map those
+aliases against the original ARM, one dispatch branch at a time;
+Redmi testing stays stopped. See
+[touch-end evidence](MODSTATION_TOUCH_END_LAYOUT_ARM_2026-11-03.md).
+
 Last reviewed: 2026-11-03 (`ModStation::OnTouchBegin`).
 Station touch capture now reads the original `Globals` status, layout,
 screen-height, module-manager and switch-setting state. Completing a

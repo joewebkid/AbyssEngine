@@ -1811,8 +1811,6 @@ void Radio_addMessage_ote(void *radio, int textId);
 void ScrollTouchBox_initRadio_ote(void *box, void *radio);
 
 void ModStation::OnTouchEnd(int x, int y, void *touch) {
-    int *status = *(int **) g_ote_status;
-
     if (this->activeTouch != touch)
         return;
     int starMapOpen = this->m_nStarMapWindowOpen.bytes[0];
@@ -1821,13 +1819,14 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
     if (starMapOpen != 0)
         return;
 
-    int *help = *(int **) g_ote_helpLayout;
-    if (((Layout *) *help)->choiceWindowOpen != 0) {
-        if (Layout_OnTouchEndR_ote((Layout *) *help, x, y) != 0)
-            ((Layout *) *help)->choiceWindowOpen = 0;
+    Layout *&layout = Globals::layout;
+    if (layout->choiceWindowOpen != 0) {
+        if (layout->OnTouchEnd(x, y) != 0)
+            layout->choiceWindowOpen = 0;
         return;
     }
 
+    int *status = *(int **) g_ote_status;
     if (this->modalFlags.bytes[1] != 0) {
         if (this->dialogueWindow->OnTouchEnd(x, y) != 0) {
             if (this->activeMission != 0) {
