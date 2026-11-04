@@ -2,6 +2,7 @@
 #include <cstddef>
 #include "game/core/Globals.h"
 #include "engine/core/GameText.h"
+#include "engine/core/AERandom.h"
 #include "game/ship/Ship.h"
 #include "game/ship/Agent.h"
 #include "engine/audio/FModSound.h"
@@ -31,6 +32,7 @@
 #include "game/mission/Mission.h"
 #include "game/mission/PendingProduct.h"
 #include "game/world/Station.h"
+#include "game/world/Standing.h"
 #include "game/mission/Status.h"
 #include "game/world/SolarSystem.h"
 #include "game/ui/TouchButton.h"
@@ -2756,8 +2758,6 @@ int Status_getLevel_oi();
 
 int Status_hardCoreMode_oi();
 
-int Status_getStanding_oi();
-
 int Status_getCampaignMission_oi();
 
 void Status_setShip_oi(Ship * s);
@@ -2807,15 +2807,11 @@ int Station_hasItem_oi(int station);
 
 int Station_hasShip_oi(void *station);
 
-int Station_hasAttackedFriends_oi();
-
 void Station_addItem_oi(Item * it);
 void Station_addShip_oi(Ship * s);
 void Station_removeShip_oi(Ship * s);
 
 void Station_setShips_oi(void *station, int list);
-
-int Standing_isEnemy_oi(int standing);
 
 int Standing_getStanding_oi(int standing);
 
@@ -2850,7 +2846,6 @@ int Generator_getShipBuyList_oi(Station * s);
 unsigned ModStation_oi_cameraHandle();
 void ModStation_oi_setCameraLocal(unsigned h, const Matrix &m);
 int GameText_getText_oiImpl(int id);
-void ChoiceWindow_setFee_oiImpl(void *cw, int credits, int templateId);
 void ChoiceWindow_set6_oiImpl(void *cw, int a, int b, int c, int d, int e, int f);
 void ChoiceWindow_set1_oiImpl(void *cw, int textStr);
 
@@ -3058,24 +3053,43 @@ void ModStation::OnInitialize() {
                             this->m_nStarMapWindowOpen.bytes[3] == 0 &&
                             this->alarmFlags.bytes[0] == 0 /* RAWREAD: alarmActive (+0xd8) */ &&
                             Globals::status->field_0x108 == 0) {
-                            Status_getStation_oi();
-                            bool enemy = false;
-                            if (Station_hasAttackedFriends_oi() != 0) {
-                                enemy = true;
-                            } else {
-                                int st0 = Status_getStanding_oi();
-                                Status_getSystem_oi();
-                                SolarSystem_getRace_oi();
-                                if (Standing_isEnemy_oi(st0) != 0)
-                                    enemy = true;
+                            Station *currentStation = Globals::status->getStation();
+                            bool enemy = currentStation->hasAttackedFriends() != 0;
+                            if (!enemy) {
+                                Standing *standing = Globals::status->getStanding();
+                                SolarSystem *system = Globals::status->getSystem();
+                                enemy = standing->isEnemy(system->getRace());
                             }
                             if (enemy) {
-                                int standing = Status_getStanding_oi();
-                                int credits = Status_getCredits_oi();
-                                if (standing < 0) {
-                                    ChoiceWindow_setFee_oiImpl(this->choiceWindow, credits, 0);
-                                    this->screenFlags.bytes[1] = 1;
+                                String notice;
+                                Standing *standing = Globals::status->getStanding();
+                                SolarSystem *system = Globals::status->getSystem();
+                                int race = system->getRace();
+                                if (standing->isEnemy(race)) {
+                                    int standingRace = (unsigned) race > 1;
+                                    int value = standing->getStanding(standingRace);
+                                    if (value < 1)
+                                        value = -standing->getStanding(standingRace);
+                                    else
+                                        value = standing->getStanding(standingRace);
+                                    this->field_0xd4 = (int) ((float) value / 100.0f * 2800.0f);
+                                    this->field_0xd4 +=
+                                        static_cast<AbyssEngine::AERandom *>(Globals::rnd)->nextInt(200) - 100;
+                                    if (Globals::status->hardCoreMode())
+                                        this->field_0xd4 *= 10;
+                                    notice = *Globals::gameText->getText(205);
+                                } else {
+                                    this->field_0xd4 = 150 * Globals::status->getLevel() + 1000;
+                                    if (Globals::status->hardCoreMode())
+                                        this->field_0xd4 *= 10;
+                                    notice = *Globals::gameText->getText(206);
                                 }
+                                String credits = Globals::layout->formatCredits(this->field_0xd4);
+                                notice = Globals::status->replaceHash(notice, credits, String("#C"));
+                                static_cast<ChoiceWindow *>(this->choiceWindow)->set(notice, true);
+                                this->m_nStarMapWindowOpen.bytes[3] = 1;
+                                this->modalFlags.bytes[3] = 1;
+                                this->dragFlags.bytes[1] = 0;
                             }
                         }
                     }

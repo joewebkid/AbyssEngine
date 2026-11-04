@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnInitialize` hostile-station
+notice). REA showed the original checks station attacks and faction
+standing, calculates a docking fee from standing or player level,
+applies the hardcore multiplier, substitutes the formatted amount into
+game text, and opens a choice window. This branch now uses typed
+receivers and writes the observed window flags and fee field.
+Strict ARM64 shared-link gaps fall **135 → 131**. Windows native,
+ARM64 static, and ARMv7 **209/209** builds pass. Focused
+`OnInitialize` source-shape rises **73.9% → 80.2%**, while strict
+fuzzy falls **31.8% → 20.6%**. Full ARM coverage remains
+**4,323/4,524** originals in **4,770** pairs, with **96.75% /
+86.74%** mean source-shape/strict fuzzy, **2,780 linked-exact**,
+**1,108 byte-exact**, 201 missing, and zero skipped. No comparison
+pair or exact match was lost. The newly reconstructed notice path has
+not been run in a linked APK; text substitution and fee presentation
+remain live-unverified. The next priority is the item/ship reward
+branch, which still contains invalid pointer casts. See
+[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnInitialize` typed station
 receivers). REA identifies 21 uses of `Status::getStation` as station
 objects. They now call the linked-exact typed getter rather than
