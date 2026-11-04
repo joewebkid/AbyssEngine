@@ -8,6 +8,23 @@ Pending device cleanup (user request, 2026-11-03):
   Keep the original `net.fishlabs.gof2hdallandroid2012` app and its
   OBB. Do not resume Redmi testing for this cleanup.
 
+Last reviewed: 2026-11-04 (startup frame path with REA). The 201
+missing ARM-corpus symbols are library/ABI symbols, with no named game
+or AbyssEngine methods. REA traced the original render callback into
+`ApplicationManager::OnUpdate`; its reconstructed state-5 path omitted
+post-effect begin/end calls, refraction-buffer selection, four counter
+resets, and the common engine swap. These are restored. Focused
+`OnUpdate` source-shape improves **8.6% -> 12.3%**, strict fuzzy
+**3.8% -> 6.3%**. Windows native, ARM64 static, and ARMv7 **209/209**
+builds pass. Full corpus compares **4,323/4,524** originals in
+**4,769** pairs, mean **96.75% / 86.74%**, **2,779 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped, and no pair or
+exact-set losses. The installed Poco diagnostic APK predates this
+change; its first eight center-pixel probes are still black, while
+Play Games sign-in prevents a foreground screenshot. Live validation
+of the new frame path remains open. See
+[REA startup evidence](STARTUP_FRAME_GAPS_REA_2026-11-04.md).
+
 Last reviewed: 2026-11-03 (`Status::nextCampaignMission`, steps
 21–23). Original ARM assigns all three new missions to the campaign
 slot; step 22 sets visibility byte 6, and step 23 writes fields at

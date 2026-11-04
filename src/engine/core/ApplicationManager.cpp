@@ -347,12 +347,27 @@ void ApplicationManager::OnUpdate(long long now) {
             void *module = this->currentModule;
             if (module != 0) {
                 ModuleVTable *vtable = module_vtable(module);
-                vtable->onRender3D(module);
                 Engine *engine = this->engine;
+                if (Engine::enableShader) {
+                    if (engine->IsPostEffectActivated()) {
+                        AbyssEngine::PostEffectFlag = true;
+                        this->paintCanvas->StartDraw2FBO();
+                    }
+                    this->paintCanvas->CheckNUseRefractFBO(true);
+                }
+                vtable->onRender3D(module);
                 engine->triangleCountA = 0;
+                engine->triangleCountB = 0;
                 engine->field_0x58 = 0;
+                engine->drawCallCountA = 0;
+                engine->drawCallCountB = 0;
                 this->paintCanvas->culledCount = 0;
                 vtable->onRender2D(module);
+                if (AbyssEngine::PostEffectFlag && Engine::enableShader &&
+                    engine->IsPostEffectActivated()) {
+                    AbyssEngine::PostEffectFlag = false;
+                    this->paintCanvas->StopDraw2FBO();
+                }
                 ResumeCallback_t *resume = this->resumeCallback;
                 if (resume == 0 || !resume(this->paintCanvas, this->resumeCallbackData)) {
                     vtable->onUpdate(module);
@@ -363,6 +378,7 @@ void ApplicationManager::OnUpdate(long long now) {
         default:
             break;
     }
+    this->engine->SwapBuffer();
 }
 
 void ApplicationManager::OnKeyPress(int key) {
