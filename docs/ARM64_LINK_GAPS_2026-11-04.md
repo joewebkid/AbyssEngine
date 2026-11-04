@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**137 unresolved symbols**, all referenced from `ModStation.cpp`. These are
-reconstruction helper names, not 137 proven absent symbols in the original ARM
+**135 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+reconstruction helper names, not 135 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-predicates-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-typed-station-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +24,7 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → 143 → **137**.
+159 → 158 → 147 → 145 → 143 → 137 → **135**.
 
 REA then confirmed that this function reads `Globals::status` at
 offsets `0xf8`, `0x108`, and `0x114`, and invokes the existing
@@ -62,6 +62,22 @@ ARMv7 compiles 209/209 units. REA separately confirmed the existing
 The called `activateNewWanted` body remains only 89.5% source-shape;
 its full semantics and live station initialization are unverified.
 
+In the next bounded section, 21 `Status::getStation` calls already used
+as `Station*` now use the typed, linked-exact getter, avoiding pointer
+truncation on ARM64. The original also calls
+`Station::stationHasPirateBase` on the returned station and checks
+`Status::getFreelanceMission` for a null mission; restoring these
+receivers removes two more unresolved helpers. Focused `OnInitialize`
+source-shape rises 73.3% → **73.9%**, strict fuzzy 29.2% → **31.8%**.
+The full ARM report (`_work/modstation_init_typed_station_full_20261104.json`)
+still compares 4,323/4,524 originals in 4,770 pairs, 96.75% /
+86.75% means, 2,780 linked-exact, 1,108 byte-exact, 201 missing,
+and zero skipped, with no pair or exact-set losses. Windows native and
+ARM64 static builds pass; ARMv7 compiles 209/209 units. The remaining
+`Status_getStation_oi` uses include invalid `Item*`/`Ship*` casts,
+which require original data-flow recovery. The existing pirate-base
+method body is 92.1% source-shape and is not yet live-validated.
+
 For the earlier cutscene-only change, Windows native and ARM64 static builds
 pass; ARMv7 compiles 209/209 units. Focused `OnInitialize` remains
 **72.2%** source-shape and **27.3%** strict fuzzy. The full ARM corpus
@@ -81,7 +97,7 @@ currently dereferences placeholder pointers initialized to null and omits the
 original's wanted-name text substitutions. REA original evidence:
 `ev_7e1aa9c7284245af140363313e649e4c93e2bd1306315edcf425f8785f24b1d3`.
 
-## `ModStation::OnInitialize()` — 54 unresolved
+## `ModStation::OnInitialize()` — 52 unresolved
 
 - `Achievements_gotAllGoldMedals_oi()`
 - `ChoiceWindow_set1_oiImpl(void*, int)`
@@ -128,10 +144,8 @@ original's wanted-name text substitutions. REA original evidence:
 - `Station_hasShip_oi(void*)`
 - `Station_removeShip_oi(Ship*)`
 - `Station_setShips_oi(void*, int)`
-- `Station_stationHasPirateBase_oi()`
 - `Status_getCampaignMission_oi()`
 - `Status_getCredits_oi()`
-- `Status_getFreelanceMission_oi()`
 - `Status_getShip_oi()`
 - `Status_getStanding_oi()`
 - `Status_getStation_oi()`

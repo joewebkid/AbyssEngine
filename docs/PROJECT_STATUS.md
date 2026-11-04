@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnInitialize` typed station
+receivers). REA identifies 21 uses of `Status::getStation` as station
+objects. They now call the linked-exact typed getter rather than
+converting a 32-bit helper result into a pointer on ARM64. The
+pirate-base check and freelance-mission presence check also use
+their original typed receivers. Strict ARM64 shared-link gaps fall
+**137 → 135**. Windows native, ARM64 static, and ARMv7 **209/209**
+builds pass. Focused `OnInitialize` source-shape rises **73.3% →
+73.9%**, strict fuzzy **29.2% → 31.8%**. The full ARM corpus remains
+**4,323/4,524** originals in **4,770** pairs, **96.75% / 86.75%**
+mean source-shape/strict fuzzy, **2,780 linked-exact**, **1,108
+byte-exact**, 201 missing, and zero skipped, with no pair or exact-set
+losses. Remaining `getStation` helper uses include incorrect `Item*`
+and `Ship*` casts; the pirate-base method body and live station path
+are not fully validated. See
+[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnInitialize` status predicates).
 REA confirmed that the original calls six existing `Status` methods:
 `inAlienOrbit`, `inSupernovaSystem`, `inBlackMarketSystem`, `gameWon`,
