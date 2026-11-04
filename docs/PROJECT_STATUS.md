@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnInitialize` campaign items).
+REA confirmed mission 20 sets the price of existing item 41 to zero,
+creates a ten-unit copy of item 41 at zero price, and adds it to the
+station. Mission 27 removes cargo 131 from the player ship. These
+branches now use typed `Mission`, `Station`, `Item`, and `Ship` calls
+instead of truncated pointer helpers and misplaced receivers. Strict
+ARM64 shared-link gaps fall **131 → 125**. Windows native, ARM64 static,
+and ARMv7 **209/209** builds pass. Focused `OnInitialize` source-shape
+rises **80.2% → 81.0%**; strict fuzzy changes **20.6% → 20.2%**.
+The full ARM corpus remains **4,323/4,524** originals in **4,770**
+pairs, with **96.75% / 86.74%** mean source-shape/strict fuzzy,
+**2,780 linked-exact**, **1,108 byte-exact**, 201 missing, and zero
+skipped. No pair or exact-set losses occurred. `Station::addItem`
+is 94.8% source-shape and the newly reconstructed mission branches
+have not been exercised in a linked APK. The next priority is the
+item-85 and fuel-122 station supply branch; see
+[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnInitialize` hostile-station
 notice). REA showed the original checks station attacks and faction
 standing, calculates a docking fee from standing or player level,

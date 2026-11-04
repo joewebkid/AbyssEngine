@@ -2758,8 +2758,6 @@ int Status_getLevel_oi();
 
 int Status_hardCoreMode_oi();
 
-int Status_getCampaignMission_oi();
-
 void Status_setShip_oi(Ship * s);
 
 int Ship_getIndex_oi();
@@ -2780,28 +2778,17 @@ void Ship_setEquipment_oi(Item *eq, int slot);
 
 void Ship_setPrice_oi(int shipPtr);
 
-void Ship_removeCargo_oi(int ship);
-
 void Ship_addCargo_oi(int ship, Item *it);
 
 int Item_makeItem_oi();
 
 int Item_makeItemDesc_oi(int desc);
 
-int Item_makeItemDescAmt_oi(int desc, int amt);
-
 void Item_setUnsaleable_oi(int flag);
-
-int Item_getIndex_oi(Item * it);
 
 int Item_getAmount_oi();
 
-void Item_setPrice_oi(int itemPtr);
-
 int Station_getShips_oi();
-
-int Station_getItems_oi();
-
 
 int Station_hasItem_oi(int station);
 
@@ -3100,25 +3087,27 @@ void ModStation::OnInitialize() {
 
         Station *here = Globals::status->getStation();
         int hereIdx = here->getIndex();
-        Status_getCampaignMission_oi();
+        Mission *campaignMission =
+            reinterpret_cast<Mission *>(Globals::status->getCampaignMission());
 
         if (Globals::status->getCurrentCampaignMission() == 0x14 &&
-            Mission_getTargetStation_oi() == hereIdx) {
-            Status_getStation_oi();
-            Array<Item *> *items = (Array<Item *> *) (intptr_t) Station_getItems_oi();
+            campaignMission->getTargetStation() == hereIdx) {
+            Station *station = Globals::status->getStation();
+            Array<Item *> *items = station->getItems();
             if (items != 0) {
                 for (unsigned i = 0; i < items->size(); i = i + 1) {
-                    if (Item_getIndex_oi((*items)[i]) == 0x29)
-                        Item_setPrice_oi((int) (intptr_t) (*items)[i]);
+                    if ((*items)[i]->getIndex() == 0x29)
+                        (*items)[i]->setPrice(0);
                 }
             }
-            Item *it = (Item *) Status_getStation_oi();
-            Item_makeItemDescAmt_oi((*(Array<int> *) (intptr_t) **g_oi_itemTable)[(0xa4) / 4], 10);
-            Station_addItem_oi(it);
+            Station *rewardStation = Globals::status->getStation();
+            Array<Item *> *itemTable = static_cast<Array<Item *> *>(Globals::items);
+            Item *reward = (*itemTable)[0x29]->makeItem(10, 0);
+            rewardStation->addItem(reward);
         }
         if (Globals::status->getCurrentCampaignMission() == 0x1b &&
-            Mission_getTargetStation_oi() == hereIdx) {
-            Ship_removeCargo_oi(Status_getShip_oi());
+            campaignMission->getTargetStation() == hereIdx) {
+            Globals::status->getShip()->removeCargo(0x83);
         }
 
         if (Globals::status->getCurrentCampaignMission() == 0x2b) {
