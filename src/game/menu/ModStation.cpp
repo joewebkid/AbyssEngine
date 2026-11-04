@@ -2748,12 +2748,6 @@ int SolarSystem_getRace_oi();
 
 int SolarSystem_getRoutes_oi();
 
-int Status_inAlienOrbit_oi();
-
-int Status_inSupernovaSystem_oi();
-
-int Status_inBlackMarketSystem_oi();
-
 int Status_getShip_oi();
 
 int Status_getCredits_oi();
@@ -2763,13 +2757,6 @@ int Status_getLevel_oi();
 int Status_hardCoreMode_oi();
 
 int Status_getStanding_oi();
-
-int Status_gameWon_oi();
-
-int Status_dlc1Won_oi();
-
-
-int Status_activateNewWanted_oi();
 
 int Status_getFreelanceMission_oi();
 
@@ -3012,7 +2999,7 @@ void ModStation::OnInitialize() {
         this->field_0x148.bytes[0] = 0;
         next = 1;
     } else if (state == 0x28) {
-        if (Status_inAlienOrbit_oi() == 0) {
+        if (Globals::status->inAlienOrbit() == 0) {
             Station *st = (Station *) Status_getStation_oi();
             if (st->getIndex() == 0x78) {
                 int camp = Globals::status->getCurrentCampaignMission();
@@ -3020,22 +3007,22 @@ void ModStation::OnInitialize() {
                     this->alarmFlags.bytes[0] = 1;
             }
         }
-        if (Status_inAlienOrbit_oi() == 0) {
+        if (Globals::status->inAlienOrbit() == 0) {
             Station *st = (Station *) Status_getStation_oi();
             if (st->getIndex() == 0x3a && Globals::status->getCurrentCampaignMission() == 0x8a)
                 this->alarmFlags.bytes[0] = 1;
         }
-        if (Status_inAlienOrbit_oi() == 0) {
+        if (Globals::status->inAlienOrbit() == 0) {
             Station *st = (Station *) Status_getStation_oi();
             if (st->getIndex() == 0x7e && Globals::status->getCurrentCampaignMission() == 0x78)
                 this->alarmFlags.bytes[0] = 1;
         }
-        if (Status_inAlienOrbit_oi() == 0) {
+        if (Globals::status->inAlienOrbit() == 0) {
             Station *st = (Station *) Status_getStation_oi();
             if (st->getIndex() == 0x4e && Globals::status->getCurrentCampaignMission() == 0x8d)
                 this->alarmFlags.bytes[0] = 1;
         }
-        if (Status_inSupernovaSystem_oi() != 0)
+        if (Globals::status->inSupernovaSystem() != 0)
             this->alarmFlags.bytes[0] = 1;
         if (**g_oi_demoFlag != 0)
             this->alarmFlags.halfword = 0x101;
@@ -3065,7 +3052,7 @@ void ModStation::OnInitialize() {
             }
             (void) gate;
             if (Globals::status->getCurrentCampaignMission() != 0x30 &&
-                Status_inBlackMarketSystem_oi() == 0) {
+                Globals::status->inBlackMarketSystem() == 0) {
                 Station *s1 = (Station *) Status_getStation_oi();
                 if (s1->getIndex() != 0x6c) {
                     Station *s2 = (Station *) Status_getStation_oi();
@@ -3131,7 +3118,7 @@ void ModStation::OnInitialize() {
         }
 
         bool isS100;
-        if (hereIdx == 10 && Status_gameWon_oi() != 0) {
+        if (hereIdx == 10 && Globals::status->gameWon() != 0) {
             int ship = Status_getShip_oi();
             if (Ship_hasEquipment_oi(ship, 0x55) == 0) {
                 ship = Status_getShip_oi();
@@ -3191,7 +3178,7 @@ void ModStation::OnInitialize() {
         }
 
         if (isS100 &&
-            (Status_dlc1Won_oi() != 0 ||
+            (Globals::status->dlc1Won() != 0 ||
              Globals::status->getCurrentCampaignMission() == 0x50 ||
              Globals::status->getCurrentCampaignMission() == 0x51 ||
              Globals::status->getCurrentCampaignMission() == 0x52 ||
@@ -3256,13 +3243,13 @@ void ModStation::OnInitialize() {
             settings->wantedActivatedShown = 1;
         }
         SettingsBlock *settings2 = (SettingsBlock *) (intptr_t) *(int *) g_oi_settings;
-        if (Status_gameWon_oi() != 0 && ((Status *) (intptr_t) *(int *) g_oi_status)->byte_0x35 == 0 &&
+        if (Globals::status->gameWon() != 0 && ((Status *) (intptr_t) *(int *) g_oi_status)->byte_0x35 == 0 &&
             settings->gameWonShown == 0) {
             ChoiceWindow_setNotice_oi(this->choiceWindow, GameText_getText_oi(**g_oi_textRoot));
             this->m_nStarMapWindowOpen.bytes[3] = 1;
             settings->gameWonShown = 1;
         }
-        if (Status_dlc1Won_oi() != 0 && ((Status *) (intptr_t) *(int *) g_oi_status)->byte_0x37 == 0 &&
+        if (Globals::status->dlc1Won() != 0 && ((Status *) (intptr_t) *(int *) g_oi_status)->byte_0x37 == 0 &&
             settings->dlc1WonShown == 0) {
             ChoiceWindow_setNotice_oi(this->choiceWindow, GameText_getText_oi(**g_oi_textRoot));
             this->m_nStarMapWindowOpen.bytes[3] = 1;
@@ -3270,7 +3257,7 @@ void ModStation::OnInitialize() {
         }
         (void) settings2;
 
-        int wanted = Status_activateNewWanted_oi();
+        int wanted = Globals::status->activateNewWanted();
         if (wanted > 0 && this->m_nStarMapWindowOpen.bytes[3] == 0) {
             if (wanted == 1)
                 ChoiceWindow_setNotice_oi(this->choiceWindow, GameText_getText_oi(**g_oi_textRoot));

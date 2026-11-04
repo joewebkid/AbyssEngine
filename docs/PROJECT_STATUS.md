@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnInitialize` status predicates).
+REA confirmed that the original calls six existing `Status` methods:
+`inAlienOrbit`, `inSupernovaSystem`, `inBlackMarketSystem`, `gameWon`,
+`dlc1Won`, and `activateNewWanted`. Eleven calls now use the typed
+`Globals::status` receiver. The strict ARM64 shared link drops from
+**143 to 137** unresolved reconstruction helpers. Windows native,
+ARM64 static, and ARMv7 **209/209** builds pass. Focused
+`OnInitialize` source-shape is **73.3%** (from 73.5%); strict fuzzy is
+**29.2%** (from 25.0%). Full ARM coverage remains **4,323/4,524**
+originals in **4,770** pairs, with **96.75% / 86.75%** mean
+source-shape/strict fuzzy, **2,780 linked-exact**, **1,108 byte-exact**,
+201 missing, and zero skipped. No comparison pair or exact match was
+lost. The called `activateNewWanted` body is only 89.5% source-shape
+and needs separate semantic validation; the victory-notice globals
+and a newly linked APK also remain unverified. See
+[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnInitialize` status and station
 access). REA confirmed the original reads `Globals::status` directly at
 offsets `0xf8`, `0x108`, and `0x114`, calls

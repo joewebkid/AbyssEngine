@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**143 unresolved symbols**, all referenced from `ModStation.cpp`. These are
-reconstruction helper names, not 143 proven absent symbols in the original ARM
+**137 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+reconstruction helper names, not 137 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-status-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-predicates-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +24,7 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → **143**.
+159 → 158 → 147 → 145 → 143 → **137**.
 
 REA then confirmed that this function reads `Globals::status` at
 offsets `0xf8`, `0x108`, and `0x114`, and invokes the existing
@@ -47,6 +47,21 @@ not be mapped blindly to `Status` bytes `0x35` and `0x37`: the original
 REA pseudocode references distinct global flag words in those checks.
 Their ownership and the associated notice state remain unverified.
 
+REA also confirms six existing `Status` methods in this function:
+`inAlienOrbit`, `inSupernovaSystem`, `inBlackMarketSystem`, `gameWon`,
+`dlc1Won`, and `activateNewWanted`. Eleven calls now use the typed
+`Globals::status` receiver, removing six more unresolved helpers.
+Focused source-shape changes 73.5% → **73.3%**, while strict fuzzy
+rises 25.0% → **29.2%**. The full ARM report
+(`_work/modstation_init_predicates_full_20261104.json`) still has
+4,323/4,524 originals in 4,770 pairs, 96.75% / 86.75% means,
+2,780 linked-exact, 1,108 byte-exact, 201 missing, and zero skipped,
+with no pair or exact-set losses. Native and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. REA separately confirmed the existing
+`inSupernovaSystem` body (`ev_16b962d376e3076dfb7d1bfb2715774d0469b4d9be497a5264615aa1838934af`).
+The called `activateNewWanted` body remains only 89.5% source-shape;
+its full semantics and live station initialization are unverified.
+
 For the earlier cutscene-only change, Windows native and ARM64 static builds
 pass; ARMv7 compiles 209/209 units. Focused `OnInitialize` remains
 **72.2%** source-shape and **27.3%** strict fuzzy. The full ARM corpus
@@ -66,7 +81,7 @@ currently dereferences placeholder pointers initialized to null and omits the
 original's wanted-name text substitutions. REA original evidence:
 `ev_7e1aa9c7284245af140363313e649e4c93e2bd1306315edcf425f8785f24b1d3`.
 
-## `ModStation::OnInitialize()` — 60 unresolved
+## `ModStation::OnInitialize()` — 54 unresolved
 
 - `Achievements_gotAllGoldMedals_oi()`
 - `ChoiceWindow_set1_oiImpl(void*, int)`
@@ -114,9 +129,6 @@ original's wanted-name text substitutions. REA original evidence:
 - `Station_removeShip_oi(Ship*)`
 - `Station_setShips_oi(void*, int)`
 - `Station_stationHasPirateBase_oi()`
-- `Status_activateNewWanted_oi()`
-- `Status_dlc1Won_oi()`
-- `Status_gameWon_oi()`
 - `Status_getCampaignMission_oi()`
 - `Status_getCredits_oi()`
 - `Status_getFreelanceMission_oi()`
@@ -124,9 +136,6 @@ original's wanted-name text substitutions. REA original evidence:
 - `Status_getStanding_oi()`
 - `Status_getStation_oi()`
 - `Status_getSystem_oi()`
-- `Status_inAlienOrbit_oi()`
-- `Status_inBlackMarketSystem_oi()`
-- `Status_inSupernovaSystem_oi()`
 - `Status_setShip_oi(Ship*)`
 
 ## `ModStation::OnUpdate()` — 31 unresolved
