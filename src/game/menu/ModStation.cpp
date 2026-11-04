@@ -2752,8 +2752,6 @@ int SolarSystem_getRoutes_oi();
 
 int Status_getShip_oi();
 
-int Status_getCredits_oi();
-
 int Status_getLevel_oi();
 
 int Status_hardCoreMode_oi();
@@ -3191,12 +3189,13 @@ void ModStation::OnInitialize() {
         } else {
             Station *st = Globals::status->getStation();
             if (st->getIndex() == 0x6c && Globals::status->field_114 == 2) {
-                if (Status_getCredits_oi() < 100000 ||
-                    Ship_hasCargo_oi(Status_getShip_oi(), 0x6d) == 0) {
-                    ChoiceWindow_setNotice_oi(this->choiceWindow, GameText_getText_oi(**g_oi_textRoot));
-                } else {
-                    ChoiceWindow_set_oi(this->choiceWindow, GameText_getText_oi(**g_oi_textRoot), 1);
+                ChoiceWindow *choice = static_cast<ChoiceWindow *>(this->choiceWindow);
+                if (Globals::status->getCredits() >= 30000001 &&
+                    Globals::status->getShip()->hasCargo(0x6d, 50)) {
+                    choice->set(*Globals::gameText->getText(477), true);
                     this->screenFlags.bytes[0] = 1;
+                } else {
+                    choice->set(*Globals::gameText->getText(476));
                 }
                 this->m_nStarMapWindowOpen.bytes[3] = 1;
             }

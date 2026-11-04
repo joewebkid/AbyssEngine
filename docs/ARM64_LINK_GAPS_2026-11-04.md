@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**109 unresolved symbols**, all referenced from `ModStation.cpp`. These are
-reconstruction helper names, not 109 proven absent symbols in the original ARM
+**108 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+reconstruction helper names, not 108 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-freelance-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-reward-offer-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +24,7 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → **109**.
+159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → **108**.
 
 REA then confirmed that this function reads `Globals::status` at
 offsets `0xf8`, `0x108`, and `0x114`, and invokes the existing
@@ -184,8 +184,26 @@ without pair or exact-set losses. Native and ARM64 static builds pass;
 ARMv7 compiles 209/209 units. REA evidence:
 `ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
 `Station::addItem` is 94.8% source-shape; this path is not yet
-live-validated. The reward-station branch still checks the wrong
-credit threshold and omits the original cargo amount requirement.
+live-validated. At this stage the reward-station branch still checked
+the wrong credit threshold and omitted the original cargo amount.
+
+The reward-station state-2 offer is now restored. REA shows station
+108, status state 2, at least 30,000,001 credits, and at least 50
+units of cargo 109. `ChoiceWindow::set` receives game text 477 with
+buttons when eligible and text 476 otherwise; the original sets
+window flags at `0x6c` and `0x63`. Typed calls replace the incorrect
+100,000-credit/no-amount check, removing `Status_getCredits_oi`.
+Focused `OnInitialize` source-shape rises 82.2% → **82.4%** and
+strict fuzzy 19.5% → **43.8%**. The full ARM report
+(`_work/modstation_init_reward_offer_full_20261104.json`) compares
+4,323/4,524 originals in 4,770 pairs, with 96.75% / 86.75% means,
+2,780 linked-exact, 1,108 byte-exact, 201 missing, and zero skipped,
+without pair or exact-set losses. Native and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. REA evidence:
+`ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
+The offer is not yet live-validated. Reward state 1 still lacks its
+original mission/dialogue construction and needs the client-image
+argument recovered before implementation.
 
 For the earlier cutscene-only change, Windows native and ARM64 static builds
 pass; ARMv7 compiles 209/209 units. Focused `OnInitialize` remains
@@ -206,7 +224,7 @@ currently dereferences placeholder pointers initialized to null and omits the
 original's wanted-name text substitutions. REA original evidence:
 `ev_7e1aa9c7284245af140363313e649e4c93e2bd1306315edcf425f8785f24b1d3`.
 
-## `ModStation::OnInitialize()` — 26 unresolved
+## `ModStation::OnInitialize()` — 25 unresolved
 
 - `ChoiceWindow_set1_oiImpl(void*, int)`
 - `ChoiceWindow_set6_oiImpl(void*, int, int, int, int, int, int)`
@@ -229,7 +247,6 @@ original's wanted-name text substitutions. REA original evidence:
 - `SolarSystem_getRace_oi()`
 - `SolarSystem_getRoutes_oi()`
 - `Station_getShips_oi()`
-- `Status_getCredits_oi()`
 - `Status_getShip_oi()`
 - `Status_getStation_oi()`
 - `Status_getSystem_oi()`
