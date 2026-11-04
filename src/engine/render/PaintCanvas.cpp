@@ -549,8 +549,6 @@ void paintcanvas_ext_rpm_loadproj(void *eng, void *m);
 
 void *paintcanvas_ext_tc_findres(void *self, unsigned short id);
 
-void paintcanvas_ext_start_fbo(void *);
-
 
 void paintcanvas_ext_dr2_restore(unsigned int flag, void *img);
 
@@ -3292,7 +3290,7 @@ void PaintCanvas::SwapBuffer() {
 }
 
 void PaintCanvas::StartDraw2FBO() {
-    return paintcanvas_ext_start_fbo(this->engine);
+    this->engine->ActivateRender2TextureFBO();
 }
 
 void PaintCanvas::Suspend() {

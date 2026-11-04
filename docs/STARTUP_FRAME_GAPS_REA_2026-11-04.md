@@ -19,9 +19,27 @@ methods, but did not start or stop the post-effect buffer, select the
 refraction buffer, reset all four engine counters, or call
 `Engine::SwapBuffer`. These calls and stores are now present in the
 ARM-observed order. The existing frame-time update is unchanged.
-The performance overlay and resource-loading states 6/7 remain to be
-reconciled separately; the IDA pseudocode alone does not prove their
-current runtime reachability.
+The original also has state 6 (`0x8311c`): call
+`PaintCanvas::WarmUpTexture`, then move to state 5 if it succeeds.
+REA confirms that `WarmUpTexture` itself simply returns true, and
+the current source is linked-exact and byte-exact. State 7
+(`0x83180–0x83332`) incrementally loads one pending texture and up
+to ten mesh VBOs per frame before returning to state 5. The
+reconstructed `OnUpdate` has no state-6 or state-7 branch, so that
+dispatch behavior remains absent. Current source references do not
+establish that either state is entered on the tested title launch;
+the installed diagnostic APK and captured log do not prove it.
+The performance overlay also remains to be reconciled separately.
+
+The original state-0 path at `0x8285e–0x8286c` first decrements a
+positive namespace `SwapCounter`, clears the buffer, swaps, and
+returns, delaying module initialization. The state-1 release path at
+`0x828a4–0x828be` reloads that counter from
+`Engine::SwapCounter`. When state 0 finishes initialization and
+enters state 5, it also resets `loadMesh` and `loadTexture` at
+`0x83780–0x83782`. These startup transition effects were absent and
+are now restored. Focused `OnUpdate` verification rises from 12.3%
+to 14.4% source-shape and from 6.3% to 8.5% strict fuzzy.
 
 The verifier's **201 missing original symbols are all library/ABI
 symbols**, not named game or AbyssEngine methods: 74 libzip, 47 zlib,
@@ -81,6 +99,33 @@ Next startup candidates from the same corpus are
 title-image path uses `SetTextures`; it needs a separately observed
 caller before treating it as the current title blocker. None of these
 shape scores alone proves semantic correctness.
+`TextureShader::UpdateMeshData` is already 100% source-shape and
+linked-exact (though not byte-exact); REA shows the same matrix,
+uniform, and vertex-attribute calls as current source, so it is not
+the first missing-function target for the title image.
+
+A strict ARM64 shared-library link exposed a separate, concrete
+inventory of missing reconstruction helpers. Initially 159 symbols
+were unresolved: 158 called by `ModStation.cpp`, plus
+`paintcanvas_ext_start_fbo`. REA decompiles the original
+`PaintCanvas::StartDraw2FBO` as a direct call to
+`Engine::ActivateRender2TextureFBO`, which is already implemented.
+REA evidence: `ev_0f0a5720ddf9afdf5bb940b7d73401d62cfbe01127690f5ee64b1032b67a6689`.
+The wrapper was replaced with that call. ARM64 static build passes;
+the strict shared link now reports **158** unresolved helpers, all
+from `ModStation.cpp`. They are documented with first call sites in
+[ARM64 link gaps](ARM64_LINK_GAPS_2026-11-04.md). A static-library
+build alone did not reveal these link gaps. The new APK cannot yet be
+built faithfully from current source, so the Poco log describes an
+older diagnostic APK only.
+Focused ARMv7 verification still gives `StartDraw2FBO` 100% source-shape,
+100% strict fuzzy and linked-exact. Windows native and ARM64 static
+builds pass. The final full ARM corpus
+(`_work/startup_missing_full_20261104.json`) compares 4,323/4,524
+originals across 4,769 pairs, with means 96.75% source-shape and
+86.74% strict fuzzy, 2,779 linked-exact, 1,108 byte-exact, 201
+missing and zero skipped. Against the prior full report, the pair
+set and both exact sets have zero additions or losses.
 
 ## Module dispatch ABI correction
 

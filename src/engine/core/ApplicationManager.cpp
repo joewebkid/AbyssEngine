@@ -293,6 +293,12 @@ void ApplicationManager::OnUpdate(long long now) {
 
     switch (this->state) {
         case 0: {
+            if (AbyssEngine::SwapCounter > 0) {
+                --AbyssEngine::SwapCounter;
+                this->engine->ClearBuffer(0);
+                this->engine->SwapBuffer();
+                return;
+            }
             void *next = this->pendingModule;
             void *module = next != 0 ? next : this->currentModule;
             if (next != 0) {
@@ -312,6 +318,8 @@ void ApplicationManager::OnUpdate(long long now) {
                     this->frameTimeMs = now;
                     this->previousFrameTimeMs = now - 1;
                     this->keyState = 0;
+                    AbyssEngine::loadMesh = 0;
+                    AbyssEngine::loadTexture = 0;
                 } else {
                     uint64_t previous = this->frameTimeMs;
                     this->currentTimeMs += (uint64_t) now - previous;
@@ -326,6 +334,7 @@ void ApplicationManager::OnUpdate(long long now) {
             if (module != 0) {
                 module_vtable(module)->release(module);
                 this->engine->ResetLightParam();
+                AbyssEngine::SwapCounter = Engine::SwapCounter;
                 this->state = 0;
                 this->currentModule = 0;
             }

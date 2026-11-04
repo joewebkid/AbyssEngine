@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (startup transition and strict ARM64 link).
+REA showed the original state-0 swap delay, state-1 counter reload,
+and texture/mesh loading-counter reset on entry to state 5; these
+are restored. `ApplicationManager::OnUpdate` focused source-shape
+is **14.4%** (from 12.3%), strict fuzzy **8.5%** (from 6.3%).
+REA also confirmed that `PaintCanvas::StartDraw2FBO` calls the
+existing `Engine::ActivateRender2TextureFBO`; replacing an unresolved
+wrapper removed one ARM64 shared-link error. A strict shared link
+still finds **158 unresolved reconstruction helpers**, all called
+from `ModStation.cpp`; the new APK is not yet linkable. Windows native,
+ARM64 static, and ARMv7 209/209 builds pass. Full ARM corpus remains
+4,323/4,524 originals in 4,769 pairs, 96.75%/86.74% means,
+2,779 linked-exact, 1,108 byte-exact, 201 original library/ABI symbols
+missing, zero skipped, with no exact-set or pair losses. See
+[REA startup evidence](STARTUP_FRAME_GAPS_REA_2026-11-04.md) and
+[ARM64 link gaps](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (REA module dispatch ABI). The original
 ARM `ApplicationManager::OnUpdate` calls module virtual slots `+0x30`,
 `+0x34`, and `+0x38` as `OnRender3D`, `OnRender2D`, and `OnUpdate`.
