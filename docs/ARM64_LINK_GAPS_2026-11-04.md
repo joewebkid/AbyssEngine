@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**90 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+**88 unresolved symbols**, all referenced from `ModStation.cpp`. These are
 reconstruction helper names, not 108 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-system-race-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-station-camera-final-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +24,7 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → **90**.
+159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → **88**.
 
 REA then confirmed that this function reads `Globals::status` at
 offsets `0xf8`, `0x108`, and `0x114`, and invokes the existing
@@ -203,17 +203,39 @@ ARMv7 compiles 209/209 units. REA evidence:
 `ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
 The offer is not yet live-validated.
 
+The state-20 station camera entry is now recovered from Android ARM.
+Before resetting the light, it reads the current camera matrix's
+direction and subtracts 0.2 from X and 0.3 from Y. After the
+mission-77 price adjustment, it chooses the race, reads coordinates
+from the original phone table `0x1FDFB8`, resets the three
+`EaseInOut` ranges, and sets a camera matrix with pitch, device
+yaw, and roll `-0.03`. The cutscene receives the initial position,
+angles, geometry matrix, and three random position offsets. A
+`CutScene` union now models the station camera angle vector at
+ARM32 offset `0x14` without changing the object size. Typed
+`PaintCanvas` calls remove two more unresolved wrappers: the strict
+ARM64 link falls 90 → **88**. Focused `OnInitialize` source-shape
+rises 85.0% → **89.9%**, while strict fuzzy changes 44.8% →
+**39.5%**. Windows native, ARM64 static, and ARMv7 209/209 builds
+pass. The iOS coordinate behavior is unverified; Android ARM uses
+the phone coordinates here even when it selects the iPad yaw table.
+The scene is not yet live-validated in a newly linked APK. Original
+REA evidence: `ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
+The full ARM report (`_work/modstation_init_camera_final_full_20261104.json`)
+compares 4,323/4,524 originals in 4,770 pairs, with 96.75% /
+86.75% mean source-shape/strict fuzzy, 2,780 linked-exact,
+1,108 byte-exact, 201 missing, and zero skipped. No comparison
+pairs or exact-match sets were lost against the system-race report.
+
 The remaining system-race lookup in the station camera path now uses
 `Status::getSystem()->getRace()` when the station index is neither
 101 nor 100, as in Android ARM. Two unresolved helpers disappear:
 the strict ARM64 link falls 92 → **90**. Focused `OnInitialize`
 source-shape remains **85.0%** and strict fuzzy **44.8%**; Windows
-native, ARM64 static, and ARMv7 209/209 builds pass. The surrounding
-camera setup is still incomplete: the original reads the current
-camera direction, resets three `EaseInOut` ranges, sets the local
-camera matrix, and updates the cutscene geometry, while the current
-source has only a partial translation. Those operations require a
-separate reconstruction before live validation. Original REA
+native, ARM64 static, and ARMv7 209/209 builds pass. At this
+checkpoint the camera setup was still partial; the preceding camera
+entry above reconstructs the direction, animation ranges, matrix,
+and geometry updates. Original REA
 evidence: `ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
 The full ARM report (`_work/modstation_init_system_race_full_20261104.json`)
 compares 4,323/4,524 originals in 4,770 pairs, with 96.75% /
@@ -311,15 +333,13 @@ currently dereferences placeholder pointers initialized to null and omits the
 original's wanted-name text substitutions. REA original evidence:
 `ev_7e1aa9c7284245af140363313e649e4c93e2bd1306315edcf425f8785f24b1d3`.
 
-## `ModStation::OnInitialize()` — 7 unresolved
+## `ModStation::OnInitialize()` — 5 unresolved
 
 - `ChoiceWindow_set1_oiImpl(void*, int)`
 - `ChoiceWindow_set6_oiImpl(void*, int, int, int, int, int, int)`
 - `ChoiceWindow_setNotice_oi(void*, int)`
 - `GameText_getText_oi(int)`
 - `GameText_getText_oiImpl(int)`
-- `ModStation_oi_cameraHandle()`
-- `ModStation_oi_setCameraLocal(unsigned int, AbyssEngine::AEMath::Matrix const&)`
 
 ## `ModStation::OnUpdate()` — 31 unresolved
 

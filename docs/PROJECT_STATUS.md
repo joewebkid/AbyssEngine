@@ -1,15 +1,34 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnInitialize` station camera).
+Android ARM reads the current camera direction for station lighting,
+sets three camera animation ranges, then applies a race-dependent
+camera matrix with roll `-0.03`. It also updates the cutscene's
+position/angles/geometry and applies three random position offsets.
+The recovered entry path now performs these operations with typed
+`PaintCanvas`, `EaseInOut`, `CutScene`, and `AEGeometry` methods. Its
+coordinates follow the original phone table at `0x1FDFB8`; yaw still
+selects the iPad/phone table. Strict ARM64 link gaps fall **90 → 88**.
+Windows native, ARM64 static, and ARMv7 **209/209** builds pass.
+Focused `OnInitialize` source-shape rises **85.0% → 89.9%** while
+strict fuzzy changes **44.8% → 39.5%**. This scene is not yet
+live-validated in a newly linked APK; the iOS camera variant remains
+unverified. Full ARM coverage remains **4,323/4,524** originals in
+**4,770** pairs, with **96.75% / 86.75%** mean source-shape/strict
+fuzzy, **2,780 linked-exact**, **1,108 byte-exact**, 201 missing, and
+zero skipped. No comparison pairs or exact-match sets were lost.
+Next priority: the five unresolved `OnInitialize`
+dialogue/notice helper names. See
+[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnInitialize` system race).
 Android ARM reads the current system's race when the station is
 neither 101 nor 100. The recovered branch now calls the typed
 `Status` and `SolarSystem` methods. Strict ARM64 link gaps fall
 **92 → 90**. Windows native, ARM64 static, and ARMv7 **209/209**
 builds pass. Focused `OnInitialize` remains **85.0%** source-shape
-and **44.8%** strict fuzzy. The camera path after this race choice
-still differs materially from the original ARM behavior; its
-animation and camera state need reconstruction before a fresh APK
-can validate this scene. Full ARM coverage remains **4,323/4,524**
+and **44.8%** strict fuzzy at this checkpoint. The camera path is
+reconstructed in the next review above. Full ARM coverage remains **4,323/4,524**
 originals in **4,770** pairs, with **96.75% / 86.75%** mean
 source-shape/strict fuzzy, **2,780 linked-exact**, **1,108 byte-exact**,
 201 missing, and zero skipped. No comparison pairs or exact-match

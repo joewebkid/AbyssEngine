@@ -17,9 +17,14 @@ public:
     Level *level;
     float cameraRotX;
     Vector vec8;
-    float vec8w;
-    int shipPosY;
-    int shipPosZ;
+    union {
+        struct {
+            float vec8w;
+            int shipPosY;
+            int shipPosZ;
+        };
+        Vector stationCameraAngles; // +0x14: pitch, yaw, roll in station mode
+    };
     AEGeometry *rootGeom;
     float rotationSpeed;
     AEGeometry *geom28;
@@ -72,6 +77,8 @@ public:
 };
 
 #if defined(__arm__) && !defined(__aarch64__)
+static_assert(offsetof(CutScene, stationCameraAngles) == 0x14,
+              "CutScene station camera angles offset");
 static_assert(offsetof(CutScene, renderAtTime) == 0x40, "CutScene time alignment");
 static_assert(offsetof(CutScene, prevTime) == 0x48, "CutScene previous time offset");
 static_assert(offsetof(CutScene, accum) == 0x50, "CutScene accumulator offset");

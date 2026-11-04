@@ -7,6 +7,7 @@
 #include "game/ship/Agent.h"
 #include "engine/audio/FModSound.h"
 #include "engine/render/PaintCanvas.h"
+#include "engine/render/AEGeometry.h"
 #include <new>
 #include "game/ui/ChoiceWindow.h"
 #include "game/core/CutScene.h"
@@ -2776,8 +2777,6 @@ void FModSound_enableReverb_oi(int sound);
 
 void FModSound_setDownPitch_oi(int sound);
 
-unsigned ModStation_oi_cameraHandle();
-void ModStation_oi_setCameraLocal(unsigned h, const Matrix &m);
 int GameText_getText_oiImpl(int id);
 void ChoiceWindow_set6_oiImpl(void *cw, int a, int b, int c, int d, int e, int f);
 void ChoiceWindow_set1_oiImpl(void *cw, int textStr);
@@ -2847,35 +2846,14 @@ void ModStation::OnInitialize() {
         if (showShop)
             (*row)[1]->setHalfTransparent(true);
 
-        int race;
-        Station *st = Globals::status->getStation();
-        if (st->getIndex() == 0x65) {
-            race = 8;
-        } else {
-            st = Globals::status->getStation();
-            if (st->getIndex() == 100) {
-                race = 7;
-            } else {
-                race = Globals::status->getSystem()->getRace();
-            }
-        }
-        {
-            const int *coord = modStationCameraCoordinates();
-            const float *yawTable = modStationCameraYaw();
-            float kx = VectorSignedToFloat(coord[race * 3 + 0], 0);
-            float ky = VectorSignedToFloat(coord[race * 3 + 1], 0);
-            float kz = VectorSignedToFloat(coord[race * 3 + 2], 0);
-            float pitch = kStationCameraPitch[race];
-            float yaw = yawTable[race];
-            this->camKeyX = kx;
-            this->camKeyY = ky;
-            this->camKeyZ = kz;
-            Matrix key;
-            AbyssEngine::AEMath::MatrixSetTranslation(key, kx, ky, kz);
-            AbyssEngine::AEMath::MatrixSetRotation(
-                key, pitch, yaw, 0.0f, AbyssEngine::AEMath::ROTATION_ORDER_YXZ);
-            ModStation_oi_setCameraLocal(ModStation_oi_cameraHandle(), key);
-        }
+        AbyssEngine::PaintCanvas *canvas = Globals::Canvas;
+        unsigned int camera = canvas->CameraGetCurrent();
+        const Matrix *current = static_cast<const Matrix *>(canvas->CameraGetLocal(camera));
+        AbyssEngine::AEMath::Vector lightDirection =
+            AbyssEngine::AEMath::MatrixGetDir(*current);
+        this->scrollTargetf = lightDirection.x - 0.2f;
+        this->field_0x120 = lightDirection.y - 0.3f;
+        this->field_0x124 = lightDirection.z;
         this->resetLight();
         if (this->dragFlags.bytes[1] != 0)
             this->enterStation();
@@ -2892,6 +2870,65 @@ void ModStation::OnInitialize() {
                     }
                 }
             }
+        }
+
+        int race;
+        Station *st = Globals::status->getStation();
+        if (st->getIndex() == 0x65) {
+            race = 8;
+        } else {
+            st = Globals::status->getStation();
+            race = st->getIndex() == 100 ? 7 : Globals::status->getSystem()->getRace();
+        }
+        // Android OnInitialize uses 0x1fdfb8 for both layouts; yaw still varies by iPad.
+        const int *coord = &kStationCameraCoordinatesPhone[0][0];
+        const float *yawTable = modStationCameraYaw();
+        float kx = static_cast<float>(coord[race * 3]);
+        float ky = static_cast<float>(coord[race * 3 + 1]);
+        float kz = static_cast<float>(coord[race * 3 + 2]);
+        float pitch = kStationCameraPitch[race];
+        float yaw = yawTable[race];
+        this->camKeyX = kx;
+        this->camKeyY = ky;
+        this->camKeyZ = kz;
+        if (this->easeX != nullptr)
+            static_cast<AbyssEngine::EaseInOut *>(this->easeX)->SetRange(kx, kx);
+        else
+            this->easeX = new AbyssEngine::EaseInOut(kx, kx);
+        if (this->easeY != nullptr)
+            static_cast<AbyssEngine::EaseInOut *>(this->easeY)->SetRange(ky, ky);
+        else
+            this->easeY = new AbyssEngine::EaseInOut(ky, ky);
+        if (this->easeZ != nullptr)
+            static_cast<AbyssEngine::EaseInOut *>(this->easeZ)->SetRange(kz, kz);
+        else
+            this->easeZ = new AbyssEngine::EaseInOut(kz, kz);
+
+        if (this->cutScene != nullptr) {
+            Matrix key;
+            AbyssEngine::AEMath::MatrixSetTranslation(key, kx, ky, kz);
+            AbyssEngine::AEMath::MatrixSetRotation(
+                key, pitch, yaw, -0.03f, AbyssEngine::AEMath::ROTATION_ORDER_YXZ);
+            canvas->CameraSetLocal(canvas->CameraGetCurrent(), key);
+            this->cutScene->vec8 = AbyssEngine::AEMath::Vector{kx, ky, kz};
+            this->cutScene->stationCameraAngles =
+                AbyssEngine::AEMath::Vector{pitch, yaw, -0.03f};
+            this->cutScene->rootGeom->setMatrix(key);
+
+            AbyssEngine::AERandom *random =
+                static_cast<AbyssEngine::AERandom *>(Globals::rnd);
+            this->field_0x12c.bytes[1] = random->nextInt(20) < 10;
+            this->field_0x12c.bytes[2] = random->nextInt(20) > 10;
+            this->field_0x12c.bytes[3] = random->nextInt(20) < 10;
+            int dx = random->nextInt(150);
+            if (this->field_0x12c.bytes[2] != 0) dx = -dx;
+            this->cutScene->vec8.x += static_cast<float>(dx);
+            int dy = random->nextInt(150);
+            if (this->field_0x12c.bytes[1] != 0) dy = -dy;
+            this->cutScene->vec8.y += static_cast<float>(dy);
+            int dz = random->nextInt(150);
+            if (this->field_0x12c.bytes[3] != 0) dz = -dz;
+            this->cutScene->vec8.z += static_cast<float>(dz);
         }
 
         if (this->modalFlags.bytes[1] == 0 && this->modalFlags.bytes[2] == 0 &&
