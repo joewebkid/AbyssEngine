@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**103 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+**96 unresolved symbols**, all referenced from `ModStation.cpp`. These are
 reconstruction helper names, not 108 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-no-routes-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-starter-ship-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +24,7 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → **103**.
+159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → **96**.
 
 REA then confirmed that this function reads `Globals::status` at
 offsets `0xf8`, `0x108`, and `0x114`, and invokes the existing
@@ -203,6 +203,24 @@ ARMv7 compiles 209/209 units. REA evidence:
 `ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
 The offer is not yet live-validated.
 
+The mission-1 starter ship path is recovered from Android ARM. The
+original clones ship template 0 with price `-1`, installs it through
+`Status::setShip`, sets race 8, creates items 90 and 81, marks both
+unsaleable, installs them in slots 0 and 1, then calls
+`CutScene::replacePlayerShip` with the new ship's index and variant 3.
+The previous code dereferenced a null placeholder and used seven
+unresolved helper names. Focused `OnInitialize` source-shape rises
+84.5% → **84.9%**; strict fuzzy remains **44.8%**. Windows native,
+ARM64 static, and ARMv7 209/209 builds pass; the strict ARM64 link
+falls 103 → **96** unresolved helpers. This path is not yet
+live-validated in a newly linked APK. The full ARM report
+(`_work/modstation_init_starter_ship_full_20261104.json`) compares
+4,323/4,524 originals in 4,770 pairs, with 96.75% / 86.75% mean
+source-shape/strict fuzzy, 2,780 linked-exact, 1,108 byte-exact,
+201 missing, and zero skipped. No comparison pairs or exact-match
+sets were lost. Original REA evidence:
+`ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
+
 The route warning in state 20 now follows the original Android ARM
 branch: `Globals::layout` byte `0x2ec` is clear, station is not 101,
 the ship has neither a jump drive nor 1 unit of cargo item 85, the
@@ -260,28 +278,21 @@ currently dereferences placeholder pointers initialized to null and omits the
 original's wanted-name text substitutions. REA original evidence:
 `ev_7e1aa9c7284245af140363313e649e4c93e2bd1306315edcf425f8785f24b1d3`.
 
-## `ModStation::OnInitialize()` — 20 unresolved
+## `ModStation::OnInitialize()` — 13 unresolved
 
 - `ChoiceWindow_set1_oiImpl(void*, int)`
 - `ChoiceWindow_set6_oiImpl(void*, int, int, int, int, int, int)`
 - `ChoiceWindow_setNotice_oi(void*, int)`
-- `CutScene_replacePlayerShip_oi(int, int)`
 - `GameText_getText_oi(int)`
 - `GameText_getText_oiImpl(int)`
-- `Item_makeItem_oi()`
-- `Item_setUnsaleable_oi(int)`
 - `ModStation_oi_cameraHandle()`
 - `ModStation_oi_setCameraLocal(unsigned int, AbyssEngine::AEMath::Matrix const&)`
 - `Ship_getIndex_oi()`
-- `Ship_makeShip_oi(int)`
-- `Ship_setEquipment_oi(Item*, int)`
 - `Ship_setPrice_oi(int)`
-- `Ship_setRace_oi(int)`
 - `SolarSystem_getRace_oi()`
 - `Station_getShips_oi()`
 - `Status_getStation_oi()`
 - `Status_getSystem_oi()`
-- `Status_setShip_oi(Ship*)`
 
 ## `ModStation::OnUpdate()` — 31 unresolved
 

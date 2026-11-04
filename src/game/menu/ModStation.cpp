@@ -2722,7 +2722,6 @@ static int **g_oi_status = 0;
 
 static int **g_oi_itemTable = 0;
 
-static int **g_oi_shipTable = 0;
 
 static int **g_oi_canvas = 0;
 
@@ -2750,25 +2749,19 @@ int Status_getLevel_oi();
 
 int Status_hardCoreMode_oi();
 
-void Status_setShip_oi(Ship * s);
 
 int Ship_getIndex_oi();
 
 
 
-void Ship_makeShip_oi(int desc);
 
-void Ship_setRace_oi(int race);
 
-void Ship_setEquipment_oi(Item *eq, int slot);
 
 void Ship_setPrice_oi(int shipPtr);
 
 void Ship_addCargo_oi(int ship, Item *it);
 
-int Item_makeItem_oi();
 
-void Item_setUnsaleable_oi(int flag);
 
 int Station_getShips_oi();
 
@@ -2779,7 +2772,6 @@ int GameText_getText_oi(int id);
 
 void ChoiceWindow_setNotice_oi(void *cw, int text);
 
-void CutScene_replacePlayerShip_oi(int cs, int shipIndex);
 
 void TouchButton_setHalfTransparent_oi(int flag);
 
@@ -2823,20 +2815,19 @@ void ModStation::OnInitialize() {
                 this->autosave();
         }
 
-        int *shipTbl = *(int **) g_oi_shipTable;
-
         if (Globals::status->getCurrentCampaignMission() == 1) {
-            Ship *ship = (Ship *) *shipTbl;
-            Ship_makeShip_oi((*(Array<int> *) (intptr_t) **g_oi_shipTable)[0]);
-            Status_setShip_oi(ship);
-            Ship_setRace_oi(Ship_getIndex_oi());
-            int eq = Item_makeItem_oi();
-            Item_setUnsaleable_oi(eq);
-            Ship_setEquipment_oi((Item *) *shipTbl, eq);
-            int eq2 = Item_makeItem_oi();
-            Ship_setEquipment_oi((Item *) *shipTbl, eq2);
-            Item_setUnsaleable_oi(eq2);
-            CutScene_replacePlayerShip_oi((int) (intptr_t) this->cutScene, Ship_getIndex_oi());
+            Array<Ship *> *shipTable = static_cast<Array<Ship *> *>(Globals::ships);
+            Globals::status->setShip((*shipTable)[0]->makeShip(-1));
+            Ship *ship = Globals::status->getShip();
+            ship->setRace(8);
+            Array<Item *> *itemTable = static_cast<Array<Item *> *>(Globals::items);
+            Item *firstItem = (*itemTable)[90]->makeItem();
+            firstItem->setUnsaleable(true);
+            ship->setEquipment(firstItem, 0);
+            Item *secondItem = (*itemTable)[81]->makeItem();
+            ship->setEquipment(secondItem, 1);
+            secondItem->setUnsaleable(true);
+            this->cutScene->replacePlayerShip(ship->getIndex(), 3);
         }
 
         auto *row = reinterpret_cast<Array<TouchButton *> *>(this->buttonRow);

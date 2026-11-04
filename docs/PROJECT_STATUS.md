@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnInitialize` starter ship).
+The original Android ARM path for campaign mission 1 clones ship
+template 0, sets race 8, installs unsaleable items 90 and 81 in
+equipment slots 0 and 1, and replaces the cutscene's player ship
+with variant 3. The recovered path now uses typed `Ship`, `Item`,
+`Status`, and `CutScene` calls instead of a null placeholder and
+unresolved wrappers. Strict ARM64 link gaps fall **103 → 96**.
+Windows native, ARM64 static, and ARMv7 **209/209** builds pass.
+Focused `OnInitialize` source-shape rises **84.5% → 84.9%** while
+strict fuzzy remains **44.8%**. This path has not been run in a
+newly linked APK. Full ARM coverage remains **4,323/4,524**
+originals in **4,770** pairs, with **96.75% / 86.75%** mean
+source-shape/strict fuzzy, **2,780 linked-exact**, **1,108 byte-exact**,
+201 missing, and zero skipped; no pair or exact-set losses. The next
+priority is the mission-77 ship price adjustment at station 100.
+See [link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnInitialize` route warning).
 The original Android ARM path checks `Layout` byte `0x2ec`, station
 101, jump drive, 1 unit of fuel item 85, the current system's routes,
