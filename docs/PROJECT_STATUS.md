@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnTouchEnd` inertia and campaign
+completion). Android ARM confirms that releasing a station drag adds the
+last horizontal movement to the camera angle, sets drag scale to 0.9,
+and starts inertia only above three pixels. The campaign completion
+branch now advances the mission, passes both ship index and race to
+the cutscene, pays the original reward, and removes the completed
+mission through typed methods. Strict ARM64 link gaps fall **39 → 35**
+with no new names. Windows native, ARM64 static and ARMv7 **209/209**
+builds pass. Focused `OnTouchEnd` source-shape rises **83.2% → 84.6%**;
+strict fuzzy changes **23.0% → 21.8%**, with no exact match. The full
+ARM corpus compares **4,323/4,524** originals in **4,770** pairs:
+mean source-shape **96.77%**, strict fuzzy **86.76%**, **2,780
+linked-exact**, **1,108 byte-exact**, 201 missing and zero skipped.
+No pair or exact-match member was lost. Live
+station drag and campaign completion remain unverified until a new
+APK links. Next priority: the remaining 35 `OnTouchEnd` helper names,
+especially the repeated reward and station transition branches. See
+[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnUpdate` touch scene).
 Android ARM shows that the late update path decays camera drag velocity,
 updates the cutscene camera angle, and moves or rotates the station

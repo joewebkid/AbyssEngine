@@ -1826,39 +1826,36 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                             return;
                         }
 
-                        if (Status_getCurrentCampaignMission_ote() != 0x94)
-                            Status_nextCampaignMission_ote(*status);
+                        if (Globals::status->getCurrentCampaignMission() != 0x94)
+                            Globals::status->nextCampaignMission(true);
 
-                        int cm = Status_getCurrentCampaignMission_ote();
+                        int cm = Globals::status->getCurrentCampaignMission();
                         unsigned d = (unsigned) (cm - 0x2c);
                         bool handled = false;
                         if (d < 0xf) {
-                            if ((1 << (d & 0xff) & 0x5830) != 0) {
-                                int cs = (int) (intptr_t) this->cutScene;
-                                Status_getShip_ote();
-                                int shipIndex = Ship_getIndex_ote();
-                                Ship *sh = (Ship *) Status_getShip_ote();
-                                Ship_getRace_ote(sh);
-                                CutScene_replacePlayerShip_ote(cs, shipIndex);
-                                {
-                                Mission_getReward_ote();
-                                int bonus = Mission_getBonus_ote();
-                                if ((unsigned) bonus >= 0)
-                                    Status_getCurrentCampaignMission_ote();
-                                Status_changeCredits_ote(*status);
-                                Status_removeMission_ote(*status);
-                                this->dialogueMission = 0;
-                                if ((int) (intptr_t) this->spaceLounge != 0)
-                                    SpaceLounge_refresh_ote();
+                            if (((1u << d) & 0x5830) != 0) {
+                                Ship *ship = Globals::status->getShip();
+                                this->cutScene->replacePlayerShip(ship->getIndex(), ship->getRace());
+                                unsigned credited = static_cast<unsigned>(this->dialogueMission->getReward()) +
+                                                    static_cast<unsigned>(this->dialogueMission->getBonus());
+                                if (credited >= 1000001u) {
+                                    unsigned step = static_cast<unsigned>(
+                                        Globals::status->getCurrentCampaignMission() - 55);
+                                    credited = step < 7 ? kNonCampaignRewardCredits[step] : 6666;
+                                }
+                                Globals::status->changeCredits(static_cast<int>(credited));
+                                Globals::status->removeMission(this->dialogueMission);
+                                this->dialogueMission = nullptr;
+                                if (this->spaceLounge != nullptr)
+                                    static_cast<SpaceLounge *>(this->spaceLounge)->refresh();
                                 this->modalFlags.bytes[1] = 0;
                                 this->checkHints();
-                            }
                                 return;
                             }
                             if (d == 1) {
-                                Status_removeMission_ote(*status);
-                                this->dialogueMission = 0;
-                                Status_setMission_ote(*status);
+                                Globals::status->removeMission(this->dialogueMission);
+                                this->dialogueMission = nullptr;
+                                Globals::status->setMission(static_cast<Mission *>(Mission::empty));
                                 this->selectedButton = 1;
                                 this->modalFlags.bytes[1] = 0;
 
@@ -2402,10 +2399,15 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
                     help->initHelpWindow(*Globals::gameText->getText(0x284));
 
                 if (this->newsTicker->OnTouchEnd(x, y) == 0) {
-                    float dx = VectorSignedToFloat(this->idleDeltaX, 0);
-                    float dy = VectorSignedToFloat(this->idleDeltaY, 0);
-                    this->camCoordX += dx * 0.01f;
-                    this->camCoordY += dy * 0.01f;
+                    const int lastMove = this->camScrollVel;
+                    const int magnitude = lastMove < 0 ? -lastMove : lastMove;
+                    const int angle = this->camAngle + lastMove;
+                    this->camDragScale = 0.9f;
+                    this->dragFlags.bytes[0] = 0;
+                    this->camAngle = angle;
+                    this->field_0xec = angle;
+                    this->camDragVelocity = magnitude > 3 ?
+                        static_cast<float>(lastMove) : 0.0f;
                 }
         }
     }

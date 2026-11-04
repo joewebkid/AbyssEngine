@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**39 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+**35 unresolved symbols**, all referenced from `ModStation.cpp`. These are
 reconstruction helper names, not 108 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-update-touch-scene-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-touchend-campaign-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +24,24 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → 88 → 83 → 70 → 59 → 41 → **39**.
+159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → 88 → 83 → 70 → 59 → 41 → 39 → **35**.
+
+REA Android ARM `ModStation::OnTouchEnd` evidence
+`ev_209fbd44797382bbddb290d593c3c6b7a8d876525f1b6a283ba2837fadb1f1ef`
+confirms the touch-release inertia handoff, campaign advance, replacement
+of the cutscene ship with its index and race, and the shared campaign
+reward path. The old code changed camera coordinates on touch release,
+discarded the race and reward, and called placeholder helpers. The
+restored path removes four unresolved helper names: **39 → 35**, with
+no new names. Focused `OnTouchEnd` source-shape rises **83.2% → 84.6%**;
+strict fuzzy changes **23.0% → 21.8%**. This is not an exact match,
+and live gameplay remains unverified until a newly linked APK runs.
+Full ARM report `_work/modstation_touchend_campaign_full_20261104.json`
+compares 4,323/4,524 originals in 4,770 pairs, with mean source-shape
+**96.77%**, strict fuzzy **86.76%**, 2,780 linked-exact and 1,108
+byte-exact matches, 201 missing and zero skipped. Pair and exact-match
+sets have no losses. Windows native, ARM64 static and ARMv7 209/209
+builds pass.
 
 The late `ModStation::OnUpdate` path in REA evidence
 `ev_71b291d89b3d7ddb28763bd8cbfcf89586bad2363a58ae69b981ac5589b66fe2`
@@ -443,7 +460,7 @@ verification; zero unresolved helper names is only a link property.
 The strict ARM64 link has no unresolved helper names from this function.
 Focused source-shape and live behavior remain separate validation tasks.
 
-## `ModStation::OnTouchEnd(int, int, void*)` — 39 unresolved
+## `ModStation::OnTouchEnd(int, int, void*)` — 35 unresolved
 
 - `Achievements_resetNewMedals_ote(void*)`
 - `Agent_getOffer_ote(Agent*)`
@@ -452,7 +469,6 @@ Focused source-shape and live behavior remain separate validation tasks.
 - `Agent_setOfferAccepted_ote(Agent*, int)`
 - `ChoiceWindow_setFee_frag(void*, int, int)`
 - `ChoiceWindow_setNotice_ote(int, int)`
-- `CutScene_replacePlayerShip_ote(int, int)`
 - `Galaxy_getStation_ote(int)`
 - `GameText_getText_ote(int)`
 - `HangarWindow_dtor_ote(HangarWindow*)`
@@ -461,8 +477,6 @@ Focused source-shape and live behavior remain separate validation tasks.
 - `Mission_getReward_ote()`
 - `RecordHandler_saveOptions_ote(RecordHandler*)`
 - `Ship_addCargo_ote(Item*)`
-- `Ship_getIndex_ote()`
-- `Ship_getRace_ote(Ship*)`
 - `Ship_makeShip_ote(int)`
 - `Ship_removeCargo_ote(int, int)`
 - `SpaceLounge_refresh_ote()`
@@ -480,7 +494,6 @@ Focused source-shape and live behavior remain separate validation tasks.
 - `Status_getCurrentCampaignMission_ote()`
 - `Status_getShip_ote()`
 - `Status_getStation_ote()`
-- `Status_nextCampaignMission_ote(int)`
 - `Status_removeMission_ote(int)`
 - `Status_setMission_ote(int)`
 - `Status_setStation_ote(Station*)`
