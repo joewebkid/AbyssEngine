@@ -336,14 +336,14 @@ int Status::getPassengers() { return passengers; }
 
 bool Status::isStorylineWanted(int index) { return (unsigned) index < 2; }
 
-int Status::missionFailed(bool docked, int64_t time) {
+Mission *Status::missionFailed(bool docked, int64_t time) {
     for (unsigned i = 0; i < missions->size(); i = i + 1) {
         Mission *cur = (*missions)[i];
         if (cur->hasFailed() != 0) {
             return 0;
         }
         if (cur != 0 && cur->getType() == 0xd && docked && this->field_0x111 != 0) {
-            return (int) (intptr_t) cur;
+            return cur;
         }
     }
     return 0;

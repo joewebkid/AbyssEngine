@@ -376,7 +376,7 @@ public:
 
     Wanted *getWantedInCurrentOrbit();
 
-    int missionFailed(bool docked, int64_t time);
+    Mission *missionFailed(bool docked, int64_t time);
 
     Mission *missionCompleted(bool atStation, bool docked, long long extra);
 

@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**59 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+**41 unresolved symbols**, all referenced from `ModStation.cpp`. These are
 reconstruction helper names, not 108 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-update-camera-window-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-update-missions-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +24,30 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → 88 → 83 → 70 → **59**.
+159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → 88 → 83 → 70 → 59 → **41**.
+
+REA Android ARM `ModStation::OnUpdate` evidence
+`ev_71b291d89b3d7ddb28763bd8cbfcf89586bad2363a58ae69b981ac5589b66fe2`
+confirms the mission-116 station bitmask and mission-148–151 dialogue
+transitions. The special dialogue uses text IDs 2716–2719, speaker
+texts 1516/1597, sounds 1561–1564, zero portrait data at BSS
+`0x217bf8`, and portrait arrays at `0x21562c`/`0x215640`. The old
+code had null text roots, invalid portrait pointers, missing status
+bits and truncated mission pointers. REA `Status::missionFailed`
+evidence `ev_9ba7febcbbbf5f45b523144cc88595161750b893fb23c1171003d3d23540eea3`
+confirms its `Mission*` return type. The current `removeMission`
+implementation deletes the mission, so `OnUpdate` now reads its type
+first. Eighteen guessed helpers were removed; strict link gaps fall
+**59 → 41** without new names. Focused `OnUpdate` source-shape changes
+**83.3% → 81.8%** and strict fuzzy **41.8% → 34.4%** as guessed
+branches are replaced with the original behavior. Full ARM report
+`_work/modstation_update_missions_full_20261104.json` compares
+4,323/4,524 originals in 4,770 pairs: mean source-shape **96.76%**,
+strict fuzzy **86.76%**, 2,780 linked-exact, 1,108 byte-exact,
+201 missing, zero skipped, and no lost pairs or exact-match members.
+Windows native, ARM64 static and ARMv7 209/209 builds pass. The two
+remaining `OnUpdate` names are in the late scene path; live behavior
+still needs a newly linked APK.
 
 REA Android ARM `ModStation::OnUpdate` evidence
 `ev_71b291d89b3d7ddb28763bd8cbfcf89586bad2363a58ae69b981ac5589b66fe2`
@@ -41,8 +64,9 @@ strict fuzzy **86.76%**, with 2,780 linked-exact, 1,108 byte-exact,
 201 missing, zero skipped and no pair or exact-set losses. Windows
 native, ARM64 static and ARMv7 209/209 builds pass. Camera movement
 and the notice still need live validation in a newly linked APK.
-The mission-result branch still has null placeholders and unverified
-method signatures; it accounts for the 20 remaining `OnUpdate` names.
+At that stage the mission-result branch still had null placeholders
+and 20 unresolved `OnUpdate` names; those paths were recovered in the
+next step above.
 
 REA decompilation of Android ARM `ModStation::checkHints`
 (`ev_725994ccb8c97a5ae0f408bb00cd8bde30e6fa31687fc965f53572c0a2d77590`)
@@ -397,28 +421,10 @@ substitutions have since been corrected as described above. Earlier REA evidence
 Its remaining source-shape and semantic differences still need
 verification; zero unresolved helper names is only a link property.
 
-## `ModStation::OnUpdate()` — 20 unresolved
+## `ModStation::OnUpdate()` — 2 unresolved
 
 - `AEGeometry_rotate_ou(void*, float, float, float)`
 - `Engine_setHangarLightIntensity_ou(float)`
-- `GameText_getText_ou(int)`
-- `Mission_ctor_ou(Mission*, int, int, int)`
-- `Mission_getStatusValue_ou()`
-- `Mission_getType_ou()`
-- `Mission_setCampaignMission_ou(void*)`
-- `Mission_setStatusValue_ou(int)`
-- `SolarSystem_getIndex_ou()`
-- `SpaceLounge_introFinished_ou()`
-- `SpaceLounge_setHangarUpdate_ou(void*)`
-- `Station_getIndex_ou(Station*)`
-- `Status_getCampaignMission_ou()`
-- `Status_getCurrentCampaignMission_ou()`
-- `Status_getStation_ou()`
-- `Status_getSystem_ou()`
-- `Status_missionCompleted_ou(int, int, long long)`
-- `Status_missionFailed_ou(int, int, int)`
-- `Status_removeMission_ou(int)`
-- `Status_setCurrentCampaignMission_ou(int)`
 
 ## `ModStation::OnTouchEnd(int, int, void*)` — 39 unresolved
 

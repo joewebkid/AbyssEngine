@@ -245,6 +245,9 @@ static bool g_stationEarlyMapHelpShown = false;
 static int g_stationPirateHangarFace[5] = {2, 0, 0, 0, 0};
 static int g_stationRewardFace[5] = {4, 2, 0, 2, 2};
 static int g_stationPirateLoungeFace[5] = {};
+// Android .data 0x21562c and 0x215640, selected by the mission-116 dialogue.
+static int g_stationSupernovaFace1[5] = {0, 6, 0, 7, 4};
+static int g_stationSupernovaFace3[5] = {2, 3, 1, 1, 4};
 
 void ModStation::OnKeyPress(long long key, long long) {
     if (this->stationActive == 0)
@@ -801,112 +804,12 @@ void ModStation::resetLight() {
 }
 
 
-static int *g_ou_stack = 0;
-
-static int **g_ou_sound = 0;
-
-static int **g_ou_layout = 0;
-
-static int **g_ou_achievements = 0;
-
-static char **g_ou_spaceLoungeFlag = 0;
-
-static int **g_ou_appData = 0;
-
-static int **g_ou_textRoot = 0;
-
-static int **g_ou_module = 0;
-
-
-
-int ApplicationManager_GetElapsedTimeMillis_ou();
-
-
-void ApplicationManager_SetCurrentApplicationModule_ou(int module);
-
-void FModSound_updateAll_ou(int sound);
-
-void FModSound_play_ou(int sound, int id, void *p, float vol);
-
-void FModSound_stop_ou(int sound);
-
-void FModSound_setParamValue_ou(int sound, int a, int b, float v);
-
-void Layout_update_ou(int layout);
-
-void Layout_formatCredits_ou(void *outStr);
-
-void Status_incPlayingTime_ou(long long delta);
-
-int Status_getCredits_ou();
-
-
-int Status_getCurrentCampaignMission_ou();
-
-void Status_nextCampaignMission_ou(int status);
-
-void Status_setCurrentCampaignMission_ou(int status);
-
-int Status_getStation_ou();
-
-int Station_getIndex_ou(Station * s);
-
-int Status_getSystem_ou();
-
-int SolarSystem_getIndex_ou();
-
-int Status_getCampaignMission_ou();
-
-int Status_missionCompleted_ou(int status, int a, long long b);
-
-int Status_missionFailed_ou(int status, int a, int b);
-
-void Status_removeMission_ou(int status);
-
-int Mission_getType_ou();
-
-int Mission_getStatusValue_ou();
-
-void Mission_setStatusValue_ou(int v);
-
-void Mission_ctor_ou(Mission *m, int a, int b, int c);
-
-void Mission_setCampaignMission_ou(void *mission);
-
-void Achievements_updateCredits_ou(void *ach, int credits);
-
-int Globals_getInAppPurchaseArrayIndex_ou(int globals, void *arr);
-
-void TouchButton_setText_ou(int btn);
-
-void ChoiceWindow_set_ou(int cw, int text, int flag);
-
-int GameText_getText_ou(int id);
-
-void CutScene_update_ou(int cs);
-
-void CutScene_ctor_ou(CutScene *cs, int kind);
-
-int CutScene_initialize_ou(CutScene * cs);
-
-
-int SpaceLounge_introFinished_ou();
-
-void SpaceLounge_ctor_ou(SpaceLounge * l);
-
-void SpaceLounge_init_ou(void *l);
-
-void SpaceLounge_setHangarUpdate_ou(void *l);
-
-int Radio_lastMessageShown_ou();
-
 void AEGeometry_rotate_ou(void *geom, float x, float y, float z);
 void Engine_setHangarLightIntensity_ou(float v);
 
 
 void ModStation::OnUpdate() {
-    int statusHandle = static_cast<int>(reinterpret_cast<intptr_t>(Globals::status));
-    int *status = &statusHandle;
+    Status *status = Globals::status;
     auto *manager = this->manager;
 
     int elapsed;
@@ -1121,109 +1024,93 @@ void ModStation::OnUpdate() {
         }
 
         bool special = false;
-        int intro = (this->subWindowFlags.bytes[1] != 0) ? SpaceLounge_introFinished_ou() : 0;
-        int completed = Status_missionCompleted_ou(*status, 1, (long long) intro);
-        Mission *m = (Mission *) completed;
-        int camp = Status_getCurrentCampaignMission_ou();
-        if (m == 0 && camp == 0x74) {
-            if (this->subWindowFlags.bytes[1] != 0 && SpaceLounge_introFinished_ou() != 0) {
-                Status_getSystem_ou();
-                if (SolarSystem_getIndex_ou() == 0x12) {
-                    Status_getCampaignMission_ou();
-                    int mask = Mission_getStatusValue_ou();
-                    Station *st = (Station *) Status_getStation_ou();
-                    int sidx = Station_getIndex_ou(st);
-                    special = true;
-                    if ((1 << ((sidx - 0x5a) & 0xff) & mask) == 0) {
-                        int v = Status_getCampaignMission_ou();
-                        Status_getCampaignMission_ou();
-                        Mission_getStatusValue_ou();
-                        Status_getStation_ou();
-                        Mission_setStatusValue_ou(v);
-                    }
+        const bool intro = this->subWindowFlags.bytes[1] != 0 &&
+            static_cast<SpaceLounge *>(this->spaceLounge)->introFinished();
+        Mission *completed = status->missionCompleted(true, intro, 0);
+
+        if (completed == nullptr && status->getCurrentCampaignMission() == 116 &&
+            this->subWindowFlags.bytes[1] != 0 &&
+            static_cast<SpaceLounge *>(this->spaceLounge)->introFinished() &&
+            status->getSystem()->getIndex() == 18) {
+            Mission *campaign = reinterpret_cast<Mission *>(status->getCampaignMission());
+            const int mask = campaign->getStatusValue();
+            const int stationIndex = status->getStation()->getIndex();
+            const unsigned shift = static_cast<unsigned>(stationIndex - 90);
+            const int bit = shift < 32 ? static_cast<int>(1u << shift) : 0;
+            if ((mask & bit) == 0) {
+                campaign->setStatusValue(mask | bit);
+                special = true;
+            }
+        }
+
+        const int campaignStep = status->getCurrentCampaignMission();
+        if (campaignStep >= 148 && campaignStep <= 151) {
+            const int stationIndex = status->getStation()->getIndex();
+            const int bit = stationIndex == 66 ? 2 :
+                            stationIndex == 55 ? 1 :
+                            stationIndex == 9 ? 4 : 0;
+            const bool introFinished = this->subWindowFlags.bytes[1] != 0 &&
+                static_cast<SpaceLounge *>(this->spaceLounge)->introFinished();
+            if (completed != nullptr && introFinished && campaignStep <= 150 &&
+                stationIndex == 96) {
+                status->setCurrentCampaignMission(151);
+                this->dialogueMission = completed;
+                this->dialogueWindow = new DialogueWindow();
+                this->dialogueWindow->set(completed, 1, 151);
+                this->modalFlags.bytes[1] = 1;
+                goto afterDialogue;
+            }
+            if (completed == nullptr && introFinished && campaignStep <= 150 &&
+                bit != 0) {
+                Mission *campaign = reinterpret_cast<Mission *>(status->getCampaignMission());
+                if ((campaign->getStatusValue() & bit) == 0) {
+                    campaign->setStatusValue(campaign->getStatusValue() | bit);
+                    const int dialogueStep = stationIndex == 66 ? 149 :
+                                             stationIndex == 9 ? 150 : 148;
+                    this->dialogueWindow = new DialogueWindow();
+                    Mission *noticeMission = new Mission(160, 0, -1);
+                    noticeMission->setCampaignMission(true);
+                    this->dialogueWindow->set(noticeMission, 1, dialogueStep);
+                    this->modalFlags.bytes[1] = 1;
+                    goto afterDialogue;
                 }
             }
         }
 
-        int campNow = Status_getCurrentCampaignMission_ou();
-        bool generic = campNow < 0x94 || Status_getCurrentCampaignMission_ou() > 0x97;
-        if (!generic) {
-            Station *st = (Station *) Status_getStation_ou();
-            int sidx = Station_getIndex_ou(st);
-            int bit = (sidx == 0x42) ? 2 : (sidx == 0x37) ? 1 : (sidx == 9) ? 4 : 0;
-            bool introOk = this->subWindowFlags.bytes[1] != 0 && SpaceLounge_introFinished_ou() != 0;
-            if (m == 0) {
-                if (introOk && 0x93 < Status_getCurrentCampaignMission_ou() &&
-                    Status_getCurrentCampaignMission_ou() < 0x97 &&
-                    (sidx == 9 || sidx == 0x37 || sidx == 0x42)) {
-                    Status_getCampaignMission_ou();
-                    if ((Mission_getStatusValue_ou() & bit) == 0) {
-                        int v = Status_getCampaignMission_ou();
-                        Status_getCampaignMission_ou();
-                        Mission_getStatusValue_ou();
-                        Mission_setStatusValue_ou(v);
-                        Status_getStation_ou();
-                        DialogueWindow *dw = new DialogueWindow();
-                        this->dialogueWindow = dw;
-                        Mission *nm = (Mission *) ::operator new(0x78);
-                        Mission_ctor_ou(nm, 0xa0, 0, -1);
-                        Mission_setCampaignMission_ou(nm);
-                        this->dialogueWindow->set(nm, 1, -1);
-                        this->modalFlags.bytes[1] = 1;
-                        goto afterDialogue;
-                    }
-                }
-                generic = true;
-            } else if (introOk && 0x93 < Status_getCurrentCampaignMission_ou() &&
-                       sidx == 0x60 && Status_getCurrentCampaignMission_ou() <= 0x96) {
-                Status_setCurrentCampaignMission_ou(*status);
-                DialogueWindow *dw = new DialogueWindow();
-                this->dialogueMission = m;
-                this->dialogueWindow = dw;
-                this->dialogueWindow->set(m, 1, -1);
-                this->modalFlags.bytes[1] = 1;
-                goto afterDialogue;
-            } else {
-                generic = true;
+        if (special) {
+            const int stationIndex = status->getStation()->getIndex();
+            const int slot = stationIndex == 94 ? 3 : stationIndex - 90;
+            Globals::sound->play(slot + 1561, nullptr, nullptr, 0.0f);
+            int *face = slot == 0 || slot == 2 ? g_stationPirateLoungeFace :
+                        slot == 1 ? g_stationSupernovaFace1 : g_stationSupernovaFace3;
+            const int speakerText = slot == 0 || slot == 2 ? 1597 : 1516;
+            this->dialogueWindow = new DialogueWindow(
+                Globals::gameText->getText(slot + 2716),
+                Globals::gameText->getText(speakerText), face);
+            this->modalFlags.bytes[1] = 1;
+        } else if (completed != nullptr) {
+            this->dialogueMission = completed;
+            this->dialogueWindow = new DialogueWindow(completed, nullptr, 1);
+            this->modalFlags.bytes[1] = 1;
+            if (completed->getType() == 13) {
+                status->field_0xf0 = 0;
+                status->field_0xf1 = 0;
+                this->autosave();
             }
-        }
-        if (generic) {
-            if (special) {
-                Station *st = (Station *) Status_getStation_ou();
-                int sidx = Station_getIndex_ou(st);
-                int slot = (sidx == 0x5e) ? 3 : (sidx - 0x5a);
-                Globals::sound->play(slot + 0x619, nullptr, nullptr, 0.0f);
-                int kind = (slot == 1) ? 0x39 : 0x3a;
-                if (slot == 0 || slot == 2) kind = 0;
-                DialogueWindow *dw = new DialogueWindow(
-                    (String *) (intptr_t) GameText_getText_ou(**g_ou_textRoot),
-                    (String *) (intptr_t) GameText_getText_ou(**g_ou_textRoot),
-                    (int *) (long) kind);
+            if (this->spaceLounge != nullptr)
+                static_cast<SpaceLounge *>(this->spaceLounge)->setHangarUpdate(true);
+        } else {
+            Mission *failed = status->missionFailed(true, 0);
+            if (failed != nullptr) {
+                this->dialogueWindow = new DialogueWindow(failed, nullptr, 2);
                 this->modalFlags.bytes[1] = 1;
-                this->dialogueWindow = dw;
-            } else if (m == 0) {
-                Mission *fm = (Mission *) Status_missionFailed_ou(*status, 1, 0);
-                if (fm != 0) {
-                    DialogueWindow *dw = new DialogueWindow(fm, (Level *) 0, 2);
-                    this->modalFlags.bytes[1] = 1;
-                    this->dialogueWindow = dw;
-                    Status_removeMission_ou(*status);
-                    if (Mission_getType_ou() == 0xd) {
-                        ((Status *) (intptr_t) *status)->field_0xf0 = 0;
-                        this->autosave();
-                    }
-                }
-            } else {
-                this->dialogueMission = m;
-                DialogueWindow *dw = new DialogueWindow(m, (Level *) 0, 1);
-                this->modalFlags.bytes[1] = 1;
-                this->dialogueWindow = dw;
-                if (Mission_getType_ou() == 0xd) {
-                    ((Status *) (intptr_t) *status)->field_0xf0 = 0;
+                const bool failedIsType13 = failed->getType() == 13;
+                status->removeMission(failed);
+                if (failedIsType13) {
+                    status->field_0xf0 = 0;
+                    status->field_0xf1 = 0;
                     this->autosave();
                 }
-                if (this->spaceLounge != 0)
-                    SpaceLounge_setHangarUpdate_ou(this->spaceLounge);
             }
         }
     afterDialogue:

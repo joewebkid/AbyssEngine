@@ -1,5 +1,27 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnUpdate` mission results).
+Android ARM confirms the mission-116 station bitmask, the mission
+148–151 dialogue transitions, mission success/failure handling, and the
+special station dialogue texts, sounds and portrait data. These paths
+now use typed `Status`/`Mission` methods and the original portrait
+tables. `Status::missionFailed` now returns the original `Mission*`
+instead of a truncated `int` on ARM64; the failed mission's type is
+captured before `removeMission` destroys it. Strict ARM64 link gaps
+fall **59 → 41** with no new names. Windows native, ARM64 static and
+ARMv7 **209/209** builds pass. Focused `OnUpdate` source-shape changes
+**83.3% → 81.8%**, strict fuzzy **41.8% → 34.4%** after replacing
+guessed calls and branches with the ARM-confirmed behavior; neither
+metric is an exact match. `Status::missionFailed` remains **99.4%**
+source-shape and **96.8%** strict fuzzy. Full ARM coverage remains
+**4,323/4,524** originals in **4,770** pairs, mean source-shape
+**96.76%**, strict fuzzy **86.76%**, **2,780 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped and no lost pair or
+exact-match members. Live mission/dialogue behavior remains unverified
+until a new APK links. Next priority: the two remaining `OnUpdate`
+helpers in the late scene path, then `OnTouchEnd` (39). See
+[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnUpdate` camera and window routing).
 Android ARM confirms that the free station camera advances three
 `EaseInOut` values, reverses direction at their range ends, chooses new
