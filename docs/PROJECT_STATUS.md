@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnInitialize` route warning).
+The original Android ARM path checks `Layout` byte `0x2ec`, station
+101, jump drive, 1 unit of fuel item 85, the current system's routes,
+and campaign mission 17 or later before showing text 335. The
+recovered path now uses typed objects and no longer dereferences a
+null placeholder. Strict ARM64 link gaps fall **108 → 103**. Windows
+native, ARM64 static, and ARMv7 **209/209** builds pass. Focused
+`OnInitialize` source-shape rises **84.2% → 84.5%**; strict fuzzy
+changes **45.0% → 44.8%**. This warning has not been live-validated
+in a newly linked APK. Full ARM coverage remains **4,323/4,524**
+originals in **4,770** pairs, with **96.75% / 86.75%** mean
+source-shape/strict fuzzy, **2,780 linked-exact**, **1,108 byte-exact**,
+201 missing, and zero skipped. No comparison pairs or exact-match
+sets were lost. Next priority: the mission-1 starter ship and equipment
+path, which still calls unresolved wrappers. See
+[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnInitialize` reward dialogue).
 The original Android `.data` at `0x2156A4` contains the five-part
 portrait descriptor `{4, 2, 0, 2, 2}`. Reward station 108 in state 1

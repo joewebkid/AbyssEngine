@@ -100,12 +100,6 @@ struct HintRecord {
     char flags[0x40];         // byte flags indexed by hint id (0x1a,0x1b,0x33..0x36,0x34,0x3a,...)
 };
 
-// Record reached via **g_oi_textRoot; only the +0x2ec "no-routes hint shown" flag is read.
-struct TextRootRecord {
-    char pad000[0x2ec];       // 0x000
-    char noRoutesHintShown;   // 0x2ec
-};
-
 // Settings block: per-message "already shown" flag bytes.
 struct SettingsBlock {
     char pad00[0x2b];         // 0x00
@@ -116,7 +110,7 @@ struct SettingsBlock {
 };
 
 #if __SIZEOF_POINTER__ == 4
-static_assert(offsetof(TextRootRecord, noRoutesHintShown) == 0x2ec, "");
+static_assert(offsetof(Layout, rewardMessageActive) == 0x2ec, "");
 static_assert(offsetof(SettingsBlock, wantedActivatedShown) == 0x2b, "");
 static_assert(offsetof(SettingsBlock, gameWonShown) == 0x38, "");
 static_assert(offsetof(SettingsBlock, dlc1WonShown) == 0x39, "");
@@ -2749,7 +2743,6 @@ int Status_getSystem_oi();
 
 int SolarSystem_getRace_oi();
 
-int SolarSystem_getRoutes_oi();
 
 int Status_getShip_oi();
 
@@ -2761,9 +2754,7 @@ void Status_setShip_oi(Ship * s);
 
 int Ship_getIndex_oi();
 
-int Ship_hasJumpDrive_oi();
 
-int Ship_hasCargo_oi(int ship, int item);
 
 void Ship_makeShip_oi(int desc);
 
@@ -2785,7 +2776,6 @@ int Standing_getStanding_oi(int standing);
 
 int GameText_getText_oi(int id);
 
-void ChoiceWindow_set_oi(void *cw, int text, int flag);
 
 void ChoiceWindow_setNotice_oi(void *cw, int text);
 
@@ -2923,17 +2913,17 @@ void ModStation::OnInitialize() {
 
         if (this->modalFlags.bytes[1] == 0 && this->modalFlags.bytes[2] == 0 &&
             this->m_nStarMapWindowOpen.bytes[3] == 0 &&
-            ((TextRootRecord *) (intptr_t) **g_oi_textRoot)->noRoutesHintShown == 0) {
+            Globals::layout->rewardMessageActive == 0) {
             Station *st2 = Globals::status->getStation();
             if (st2->getIndex() != 0x65) {
-                Status_getShip_oi();
-                int hasJump = Ship_hasJumpDrive_oi();
-                int hasFuel = Ship_hasCargo_oi(Status_getShip_oi(), 0x55);
-                Status_getSystem_oi();
-                int routes = SolarSystem_getRoutes_oi();
+                Ship *ship = Globals::status->getShip();
+                bool hasJump = ship->hasJumpDrive() != 0;
+                bool hasFuel = Globals::status->getShip()->hasCargo(85, 1);
+                uint32_t *routes = Globals::status->getSystem()->getRoutes();
                 if (routes == 0 && hasJump == 0 && hasFuel == 0 &&
                     0x10 < Globals::status->getCurrentCampaignMission()) {
-                    ChoiceWindow_set_oi(this->choiceWindow, GameText_getText_oi(**g_oi_textRoot), 1);
+                    static_cast<ChoiceWindow *>(this->choiceWindow)->set(
+                        *Globals::gameText->getText(335), true);
                     this->screenFlags.bytes[1] = 1;
                     this->m_nStarMapWindowOpen.bytes[3] = 1;
                 }
