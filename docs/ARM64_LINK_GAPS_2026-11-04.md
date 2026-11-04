@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**88 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+**83 unresolved symbols**, all referenced from `ModStation.cpp`. These are
 reconstruction helper names, not 108 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-station-camera-final-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-station-notices-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +24,7 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → **88**.
+159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → 88 → **83**.
 
 REA then confirmed that this function reads `Globals::status` at
 offsets `0xf8`, `0x108`, and `0x114`, and invokes the existing
@@ -42,10 +42,9 @@ preceding report. Windows native and ARM64 static builds pass; ARMv7
 compiles 209/209 units. REA evidence:
 `ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
 
-The two remaining `g_oi_status` reads in victory-notice checks must
-not be mapped blindly to `Status` bytes `0x35` and `0x37`: the original
-REA pseudocode references distinct global flag words in those checks.
-Their ownership and the associated notice state remain unverified.
+The two `g_oi_status` reads in victory-notice checks were unresolved
+at this checkpoint. The newer notice recovery below maps the original
+flags to `Globals::options[0x35]` and `[0x37]` using ELF symbols.
 
 REA also confirms six existing `Status` methods in this function:
 `inAlienOrbit`, `inSupernovaSystem`, `inBlackMarketSystem`, `gameWon`,
@@ -203,6 +202,28 @@ ARMv7 compiles 209/209 units. REA evidence:
 `ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
 The offer is not yet live-validated.
 
+The remaining state-40 notices now use the original global arrays.
+ELF symbols place `Globals::options` at `0x2181E8` and the 59-byte
+`Globals::hints` at `0x21824C`. Thus `dword_21821D` bytes 0/2 map to
+options indices `0x35`/`0x37`, `byte_218277` maps to hint `0x2b`,
+and `word_218284` bytes 0/1 map to hints `0x38`/`0x39`. Text IDs
+613, 110, 111, 3230, and 3231 are restored; the last text substitutes
+the wanted count for `#N`. `Globals::enterSpaceLounge` replaces the
+remaining null demo-flag placeholder. The pirate-base path sets
+`alarmFlags.bytes[1]` as in Android ARM and no longer invents a
+six-text ChoiceWindow. These replacements remove all five remaining
+`OnInitialize` unresolved helper names: strict ARM64 link gaps fall
+88 → **83**. Focused source-shape rises 89.9% → **91.7%** and strict
+fuzzy 39.5% → **43.0%**. Windows native, ARM64 static, and ARMv7
+209/209 builds pass. The wider pirate-base control flow and notices
+still require live validation in a newly linked APK. REA evidence:
+`ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
+The full ARM report (`_work/modstation_init_notices_full_20261104.json`)
+compares 4,323/4,524 originals in 4,770 pairs, with 96.75% /
+86.75% mean source-shape/strict fuzzy, 2,780 linked-exact,
+1,108 byte-exact, 201 missing, and zero skipped. No comparison
+pairs or exact-match sets were lost against the camera report.
+
 The state-20 station camera entry is now recovered from Android ARM.
 Before resetting the light, it reads the current camera matrix's
 direction and subtracts 0.2 from X and 0.3 from Y. After the
@@ -333,13 +354,10 @@ currently dereferences placeholder pointers initialized to null and omits the
 original's wanted-name text substitutions. REA original evidence:
 `ev_7e1aa9c7284245af140363313e649e4c93e2bd1306315edcf425f8785f24b1d3`.
 
-## `ModStation::OnInitialize()` — 5 unresolved
+## `ModStation::OnInitialize()` — 0 unresolved
 
-- `ChoiceWindow_set1_oiImpl(void*, int)`
-- `ChoiceWindow_set6_oiImpl(void*, int, int, int, int, int, int)`
-- `ChoiceWindow_setNotice_oi(void*, int)`
-- `GameText_getText_oi(int)`
-- `GameText_getText_oiImpl(int)`
+Its remaining source-shape and semantic differences still need
+verification; zero unresolved helper names is only a link property.
 
 ## `ModStation::OnUpdate()` — 31 unresolved
 

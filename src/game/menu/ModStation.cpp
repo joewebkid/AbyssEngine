@@ -101,20 +101,8 @@ struct HintRecord {
     char flags[0x40];         // byte flags indexed by hint id (0x1a,0x1b,0x33..0x36,0x34,0x3a,...)
 };
 
-// Settings block: per-message "already shown" flag bytes.
-struct SettingsBlock {
-    char pad00[0x2b];         // 0x00
-    char wantedActivatedShown; // 0x2b
-    char pad2c[0x38 - 0x2c];  // 0x2c
-    char gameWonShown;        // 0x38
-    char dlc1WonShown;        // 0x39
-};
-
 #if __SIZEOF_POINTER__ == 4
 static_assert(offsetof(Layout, rewardMessageActive) == 0x2ec, "");
-static_assert(offsetof(SettingsBlock, wantedActivatedShown) == 0x2b, "");
-static_assert(offsetof(SettingsBlock, gameWonShown) == 0x38, "");
-static_assert(offsetof(SettingsBlock, dlc1WonShown) == 0x39, "");
 #endif
 
 
@@ -2717,21 +2705,7 @@ void ModStation::OnRender2D() {
 }
 
 
-static int *g_oi_stack = 0;
-
-static int **g_oi_status = 0;
-
-static int **g_oi_itemTable = 0;
-
-
-static int **g_oi_canvas = 0;
-
-static int **g_oi_settings = 0;
-
-
-static int **g_oi_textRoot = 0;
-
-static char **g_oi_demoFlag = 0;
+// Station-entry state is held by Globals::hints and Globals::options.
 
 
 
@@ -2761,10 +2735,8 @@ void Ship_addCargo_oi(int ship, Item *it);
 
 int Standing_getStanding_oi(int standing);
 
-int GameText_getText_oi(int id);
 
 
-void ChoiceWindow_setNotice_oi(void *cw, int text);
 
 
 void TouchButton_setHalfTransparent_oi(int flag);
@@ -2777,9 +2749,6 @@ void FModSound_enableReverb_oi(int sound);
 
 void FModSound_setDownPitch_oi(int sound);
 
-int GameText_getText_oiImpl(int id);
-void ChoiceWindow_set6_oiImpl(void *cw, int a, int b, int c, int d, int e, int f);
-void ChoiceWindow_set1_oiImpl(void *cw, int textStr);
 
 void ModStation::OnInitialize() {
     this->dialogueMission = 0;
@@ -2983,7 +2952,7 @@ void ModStation::OnInitialize() {
         }
         if (Globals::status->inSupernovaSystem() != 0)
             this->alarmFlags.bytes[0] = 1;
-        if (**g_oi_demoFlag != 0)
+        if (Globals::enterSpaceLounge != 0)
             this->alarmFlags.halfword = 0x101;
 
         if (this->cameraFlags.bytes[0] == 0) {
@@ -2996,14 +2965,7 @@ void ModStation::OnInitialize() {
                 else {
                     Station *pirateBaseStation = Globals::status->getStation();
                     if (pirateBaseStation->stationHasPirateBase() != 0) {
-                        if (this->dialogueWindow == 0) {
-                            void *cw = this->choiceWindow;
-                            ChoiceWindow_set6_oiImpl(cw,
-                                                     GameText_getText_oiImpl(0x3e), GameText_getText_oiImpl(0x49),
-                                                     GameText_getText_oiImpl(0x7e), GameText_getText_oiImpl(0x7f),
-                                                     GameText_getText_oiImpl(0x20c), GameText_getText_oiImpl(0x20d));
-                            this->screenFlags.bytes[1] = 1;
-                        }
+                        this->alarmFlags.bytes[1] = 1;
                         goto afterGate;
                     }
                     gate = true;
@@ -3231,37 +3193,34 @@ void ModStation::OnInitialize() {
             }
         }
 
-        SettingsBlock *settings = (SettingsBlock *) (intptr_t) *(int *) g_oi_settings;
-        int rec = *(int *) g_oi_textRoot;
-        (void) rec;
-        if (Globals::status->getCurrentCampaignMission() == 0xa2 && (unsigned char) settings->wantedActivatedShown == 0) {
-            ChoiceWindow_setNotice_oi(this->choiceWindow, GameText_getText_oi(**g_oi_textRoot));
+        ChoiceWindow *choice = static_cast<ChoiceWindow *>(this->choiceWindow);
+        if (Globals::status->getCurrentCampaignMission() == 0xa2 &&
+            Globals::hints[0x2b] == 0) {
+            choice->set(*Globals::gameText->getText(613));
             this->m_nStarMapWindowOpen.bytes[3] = 1;
-            settings->wantedActivatedShown = 1;
+            Globals::hints[0x2b] = 1;
         }
-        SettingsBlock *settings2 = (SettingsBlock *) (intptr_t) *(int *) g_oi_settings;
-        if (Globals::status->gameWon() != 0 && ((Status *) (intptr_t) *(int *) g_oi_status)->byte_0x35 == 0 &&
-            settings->gameWonShown == 0) {
-            ChoiceWindow_setNotice_oi(this->choiceWindow, GameText_getText_oi(**g_oi_textRoot));
+        if (Globals::status->gameWon() != 0 && Globals::options[0x35] == 0 &&
+            Globals::hints[0x38] == 0) {
+            choice->set(*Globals::gameText->getText(110));
             this->m_nStarMapWindowOpen.bytes[3] = 1;
-            settings->gameWonShown = 1;
+            Globals::hints[0x38] = 1;
         }
-        if (Globals::status->dlc1Won() != 0 && ((Status *) (intptr_t) *(int *) g_oi_status)->byte_0x37 == 0 &&
-            settings->dlc1WonShown == 0) {
-            ChoiceWindow_setNotice_oi(this->choiceWindow, GameText_getText_oi(**g_oi_textRoot));
+        if (Globals::status->dlc1Won() != 0 && Globals::options[0x37] == 0 &&
+            Globals::hints[0x39] == 0) {
+            choice->set(*Globals::gameText->getText(111));
             this->m_nStarMapWindowOpen.bytes[3] = 1;
-            settings->dlc1WonShown = 1;
+            Globals::hints[0x39] = 1;
         }
-        (void) settings2;
 
         int wanted = Globals::status->activateNewWanted();
         if (wanted > 0 && this->m_nStarMapWindowOpen.bytes[3] == 0) {
             if (wanted == 1)
-                ChoiceWindow_setNotice_oi(this->choiceWindow, GameText_getText_oi(**g_oi_textRoot));
-            else {
-                ChoiceWindow_set1_oiImpl(this->choiceWindow, GameText_getText_oiImpl(0x2c5));
-                this->screenFlags.bytes[1] = 1;
-            }
+                choice->set(*Globals::gameText->getText(3230));
+            else
+                choice->set(Globals::status->replaceHash(
+                    String(*Globals::gameText->getText(3231), false),
+                    String(wanted), String("#N")));
             this->m_nStarMapWindowOpen.bytes[3] = 1;
         }
         next = 0x14;
