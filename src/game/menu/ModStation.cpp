@@ -2736,7 +2736,6 @@ static char **g_oi_demoFlag = 0;
 
 
 
-int Status_getStation_oi();
 
 int Status_getSystem_oi();
 
@@ -2750,20 +2749,17 @@ int Status_getLevel_oi();
 int Status_hardCoreMode_oi();
 
 
-int Ship_getIndex_oi();
 
 
 
 
 
 
-void Ship_setPrice_oi(int shipPtr);
 
 void Ship_addCargo_oi(int ship, Item *it);
 
 
 
-int Station_getShips_oi();
 
 int Standing_getStanding_oi(int standing);
 
@@ -2891,12 +2887,12 @@ void ModStation::OnInitialize() {
         if (Globals::status->getCurrentCampaignMission() == 0x4d) {
             Station *st2 = Globals::status->getStation();
             if (st2->getIndex() == 100) {
-                Status_getStation_oi();
-                Array<Ship *> *ships = (Array<Ship *> *) (intptr_t) Station_getShips_oi();
+                Array<Ship *> *ships = Globals::status->getStation()->getShips();
                 if (ships != 0) {
                     for (unsigned i = 0; i < ships->size(); i = i + 1) {
-                        if (Ship_getIndex_oi() == 0x25)
-                            Ship_setPrice_oi((int) (intptr_t) (*ships)[i]);
+                        Ship *ship = (*ships)[i];
+                        if (ship->getIndex() == 0x25)
+                            ship->setPrice(0);
                     }
                 }
             }

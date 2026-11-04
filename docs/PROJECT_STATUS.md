@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnInitialize` ship price).
+The original Android ARM path for campaign mission 77 at station 100
+sets the price of each ship with index 37 to zero. This branch now
+reads the station's ship list and calls typed `Ship` methods. Strict
+ARM64 link gaps fall **96 → 92**. Windows native, ARM64 static, and
+ARMv7 **209/209** builds pass. Focused `OnInitialize` source-shape
+rises **84.9% → 85.0%**; strict fuzzy remains **44.8%**. This path
+has not been live-validated in a newly linked APK. Full ARM coverage
+remains **4,323/4,524** originals in **4,770** pairs, with **96.75% /
+86.75%** mean source-shape/strict fuzzy, **2,780 linked-exact**,
+**1,108 byte-exact**, 201 missing, and zero skipped; no pair or
+exact-set losses. Next priority: the system race and camera setup.
+See
+[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnInitialize` starter ship).
 The original Android ARM path for campaign mission 1 clones ship
 template 0, sets race 8, installs unsaleable items 90 and 81 in
