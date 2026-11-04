@@ -1,5 +1,26 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnTouchEnd` choice-window and
+departure flows). Android ARM confirms the choice result branches,
+the flags at offsets `0xb2`/`0xdc`, mission-24 agent update,
+mission-48 destination, station penalties, and the 25,000 and
+30,000,000-credit flows. The source now uses typed game methods and
+removes the truncated ARM64 `Status*` conversion. Strict ARM64
+`--whole-archive --no-undefined` linking now passes: **22 → 13 → 0**
+unresolved helper names. The resulting ELF64/AArch64 library retains
+all **53 JNI** entry points. Windows native, ARM64 static and ARMv7
+**209/209** builds pass. Focused `OnTouchEnd` source-shape rises
+**88.8% → 96.1%**; strict fuzzy changes **29.2% → 25.5%**, with no
+exact match. The full ARM corpus compares **4,323/4,524** originals
+in **4,770** pairs, mean source-shape **96.77%**, strict fuzzy
+**86.76%**, **2,780 linked-exact** and **1,108 byte-exact** matches,
+201 missing and zero skipped. No pair or exact-match member was lost.
+A clone test APK was built and its signature and embedded
+library were verified; it has not been installed or run. Live station
+and choice behavior remains unverified. Next priority: launch this
+APK when a test device is free, then inspect any runtime failure.
+See [link and APK evidence](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnTouchEnd` campaign switch).
 The original Android ARM switch confirms distinct exits for selected
 campaign missions, station-100 ship and cargo awards, ship-stat reset,

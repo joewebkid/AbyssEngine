@@ -1,12 +1,14 @@
 # ARM64 shared-library link gaps (2026-11-04)
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
-against the project libzip/crypto archives and Android system libraries reports
-**22 unresolved symbols**, all referenced from `ModStation.cpp`. These are
-reconstruction helper names, not 108 proven absent symbols in the original ARM
-library. Many can map to existing C++ methods; each mapping needs source and ABI
-confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-touchend-switch-20261104.log` (outside Git).
+against the project libzip/crypto archives and Android system libraries now
+reports **zero unresolved symbols**. The former names were
+reconstruction helpers, not proof that the original ARM library lacked
+those functions. Their replacements were tied to the original code and
+checked against the source and ABI. The raw linker evidence is
+`D:/gof2-arm64-crypto/startup-link-touchend-choice-fullpath-20261104.log`
+(outside Git). The resulting ELF64/AArch64 shared library retains all
+53 JNI entry points. Link success does not prove runtime behavior.
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +26,31 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → 88 → 83 → 70 → 59 → 41 → 39 → 35 → 34 → **22**.
+159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → 88 → 83 → 70 → 59 → 41 → 39 → 35 → 34 → 22 → 13 → **0**.
+
+REA Android ARM `OnTouchEnd` at `0xd7c42`–`0xd850e` confirms the
+choice-window result paths, the pending-departure flag at offset `0xb2`,
+the rating flag at `0xdc`, the mission-24 agent change, mission-48
+destination, station penalty payment and the 25,000/30,000,000-credit
+flows. The recovered code replaces the remaining null-root helper
+calls with typed methods, corrects the flag offsets and fee source,
+and removes the lossy ARM64 `Status*` to `int` conversion. This lowers
+strict link gaps **22 → 13 → 0** with no new names. Focused
+`OnTouchEnd` source-shape rises **88.8% → 90.0% → 96.1%**; strict
+fuzzy changes **29.2% → 26.8% → 25.5%**. The function is still not
+exact. The signed clone test APK is
+`D:/gof2-arm64-crypto/gof2-arm64-main-touchend-final-debug-20261104.apk`
+(SHA-256 `a19db87f4988290521935413bc078e0f72bd3b37f0609a87b06e7ad2d0a9da1a`).
+Its v1/v2/v3 signatures and embedded ARM64 library hash were verified;
+it has not been installed or launched.
+Unused `_ote` declarations and null-root globals were then removed;
+the final ELF still links with zero unresolved names and keeps the
+53 JNI exports. Full ARM report `_work/modstation_touchend_final_full_20261104.json`
+compares 4,323/4,524 originals in 4,770 pairs: mean source-shape
+**96.77%**, strict fuzzy **86.76%**, 2,780 linked-exact and 1,108
+byte-exact matches, 201 missing and zero skipped. Pair and exact-match
+sets have no losses. Windows native, ARM64 static and ARMv7 209/209
+builds pass.
 
 The original `OnTouchEnd` campaign switch at `0xd81b8`–`0xd8862`
 routes missions 44, 45, 75/83, 18 and 9 to distinct exits, gives
@@ -494,30 +520,10 @@ verification; zero unresolved helper names is only a link property.
 The strict ARM64 link has no unresolved helper names from this function.
 Focused source-shape and live behavior remain separate validation tasks.
 
-## `ModStation::OnTouchEnd(int, int, void*)` — 22 unresolved
+## `ModStation::OnTouchEnd(int, int, void*)` — 0 unresolved
 
-- `Achievements_resetNewMedals_ote(void*)`
-- `Agent_getOffer_ote(Agent*)`
-- `Agent_getSellItemIndex_ote(Agent*)`
-- `Agent_setEvent_ote(Agent*, int)`
-- `Agent_setOfferAccepted_ote(Agent*, int)`
-- `ChoiceWindow_setFee_frag(void*, int, int)`
-- `ChoiceWindow_setNotice_ote(int, int)`
-- `Galaxy_getStation_ote(int)`
-- `GameText_getText_ote(int)`
-- `RecordHandler_saveOptions_ote(RecordHandler*)`
-- `Ship_removeCargo_ote(int, int)`
-- `Station_getAgents_ote(Station*)`
-- `Station_getIndex_ote(Station*)`
-- `Station_setAttackedFriends_ote(Station*, int)`
-- `Station_setItems_ote(Station*, void*, int)`
-- `Status_changeCredits_ote(int)`
-- `Status_departStation_ote(Station*)`
-- `Status_getCredits_ote()`
-- `Status_getCurrentCampaignMission_ote()`
-- `Status_getShip_ote()`
-- `Status_getStation_ote()`
-- `Status_setStation_ote(Station*)`
+All former helper references in this function are resolved. Focused
+source-shape and live behavior remain separate validation tasks.
 
 ## `ModStation::checkHints()` — closed
 
