@@ -2740,11 +2740,7 @@ static char **g_oi_demoFlag = 0;
 
 
 
-int Status_getCurrentCampaignMission_oi();
-
 int Status_getStation_oi();
-
-int Station_getIndex_oi(Station * s);
 
 int Status_getSystem_oi();
 
@@ -2892,9 +2888,9 @@ void ModStation::OnInitialize() {
         if (this->cameraFlags.bytes[1] == 0 && this->cameraFlags.bytes[0] == 0 &&
             this->dragFlags.bytes[1] != 0) {
             bool skip = false;
-            if (Status_getCurrentCampaignMission_oi() == 0x4d) {
+            if (Globals::status->getCurrentCampaignMission() == 0x4d) {
                 Station *st = (Station *) Status_getStation_oi();
-                if (Station_getIndex_oi(st) == 0x65)
+                if (st->getIndex() == 0x65)
                     skip = true;
             }
             if (!skip)
@@ -2903,7 +2899,7 @@ void ModStation::OnInitialize() {
 
         int *shipTbl = *(int **) g_oi_shipTable;
 
-        if (Status_getCurrentCampaignMission_oi() == 1) {
+        if (Globals::status->getCurrentCampaignMission() == 1) {
             Ship *ship = (Ship *) *shipTbl;
             Ship_makeShip_oi((*(Array<int> *) (intptr_t) **g_oi_shipTable)[0]);
             Status_setShip_oi(ship);
@@ -2918,7 +2914,7 @@ void ModStation::OnInitialize() {
         }
 
         auto *row = reinterpret_cast<Array<TouchButton *> *>(this->buttonRow);
-        int camp = Status_getCurrentCampaignMission_oi();
+        int camp = Globals::status->getCurrentCampaignMission();
         bool special = false;
         if (camp < 5) {
             (*row)[0]->setHalfTransparent(true);
@@ -2932,10 +2928,10 @@ void ModStation::OnInitialize() {
         bool showShop = camp < 0xc || special;
         if (!showShop) {
             Station *st = (Station *) Status_getStation_oi();
-            if (Station_getIndex_oi(st) == 100) showShop = true;
+            if (st->getIndex() == 100) showShop = true;
             else {
                 st = (Station *) Status_getStation_oi();
-                if (Station_getIndex_oi(st) == 0x65) showShop = true;
+                if (st->getIndex() == 0x65) showShop = true;
             }
         }
         if (showShop)
@@ -2943,11 +2939,11 @@ void ModStation::OnInitialize() {
 
         int race;
         Station *st = (Station *) Status_getStation_oi();
-        if (Station_getIndex_oi(st) == 0x65) {
+        if (st->getIndex() == 0x65) {
             race = 8;
         } else {
             st = (Station *) Status_getStation_oi();
-            if (Station_getIndex_oi(st) == 100) {
+            if (st->getIndex() == 100) {
                 race = 7;
             } else {
                 Status_getSystem_oi();
@@ -2975,9 +2971,9 @@ void ModStation::OnInitialize() {
         if (this->dragFlags.bytes[1] != 0)
             this->enterStation();
 
-        if (Status_getCurrentCampaignMission_oi() == 0x4d) {
+        if (Globals::status->getCurrentCampaignMission() == 0x4d) {
             Station *st2 = (Station *) Status_getStation_oi();
-            if (Station_getIndex_oi(st2) == 100) {
+            if (st2->getIndex() == 100) {
                 Status_getStation_oi();
                 Array<Ship *> *ships = (Array<Ship *> *) (intptr_t) Station_getShips_oi();
                 if (ships != 0) {
@@ -2993,14 +2989,14 @@ void ModStation::OnInitialize() {
             this->m_nStarMapWindowOpen.bytes[3] == 0 &&
             ((TextRootRecord *) (intptr_t) **g_oi_textRoot)->noRoutesHintShown == 0) {
             Station *st2 = (Station *) Status_getStation_oi();
-            if (Station_getIndex_oi(st2) != 0x65) {
+            if (st2->getIndex() != 0x65) {
                 Status_getShip_oi();
                 int hasJump = Ship_hasJumpDrive_oi();
                 int hasFuel = Ship_hasCargo_oi(Status_getShip_oi(), 0x55);
                 Status_getSystem_oi();
                 int routes = SolarSystem_getRoutes_oi();
                 if (routes == 0 && hasJump == 0 && hasFuel == 0 &&
-                    0x10 < Status_getCurrentCampaignMission_oi()) {
+                    0x10 < Globals::status->getCurrentCampaignMission()) {
                     ChoiceWindow_set_oi(this->choiceWindow, GameText_getText_oi(**g_oi_textRoot), 1);
                     this->screenFlags.bytes[1] = 1;
                     this->m_nStarMapWindowOpen.bytes[3] = 1;
@@ -3008,7 +3004,7 @@ void ModStation::OnInitialize() {
             }
         }
 
-        ((Status *) (intptr_t) *(int *) g_oi_status)->field_f8 = 1;
+        Globals::status->field_f8 = 1;
         this->scrollFlags.bytes[0] = 0;
         this->activeTouch = 0;
         this->cameraFlags.bytes[3] = 0;
@@ -3018,25 +3014,25 @@ void ModStation::OnInitialize() {
     } else if (state == 0x28) {
         if (Status_inAlienOrbit_oi() == 0) {
             Station *st = (Station *) Status_getStation_oi();
-            if (Station_getIndex_oi(st) == 0x78) {
-                int camp = Status_getCurrentCampaignMission_oi();
-                if (camp == 0x62 || Status_getCurrentCampaignMission_oi() == 100)
+            if (st->getIndex() == 0x78) {
+                int camp = Globals::status->getCurrentCampaignMission();
+                if (camp == 0x62 || Globals::status->getCurrentCampaignMission() == 100)
                     this->alarmFlags.bytes[0] = 1;
             }
         }
         if (Status_inAlienOrbit_oi() == 0) {
             Station *st = (Station *) Status_getStation_oi();
-            if (Station_getIndex_oi(st) == 0x3a && Status_getCurrentCampaignMission_oi() == 0x8a)
+            if (st->getIndex() == 0x3a && Globals::status->getCurrentCampaignMission() == 0x8a)
                 this->alarmFlags.bytes[0] = 1;
         }
         if (Status_inAlienOrbit_oi() == 0) {
             Station *st = (Station *) Status_getStation_oi();
-            if (Station_getIndex_oi(st) == 0x7e && Status_getCurrentCampaignMission_oi() == 0x78)
+            if (st->getIndex() == 0x7e && Globals::status->getCurrentCampaignMission() == 0x78)
                 this->alarmFlags.bytes[0] = 1;
         }
         if (Status_inAlienOrbit_oi() == 0) {
             Station *st = (Station *) Status_getStation_oi();
-            if (Station_getIndex_oi(st) == 0x4e && Status_getCurrentCampaignMission_oi() == 0x8d)
+            if (st->getIndex() == 0x4e && Globals::status->getCurrentCampaignMission() == 0x8d)
                 this->alarmFlags.bytes[0] = 1;
         }
         if (Status_inSupernovaSystem_oi() != 0)
@@ -3047,10 +3043,10 @@ void ModStation::OnInitialize() {
         if (this->cameraFlags.bytes[0] == 0) {
             bool gate = false;
             Station *st = (Station *) Status_getStation_oi();
-            if (Station_getIndex_oi(st) == 4) gate = true;
+            if (st->getIndex() == 4) gate = true;
             else {
                 st = (Station *) Status_getStation_oi();
-                if (Station_getIndex_oi(st) == 0x58) gate = true;
+                if (st->getIndex() == 0x58) gate = true;
                 else {
                     Status_getStation_oi();
                     if (Station_stationHasPirateBase_oi() != 0) {
@@ -3068,17 +3064,17 @@ void ModStation::OnInitialize() {
                 }
             }
             (void) gate;
-            if (Status_getCurrentCampaignMission_oi() != 0x30 &&
+            if (Globals::status->getCurrentCampaignMission() != 0x30 &&
                 Status_inBlackMarketSystem_oi() == 0) {
                 Station *s1 = (Station *) Status_getStation_oi();
-                if (Station_getIndex_oi(s1) != 0x6c) {
+                if (s1->getIndex() != 0x6c) {
                     Station *s2 = (Station *) Status_getStation_oi();
-                    if (Station_getIndex_oi(s2) != 100) {
+                    if (s2->getIndex() != 100) {
                         Station *s3 = (Station *) Status_getStation_oi();
-                        if (Station_getIndex_oi(s3) != 0x65 && this->modalFlags.bytes[2] == 0 &&
+                        if (s3->getIndex() != 0x65 && this->modalFlags.bytes[2] == 0 &&
                             this->m_nStarMapWindowOpen.bytes[3] == 0 &&
                             this->alarmFlags.bytes[0] == 0 /* RAWREAD: alarmActive (+0xd8) */ &&
-                            ((Status *) (intptr_t) *(int *) g_oi_status)->field_0x108 == 0) {
+                            Globals::status->field_0x108 == 0) {
                             Status_getStation_oi();
                             bool enemy = false;
                             if (Station_hasAttackedFriends_oi() != 0) {
@@ -3106,10 +3102,10 @@ void ModStation::OnInitialize() {
         }
 
         Station *here = (Station *) Status_getStation_oi();
-        int hereIdx = Station_getIndex_oi(here);
+        int hereIdx = here->getIndex();
         Status_getCampaignMission_oi();
 
-        if (Status_getCurrentCampaignMission_oi() == 0x14 &&
+        if (Globals::status->getCurrentCampaignMission() == 0x14 &&
             Mission_getTargetStation_oi() == hereIdx) {
             Status_getStation_oi();
             Array<Item *> *items = (Array<Item *> *) (intptr_t) Station_getItems_oi();
@@ -3123,14 +3119,14 @@ void ModStation::OnInitialize() {
             Item_makeItemDescAmt_oi((*(Array<int> *) (intptr_t) **g_oi_itemTable)[(0xa4) / 4], 10);
             Station_addItem_oi(it);
         }
-        if (Status_getCurrentCampaignMission_oi() == 0x1b &&
+        if (Globals::status->getCurrentCampaignMission() == 0x1b &&
             Mission_getTargetStation_oi() == hereIdx) {
             Ship_removeCargo_oi(Status_getShip_oi());
         }
 
-        if (Status_getCurrentCampaignMission_oi() == 0x2b) {
+        if (Globals::status->getCurrentCampaignMission() == 0x2b) {
             if (hereIdx == 10) this->alarmFlags.bytes[1] = 1;
-        } else if (hereIdx == 10 && Status_getCurrentCampaignMission_oi() == 0x2c) {
+        } else if (hereIdx == 10 && Globals::status->getCurrentCampaignMission() == 0x2c) {
             this->alarmFlags.bytes[1] = 1;
         }
 
@@ -3166,7 +3162,7 @@ void ModStation::OnInitialize() {
         }
 
         Station *st10 = (Station *) Status_getStation_oi();
-        if (Station_getIndex_oi(st10) == 10 && Achievements_gotAllGoldMedals_oi() != 0) {
+        if (st10->getIndex() == 10 && Achievements_gotAllGoldMedals_oi() != 0) {
             Status_getStation_oi();
             Array<Ship *> *ships = (Array<Ship *> *) (intptr_t) Station_getShips_oi();
             bool needNew = ships == 0;
@@ -3196,11 +3192,11 @@ void ModStation::OnInitialize() {
 
         if (isS100 &&
             (Status_dlc1Won_oi() != 0 ||
-             Status_getCurrentCampaignMission_oi() == 0x50 ||
-             Status_getCurrentCampaignMission_oi() == 0x51 ||
-             Status_getCurrentCampaignMission_oi() == 0x52 ||
-             Status_getCurrentCampaignMission_oi() == 0x53 ||
-             Status_getCurrentCampaignMission_oi() == 0x54)) {
+             Globals::status->getCurrentCampaignMission() == 0x50 ||
+             Globals::status->getCurrentCampaignMission() == 0x51 ||
+             Globals::status->getCurrentCampaignMission() == 0x52 ||
+             Globals::status->getCurrentCampaignMission() == 0x53 ||
+             Globals::status->getCurrentCampaignMission() == 0x54)) {
             Ship *st = (Ship *) Status_getStation_oi();
             if (Station_hasShip_oi(st) != 0) {
                 Array<Ship *> *ships = (Array<Ship *> *) (intptr_t) Station_getShips_oi();
@@ -3219,8 +3215,8 @@ void ModStation::OnInitialize() {
         }
 
         Station *st6c = (Station *) Status_getStation_oi();
-        bool atReward = Station_getIndex_oi(st6c) == 0x6c;
-        int rewardState = atReward ? ((Status *) (intptr_t) *(int *) g_oi_status)->field_114 : 0;
+        bool atReward = st6c->getIndex() == 0x6c;
+        int rewardState = atReward ? Globals::status->field_114 : 0;
         if (atReward && rewardState == 1) {
             if (this->dialogueWindow != 0) {
             }
@@ -3229,7 +3225,7 @@ void ModStation::OnInitialize() {
             this->screenFlags.bytes[1] = 1;
         } else {
             Station *st = (Station *) Status_getStation_oi();
-            if (Station_getIndex_oi(st) == 0x6c && ((Status *) (intptr_t) *(int *) g_oi_status)->field_114 == 2) {
+            if (st->getIndex() == 0x6c && Globals::status->field_114 == 2) {
                 if (Status_getCredits_oi() < 100000 ||
                     Ship_hasCargo_oi(Status_getShip_oi(), 0x6d) == 0) {
                     ChoiceWindow_setNotice_oi(this->choiceWindow, GameText_getText_oi(**g_oi_textRoot));
@@ -3243,7 +3239,7 @@ void ModStation::OnInitialize() {
 
         if (Status_getFreelanceMission_oi() != 0 && Mission_getType_oi() == 0xe) {
             Station *st = (Station *) Status_getStation_oi();
-            if (Mission_getTargetStation_oi() == Station_getIndex_oi(st) &&
+            if (Mission_getTargetStation_oi() == st->getIndex() &&
                 Station_hasItem_oi(Status_getStation_oi()) == 0) {
                 Item_makeItemDesc_oi((*(Array<int> *) (intptr_t) **g_oi_itemTable)[(0x1cc) / 4]);
                 Item *it = (Item *) Status_getStation_oi();
@@ -3254,7 +3250,7 @@ void ModStation::OnInitialize() {
         SettingsBlock *settings = (SettingsBlock *) (intptr_t) *(int *) g_oi_settings;
         int rec = *(int *) g_oi_textRoot;
         (void) rec;
-        if (Status_getCurrentCampaignMission_oi() == 0xa2 && (unsigned char) settings->wantedActivatedShown == 0) {
+        if (Globals::status->getCurrentCampaignMission() == 0xa2 && (unsigned char) settings->wantedActivatedShown == 0) {
             ChoiceWindow_setNotice_oi(this->choiceWindow, GameText_getText_oi(**g_oi_textRoot));
             this->m_nStarMapWindowOpen.bytes[3] = 1;
             settings->wantedActivatedShown = 1;

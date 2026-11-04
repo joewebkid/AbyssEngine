@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnInitialize` status and station
+access). REA confirmed the original reads `Globals::status` directly at
+offsets `0xf8`, `0x108`, and `0x114`, calls
+`Status::getCurrentCampaignMission`, and calls `Station::getIndex` on
+station objects. The recovered code now uses those fields and methods
+instead of null placeholder reads and unresolved helper names. Strict
+ARM64 shared-link gaps fall **145 → 143**. Windows native, ARM64 static,
+and ARMv7 **209/209** builds pass. Focused `OnInitialize` source-shape
+is **73.5%** (from 72.2%); strict fuzzy is **25.0%** (from 27.3%).
+The full corpus still compares **4,323/4,524** originals in **4,770**
+pairs, with **96.75% / 86.75%** mean source-shape/strict fuzzy,
+**2,780 linked-exact**, **1,108 byte-exact**, 201 missing, and zero
+skipped. Pair and exact sets have no losses. The two remaining reads
+of `g_oi_status` in victory-notice conditions are not yet recovered:
+REA shows distinct global flags there. A newly linked APK and live
+station initialization remain unverified; see
+[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnInitialize` opening
 cutscene). REA confirmed the original creates `CutScene(23)` in an
 `0xA0`-byte allocation and calls `initialize()`. The recovered source

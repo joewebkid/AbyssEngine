@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**145 unresolved symbols**, all referenced from `ModStation.cpp`. These are
-reconstruction helper names, not 145 proven absent symbols in the original ARM
+**143 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+reconstruction helper names, not 143 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/modstation-init-cutscene-link-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-status-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,9 +24,30 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → **145**.
+159 → 158 → 147 → 145 → **143**.
 
-For this initialization change, Windows native and ARM64 static builds
+REA then confirmed that this function reads `Globals::status` at
+offsets `0xf8`, `0x108`, and `0x114`, and invokes the existing
+`Status::getCurrentCampaignMission` and `Station::getIndex` methods.
+Four null-placeholder field reads were replaced, and 21 calls to each
+of the two methods now use their typed receivers. This removes two
+unresolved helper symbols. Focused `OnInitialize` source-shape rises
+72.2% → **73.5%**, while strict fuzzy changes 27.3% → **25.0%**.
+The full ARM report (`_work/modstation_init_status_full_20261104.json`)
+still compares 4,323/4,524 originals in 4,770 pairs, with 96.75%
+mean source-shape, 86.75% strict fuzzy, 2,780 linked-exact, 1,108
+byte-exact, 201 missing library/ABI symbols, and zero skipped. The
+pair, linked-exact, and byte-exact sets have no losses against the
+preceding report. Windows native and ARM64 static builds pass; ARMv7
+compiles 209/209 units. REA evidence:
+`ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
+
+The two remaining `g_oi_status` reads in victory-notice checks must
+not be mapped blindly to `Status` bytes `0x35` and `0x37`: the original
+REA pseudocode references distinct global flag words in those checks.
+Their ownership and the associated notice state remain unverified.
+
+For the earlier cutscene-only change, Windows native and ARM64 static builds
 pass; ARMv7 compiles 209/209 units. Focused `OnInitialize` remains
 **72.2%** source-shape and **27.3%** strict fuzzy. The full ARM corpus
 (`_work/modstation_init_cutscene_full_20261104.json`) compares
@@ -45,7 +66,7 @@ currently dereferences placeholder pointers initialized to null and omits the
 original's wanted-name text substitutions. REA original evidence:
 `ev_7e1aa9c7284245af140363313e649e4c93e2bd1306315edcf425f8785f24b1d3`.
 
-## `ModStation::OnInitialize()` — 62 unresolved
+## `ModStation::OnInitialize()` — 60 unresolved
 
 - `Achievements_gotAllGoldMedals_oi()`
 - `ChoiceWindow_set1_oiImpl(void*, int)`
@@ -85,7 +106,6 @@ original's wanted-name text substitutions. REA original evidence:
 - `Standing_isEnemy_oi(int)`
 - `Station_addItem_oi(Item*)`
 - `Station_addShip_oi(Ship*)`
-- `Station_getIndex_oi(Station*)`
 - `Station_getItems_oi()`
 - `Station_getShips_oi()`
 - `Station_hasAttackedFriends_oi()`
@@ -99,7 +119,6 @@ original's wanted-name text substitutions. REA original evidence:
 - `Status_gameWon_oi()`
 - `Status_getCampaignMission_oi()`
 - `Status_getCredits_oi()`
-- `Status_getCurrentCampaignMission_oi()`
 - `Status_getFreelanceMission_oi()`
 - `Status_getShip_oi()`
 - `Status_getStanding_oi()`
