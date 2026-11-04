@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnUpdate` touch scene).
+Android ARM shows that the late update path decays camera drag velocity,
+updates the cutscene camera angle, and moves or rotates the station
+geometry according to the held touch coordinates. The previous light
+interpolation and unconditional rotation were replaced with this path.
+Both remaining guessed `OnUpdate` helpers are gone: strict ARM64 link
+gaps fall **41 → 39**, all now in `OnTouchEnd`. Windows native, ARM64
+static and ARMv7 **209/209** builds pass. Focused `OnUpdate`
+source-shape rises **81.8% → 87.4%**, strict fuzzy **34.4% → 36.8%**;
+the function is still not exact. The full ARM corpus compares
+**4,323/4,524** originals in **4,770** pairs, with **96.76%** mean
+source-shape, **86.76%** strict fuzzy, **2,780 linked-exact**,
+**1,108 byte-exact**, 201 missing and zero skipped. No pair or exact
+member was lost. The touch velocity handoff from `OnTouchEnd` and live
+scene movement still need validation in a newly linked APK. Next
+priority: `ModStation::OnTouchEnd`, which contains all 39 remaining
+ARM64 helper names. See [link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnUpdate` mission results).
 Android ARM confirms the mission-116 station bitmask, the mission
 148–151 dialogue transitions, mission success/failure handling, and the

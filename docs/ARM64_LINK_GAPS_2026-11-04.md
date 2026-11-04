@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**41 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+**39 unresolved symbols**, all referenced from `ModStation.cpp`. These are
 reconstruction helper names, not 108 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-update-missions-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-update-touch-scene-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +24,24 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → 88 → 83 → 70 → 59 → **41**.
+159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → 88 → 83 → 70 → 59 → 41 → **39**.
+
+The late `ModStation::OnUpdate` path in REA evidence
+`ev_71b291d89b3d7ddb28763bd8cbfcf89586bad2363a58ae69b981ac5589b66fe2`
+uses the float interpretations of fields `0xf4`/`0xf8` for camera
+drag decay, updates `CutScene::cameraRotX`, and moves or rotates
+`rootGeom` by touch zone while updating the corresponding `CutScene`
+position and angle fields. The former light interpolation and constant
+geometry rotation were incorrect. Restoring this path removes both
+remaining `OnUpdate` helpers: **41 → 39** strict link gaps, with no
+new names. Focused source-shape rises **81.8% → 87.4%**, strict fuzzy
+**34.4% → 36.8%**, without an exact match. Full ARM report
+`_work/modstation_update_touch_scene_full_20261104.json` compares
+4,323/4,524 originals in 4,770 pairs, mean source-shape **96.76%**,
+strict fuzzy **86.76%**, 2,780 linked-exact, 1,108 byte-exact,
+201 missing, zero skipped and no pair or exact-set losses. Windows
+native, ARM64 static and ARMv7 209/209 builds pass. The touch velocity
+handoff from `OnTouchEnd` and live scene movement remain unverified.
 
 REA Android ARM `ModStation::OnUpdate` evidence
 `ev_71b291d89b3d7ddb28763bd8cbfcf89586bad2363a58ae69b981ac5589b66fe2`
@@ -45,9 +62,9 @@ branches are replaced with the original behavior. Full ARM report
 4,323/4,524 originals in 4,770 pairs: mean source-shape **96.76%**,
 strict fuzzy **86.76%**, 2,780 linked-exact, 1,108 byte-exact,
 201 missing, zero skipped, and no lost pairs or exact-match members.
-Windows native, ARM64 static and ARMv7 209/209 builds pass. The two
-remaining `OnUpdate` names are in the late scene path; live behavior
-still needs a newly linked APK.
+Windows native, ARM64 static and ARMv7 209/209 builds pass. At that
+stage two `OnUpdate` names remained in the late scene path; live
+behavior still needs a newly linked APK.
 
 REA Android ARM `ModStation::OnUpdate` evidence
 `ev_71b291d89b3d7ddb28763bd8cbfcf89586bad2363a58ae69b981ac5589b66fe2`
@@ -421,10 +438,10 @@ substitutions have since been corrected as described above. Earlier REA evidence
 Its remaining source-shape and semantic differences still need
 verification; zero unresolved helper names is only a link property.
 
-## `ModStation::OnUpdate()` — 2 unresolved
+## `ModStation::OnUpdate()` — closed
 
-- `AEGeometry_rotate_ou(void*, float, float, float)`
-- `Engine_setHangarLightIntensity_ou(float)`
+The strict ARM64 link has no unresolved helper names from this function.
+Focused source-shape and live behavior remain separate validation tasks.
 
 ## `ModStation::OnTouchEnd(int, int, void*)` — 39 unresolved
 

@@ -121,17 +121,20 @@ public:
     int camScrollPos;         // 0xe8
     int field_0xec;           // 0xec
     int camScrollVel;         // 0xf0
-    int field_0xf4;           // 0xf4
-    int field_0xf8;           // 0xf8
+    union {                    // 0xf4: raw bit pattern and camera drag scale
+        int field_0xf4;
+        float camDragScale;
+    };
+    union {                    // 0xf8: raw bit pattern and camera drag velocity
+        int field_0xf8;
+        float camDragVelocity;
+    };
     int field_0xfc;           // 0xfc
     FlagWord dragFlags;       // 0x100 byte [0]=dragging [1]=touchActive
     AbyssEngine::AEMath::Vector radioScrollAnchor; // 0x104 on ARM32
     union { int touchX; float touchXf; };          // 0x110 (radio reveal: float scroll-current)
     union { int touchY; float touchYf; };          // 0x114 (radio reveal: float scroll-target)
-    union {
-        FlagWord scrollFlags; // 0x118 byte [0]
-        float scrollFlagsf;   //       float@0x118 hangar-light intensity
-    };
+    FlagWord scrollFlags;     // 0x118 byte [0]: touch held
     union { int scrollTarget; float scrollTargetf; }; // 0x11c (hangar-light target)
     float field_0x120;        // 0x120, light-direction component
     float field_0x124;        // 0x124, light-direction component

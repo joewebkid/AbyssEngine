@@ -804,10 +804,6 @@ void ModStation::resetLight() {
 }
 
 
-void AEGeometry_rotate_ou(void *geom, float x, float y, float z);
-void Engine_setHangarLightIntensity_ou(float v);
-
-
 void ModStation::OnUpdate() {
     Status *status = Globals::status;
     auto *manager = this->manager;
@@ -849,7 +845,7 @@ void ModStation::OnUpdate() {
             Globals::sound->stop(0x7a);
             Globals::sound->play(0x6c, nullptr, nullptr, 0.0f);
             this->subWindowFlags.bytes[1] = 1;
-            goto epilogue;
+            return;
         }
     }
 
@@ -939,7 +935,7 @@ void ModStation::OnUpdate() {
     }
 
     if (this->accumTime < 1000)
-        goto epilogue;
+        return;
 
     if (this->m_nStarMapWindowOpen.bytes[0] != 0) {
         int t = this->field_0xb4;
@@ -982,7 +978,7 @@ void ModStation::OnUpdate() {
             Globals::switch_to_target_setting = 0;
             manager->SetCurrentApplicationModule(5);
             this->m_nStarMapWindowOpen.bytes[0] = 0;
-            goto epilogue;
+            return;
         }
     } else if (this->modalFlags.bytes[1] != 0) {
         this->dialogueWindow->update(this->dt);
@@ -1118,29 +1114,79 @@ void ModStation::OnUpdate() {
     }
 
     if (this->dragFlags.bytes[0] == 0) {
-        float cur = this->scrollFlagsf;
-        float tgt = this->scrollTargetf;
-        float step = VectorSignedToFloat(elapsed, 0) * 0.002f;
-        if (cur < tgt) {
-            cur += step;
-            if (cur > tgt) cur = tgt;
-        } else if (cur > tgt) {
-            cur -= step;
-            if (cur < tgt) cur = tgt;
+        float decay = static_cast<float>(this->dt) * 0.05f;
+        if (decay > 1.0f) decay = 1.0f;
+        const float velocity = this->camDragVelocity * (this->camDragScale * decay);
+        this->camDragVelocity = velocity;
+        const float magnitude = velocity > 0.0f ? velocity : -velocity;
+        if (magnitude > 1.0f) {
+            this->camAngle = static_cast<int>(velocity + static_cast<float>(this->camAngle));
         }
-        if (cur < 0.0f) cur = 0.0f;
-        if (cur > 1.0f) cur = 1.0f;
-        this->scrollFlagsf = cur;
-        Engine_setHangarLightIntensity_ou(cur);
     }
-    if ((int) (intptr_t) this->cutScene != 0 && this->m_nStarMapWindowOpen.bytes[0] == 0)
-        {
-            void *geom = this->cutScene->rootGeom;
-            if (geom != nullptr)
-                AEGeometry_rotate_ou(geom, 0.0f, 0.1f, 0.0f);
+
+    CutScene *scene = this->cutScene;
+    if (scene != nullptr && this->m_nStarMapWindowOpen.bytes[0] == 0)
+        scene->cameraRotX = static_cast<float>(this->camAngle) / 120.0f;
+
+    if (this->scrollFlags.bytes[0] != 0) {
+        const int x = this->touchX;
+        const int y = this->touchY;
+        AEGeometry *geometry = scene->rootGeom;
+        const float frame = static_cast<float>(this->dt);
+
+        if (y >= Globals::layout->field_0xc) {
+            if (y >= Globals::h - 2 * Globals::layout->field_0x10) {
+                if (x > 69) {
+                    if (x <= Globals::w - 70) return;
+                    geometry->translate(frame, 0.0f, 0.0f);
+                    scene->vec8.x += frame;
+                } else {
+                    geometry->translate(-frame, 0.0f, 0.0f);
+                    scene->vec8.x -= frame;
+                }
+                return;
+            }
+            if (x > 69) {
+                if (x <= Globals::w - 70) {
+                    if (x >= 101 && x < Globals::w - 100) {
+                        if (y >= Globals::h / 2) {
+                            geometry->moveForward(frame);
+                            scene->vec8.z += frame;
+                        } else {
+                            geometry->moveForward(-frame);
+                            scene->vec8.z -= frame;
+                        }
+                    }
+                    return;
+                }
+                geometry->rotate(0.0f, -0.01f, 0.0f);
+                scene->stationCameraAngles.y -= 0.01f;
+            } else {
+                geometry->rotate(0.0f, 0.01f, 0.0f);
+                scene->stationCameraAngles.y += 0.01f;
+            }
+            return;
         }
 
-epilogue:;
+        if (x > 99) {
+            if (x > 199) {
+                if (x >= 400) return;
+                if (x >= 300) {
+                    geometry->rotate(-0.01f, 0.0f, 0.0f);
+                    scene->stationCameraAngles.x -= 0.01f;
+                } else {
+                    geometry->rotate(0.01f, 0.0f, 0.0f);
+                    scene->stationCameraAngles.x += 0.01f;
+                }
+                return;
+            }
+            geometry->translate(0.0f, 10.0f, 0.0f);
+            scene->vec8.y += 10.0f;
+        } else {
+            geometry->translate(0.0f, -10.0f, 0.0f);
+            scene->vec8.y -= 10.0f;
+        }
+    }
 }
 
 
