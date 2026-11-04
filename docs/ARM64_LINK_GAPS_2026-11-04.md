@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**83 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+**70 unresolved symbols**, all referenced from `ModStation.cpp`. These are
 reconstruction helper names, not 108 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-station-notices-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-checkhints-recovered-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +24,26 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → 88 → **83**.
+159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → 88 → 83 → **70**.
+
+REA decompilation of Android ARM `ModStation::checkHints`
+(`ev_725994ccb8c97a5ae0f408bb00cd8bde30e6fa31687fc965f53572c0a2d77590`)
+resolved all 13 helper names. The first hint reads `Globals::options[0x34]`;
+the four wanted notices read `Globals::hints[0x33..0x36]`, use text 3232,
+and substitute `#SHIP_NAME` and `#WANTED_NAME`. Medal notices use texts
+649/650, blueprint 232 uses 651, and the later campaign hint uses 3233.
+The wingman path now follows the original gates, with dialogue 442/1662
+and the 20,000-credit award only when status byte `0xf9` is set, or
+dialogue 313 for an available wingman. The unknown wider lifecycle of
+byte `0xf9` and live dialogue behavior remain unverified. Focused
+source-shape rises **25.0% → 63.5%**, strict fuzzy **12.7% → 35.0%**;
+there is no exact match. The full report
+`_work/modstation_checkhints_recovered_full_20261104.json` compares
+4,323/4,524 originals in 4,770 pairs, mean source-shape **96.76%**,
+strict fuzzy **86.75%**, with 2,780 linked-exact, 1,108 byte-exact,
+201 missing, zero skipped, and no lost pairs or exact-match members.
+Windows native, ARM64 static, and ARMv7 209/209 builds pass. The 70
+remaining names belong to `OnUpdate` (31) and `OnTouchEnd` (39).
 
 REA then confirmed that this function reads `Globals::status` at
 offsets `0xf8`, `0x108`, and `0x114`, and invokes the existing
@@ -349,9 +368,9 @@ in a newly linked APK.
 The installed Poco APK was built earlier and does not include these changes.
 A new APK cannot be linked from current source until these calls are recovered
 or otherwise correctly implemented. Success-returning stubs would mask missing
-game behavior and are not a valid closure. For example, `ModStation::checkHints`
-currently dereferences placeholder pointers initialized to null and omits the
-original's wanted-name text substitutions. REA original evidence:
+game behavior and are not a valid closure. The earlier
+`ModStation::checkHints` null placeholders and missing wanted-name
+substitutions have since been corrected as described above. Earlier REA evidence:
 `ev_7e1aa9c7284245af140363313e649e4c93e2bd1306315edcf425f8785f24b1d3`.
 
 ## `ModStation::OnInitialize()` — 0 unresolved
@@ -435,18 +454,7 @@ verification; zero unresolved helper names is only a link property.
 - `Status_setMission_ote(int)`
 - `Status_setStation_ote(Station*)`
 
-## `ModStation::checkHints()` — 13 unresolved
+## `ModStation::checkHints()` — closed
 
-- `Achievements_gotAllGoldMedals_ch()`
-- `Achievements_gotAllMedals_ch(Achievements*)`
-- `Achievements_gotAllSupernovaMedals_ch(Achievements*)`
-- `ChoiceWindow_set1_ch(void*, int)`
-- `ChoiceWindow_set6_ch(void*, int, int, int, int, int)`
-- `DialogueWindow_initWingman_ch(void*, int)`
-- `FModSound_playWingmanRecruit_ch()`
-- `GameText_getText_ch(int)`
-- `GameText_text_ch(int)`
-- `Status_getCurrentCampaignMission_ch()`
-- `Status_hardCoreMode_ch()`
-- `Status_isBlueprintUnlocked_ch(void*, int)`
-- `Status_unlockBluePrint_ch(void*, int)`
+All 13 formerly unresolved helper names were removed by direct calls
+and typed state access. See the recovery evidence and limits above.

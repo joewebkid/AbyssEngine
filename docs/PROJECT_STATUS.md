@@ -1,5 +1,25 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::checkHints`). The Android ARM
+function confirms the station hint flags, four wanted-pilot notices,
+medal and blueprint rewards, and two conditional wingman dialogues.
+The previous null-pointer placeholders and incorrect text IDs are
+replaced with typed game state, the original text IDs and token
+substitutions, and the original dialogue gates. All 13 unresolved
+`checkHints` helper names are gone, reducing strict ARM64 link gaps
+**83 → 70**, with no newly unresolved names. Windows native, ARM64
+static, and ARMv7 **209/209** builds pass. Focused source-shape rises
+**25.0% → 63.5%** and strict fuzzy **12.7% → 35.0%**; neither exact
+match is achieved. The full ARM corpus compares **4,323/4,524**
+original functions in **4,770** pairs: mean source-shape **96.76%**,
+strict fuzzy **86.75%**, **2,780 linked-exact**, **1,108 byte-exact**,
+201 missing and zero skipped. Pair and exact-match sets have no
+losses. The `Status` byte at ARM32 offset `0xf9` gates the
+20,000-credit dialogue, but its wider lifecycle and the restored
+dialogues still need validation in a linked APK. Next priority:
+`ModStation::OnUpdate` (31 unresolved helper names), followed by
+`OnTouchEnd` (39). See [link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnInitialize` notices).
 The original Android ELF places notice state in `Globals::hints`
 (`0x21824C`) and `Globals::options` (`0x2181E8`). Station entry now

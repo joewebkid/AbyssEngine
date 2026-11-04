@@ -169,7 +169,13 @@ public:
     uint8_t field_0xf1;                      // 0xf1
     uint8_t _pad_0xf2[2];                    // 0xf2 (binary gap)
     int32_t field_f4;                        // 0xf4
-    int16_t field_f8;                        // 0xf8
+    union {                                  // 0xf8..0xf9
+        int16_t field_f8;
+        struct {
+            uint8_t field_0xf8;
+            uint8_t field_0xf9;              // 0xf9; gates the 20,000-credit dialogue
+        };
+    };
     uint8_t _pad_0xfa[6];                    // 0xfa (binary gap)
     int32_t field_0x100;                     // 0x100
     int32_t field_0x104;                     // 0x104
