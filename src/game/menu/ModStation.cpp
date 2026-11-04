@@ -2778,21 +2778,11 @@ void Ship_addCargo_oi(int ship, Item *it);
 
 int Item_makeItem_oi();
 
-int Item_makeItemDesc_oi(int desc);
-
 void Item_setUnsaleable_oi(int flag);
 
 int Station_getShips_oi();
 
-int Station_hasItem_oi(int station);
-
-void Station_addItem_oi(Item * it);
-
 int Standing_getStanding_oi(int standing);
-
-int Mission_getTargetStation_oi();
-
-int Mission_getType_oi();
 
 int GameText_getText_oi(int id);
 
@@ -3212,13 +3202,18 @@ void ModStation::OnInitialize() {
             }
         }
 
-        if (Globals::status->getFreelanceMission() != nullptr && Mission_getType_oi() == 0xe) {
-            Station *st = Globals::status->getStation();
-            if (Mission_getTargetStation_oi() == st->getIndex() &&
-                Station_hasItem_oi(Status_getStation_oi()) == 0) {
-                Item_makeItemDesc_oi((*(Array<int> *) (intptr_t) **g_oi_itemTable)[(0x1cc) / 4]);
-                Item *it = (Item *) Status_getStation_oi();
-                Station_addItem_oi(it);
+        Mission *freelanceMission = Globals::status->getFreelanceMission();
+        if (freelanceMission != nullptr && freelanceMission->getType() == 0xe) {
+            int targetStation = freelanceMission->getTargetStation();
+            Station *currentStation = Globals::status->getStation();
+            if (targetStation == currentStation->getIndex()) {
+                Station *itemStation = Globals::status->getStation();
+                if (!itemStation->hasItem(0x73)) {
+                    Array<Item *> *itemTable = static_cast<Array<Item *> *>(Globals::items);
+                    Item *reward = (*itemTable)[0x73]->makeItem(1);
+                    Station *rewardStation = Globals::status->getStation();
+                    rewardStation->addItem(reward);
+                }
             }
         }
 

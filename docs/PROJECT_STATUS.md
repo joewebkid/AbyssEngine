@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnInitialize` freelance item).
+REA confirmed that freelance mission type 14 adds one copy of item
+115 from `Globals::items` at its target station only if the station
+lacks that item. The recovered code now uses typed `Mission`,
+`Station`, and `Item` receivers. Strict ARM64 shared-link gaps fall
+**114 → 109**. Windows native, ARM64 static, and ARMv7 **209/209**
+builds pass. Focused `OnInitialize` source-shape rises **81.9% →
+82.2%**; strict fuzzy changes **19.6% → 19.5%**. Full ARM coverage
+remains **4,323/4,524** originals in **4,770** pairs, with
+**96.75% / 86.74%** mean source-shape/strict fuzzy, **2,780
+linked-exact**, **1,108 byte-exact**, 201 missing, and zero skipped;
+no pair or exact-set losses. `Station::addItem` remains non-exact and
+this path has not been live-validated. The next priority is the
+reward-station condition: REA shows 30,000,001 credits and 50 units
+of cargo 109, which the current code does not check correctly. See
+[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnInitialize` station-100 ship
 replacement). REA confirmed that this branch removes ship 37 when
 present, then adds ships 38 and 40 from the global ship table at

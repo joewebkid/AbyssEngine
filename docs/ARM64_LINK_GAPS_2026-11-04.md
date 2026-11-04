@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**114 unresolved symbols**, all referenced from `ModStation.cpp`. These are
-reconstruction helper names, not 114 proven absent symbols in the original ARM
+**109 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+reconstruction helper names, not 109 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-ship-swap-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-freelance-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +24,7 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → **114**.
+159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → **109**.
 
 REA then confirmed that this function reads `Globals::status` at
 offsets `0xf8`, `0x108`, and `0x114`, and invokes the existing
@@ -169,6 +169,24 @@ static builds pass; ARMv7 compiles 209/209 units. REA evidence:
 `Station::addShip` is 91.0% source-shape and the new station path is
 not yet live-validated in a linked APK.
 
+REA confirms that freelance mission type 14 adds one copy of item 115
+from `Globals::items` at its target station when the station lacks
+that item. The branch now uses typed `Mission`, `Station`, and `Item`
+receivers, removing `Mission_getType_oi`,
+`Mission_getTargetStation_oi`, `Station_hasItem_oi`,
+`Item_makeItemDesc_oi`, and `Station_addItem_oi`. Focused
+`OnInitialize` source-shape rises 81.9% → **82.2%** and strict fuzzy
+changes 19.6% → **19.5%**. The full ARM report
+(`_work/modstation_init_freelance_full_20261104.json`) still compares
+4,323/4,524 originals in 4,770 pairs, with 96.75% / 86.74% means,
+2,780 linked-exact, 1,108 byte-exact, 201 missing, and zero skipped,
+without pair or exact-set losses. Native and ARM64 static builds pass;
+ARMv7 compiles 209/209 units. REA evidence:
+`ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
+`Station::addItem` is 94.8% source-shape; this path is not yet
+live-validated. The reward-station branch still checks the wrong
+credit threshold and omits the original cargo amount requirement.
+
 For the earlier cutscene-only change, Windows native and ARM64 static builds
 pass; ARMv7 compiles 209/209 units. Focused `OnInitialize` remains
 **72.2%** source-shape and **27.3%** strict fuzzy. The full ARM corpus
@@ -188,7 +206,7 @@ currently dereferences placeholder pointers initialized to null and omits the
 original's wanted-name text substitutions. REA original evidence:
 `ev_7e1aa9c7284245af140363313e649e4c93e2bd1306315edcf425f8785f24b1d3`.
 
-## `ModStation::OnInitialize()` — 31 unresolved
+## `ModStation::OnInitialize()` — 26 unresolved
 
 - `ChoiceWindow_set1_oiImpl(void*, int)`
 - `ChoiceWindow_set6_oiImpl(void*, int, int, int, int, int, int)`
@@ -197,11 +215,8 @@ original's wanted-name text substitutions. REA original evidence:
 - `CutScene_replacePlayerShip_oi(int, int)`
 - `GameText_getText_oi(int)`
 - `GameText_getText_oiImpl(int)`
-- `Item_makeItemDesc_oi(int)`
 - `Item_makeItem_oi()`
 - `Item_setUnsaleable_oi(int)`
-- `Mission_getTargetStation_oi()`
-- `Mission_getType_oi()`
 - `ModStation_oi_cameraHandle()`
 - `ModStation_oi_setCameraLocal(unsigned int, AbyssEngine::AEMath::Matrix const&)`
 - `Ship_getIndex_oi()`
@@ -213,9 +228,7 @@ original's wanted-name text substitutions. REA original evidence:
 - `Ship_setRace_oi(int)`
 - `SolarSystem_getRace_oi()`
 - `SolarSystem_getRoutes_oi()`
-- `Station_addItem_oi(Item*)`
 - `Station_getShips_oi()`
-- `Station_hasItem_oi(int)`
 - `Status_getCredits_oi()`
 - `Status_getShip_oi()`
 - `Status_getStation_oi()`
