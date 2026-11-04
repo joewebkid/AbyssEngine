@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnUpdate` camera and window routing).
+Android ARM confirms that the free station camera advances three
+`EaseInOut` values, reverses direction at their range ends, chooses new
+random targets, and writes their values directly to the current camera
+matrix. The update loop now follows this path, passes elapsed time to the
+news ticker and active windows, and shows text 601 using
+`Globals::hints[0x2a]`. Strict ARM64 link gaps fall **70 → 59** with no
+new unresolved names. Windows native, ARM64 static and ARMv7 **209/209**
+builds pass. Focused `OnUpdate` source-shape rises **76.3% → 83.3%**
+and strict fuzzy **27.1% → 41.8%**; it has no exact match. The full ARM
+corpus remains **4,323/4,524** originals in **4,770** pairs, mean
+source-shape **96.76%**, strict fuzzy **86.76%**, **2,780 linked-exact**,
+**1,108 byte-exact**, 201 missing and zero skipped. Pair and exact-match
+sets have no losses. This path has not run in a newly linked APK.
+Next priority: the mission-result branch of `OnUpdate`, which still
+contains null placeholders and 20 unresolved helper names, followed
+by `OnTouchEnd` (39). See [link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::checkHints`). The Android ARM
 function confirms the station hint flags, four wanted-pilot notices,
 medal and blueprint rewards, and two conditional wingman dialogues.

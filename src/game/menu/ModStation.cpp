@@ -807,8 +807,6 @@ static int **g_ou_sound = 0;
 
 static int **g_ou_layout = 0;
 
-static int **g_ou_status = 0;
-
 static int **g_ou_achievements = 0;
 
 static char **g_ou_spaceLoungeFlag = 0;
@@ -883,28 +881,13 @@ void TouchButton_setText_ou(int btn);
 
 void ChoiceWindow_set_ou(int cw, int text, int flag);
 
-void ChoiceWindow_setNotice_ou(int cw, int text);
-
-void ChoiceWindow_update_ou(int cw);
-
 int GameText_getText_ou(int id);
-
-void CutScene_process_ou(int cs);
 
 void CutScene_update_ou(int cs);
 
 void CutScene_ctor_ou(CutScene *cs, int kind);
 
 int CutScene_initialize_ou(CutScene * cs);
-
-void StarMap_update_ou(int sm, int dt);
-
-void HangarWindow_update_ou(int w);
-
-
-void StatusWindow_update_ou(int w);
-
-void MenuTouchWindow_update_ou(void *w, int dt);
 
 
 int SpaceLounge_introFinished_ou();
@@ -913,15 +896,10 @@ void SpaceLounge_ctor_ou(SpaceLounge * l);
 
 void SpaceLounge_init_ou(void *l);
 
-void SpaceLounge_update_ou(int l);
-
 void SpaceLounge_setHangarUpdate_ou(void *l);
 
 int Radio_lastMessageShown_ou();
 
-float EaseInOut_advance_ou(void *e, int elapsed);
-unsigned ModStation_ou_cameraHandle();
-void ModStation_ou_setCameraLocal(unsigned h, const Matrix &m);
 void AEGeometry_rotate_ou(void *geom, float x, float y, float z);
 void Engine_setHangarLightIntensity_ou(float v);
 
@@ -1007,21 +985,54 @@ void ModStation::OnUpdate() {
         this->subWindowFlags.bytes[2] == 0 && this->subWindowFlags.bytes[3] == 0 &&
         this->modalFlags.bytes[0] == 0 && this->m_nStarMapWindowOpen.bytes[0] == 0) {
         if (this->newsTicker != nullptr)
-            this->newsTicker->update(0);
-        if ((int) (intptr_t) this->cutScene != 0)
-            CutScene_process_ou((int) (intptr_t) this->cutScene);
-        {
-            float bx = this->camCoordX;
-            float by = this->camCoordY;
-            float bz = this->camCoordZ;
+            this->newsTicker->update(this->dt);
+        if (this->cutScene != nullptr)
+            this->cutScene->process(0);
 
-            float dx = EaseInOut_advance_ou(this->easeX, elapsed);
-            float dy = EaseInOut_advance_ou(this->easeY, elapsed);
-            float dz = EaseInOut_advance_ou(this->easeZ, elapsed);
-            Matrix cam;
-            MatrixSetTranslation(cam, bx + dx, by + dy, bz + dz);
-            ModStation_ou_setCameraLocal(ModStation_ou_cameraHandle(), cam);
+        AERandom *random = static_cast<AERandom *>(Globals::rnd);
+        auto *easeX = static_cast<AbyssEngine::EaseInOut *>(this->easeX);
+        auto *easeY = static_cast<AbyssEngine::EaseInOut *>(this->easeY);
+        auto *easeZ = static_cast<AbyssEngine::EaseInOut *>(this->easeZ);
+
+        const bool xIncreasing = this->field_0x12c.bytes[2] == 0;
+        easeX->Increase(static_cast<float>(xIncreasing ? elapsed : -elapsed));
+        const float x = easeX->GetValue();
+        float xDistance = x - easeX->GetMaxValue();
+        if (xDistance < 0.0f) xDistance = -xDistance;
+        if (xDistance <= 5.0f) {
+            this->field_0x12c.bytes[2] ^= 1;
+            const int shift = random->nextInt(131) + 18;
+            easeX->SetRange(x, this->camKeyX +
+                               static_cast<float>(xIncreasing ? -shift : shift));
         }
+
+        const bool yIncreasing = this->field_0x12c.bytes[1] != 0;
+        easeY->Increase(static_cast<float>(yIncreasing ? elapsed : -elapsed));
+        const float y = easeY->GetValue();
+        float yDistance = y - easeY->GetMaxValue();
+        if (yDistance < 0.0f) yDistance = -yDistance;
+        if (yDistance <= 5.0f) {
+            this->field_0x12c.bytes[1] ^= 1;
+            const int shift = random->nextInt(120) + 30;
+            easeY->SetRange(y, this->camKeyY +
+                               static_cast<float>(yIncreasing ? shift : -shift));
+        }
+
+        const bool zIncreasing = this->field_0x12c.bytes[3] != 0;
+        easeZ->Increase(static_cast<float>(zIncreasing ? elapsed : -elapsed));
+        const float z = easeZ->GetValue();
+        float zDistance = z - easeZ->GetMaxValue();
+        if (zDistance < 0.0f) zDistance = -zDistance;
+        if (zDistance <= 5.0f) {
+            this->field_0x12c.bytes[3] ^= 1;
+            const int shift = random->nextInt(100) + 50;
+            easeZ->SetRange(z, this->camKeyZ +
+                               static_cast<float>(zIncreasing ? shift : -shift));
+        }
+
+        const unsigned camera = Globals::Canvas->CameraGetCurrent();
+        Matrix *local = static_cast<Matrix *>(Globals::Canvas->CameraGetLocal(camera));
+        AbyssEngine::AEMath::MatrixSetTranslation(*local, x, y, z);
     }
 
     if (this->accumTime < 1000)
@@ -1073,21 +1084,21 @@ void ModStation::OnUpdate() {
     } else if (this->modalFlags.bytes[1] != 0) {
         this->dialogueWindow->update(this->dt);
     } else if (this->subWindowFlags.bytes[3] != 0) {
-        StarMap_update_ou((int) (intptr_t) this->starMap, this->dt);
+        static_cast<StarMap *>(this->starMap)->update(this->dt);
     } else if (this->subWindowFlags.bytes[2] != 0) {
-        HangarWindow_update_ou((int) (intptr_t) this->hangarWindow);
+        static_cast<HangarWindow *>(this->hangarWindow)->update(this->dt);
     } else if (this->subWindowFlags.bytes[0] != 0) {
         this->missionsWindow->update(this->dt);
     } else if (this->subWindowFlags.bytes[1] != 0) {
-        SpaceLounge_update_ou((int) (intptr_t) this->spaceLounge);
+        static_cast<SpaceLounge *>(this->spaceLounge)->update(this->dt);
     } else if (this->modalFlags.bytes[0] != 0) {
-        StatusWindow_update_ou((int) (intptr_t) this->statusWindow);
+        static_cast<StatusWindow *>(this->statusWindow)->update(this->dt);
     }
 
     if (this->m_nStarMapWindowOpen.bytes[3] != 0)
-        ChoiceWindow_update_ou((int) (intptr_t) this->choiceWindow);
+        static_cast<ChoiceWindow *>(this->choiceWindow)->update(this->dt);
     if (this->m_nStarMapWindowOpen.bytes[2] != 0)
-        MenuTouchWindow_update_ou(this->dlcMenu, this->dt);
+        static_cast<MenuTouchWindow *>(this->dlcMenu)->update(this->dt);
 
     if (this->m_nStarMapWindowOpen.bytes[3] == 0 && this->modalFlags.bytes[1] == 0 &&
         this->screenFlags.bytes[0] == 0) {
@@ -1100,14 +1111,13 @@ void ModStation::OnUpdate() {
             this->buttonCreditsFlags.bytes[1] = 1;
         }
 
-        if (this->modalFlags.bytes[2] == 0 && this->screenFlags.bytes[2] != 0) {
-            Status *rec = (Status *) (intptr_t) *(int *) g_ou_status;
-            if (rec->byte_0x2a == 0) {
-                ChoiceWindow_setNotice_ou((int) (intptr_t) this->choiceWindow, GameText_getText_ou(**g_ou_textRoot));
-                this->m_nStarMapWindowOpen.bytes[3] = 1;
-                rec->byte_0x2a = 1;
-                this->screenFlags.bytes[2] = 0;
-            }
+        if (this->modalFlags.bytes[2] == 0 && this->screenFlags.bytes[2] != 0 &&
+            Globals::hints[0x2a] == 0) {
+            static_cast<ChoiceWindow *>(this->choiceWindow)->set(
+                *Globals::gameText->getText(601));
+            this->m_nStarMapWindowOpen.bytes[3] = 1;
+            Globals::hints[0x2a] = 1;
+            this->screenFlags.bytes[2] = 0;
         }
 
         bool special = false;

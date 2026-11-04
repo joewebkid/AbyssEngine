@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**70 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+**59 unresolved symbols**, all referenced from `ModStation.cpp`. These are
 reconstruction helper names, not 108 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-checkhints-recovered-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-update-camera-window-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +24,25 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → 88 → 83 → **70**.
+159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → 88 → 83 → 70 → **59**.
+
+REA Android ARM `ModStation::OnUpdate` evidence
+`ev_71b291d89b3d7ddb28763bd8cbfcf89586bad2363a58ae69b981ac5589b66fe2`
+confirms the free-camera `EaseInOut` advance and random range renewal,
+direct current-camera translation, elapsed-time updates for the news
+ticker and active windows, and the text-601 notice flag at
+`Globals::hints[0x2a]`. Eleven guessed helper calls were replaced by
+typed methods; strict link gaps fall **70 → 59**, with no new names.
+Focused `OnUpdate` source-shape rises **76.3% → 83.3%** and strict
+fuzzy **27.1% → 41.8%**, without an exact match. Full report
+`_work/modstation_update_camera_window_full_20261104.json` compares
+4,323/4,524 originals in 4,770 pairs, mean source-shape **96.76%**,
+strict fuzzy **86.76%**, with 2,780 linked-exact, 1,108 byte-exact,
+201 missing, zero skipped and no pair or exact-set losses. Windows
+native, ARM64 static and ARMv7 209/209 builds pass. Camera movement
+and the notice still need live validation in a newly linked APK.
+The mission-result branch still has null placeholders and unverified
+method signatures; it accounts for the 20 remaining `OnUpdate` names.
 
 REA decompilation of Android ARM `ModStation::checkHints`
 (`ev_725994ccb8c97a5ae0f408bb00cd8bde30e6fa31687fc965f53572c0a2d77590`)
@@ -42,8 +60,9 @@ there is no exact match. The full report
 4,323/4,524 originals in 4,770 pairs, mean source-shape **96.76%**,
 strict fuzzy **86.75%**, with 2,780 linked-exact, 1,108 byte-exact,
 201 missing, zero skipped, and no lost pairs or exact-match members.
-Windows native, ARM64 static, and ARMv7 209/209 builds pass. The 70
-remaining names belong to `OnUpdate` (31) and `OnTouchEnd` (39).
+Windows native, ARM64 static, and ARMv7 209/209 builds pass. At that
+stage the 70 remaining names belonged to `OnUpdate` (31) and
+`OnTouchEnd` (39).
 
 REA then confirmed that this function reads `Globals::status` at
 offsets `0xf8`, `0x108`, and `0x114`, and invokes the existing
@@ -378,31 +397,20 @@ substitutions have since been corrected as described above. Earlier REA evidence
 Its remaining source-shape and semantic differences still need
 verification; zero unresolved helper names is only a link property.
 
-## `ModStation::OnUpdate()` — 31 unresolved
+## `ModStation::OnUpdate()` — 20 unresolved
 
 - `AEGeometry_rotate_ou(void*, float, float, float)`
-- `ChoiceWindow_setNotice_ou(int, int)`
-- `ChoiceWindow_update_ou(int)`
-- `CutScene_process_ou(int)`
-- `EaseInOut_advance_ou(void*, int)`
 - `Engine_setHangarLightIntensity_ou(float)`
 - `GameText_getText_ou(int)`
-- `HangarWindow_update_ou(int)`
-- `MenuTouchWindow_update_ou(void*, int)`
 - `Mission_ctor_ou(Mission*, int, int, int)`
 - `Mission_getStatusValue_ou()`
 - `Mission_getType_ou()`
 - `Mission_setCampaignMission_ou(void*)`
 - `Mission_setStatusValue_ou(int)`
-- `ModStation_ou_cameraHandle()`
-- `ModStation_ou_setCameraLocal(unsigned int, AbyssEngine::AEMath::Matrix const&)`
 - `SolarSystem_getIndex_ou()`
 - `SpaceLounge_introFinished_ou()`
 - `SpaceLounge_setHangarUpdate_ou(void*)`
-- `SpaceLounge_update_ou(int)`
-- `StarMap_update_ou(int, int)`
 - `Station_getIndex_ou(Station*)`
-- `StatusWindow_update_ou(int)`
 - `Status_getCampaignMission_ou()`
 - `Status_getCurrentCampaignMission_ou()`
 - `Status_getStation_ou()`
