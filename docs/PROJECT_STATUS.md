@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnRelease` ARM64 link closure).
+REA confirmed its original destructor/delete order. Eleven unresolved
+helper calls were replaced by typed deletion of the owned objects;
+the strict ARM64 shared link now has **147** unresolved helpers, down
+from 158, all in other `ModStation` methods. Windows native and ARM64
+static builds pass; ARMv7 compiles 209/209 units. Focused `OnRelease`
+source-shape rises **92.4% → 92.6%**, strict fuzzy **74.9% → 75.1%**.
+Full corpus: **4,323/4,524** originals in **4,770** pairs,
+**96.75% / 86.75%**, **2,780 linked-exact**, **1,108 byte-exact**,
+201 library/ABI missing symbols, zero skipped; no comparison or exact
+losses. A new `Array<RadioMessage *>` destructor pair is linked-exact.
+The corrected source is not yet linkable as a new APK. See
+[release evidence](MODSTATION_RELEASE_LINK_CLOSURE_ARM_2026-11-04.md) and
+[remaining link gaps](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (startup transition and strict ARM64 link).
 REA showed the original state-0 swap delay, state-1 counter reload,
 and texture/mesh loading-counter reset on entry to state 5; these

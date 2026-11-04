@@ -128,32 +128,9 @@ int FModSound_tryToStopMusicForBGMusic();
 
 
 
-void *ms_op_delete(void *p);
-
 void *ArrayReleaseClasses_TouchButton(void *a);
 
 void *Array_TB_dtor(void *p);
-
-void *HangarWindow_dtor(void *p);
-
-void *StarMap_dtor(void *p);
-
-void *MissionsWindow_dtor(void *p);
-
-void *DialogueWindow_dtor(void *p);
-
-void *ChoiceWindow_dtor(void *p);
-
-void *StatusWindow_dtor(void *p);
-
-void *CutScene_dtor(void *p);
-
-void *Radio_dtor(void *p);
-
-void *Array_RM_dtor(void *p);
-
-
-void *ScrollTouchBox_dtor(void *p);
 
 
 void ModStation::autosave() {
@@ -1545,54 +1522,43 @@ void ModStation::OnRelease() {
     }
     this->buttonRow = 0;
 
-    if (this->hangarWindow != 0)
-        ms_op_delete(HangarWindow_dtor(this->hangarWindow));
+    delete static_cast<HangarWindow *>(this->hangarWindow);
     this->hangarWindow = 0;
 
-    if ((void *&) this->starMap != 0)
-        ms_op_delete(StarMap_dtor((void *&) this->starMap));
+    delete this->starMap;
     (void *&) this->starMap = 0;
 
     delete (SpaceLounge *) this->spaceLounge;
     this->spaceLounge = 0;
 
-    if (this->missionsWindow != 0)
-        ms_op_delete(MissionsWindow_dtor(this->missionsWindow));
+    delete this->missionsWindow;
     this->missionsWindow = 0;
 
-    if (this->dialogueWindow != 0)
-        ms_op_delete(DialogueWindow_dtor(this->dialogueWindow));
+    delete this->dialogueWindow;
     this->dialogueWindow = 0;
 
-    if (this->medalChoiceWindow != 0)
-        ms_op_delete(ChoiceWindow_dtor(this->medalChoiceWindow));
+    delete static_cast<ChoiceWindow *>(this->medalChoiceWindow);
     this->medalChoiceWindow = 0;
 
-    if (this->statusWindow != 0)
-        ms_op_delete(StatusWindow_dtor(this->statusWindow));
+    delete static_cast<StatusWindow *>(this->statusWindow);
     this->statusWindow = 0;
 
-    if (this->cutScene != 0)
-        ms_op_delete(CutScene_dtor(this->cutScene));
+    delete this->cutScene;
     this->cutScene = 0;
 
     delete (MenuTouchWindow *) this->dlcMenu;
     this->dlcMenu = 0;
 
-    if (this->activeMission != 0)
-        ms_op_delete(Radio_dtor((void *) (intptr_t) this->activeMission));
+    delete reinterpret_cast<Radio *>(this->activeMission);
     this->activeMission = 0;
 
-    if (this->radioMessages != 0)
-        ms_op_delete(Array_RM_dtor(this->radioMessages));
+    delete static_cast<Array<RadioMessage *> *>(this->radioMessages);
     this->radioMessages = 0;
 
-    if (this->newsTicker != 0)
-        ms_op_delete((this->newsTicker->~NewsTicker(), this->newsTicker));
+    delete this->newsTicker;
     this->newsTicker = 0;
 
-    if (this->choiceWindow != 0)
-        ms_op_delete(ChoiceWindow_dtor(this->choiceWindow));
+    delete static_cast<ChoiceWindow *>(this->choiceWindow);
     this->choiceWindow = 0;
 
     PaintCanvas::gCanvas->ReleaseAllResources();
@@ -1617,12 +1583,10 @@ void ModStation::OnRelease() {
     delete (AbyssEngine::EaseInOut *) this->easeZ;
     this->easeZ = 0;
 
-    if (this->activeMission != 0)
-        ms_op_delete(Radio_dtor((void *) (intptr_t) this->activeMission));
+    delete reinterpret_cast<Radio *>(this->activeMission);
     this->activeMission = 0;
 
-    if (this->scrollBox != 0)
-        ms_op_delete(ScrollTouchBox_dtor(this->scrollBox));
+    delete static_cast<ScrollTouchBox *>(this->scrollBox);
     this->scrollBox = 0;
 
     this->cameraFlags.halfword = 0;
