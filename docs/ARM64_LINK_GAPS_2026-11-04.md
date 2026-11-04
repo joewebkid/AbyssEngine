@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**117 unresolved symbols**, all referenced from `ModStation.cpp`. These are
-reconstruction helper names, not 117 proven absent symbols in the original ARM
+**114 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+reconstruction helper names, not 114 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-medals-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-ship-swap-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +24,7 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → **117**.
+159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → **114**.
 
 REA then confirmed that this function reads `Globals::status` at
 offsets `0xf8`, `0x108`, and `0x114`, and invokes the existing
@@ -153,6 +153,22 @@ ARMv7 compiles 209/209 units. REA evidence:
 `Generator::getShipBuyList` is 96.7% source-shape and
 `Station::setShips` is 96.1%; this path is not yet live-validated.
 
+REA confirms the station-100 ship replacement branch: ship 37 is
+removed if present, then ships 38 and 40 are created from the global
+ship table with price `-1` and added if absent. The reconstructed code
+now passes the actual ship to `removeShip` and created objects to
+`addShip`, removing `Station_hasShip_oi`, `Station_removeShip_oi`, and
+`Station_addShip_oi`. Focused `OnInitialize` source-shape rises
+81.5% → **81.9%**; strict fuzzy changes 19.7% → **19.6%**. The full
+ARM report (`_work/modstation_init_ship_swap_full_20261104.json`)
+still compares 4,323/4,524 originals in 4,770 pairs, with 96.75% /
+86.74% means, 2,780 linked-exact, 1,108 byte-exact, 201 missing,
+and zero skipped, without pair or exact-set losses. Native and ARM64
+static builds pass; ARMv7 compiles 209/209 units. REA evidence:
+`ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
+`Station::addShip` is 91.0% source-shape and the new station path is
+not yet live-validated in a linked APK.
+
 For the earlier cutscene-only change, Windows native and ARM64 static builds
 pass; ARMv7 compiles 209/209 units. Focused `OnInitialize` remains
 **72.2%** source-shape and **27.3%** strict fuzzy. The full ARM corpus
@@ -172,7 +188,7 @@ currently dereferences placeholder pointers initialized to null and omits the
 original's wanted-name text substitutions. REA original evidence:
 `ev_7e1aa9c7284245af140363313e649e4c93e2bd1306315edcf425f8785f24b1d3`.
 
-## `ModStation::OnInitialize()` — 34 unresolved
+## `ModStation::OnInitialize()` — 31 unresolved
 
 - `ChoiceWindow_set1_oiImpl(void*, int)`
 - `ChoiceWindow_set6_oiImpl(void*, int, int, int, int, int, int)`
@@ -198,11 +214,8 @@ original's wanted-name text substitutions. REA original evidence:
 - `SolarSystem_getRace_oi()`
 - `SolarSystem_getRoutes_oi()`
 - `Station_addItem_oi(Item*)`
-- `Station_addShip_oi(Ship*)`
 - `Station_getShips_oi()`
 - `Station_hasItem_oi(int)`
-- `Station_hasShip_oi(void*)`
-- `Station_removeShip_oi(Ship*)`
 - `Status_getCredits_oi()`
 - `Status_getShip_oi()`
 - `Status_getStation_oi()`

@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnInitialize` station-100 ship
+replacement). REA confirmed that this branch removes ship 37 when
+present, then adds ships 38 and 40 from the global ship table at
+price `-1` if absent. The recovered code now passes the found ship
+to `Station::removeShip` and the created ship objects to
+`Station::addShip`, with typed station and list access. Strict ARM64
+shared-link gaps fall **117 → 114**. Windows native, ARM64 static,
+and ARMv7 **209/209** builds pass. Focused `OnInitialize`
+source-shape rises **81.5% → 81.9%**; strict fuzzy changes
+**19.7% → 19.6%**. Full ARM coverage remains **4,323/4,524**
+originals in **4,770** pairs, with **96.75% / 86.74%** mean
+source-shape/strict fuzzy, **2,780 linked-exact**, **1,108 byte-exact**,
+201 missing, and zero skipped, without pair or exact-set losses.
+`Station::addShip` remains non-exact internally. The branch has not
+been live-validated in a linked APK. The next priority is the reward
+station and freelance-mission item paths; see
+[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnInitialize` gold-medal ship
 list). REA confirmed that station 10 checks the gold-medal state,
 searches its ship list for ship 8, and if absent creates a `Generator`,

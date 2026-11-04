@@ -2786,11 +2786,7 @@ int Station_getShips_oi();
 
 int Station_hasItem_oi(int station);
 
-int Station_hasShip_oi(void *station);
-
 void Station_addItem_oi(Item * it);
-void Station_addShip_oi(Ship * s);
-void Station_removeShip_oi(Ship * s);
 
 int Standing_getStanding_oi(int standing);
 
@@ -3172,20 +3168,24 @@ void ModStation::OnInitialize() {
              Globals::status->getCurrentCampaignMission() == 0x52 ||
              Globals::status->getCurrentCampaignMission() == 0x53 ||
              Globals::status->getCurrentCampaignMission() == 0x54)) {
-            Ship *st = (Ship *) Status_getStation_oi();
-            if (Station_hasShip_oi(st) != 0) {
-                Array<Ship *> *ships = (Array<Ship *> *) (intptr_t) Station_getShips_oi();
-                unsigned i = 0;
-                while (i < ships->size() && Ship_getIndex_oi() != 0x25) i = i + 1;
-                Station_removeShip_oi(st);
+            Station *station = Globals::status->getStation();
+            if (station->hasShip(0x25)) {
+                Array<Ship *> *ships = station->getShips();
+                Ship *oldShip = nullptr;
+                for (unsigned i = 0; i < ships->size(); ++i) {
+                    if ((*ships)[i]->getIndex() == 0x25) {
+                        oldShip = (*ships)[i];
+                        break;
+                    }
+                }
+                station->removeShip(oldShip);
             }
-            if (Station_hasShip_oi(st) == 0) {
-                Ship_makeShip_oi((*(Array<int> *) (intptr_t) **g_oi_shipTable)[(0x98) / 4]);
-                Station_addShip_oi(st);
+            Array<Ship *> *shipTable = static_cast<Array<Ship *> *>(Globals::ships);
+            if (!station->hasShip(0x26)) {
+                station->addShip((*shipTable)[0x26]->makeShip(-1));
             }
-            if (Station_hasShip_oi(st) == 0) {
-                Ship_makeShip_oi((*(Array<int> *) (intptr_t) **g_oi_shipTable)[(0xa0) / 4]);
-                Station_addShip_oi(st);
+            if (!station->hasShip(0x28)) {
+                station->addShip((*shipTable)[0x28]->makeShip(-1));
             }
         }
 
