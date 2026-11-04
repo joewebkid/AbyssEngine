@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnInitialize` station supply).
+REA confirmed that station 10 offers item 164 in a 50-unit copy only
+when the player lacks equipment/cargo 85 and the station lacks items
+85 and 164. The fuel path checks cargo 122, and adds a ten-unit item
+122 when the player has at most five and the station has none. These
+branches now retain typed `Ship`, `Station`, and `Item` receivers.
+Strict ARM64 shared-link gaps fall **125 → 122**. Windows native,
+ARM64 static, and ARMv7 **209/209** builds pass. Focused
+`OnInitialize` source-shape rises **81.0% → 81.7%**; strict fuzzy
+changes **20.2% → 20.1%**. Full ARM coverage remains
+**4,323/4,524** originals in **4,770** pairs, with **96.75% /
+86.74%** mean source-shape/strict fuzzy, **2,780 linked-exact**,
+**1,108 byte-exact**, 201 missing, and zero skipped; no pair or
+exact-set losses. `Ship::hasEquipment`, `hasCargo`, and `getCargo`
+remain non-exact internally, and this supply path is not yet
+live-validated in a linked APK. The next priority is the medal ship
+list and later station rewards; see
+[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnInitialize` campaign items).
 REA confirmed mission 20 sets the price of existing item 41 to zero,
 creates a ten-unit copy of item 41 at zero price, and adds it to the

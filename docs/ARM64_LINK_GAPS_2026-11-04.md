@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**125 unresolved symbols**, all referenced from `ModStation.cpp`. These are
-reconstruction helper names, not 125 proven absent symbols in the original ARM
+**122 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+reconstruction helper names, not 122 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-mission-items-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-fuel-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +24,7 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → **125**.
+159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → **122**.
 
 REA then confirmed that this function reads `Globals::status` at
 offsets `0xf8`, `0x108`, and `0x114`, and invokes the existing
@@ -116,6 +116,24 @@ ARMv7 compiles 209/209 units. REA evidence:
 been live-validated in a linked APK. The item-85 and fuel-122 supply
 branch is next.
 
+REA confirms the station supply paths. At station 10 after the game
+is won, item 164 is added in a 50-unit copy only if the player's
+equipment/cargo lacks item 85 and the station lacks items 85 and 164.
+The fuel path reads cargo 122 and adds a ten-unit item 122 when the
+player has at most five and the station has none. Restoring typed
+receivers removes `Ship_hasEquipment_oi`, `Ship_getCargo_oi`, and
+`Item_getAmount_oi`; no new link errors appear. Focused
+`OnInitialize` source-shape rises 81.0% → **81.7%** and strict fuzzy
+changes 20.2% → **20.1%**. The full ARM report
+(`_work/modstation_init_fuel_full_20261104.json`) still compares
+4,323/4,524 originals in 4,770 pairs, with 96.75% / 86.74% means,
+2,780 linked-exact, 1,108 byte-exact, 201 missing, and zero skipped,
+without pair or exact-set losses. Windows native and ARM64 static
+builds pass; ARMv7 compiles 209/209 units. REA evidence:
+`ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
+The existing ship cargo/equipment helpers are non-exact internally;
+this supply path has not been live-validated in a linked APK.
+
 For the earlier cutscene-only change, Windows native and ARM64 static builds
 pass; ARMv7 compiles 209/209 units. Focused `OnInitialize` remains
 **72.2%** source-shape and **27.3%** strict fuzzy. The full ARM corpus
@@ -135,7 +153,7 @@ currently dereferences placeholder pointers initialized to null and omits the
 original's wanted-name text substitutions. REA original evidence:
 `ev_7e1aa9c7284245af140363313e649e4c93e2bd1306315edcf425f8785f24b1d3`.
 
-## `ModStation::OnInitialize()` — 42 unresolved
+## `ModStation::OnInitialize()` — 39 unresolved
 
 - `Achievements_gotAllGoldMedals_oi()`
 - `ChoiceWindow_set1_oiImpl(void*, int)`
@@ -148,7 +166,6 @@ original's wanted-name text substitutions. REA original evidence:
 - `Generator_ctor_oi(Generator*)`
 - `Generator_dtor_oi(Generator*)`
 - `Generator_getShipBuyList_oi(Station*)`
-- `Item_getAmount_oi()`
 - `Item_makeItemDesc_oi(int)`
 - `Item_makeItem_oi()`
 - `Item_setUnsaleable_oi(int)`
@@ -156,10 +173,8 @@ original's wanted-name text substitutions. REA original evidence:
 - `Mission_getType_oi()`
 - `ModStation_oi_cameraHandle()`
 - `ModStation_oi_setCameraLocal(unsigned int, AbyssEngine::AEMath::Matrix const&)`
-- `Ship_getCargo_oi(int)`
 - `Ship_getIndex_oi()`
 - `Ship_hasCargo_oi(int, int)`
-- `Ship_hasEquipment_oi(int, int)`
 - `Ship_hasJumpDrive_oi()`
 - `Ship_makeShip_oi(int)`
 - `Ship_setEquipment_oi(Item*, int)`

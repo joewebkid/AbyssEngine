@@ -2766,10 +2766,6 @@ int Ship_hasJumpDrive_oi();
 
 int Ship_hasCargo_oi(int ship, int item);
 
-int Ship_hasEquipment_oi(int ship, int item);
-
-int Ship_getCargo_oi(int ship);
-
 void Ship_makeShip_oi(int desc);
 
 void Ship_setRace_oi(int race);
@@ -2785,8 +2781,6 @@ int Item_makeItem_oi();
 int Item_makeItemDesc_oi(int desc);
 
 void Item_setUnsaleable_oi(int flag);
-
-int Item_getAmount_oi();
 
 int Station_getShips_oi();
 
@@ -3118,15 +3112,18 @@ void ModStation::OnInitialize() {
 
         bool isS100;
         if (hereIdx == 10 && Globals::status->gameWon() != 0) {
-            int ship = Status_getShip_oi();
-            if (Ship_hasEquipment_oi(ship, 0x55) == 0) {
-                ship = Status_getShip_oi();
-                if (Ship_hasCargo_oi(ship, 0x55) == 0) {
-                    int st0 = Status_getStation_oi();
-                    if (Station_hasItem_oi(st0) == 0 && Station_hasItem_oi(Status_getStation_oi()) == 0) {
-                        Item *it = (Item *) Status_getStation_oi();
-                        Item_makeItemDesc_oi((*(Array<int> *) (intptr_t) **g_oi_itemTable)[(0x290) / 4]);
-                        Station_addItem_oi(it);
+            Ship *ship = Globals::status->getShip();
+            if (!ship->hasEquipment(0x55, 1)) {
+                ship = Globals::status->getShip();
+                if (!ship->hasCargo(0x55, 1)) {
+                    Station *station = Globals::status->getStation();
+                    if (!station->hasItem(0x55)) {
+                        station = Globals::status->getStation();
+                        if (!station->hasItem(0xa4)) {
+                            Station *rewardStation = Globals::status->getStation();
+                            Array<Item *> *itemTable = static_cast<Array<Item *> *>(Globals::items);
+                            rewardStation->addItem((*itemTable)[0xa4]->makeItem(50));
+                        }
                     }
                 }
             }
@@ -3136,13 +3133,14 @@ void ModStation::OnInitialize() {
             isS100 = hereIdx == 100;
             if ((unsigned) (hereIdx - 100) < 2 || hereIdx == 10) {
             fuelTop:
-                int amt;
-                int cargo = Ship_getCargo_oi(Status_getShip_oi());
-                amt = (cargo == 0) ? 0 : Item_getAmount_oi();
-                if (amt < 6 && Station_hasItem_oi(Status_getStation_oi()) == 0) {
-                    Item *it = (Item *) Status_getStation_oi();
-                    Item_makeItemDesc_oi((*(Array<int> *) (intptr_t) **g_oi_itemTable)[(0x1e8) / 4]);
-                    Station_addItem_oi(it);
+                Ship *playerShip = Globals::status->getShip();
+                Item *cargo = playerShip->getCargo(0x7a);
+                int amt = cargo != nullptr ? cargo->getAmount() : 0;
+                Station *station = Globals::status->getStation();
+                if (amt <= 5 && !station->hasItem(0x7a)) {
+                    Station *fuelStation = Globals::status->getStation();
+                    Array<Item *> *itemTable = static_cast<Array<Item *> *>(Globals::items);
+                    fuelStation->addItem((*itemTable)[0x7a]->makeItem(10));
                 }
             }
         }
