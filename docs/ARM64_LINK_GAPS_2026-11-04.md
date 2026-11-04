@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**92 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+**90 unresolved symbols**, all referenced from `ModStation.cpp`. These are
 reconstruction helper names, not 108 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-ship-price-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-system-race-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +24,7 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → **92**.
+159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → **90**.
 
 REA then confirmed that this function reads `Globals::status` at
 offsets `0xf8`, `0x108`, and `0x114`, and invokes the existing
@@ -203,6 +203,24 @@ ARMv7 compiles 209/209 units. REA evidence:
 `ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
 The offer is not yet live-validated.
 
+The remaining system-race lookup in the station camera path now uses
+`Status::getSystem()->getRace()` when the station index is neither
+101 nor 100, as in Android ARM. Two unresolved helpers disappear:
+the strict ARM64 link falls 92 → **90**. Focused `OnInitialize`
+source-shape remains **85.0%** and strict fuzzy **44.8%**; Windows
+native, ARM64 static, and ARMv7 209/209 builds pass. The surrounding
+camera setup is still incomplete: the original reads the current
+camera direction, resets three `EaseInOut` ranges, sets the local
+camera matrix, and updates the cutscene geometry, while the current
+source has only a partial translation. Those operations require a
+separate reconstruction before live validation. Original REA
+evidence: `ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
+The full ARM report (`_work/modstation_init_system_race_full_20261104.json`)
+compares 4,323/4,524 originals in 4,770 pairs, with 96.75% /
+86.75% mean source-shape/strict fuzzy, 2,780 linked-exact,
+1,108 byte-exact, 201 missing, and zero skipped. No comparison
+pairs or exact-match sets were lost.
+
 The mission-77 ship price branch is restored. The original Android
 ARM code visits station 100's ship array and sets the price of every
 ship with index 37 to zero. Typed `Station` and `Ship` calls replace
@@ -293,7 +311,7 @@ currently dereferences placeholder pointers initialized to null and omits the
 original's wanted-name text substitutions. REA original evidence:
 `ev_7e1aa9c7284245af140363313e649e4c93e2bd1306315edcf425f8785f24b1d3`.
 
-## `ModStation::OnInitialize()` — 9 unresolved
+## `ModStation::OnInitialize()` — 7 unresolved
 
 - `ChoiceWindow_set1_oiImpl(void*, int)`
 - `ChoiceWindow_set6_oiImpl(void*, int, int, int, int, int, int)`
@@ -302,8 +320,6 @@ original's wanted-name text substitutions. REA original evidence:
 - `GameText_getText_oiImpl(int)`
 - `ModStation_oi_cameraHandle()`
 - `ModStation_oi_setCameraLocal(unsigned int, AbyssEngine::AEMath::Matrix const&)`
-- `SolarSystem_getRace_oi()`
-- `Status_getSystem_oi()`
 
 ## `ModStation::OnUpdate()` — 31 unresolved
 

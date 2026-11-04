@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnInitialize` system race).
+Android ARM reads the current system's race when the station is
+neither 101 nor 100. The recovered branch now calls the typed
+`Status` and `SolarSystem` methods. Strict ARM64 link gaps fall
+**92 → 90**. Windows native, ARM64 static, and ARMv7 **209/209**
+builds pass. Focused `OnInitialize` remains **85.0%** source-shape
+and **44.8%** strict fuzzy. The camera path after this race choice
+still differs materially from the original ARM behavior; its
+animation and camera state need reconstruction before a fresh APK
+can validate this scene. Full ARM coverage remains **4,323/4,524**
+originals in **4,770** pairs, with **96.75% / 86.75%** mean
+source-shape/strict fuzzy, **2,780 linked-exact**, **1,108 byte-exact**,
+201 missing, and zero skipped. No comparison pairs or exact-match
+sets were lost. See [link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnInitialize` ship price).
 The original Android ARM path for campaign mission 77 at station 100
 sets the price of each ship with index 37 to zero. This branch now

@@ -2737,9 +2737,6 @@ static char **g_oi_demoFlag = 0;
 
 
 
-int Status_getSystem_oi();
-
-int SolarSystem_getRace_oi();
 
 
 int Status_getShip_oi();
@@ -2859,8 +2856,7 @@ void ModStation::OnInitialize() {
             if (st->getIndex() == 100) {
                 race = 7;
             } else {
-                Status_getSystem_oi();
-                race = SolarSystem_getRace_oi();
+                race = Globals::status->getSystem()->getRace();
             }
         }
         {
