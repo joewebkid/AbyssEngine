@@ -3001,24 +3001,18 @@ void ModStation::showDlcMenu() {
 }
 
 
-static int *g_cbs_stack = 0;
-
-static int **g_cbs_textId = 0;
-
-int GameText_getText_cbs(int id);
-
-void ChoiceWindow_set_cbs(ChoiceWindow *cw, String *title, String *ok, int modal,
-                          String *a, String *b, String *c, int d, int e);
-
 void ModStation::showCBSMessage() {
-    String emptyA, emptyB, ok;
-
-    ChoiceWindow *cw = (ChoiceWindow *) this->choiceWindow;
-    String *title = (String *) GameText_getText_cbs(**g_cbs_textId);
-    ChoiceWindow_set_cbs(cw, title, &ok, 1, &emptyA, &emptyB, &emptyA, -1, -1);
-
+    // Android ARM 2.0.16 embeds this COMPUTERBILD SPIELE unlock prompt.
+    String code("Code");
+    String purchase("In-App Purchase");
+    String message(
+        "Zum Weiterspielen musst Du Galaxy on Fire 2 freischalten. Moechtest Du die Vollversion mit einen COMPUTERBILD SPIELE"
+        " Freischalt-Code oder via In-App-Purchase freischalten?");
+    static_cast<ChoiceWindow *>(this->choiceWindow)->set(
+        *Globals::gameText->getText(390), message, true,
+        code, purchase, code, -1, -1);
     this->hintFlags.bytes[1] = 1;
-    this->modalFlags.bytes[3] = 1;
+    this->m_nStarMapWindowOpen.bytes[3] = 1;
 }
 
 int GameText_getText_frag(int id);

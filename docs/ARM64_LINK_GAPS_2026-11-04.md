@@ -9,6 +9,9 @@ checked against the source and ABI. The raw linker evidence is
 `D:/gof2-arm64-crypto/startup-link-touchend-choice-fullpath-20261104.log`
 (outside Git). The resulting ELF64/AArch64 shared library retains all
 53 JNI entry points. Link success does not prove runtime behavior.
+Section garbage collection can omit unreferenced functions; the
+previous `showCBSMessage` null-root path was found by focused source
+review despite this passing link. See [CBS evidence](MODSTATION_CBS_MESSAGE_ARM_2026-11-04.md).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -38,9 +41,10 @@ and removes the lossy ARM64 `Status*` to `int` conversion. This lowers
 strict link gaps **22 → 13 → 0** with no new names. Focused
 `OnTouchEnd` source-shape rises **88.8% → 90.0% → 96.1%**; strict
 fuzzy changes **29.2% → 26.8% → 25.5%**. The function is still not
-exact. The signed clone test APK is
-`D:/gof2-arm64-crypto/gof2-arm64-main-touchend-final-debug-20261104.apk`
-(SHA-256 `a19db87f4988290521935413bc078e0f72bd3b37f0609a87b06e7ad2d0a9da1a`).
+exact. The latest signed clone test APK, including the subsequent CBS
+message fix, is
+`D:/gof2-arm64-crypto/gof2-arm64-main-cbs-debug-20261104.apk`
+(SHA-256 `af237730114443d560a97e0edc30e2d17d6040d9875d22539ac62e70fc6eb02b`).
 Its v1/v2/v3 signatures and embedded ARM64 library hash were verified;
 it has not been installed or launched.
 Unused `_ote` declarations and null-root globals were then removed;

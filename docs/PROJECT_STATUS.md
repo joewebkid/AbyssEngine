@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::showCBSMessage`). Android ARM
+shows the original COMPUTERBILD SPIELE unlock prompt, text 390,
+button labels and choice flags at offsets `0xdd`/`0x63`. The previous
+implementation dereferenced a null text root and wrote the choice
+flag at `0x6b`. The recovered function now constructs the original
+message and uses `ChoiceWindow::set` directly. Windows native, ARM64
+static and ARMv7 **209/209** builds pass; strict ARM64 shared linking
+still has zero undefined symbols and 53 JNI exports. Focused
+source-shape rises **88.6% → 98.2%**, strict fuzzy **40.5% → 53.0%**;
+the function is not exact. Full corpus: **4,323/4,524** originals in
+**4,770** pairs, mean source-shape **96.77%**, strict fuzzy **86.76%**,
+**2,780 linked-exact**, **1,108 byte-exact**, 201 missing and zero
+skipped; no pair or exact-match member was lost. A new signed APK is
+ready but has not run. This function has no current source caller, and
+its live behavior remains unverified. Next priority: inspect other
+unreferenced functions for null roots and test the current APK when a
+device is free. See [evidence and limits](MODSTATION_CBS_MESSAGE_ARM_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnTouchEnd` choice-window and
 departure flows). Android ARM confirms the choice result branches,
 the flags at offsets `0xb2`/`0xdc`, mission-24 agent update,
