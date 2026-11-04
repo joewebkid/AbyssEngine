@@ -258,8 +258,9 @@ static bool g_stationStatusHelpShown = false;
 static bool g_stationLoungeHelpShown = false;
 static bool g_stationMapHelpShown = false;
 static bool g_stationEarlyMapHelpShown = false;
-// Android .data 0x215690 and zero-initialized .bss 0x217bf8.
+// Android .data 0x215690, 0x2156a4, and zero-initialized .bss 0x217bf8.
 static int g_stationPirateHangarFace[5] = {2, 0, 0, 0, 0};
+static int g_stationRewardFace[5] = {4, 2, 0, 2, 2};
 static int g_stationPirateLoungeFace[5] = {};
 
 void ModStation::OnKeyPress(long long key, long long) {
@@ -3181,11 +3182,15 @@ void ModStation::OnInitialize() {
         bool atReward = st6c->getIndex() == 0x6c;
         int rewardState = atReward ? Globals::status->field_114 : 0;
         if (atReward && rewardState == 1) {
-            if (this->dialogueWindow != 0) {
-            }
-            this->dialogueWindow = 0;
-            ChoiceWindow_set1_oiImpl(this->choiceWindow, GameText_getText_oiImpl(0x6c));
-            this->screenFlags.bytes[1] = 1;
+            delete this->dialogueWindow;
+            this->dialogueWindow = nullptr;
+            Mission *rewardMission = new Mission(
+                -1, AbyssEngine::String(*Globals::gameText->getText(1601), false),
+                g_stationRewardFace, 4, 0, 0x6c, 0);
+            rewardMission->setWon(true);
+            Globals::status->field_114 = 2;
+            this->dialogueWindow = new DialogueWindow(rewardMission, nullptr, 0);
+            this->modalFlags.bytes[1] = 1;
         } else {
             Station *st = Globals::status->getStation();
             if (st->getIndex() == 0x6c && Globals::status->field_114 == 2) {

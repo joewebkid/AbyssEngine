@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnInitialize` reward dialogue).
+The original Android `.data` at `0x2156A4` contains the five-part
+portrait descriptor `{4, 2, 0, 2, 2}`. Reward station 108 in state 1
+now deletes the previous dialogue, creates a won mission with game
+text 1601 and that portrait, advances state to 2, and opens the
+dialogue. Focused `OnInitialize` source-shape rises **82.4% → 84.2%**
+and strict fuzzy **43.8% → 45.0%**. Windows native, ARM64 static, and
+ARMv7 **209/209** builds pass. The strict ARM64 link still has **108**
+unresolved helper symbols elsewhere in `ModStation.cpp`; this path
+has not been tested in a newly linked APK. Full ARM coverage remains
+**4,323/4,524** originals in **4,770** pairs, with **96.75% /
+86.75%** mean source-shape/strict fuzzy, **2,780 linked-exact**,
+**1,108 byte-exact**, 201 missing, and zero skipped. There are no
+lost comparison pairs or exact matches against the preceding report.
+See
+[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnInitialize` reward offer).
 REA confirmed that reward station 108 in state 2 offers the choice
 only with at least **30,000,001 credits** and 50 units of cargo 109;
@@ -13,9 +30,8 @@ builds pass. Focused `OnInitialize` source-shape rises **82.2% →
 86.75%** mean source-shape/strict fuzzy, **2,780 linked-exact**,
 **1,108 byte-exact**, 201 missing, and zero skipped, without pair
 or exact-set losses. The offer has not been run in a linked APK.
-Reward state 1 still lacks its original mission/dialogue construction;
-the constructor's client-image argument needs recovery. See
-[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+The state-1 mission/dialogue construction is recovered in the next
+review above. See [link inventory](ARM64_LINK_GAPS_2026-11-04.md).
 
 Last reviewed: 2026-11-04 (`ModStation::OnInitialize` freelance item).
 REA confirmed that freelance mission type 14 adds one copy of item

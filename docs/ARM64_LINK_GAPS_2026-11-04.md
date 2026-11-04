@@ -6,7 +6,7 @@ against the project libzip/crypto archives and Android system libraries reports
 reconstruction helper names, not 108 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-reward-offer-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-reward-dialogue-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -201,9 +201,26 @@ strict fuzzy 19.5% → **43.8%**. The full ARM report
 without pair or exact-set losses. Native and ARM64 static builds pass;
 ARMv7 compiles 209/209 units. REA evidence:
 `ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
-The offer is not yet live-validated. Reward state 1 still lacks its
-original mission/dialogue construction and needs the client-image
-argument recovered before implementation.
+The offer is not yet live-validated.
+
+The reward-station state-1 dialogue is also recovered. The original
+Android `.data` at `0x2156A4` contains the five-word client portrait
+`{4, 2, 0, 2, 2}`. REA shows the previous dialogue being destroyed,
+then a mission with ID `-1`, text 1601, this portrait, race 4, and
+target station 108 being created and marked won. State advances to 2,
+then a `DialogueWindow` is constructed and its modal flag enabled.
+The focused `OnInitialize` comparison rises 82.4% → **84.2%**
+source-shape and 43.8% → **45.0%** strict fuzzy. Windows native,
+ARM64 static, and ARMv7 209/209 builds pass. The strict ARM64 link
+still has **108** unresolved helpers because the remaining uses of
+its ChoiceWindow wrapper occur elsewhere. This branch remains
+unverified in a freshly linked APK. The full ARM report
+(`_work/modstation_init_reward_dialogue_full_20261104.json`) compares
+4,323/4,524 originals in 4,770 pairs, with 96.75% / 86.75% mean
+source-shape/strict fuzzy, 2,780 linked-exact, 1,108 byte-exact,
+201 missing, and zero skipped. No comparison pairs or exact-match
+sets were lost against the preceding report. REA evidence:
+`ev_fde7c5f6ddbb9d335fd57806d522f3253b7b40199427cd9ebe82f6ebd61fe7ea`.
 
 For the earlier cutscene-only change, Windows native and ARM64 static builds
 pass; ARMv7 compiles 209/209 units. Focused `OnInitialize` remains
