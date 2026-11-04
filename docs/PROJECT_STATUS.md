@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnTouchEnd` campaign switch).
+The original Android ARM switch confirms distinct exits for selected
+campaign missions, station-100 ship and cargo awards, ship-stat reset,
+and destination-station transitions. The previous branch repeated
+placeholder calls, used null global roots, and skipped mission rewards.
+It now uses typed game methods and the common original reward path.
+Strict ARM64 link gaps fall **34 → 22** without new names. Windows
+native, ARM64 static and ARMv7 **209/209** builds pass. Focused
+`OnTouchEnd` source-shape rises **85.4% → 88.8%**, strict fuzzy
+**23.6% → 29.2%**; it is not exact. Live campaign outcomes remain
+unverified until a new APK links. The full ARM corpus compares
+**4,323/4,524** originals in **4,770** pairs, with mean source-shape
+**96.77%**, strict fuzzy **86.76%**, **2,780 linked-exact** and
+**1,108 byte-exact** matches, 201 missing and zero skipped. Pair and
+exact-match sets have no losses. Next priority: the remaining 22
+`OnTouchEnd` helper names in choice-window and departure flows. See
+[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnTouchEnd` dialogue exit).
 Android ARM shows that closing a dialogue without a mission checks
 the touch-active byte at `0x101`, clears camera byte `0xb2`, and

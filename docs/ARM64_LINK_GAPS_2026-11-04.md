@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**34 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+**22 unresolved symbols**, all referenced from `ModStation.cpp`. These are
 reconstruction helper names, not 108 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-touchend-dialogue-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-touchend-switch-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +24,24 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → 88 → 83 → 70 → 59 → 41 → 39 → 35 → **34**.
+159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → 88 → 83 → 70 → 59 → 41 → 39 → 35 → 34 → **22**.
+
+The original `OnTouchEnd` campaign switch at `0xd81b8`–`0xd8862`
+routes missions 44, 45, 75/83, 18 and 9 to distinct exits, gives
+ships and cargo at station 100 for missions 77/84, resets ship stats
+for mission 78, and chooses explicit destination stations for missions
+89, 99, 109, 119, 133, 144 and 160. Other branches join the one
+reward/mission-removal path at `LABEL_65`. The recovered source now
+follows that control flow with typed `Status`, `Station`, `Ship`, `Item`
+and `Galaxy` methods. It removes 12 more unresolved placeholder names,
+**34 → 22**, with no new names. Focused `OnTouchEnd` source-shape rises
+**85.4% → 88.8%**, strict fuzzy **23.6% → 29.2%**; it is not exact.
+Full ARM report `_work/modstation_touchend_campaign_switch_full_20261104.json`
+compares 4,323/4,524 originals in 4,770 pairs, with mean source-shape
+**96.77%**, strict fuzzy **86.76%**, 2,780 linked-exact and 1,108
+byte-exact matches, 201 missing and zero skipped. Pair and exact-match
+sets have no losses. Windows native, ARM64 static and ARMv7 209/209
+builds pass. The campaign outcomes still need a linked-APK test.
 
 The same REA `OnTouchEnd` evidence confirms that closing a dialogue
 without an active mission checks the touch-active byte at `0x101`,
@@ -477,7 +494,7 @@ verification; zero unresolved helper names is only a link property.
 The strict ARM64 link has no unresolved helper names from this function.
 Focused source-shape and live behavior remain separate validation tasks.
 
-## `ModStation::OnTouchEnd(int, int, void*)` — 34 unresolved
+## `ModStation::OnTouchEnd(int, int, void*)` — 22 unresolved
 
 - `Achievements_resetNewMedals_ote(void*)`
 - `Agent_getOffer_ote(Agent*)`
@@ -488,30 +505,18 @@ Focused source-shape and live behavior remain separate validation tasks.
 - `ChoiceWindow_setNotice_ote(int, int)`
 - `Galaxy_getStation_ote(int)`
 - `GameText_getText_ote(int)`
-- `HangarWindow_dtor_ote(HangarWindow*)`
-- `Item_makeItem_ote(int)`
-- `Mission_getBonus_ote()`
-- `Mission_getReward_ote()`
 - `RecordHandler_saveOptions_ote(RecordHandler*)`
-- `Ship_addCargo_ote(Item*)`
-- `Ship_makeShip_ote(int)`
 - `Ship_removeCargo_ote(int, int)`
-- `SpaceLounge_refresh_ote()`
-- `Station_addShip_ote(Ship*)`
 - `Station_getAgents_ote(Station*)`
 - `Station_getIndex_ote(Station*)`
-- `Station_hasShip_ote(void*)`
 - `Station_setAttackedFriends_ote(Station*, int)`
 - `Station_setItems_ote(Station*, void*, int)`
-- `Status_activateNewWanted_ote()`
 - `Status_changeCredits_ote(int)`
 - `Status_departStation_ote(Station*)`
 - `Status_getCredits_ote()`
 - `Status_getCurrentCampaignMission_ote()`
 - `Status_getShip_ote()`
 - `Status_getStation_ote()`
-- `Status_removeMission_ote(int)`
-- `Status_setMission_ote(int)`
 - `Status_setStation_ote(Station*)`
 
 ## `ModStation::checkHints()` — closed
