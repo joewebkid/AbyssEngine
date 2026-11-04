@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnInitialize` opening
+cutscene). REA confirmed the original creates `CutScene(23)` in an
+`0xA0`-byte allocation and calls `initialize()`. The recovered source
+now does so directly, retaining at least that allocation size and
+removing an unused null-pointer read at function entry. The strict
+ARM64 shared link has **145** unresolved reconstruction helpers,
+down from 147. Windows native, ARM64 static, and ARMv7 209/209 builds
+pass. `OnInitialize` focused source-shape/strict fuzzy remains
+**72.2% / 27.3%**. Full corpus: **4,323/4,524** originals,
+**4,770** pairs, **96.75% / 86.75%**, **2,780 linked-exact**,
+**1,108 byte-exact**, 201 library/ABI missing symbols, zero skipped,
+with no pair or exact losses. The new APK is still blocked by the
+remaining link gaps; see [inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnRelease` ARM64 link closure).
 REA confirmed its original destructor/delete order. Eleven unresolved
 helper calls were replaced by typed deletion of the owned objects;

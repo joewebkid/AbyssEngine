@@ -2852,10 +2852,6 @@ void ChoiceWindow_set_oi(void *cw, int text, int flag);
 
 void ChoiceWindow_setNotice_oi(void *cw, int text);
 
-int CutScene_initialize_oi(CutScene * cs);
-
-void CutScene_ctor_oi(CutScene *cs, int kind);
-
 void CutScene_replacePlayerShip_oi(int cs, int shipIndex);
 
 void TouchButton_setHalfTransparent_oi(int flag);
@@ -2880,15 +2876,13 @@ void ChoiceWindow_set6_oiImpl(void *cw, int a, int b, int c, int d, int e, int f
 void ChoiceWindow_set1_oiImpl(void *cw, int textStr);
 
 void ModStation::OnInitialize() {
-    int *status = *(int **) g_oi_status;
-
     this->dialogueMission = 0;
 
-    if ((int) (intptr_t) this->cutScene == 0) {
-        CutScene *cs = (CutScene *) ::operator new(0xa0);
-        CutScene_ctor_oi(cs, 0x17);
+    if (this->cutScene == nullptr) {
+        const size_t bytes = sizeof(CutScene) > 0xa0 ? sizeof(CutScene) : 0xa0;
+        CutScene *cs = new (::operator new(bytes)) CutScene(23);
         this->cutScene = cs;
-        CutScene_initialize_oi(cs);
+        cs->initialize();
     }
 
     int state = this->state;

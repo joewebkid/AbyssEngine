@@ -2,18 +2,40 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**147 unresolved symbols**, all referenced from `ModStation.cpp`. These are
-reconstruction helper names, not 147 proven absent symbols in the original ARM
+**145 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+reconstruction helper names, not 145 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/modstation-release-link-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/modstation-init-cutscene-link-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
 `Engine::ActivateRender2TextureFBO`; replacing an unresolved wrapper removed
 one. REA then confirmed the destructor sequence in `ModStation::OnRelease`;
 direct typed deletion removed 11 more without adding new unresolved symbols.
-The resulting counts are 159 → 158 → **147**.
+REA also confirmed the opening `CutScene(23)` construction and
+`initialize()` call in `ModStation::OnInitialize`. Direct calls remove
+two more unresolved helpers. The unused read of the null
+`g_oi_status` placeholder at function entry is also removed; the
+original begins directly with the cutscene branch. The original
+`0xA0`-byte allocation is retained on ARM32 with placement
+construction, and the allocation grows to `sizeof(CutScene)` if the
+recovered class is larger on ARM64.
+REA evidence:
+`ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
+The resulting counts are
+159 → 158 → 147 → **145**.
+
+For this initialization change, Windows native and ARM64 static builds
+pass; ARMv7 compiles 209/209 units. Focused `OnInitialize` remains
+**72.2%** source-shape and **27.3%** strict fuzzy. The full ARM corpus
+(`_work/modstation_init_cutscene_full_20261104.json`) compares
+4,323/4,524 originals in 4,770 pairs, with 96.75% mean source-shape,
+86.75% strict fuzzy, 2,780 linked-exact, 1,108 byte-exact, 201
+missing library/ABI symbols, and zero skipped. Compared with the
+preceding release-path report, there are no lost comparison pairs or
+exact matches. This branch of `OnInitialize` has not been exercised
+in a newly linked APK.
 
 The installed Poco APK was built earlier and does not include these changes.
 A new APK cannot be linked from current source until these calls are recovered
@@ -23,7 +45,7 @@ currently dereferences placeholder pointers initialized to null and omits the
 original's wanted-name text substitutions. REA original evidence:
 `ev_7e1aa9c7284245af140363313e649e4c93e2bd1306315edcf425f8785f24b1d3`.
 
-## `ModStation::OnInitialize()` — 64 unresolved
+## `ModStation::OnInitialize()` — 62 unresolved
 
 - `Achievements_gotAllGoldMedals_oi()`
 - `ChoiceWindow_set1_oiImpl(void*, int)`
@@ -31,8 +53,6 @@ original's wanted-name text substitutions. REA original evidence:
 - `ChoiceWindow_setFee_oiImpl(void*, int, int)`
 - `ChoiceWindow_setNotice_oi(void*, int)`
 - `ChoiceWindow_set_oi(void*, int, int)`
-- `CutScene_ctor_oi(CutScene*, int)`
-- `CutScene_initialize_oi(CutScene*)`
 - `CutScene_replacePlayerShip_oi(int, int)`
 - `GameText_getText_oi(int)`
 - `GameText_getText_oiImpl(int)`
