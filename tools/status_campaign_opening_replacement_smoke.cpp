@@ -5,7 +5,7 @@
 template <typename T> struct Array {
     std::vector<T> values;
     unsigned size() const { return static_cast<unsigned>(values.size()); }
-    T &operator[](unsigned index) { return values[index]; }
+    decltype(auto) operator[](unsigned index) { return values[index]; }
 };
 
 template <typename T> void ArrayAdd(T value, Array<T> &array) {
@@ -73,7 +73,10 @@ struct Status {
     int field_0x104 = 0;
     int currentCampaignMission = 0;
     int missionCount = 0;
+    int field_7c = -1;
+    int field_80 = -1;
     unsigned char field_0x17c = 0;
+    Array<bool> *systemVisibilities = nullptr;
     Ship *ship = nullptr;
     Mission *mission = nullptr;
     Array<Mission *> *missions = nullptr;
@@ -99,12 +102,15 @@ int main() {
 
     Array<Mission *> missions;
     missions.values.resize(2);
+    Array<bool> visibilities;
+    visibilities.values.resize(7);
     Ship ship;
     Status status;
     status.playingTime = 0x1234567887654321LL;
     status.missionCount = 41;
     status.ship = &ship;
     status.missions = &missions;
+    status.systemVisibilities = &visibilities;
 
     status.nextCampaignMission(true);
     assert(status.currentCampaignMission == 1);
@@ -128,16 +134,19 @@ int main() {
     prototypes[0].price = 110;
     ship.equipment.values.push_back(&equipped);
     ship.cargo.values.push_back(&carried);
-    const int types[21] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11,
-                           11, 11, 150, 4, 11, 4, 11, 156, 156, 189, 4};
-    const int stations[21] = {78, 78, 78, 78, 78, 78, 78, 78, 78, 79,
-                              76, 79, 0, 79, 98, 98, 98, 56, 55, 55, 55};
-    for (int step = 1; step <= 20; ++step) {
+    const int types[24] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11,
+                           11, 11, 150, 4, 11, 4, 11, 156, 156, 189, 4,
+                           11, 11, 4};
+    const int stations[24] = {78, 78, 78, 78, 78, 78, 78, 78, 78, 79,
+                              76, 79, 0, 79, 98, 98, 98, 56, 55, 55, 55,
+                              55, 10, 48};
+    for (int step = 1; step <= 23; ++step) {
         status.currentCampaignMission = step;
         status.nextCampaignMission(true);
         assert(status.currentCampaignMission == step + 1);
         assert(missions[0] != nullptr && missions[0]->campaign);
-        assert(missions[0]->type == types[step] && missions[0]->param == 0);
+        assert(missions[0]->type == types[step]);
+        assert(missions[0]->param == (step == 22 ? 20000 : 0));
         assert(missions[0]->station == stations[step]);
         assert(missions[0]->statusValue ==
                (step == 1 ? 10 : step == 3 ? 25 : step == 12 ? 42 :
@@ -155,6 +164,8 @@ int main() {
             assert(ship.added->amount == 1);
         }
         if (step == 17) assert(ship.race == 0 && ship.raceSetCount == 1);
+        if (step == 22) assert(visibilities[6]);
+        if (step == 23) assert(status.field_7c == 9 && status.field_80 == 48);
         delete missions[0];
         missions[0] = nullptr;
     }
