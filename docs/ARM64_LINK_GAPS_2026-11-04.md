@@ -2,11 +2,11 @@
 
 A strict `--whole-archive --no-undefined` ARM64 link of the current `libgof2.a`
 against the project libzip/crypto archives and Android system libraries reports
-**35 unresolved symbols**, all referenced from `ModStation.cpp`. These are
+**34 unresolved symbols**, all referenced from `ModStation.cpp`. These are
 reconstruction helper names, not 108 proven absent symbols in the original ARM
 library. Many can map to existing C++ methods; each mapping needs source and ABI
 confirmation before replacement. The raw linker evidence is
-`D:/gof2-arm64-crypto/startup-link-touchend-campaign-20261104.log` (outside Git).
+`D:/gof2-arm64-crypto/startup-link-touchend-dialogue-20261104.log` (outside Git).
 
 The earlier strict link had 159 unresolved symbols. REA confirmed that
 `PaintCanvas::StartDraw2FBO` calls the existing
@@ -24,7 +24,24 @@ recovered class is larger on ARM64.
 REA evidence:
 `ev_fd7c0959b6f25f9dff6c57f51ecb6d1759641081817eebbf90c22041e9b3cc5b256`.
 The resulting counts are
-159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → 88 → 83 → 70 → 59 → 41 → 39 → **35**.
+159 → 158 → 147 → 145 → 143 → 137 → 135 → 131 → 125 → 122 → 117 → 114 → 109 → 108 → 103 → 96 → 92 → 90 → 88 → 83 → 70 → 59 → 41 → 39 → 35 → **34**.
+
+The same REA `OnTouchEnd` evidence confirms that closing a dialogue
+without an active mission checks the touch-active byte at `0x101`,
+clears the camera byte at `0xb2`, and routes to application module 2
+after departing from a pirate-base station. The old code checked the
+choice-window byte at `0x71`, cleared an unrelated departure flag, and
+called a placeholder module function with a guessed argument. The
+restored path removes one distinct unresolved name: **35 → 34**,
+without new names. Focused `OnTouchEnd` source-shape rises **84.6% →
+85.4%**, strict fuzzy **21.8% → 23.6%**; it is not exact and live
+transition behavior remains unverified.
+Full ARM report `_work/modstation_touchend_dialogue_full_20261104.json`
+compares 4,323/4,524 originals in 4,770 pairs, with mean source-shape
+**96.77%**, strict fuzzy **86.76%**, 2,780 linked-exact and 1,108
+byte-exact matches, 201 missing and zero skipped. Pair and exact-match
+sets have no losses. Windows native, ARM64 static and ARMv7 209/209
+builds pass.
 
 REA Android ARM `ModStation::OnTouchEnd` evidence
 `ev_209fbd44797382bbddb290d593c3c6b7a8d876525f1b6a283ba2837fadb1f1ef`
@@ -460,7 +477,7 @@ verification; zero unresolved helper names is only a link property.
 The strict ARM64 link has no unresolved helper names from this function.
 Focused source-shape and live behavior remain separate validation tasks.
 
-## `ModStation::OnTouchEnd(int, int, void*)` — 35 unresolved
+## `ModStation::OnTouchEnd(int, int, void*)` — 34 unresolved
 
 - `Achievements_resetNewMedals_ote(void*)`
 - `Agent_getOffer_ote(Agent*)`
@@ -486,7 +503,6 @@ Focused source-shape and live behavior remain separate validation tasks.
 - `Station_hasShip_ote(void*)`
 - `Station_setAttackedFriends_ote(Station*, int)`
 - `Station_setItems_ote(Station*, void*, int)`
-- `Station_stationHasPirateBase_ote()`
 - `Status_activateNewWanted_ote()`
 - `Status_changeCredits_ote(int)`
 - `Status_departStation_ote(Station*)`

@@ -2047,26 +2047,20 @@ void ModStation::OnTouchEnd(int x, int y, void *touch) {
             if (dw != 0) {
                 delete dw;
             }
-            char justEntered = this->choiceWindowFlags.bytes[1];
+            char touchActive = this->dragFlags.bytes[1];
             this->dialogueWindow = 0;
-            if (justEntered == 0) {
-                Station *st = (Station *) Status_getStation_ote();
-                if (Station_getIndex_ote(st) != 4) {
-                    st = (Station *) Status_getStation_ote();
-                    if (Station_getIndex_ote(st) != 0x58) {
-                        Status_getStation_ote();
-                        if (Station_stationHasPirateBase_ote() != 0) {
-                            this->departPendingFlags.bytes[2] = 0;
-                            Station *home = (Station *) **(int **) g_ote_status;
-                            Status_getStation_ote();
-                            Status_departStation_ote(home);
-                            Achievements_resetNewMedals_ote((void *) **(int **) g_ote_achievements);
-                            int mod = (Status_getCurrentCampaignMission_ote() == 0x10) ? -1 : 1;
-                            **(int **) g_ote_module = mod;
-                            ApplicationManager_SetCurrentApplicationModule_ote(**(int **) g_ote_module);
-                            this->stationActive = 0;
-                        }
-                    }
+            if (touchActive == 0) {
+                Station *station = Globals::status->getStation();
+                if (station->getIndex() != 4 &&
+                    Globals::status->getStation()->getIndex() != 0x58 &&
+                    Globals::status->getStation()->stationHasPirateBase() != 0) {
+                    this->cameraFlags.bytes[2] = 0;
+                    Globals::status->departStation(Globals::status->getStation());
+                    static_cast<Achievements *>(Globals::achievements)->resetNewMedals();
+                    Globals::switch_to_target_setting =
+                        Globals::status->getCurrentCampaignMission() == 0x10 ? -1 : 1;
+                    static_cast<ApplicationManager *>(Globals::appManager)->SetCurrentApplicationModule(2);
+                    this->stationActive = 0;
                 }
             }
             return;

@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnTouchEnd` dialogue exit).
+Android ARM shows that closing a dialogue without a mission checks
+the touch-active byte at `0x101`, clears camera byte `0xb2`, and
+switches to application module 2 after departing a pirate-base
+station. The previous code read the wrong byte, cleared an unrelated
+flag, and called a placeholder module function. The corrected path
+reduces strict ARM64 link gaps **35 → 34** without new names.
+Windows native, ARM64 static and ARMv7 **209/209** builds pass;
+focused `OnTouchEnd` source-shape rises **84.6% → 85.4%** and strict
+fuzzy **21.8% → 23.6%**. The function is not exact.
+The full ARM corpus compares **4,323/4,524** originals in **4,770**
+pairs: mean source-shape **96.77%**, strict fuzzy **86.76%**,
+**2,780 linked-exact**, **1,108 byte-exact**, 201 missing and zero
+skipped. No pair or exact-match member was lost. Live transition
+behavior remains unverified until a newly linked APK runs. Next
+priority: the remaining 34 helper names in `OnTouchEnd`. See
+[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnTouchEnd` inertia and campaign
 completion). Android ARM confirms that releasing a station drag adds the
 last horizontal movement to the camera angle, sets drag scale to 0.9,
