@@ -7,15 +7,6 @@
 #include "engine/render/PaintCanvas.h"
 #include "game/core/Globals.h"
 
-#if __SIZEOF_POINTER__ == 8
-#define g_currentLayout Globals::layout
-#define g_sound Globals::sound
-#else
-static Layout *g_currentLayout = nullptr;
-static ImageFactory *g_imageFactory = nullptr;
-static FModSound *g_sound = nullptr;
-#endif
-
 MTitle::MTitle() {
     this->renderPriority = 100;
 }
@@ -25,11 +16,11 @@ MTitle::~MTitle() {
 }
 
 int MTitle::OnInitialize() {
-    PaintCanvas *canvas = PaintCanvas::gCanvas;
+    PaintCanvas *canvas = Globals::Canvas;
     canvas->Image2DCreate(7000, this->logoImage);
     canvas->Image2DCreate(0x1b59, this->logoImage2);
 
-    g_sound->play(0x91, (Vector *) 0, (Vector *) 0, 0.0f);
+    Globals::sound->play(0x91, nullptr, nullptr, 0.0f);
 
     this->step = 0;
     this->timer = 0;
@@ -38,21 +29,12 @@ int MTitle::OnInitialize() {
 }
 
 void MTitle::OnRelease() {
-    PaintCanvas::gCanvas->ReleaseAllResources();
-
-#if __SIZEOF_POINTER__ == 8
+    Globals::Canvas->ReleaseAllResources();
     static_cast<Globals *>(Globals::globals)->loadFont(GameText::getLanguage());
-#else
-    Globals::gGlobals->loadFont(GameText::getLanguage());
-#endif
-
-    if (g_currentLayout != 0) {
-        g_currentLayout->reload();
-#if __SIZEOF_POINTER__ == 8
+    if (Globals::layout != nullptr) {
+        Globals::layout->reload();
         static_cast<ImageFactory *>(Globals::imageFactory)->reload();
-#else
-        g_imageFactory->reload();
-#endif
+        Globals::layout->initTip();
     }
 }
 
@@ -72,16 +54,18 @@ void MTitle::OnUpdate() {
 }
 
 void MTitle::OnRender2D() {
-    PaintCanvas *canvas = PaintCanvas::gCanvas;
+    PaintCanvas *canvas = this->paintCanvas;
     canvas->Begin2d();
-    canvas->SetColor((unsigned int) -1);
+    Globals::Canvas->SetColor(0xffffffffu);
 
-    g_currentLayout->drawBG();
-    g_currentLayout->drawHeader();
-    g_currentLayout->drawEmptyFooter(0);
+    Globals::layout->drawBG();
+    Globals::layout->drawHeader();
+    Globals::layout->drawEmptyFooter(0);
 
     int delta = (int) this->applicationManager->GetElapsedTimeMillis();
-    if (delta > 50)
+    if (delta <= 50)
+        delta = (int) this->applicationManager->GetElapsedTimeMillis();
+    else
         delta = 50;
     this->timer += delta;
     int t = this->timer;
@@ -92,7 +76,7 @@ void MTitle::OnRender2D() {
         this->step += 1;
         this->timer = 0;
         if (this->step == 2) {
-            this->applicationManager->SetCurrentApplicationModule(1);
+            static_cast<ApplicationManager *>(Globals::appManager)->SetCurrentApplicationModule(1);
             return;
         }
         image = (int) (this->step == 0 ? this->logoImage2 : this->logoImage);
@@ -110,16 +94,15 @@ void MTitle::OnRender2D() {
 
     int color = (int) (fade * 255.0f) - 0x100;
     canvas->SetColor((unsigned int) color);
-    canvas->DrawImage2D((unsigned int) image, 0, 0, (unsigned char) 0x44, (unsigned char) 0x44);
+    Globals::Canvas->DrawImage2D((unsigned int) image, 0, 0, (unsigned char) 0x44, (unsigned char) 0x44);
     canvas->End2d();
     canvas->SwapBuffer();
 }
 
 void MTitle::OnRender3D() {
-    PaintCanvas *canvas = PaintCanvas::gCanvas;
-    canvas->ClearBuffer(0xff);
-    canvas->Begin3d();
-    canvas->End3d();
+    Globals::Canvas->ClearBuffer(0xff);
+    this->paintCanvas->Begin3d();
+    this->paintCanvas->End3d();
 }
 
 void MTitle::OnTouchEnd(int x, int y) {

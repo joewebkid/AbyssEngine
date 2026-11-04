@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`MTitle` startup/title screen). The
+Android ARM original uses global canvas, sound, layout, image factory,
+and application manager roots; the ARM32 source had null placeholders
+for several of them. The corrected release path also restores
+`Layout::initTip()`. Windows native, ARM64 static, and ARMv7 **209/209**
+builds pass, and strict ARM64 shared linking has zero undefined symbols
+and 53 JNI exports. Across the four changed methods, focused
+source-shape rises **81.8% → 96.4%** and strict fuzzy **68.6% → 86.5%**;
+`OnRelease` and `OnRender3D` become linked-exact. Full ARM corpus:
+**4,323/4,524** original functions in **4,770** pairs, mean
+source-shape **96.78%**, strict fuzzy **86.77%**, **2,782 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped, and no lost pair or
+exact-match member. A signed clone APK is ready but has not run;
+startup rendering remains unverified on a device. Next priority:
+inspect another ARM32 null-root path while device testing is occupied.
+See [MTitle evidence](MTITLE_GLOBALS_STARTUP_ARM_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::showCBSMessage`). Android ARM
 shows the original COMPUTERBILD SPIELE unlock prompt, text 390,
 button labels and choice flags at offsets `0xdd`/`0x63`. The previous
