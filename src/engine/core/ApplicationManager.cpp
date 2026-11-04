@@ -29,9 +29,9 @@ namespace {
         void (*onTouchBegin3)(void *self, int x, int y, void *data);       // 0x24 idx9
         void (*onTouchMove3)(void *self, int x, int y, void *data);        // 0x28 idx10
         void (*onTouchEnd3)(void *self, int x, int y, void *data);         // 0x2c idx11
-        void (*onUpdate)(void *self);                                       // 0x30 idx12
-        void (*onRender3D)(void *self);                                     // 0x34 idx13
-        void (*onRender2D)(void *self);                                     // 0x38 idx14
+        void (*onRender3D)(void *self);                                     // 0x30 idx12
+        void (*onRender2D)(void *self);                                     // 0x34 idx13
+        void (*onUpdate)(void *self);                                       // 0x38 idx14
         void (*onSuspend)(void *self);                                      // 0x3c idx15
         void (*onResume)(void *self);                                       // 0x40 idx16
         int (*showLoading)(void *self);                                     // 0x44 idx17
@@ -81,9 +81,9 @@ static_assert(offsetof(ModuleVTable, onKeyRelease) == 0x14, "vtable onKeyRelease
 static_assert(offsetof(ModuleVTable, onTouchBegin2) == 0x18, "vtable onTouchBegin2 slot");
 static_assert(offsetof(ModuleVTable, onTouchEnd2) == 0x20, "vtable onTouchEnd2 slot");
 static_assert(offsetof(ModuleVTable, onTouchBegin3) == 0x24, "vtable onTouchBegin3 slot");
-static_assert(offsetof(ModuleVTable, onUpdate) == 0x30, "vtable onUpdate slot");
-static_assert(offsetof(ModuleVTable, onRender3D) == 0x34, "vtable onRender3D slot");
-static_assert(offsetof(ModuleVTable, onRender2D) == 0x38, "vtable onRender2D slot");
+static_assert(offsetof(ModuleVTable, onRender3D) == 0x30, "vtable onRender3D slot");
+static_assert(offsetof(ModuleVTable, onRender2D) == 0x34, "vtable onRender2D slot");
+static_assert(offsetof(ModuleVTable, onUpdate) == 0x38, "vtable onUpdate slot");
 static_assert(offsetof(ModuleVTable, onSuspend) == 0x3c, "vtable onSuspend slot");
 static_assert(offsetof(ModuleVTable, onResume) == 0x40, "vtable onResume slot");
 static_assert(offsetof(ModuleVTable, showLoading) == 0x44, "vtable showLoading slot");

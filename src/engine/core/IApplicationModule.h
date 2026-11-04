@@ -45,11 +45,11 @@ namespace AbyssEngine {
 
         virtual void OnTouchEnd(int x, int y, void *data);
 
-        virtual void OnUpdate() = 0;
-
         virtual void OnRender3D() = 0;
 
         virtual void OnRender2D() = 0;
+
+        virtual void OnUpdate() = 0;
 
         virtual void OnSuspend();
 

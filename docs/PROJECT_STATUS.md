@@ -1,5 +1,17 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (REA module dispatch ABI). The original
+ARM `ApplicationManager::OnUpdate` calls module virtual slots `+0x30`,
+`+0x34`, and `+0x38` as `OnRender3D`, `OnRender2D`, and `OnUpdate`.
+The reconstructed base interface and raw vtable view had these in a
+different order; both now use the observed order. Windows native,
+ARM64 static, and ARMv7 209/209 builds pass. Full ARM corpus remains
+4,323/4,524 originals in 4,769 pairs, 96.75%/86.74% means,
+2,779 linked-exact, 1,108 byte-exact, 201 missing, zero skipped,
+with no exact-set or pair losses. Runtime validation of a newly
+packaged APK remains open. See
+[REA startup evidence](STARTUP_FRAME_GAPS_REA_2026-11-04.md).
+
 Pending device cleanup (user request, 2026-11-03):
 
 - [ ] When Redmi is available, remove the extra GOF2 test build,

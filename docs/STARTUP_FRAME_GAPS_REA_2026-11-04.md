@@ -81,3 +81,26 @@ Next startup candidates from the same corpus are
 title-image path uses `SetTextures`; it needs a separately observed
 caller before treating it as the current title blocker. None of these
 shape scores alone proves semantic correctness.
+
+## Module dispatch ABI correction
+
+REA's original `ApplicationManager::OnUpdate` dispatches the current
+module through virtual slots `+0x30` (`OnRender3D`), `+0x34`
+(`OnRender2D`), and `+0x38` (`OnUpdate`) at original addresses
+`0x82a0e`, `0x82a32`, and `0x82a78`. The reconstructed
+`IApplicationModule` declared these methods in the reverse frame order:
+`OnUpdate`, `OnRender3D`, `OnRender2D`. Its raw `ModuleVTable` view
+also labelled the three slots that way. This would call the wrong
+module method at each stage of the frame when using the reconstructed
+vtable. Both declarations now follow the observed ARM slot order.
+ARMv7 compiles 209/209 units and the focused `OnUpdate` comparison
+remains 12.3% source-shape and 6.3% strict fuzzy because the dispatch
+instructions themselves did not change; the correction is in the
+vtable ABI. Windows native and ARM64 static builds pass. The full ARM
+corpus still compares 4,323/4,524 originals in 4,769 pairs, with
+96.75% mean source-shape, 86.74% strict fuzzy, 2,779 linked-exact,
+1,108 byte-exact, 201 missing, and zero skipped. Against the prior
+full report, the pair set and exact sets have zero additions or losses.
+The report is `_work/appmgr_vtable_full_20261104.json`. This is a
+static ABI correction; the corrected APK has not yet been exercised
+on a phone.
