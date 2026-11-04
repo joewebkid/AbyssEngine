@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-04 (`ModStation::OnInitialize` gold-medal ship
+list). REA confirmed that station 10 checks the gold-medal state,
+searches its ship list for ship 8, and if absent creates a `Generator`,
+builds a buy list for that station, and installs it with
+`setShips(..., false)`. The reconstructed code now uses these typed
+receivers and deletes the temporary generator. Strict ARM64
+shared-link gaps fall **122 → 117**. Windows native, ARM64 static,
+and ARMv7 **209/209** builds pass. Focused `OnInitialize` source-shape
+changes **81.7% → 81.5%**, strict fuzzy **20.1% → 19.7%**. Full ARM
+coverage remains **4,323/4,524** originals in **4,770** pairs, with
+**96.75% / 86.74%** mean source-shape/strict fuzzy, **2,780
+linked-exact**, **1,108 byte-exact**, 201 missing, and zero skipped;
+no pair or exact-set losses. `Generator::getShipBuyList` and
+`Station::setShips` remain non-exact internally. The ship-list path
+has not been live-validated in a linked APK. The next priority is
+the station-100 ship replacement branch; see
+[link inventory](ARM64_LINK_GAPS_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`ModStation::OnInitialize` station supply).
 REA confirmed that station 10 offers item 164 in a 50-unit copy only
 when the player lacks equipment/cargo 85 and the station lacks items

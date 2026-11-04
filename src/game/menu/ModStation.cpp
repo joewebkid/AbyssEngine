@@ -2792,15 +2792,11 @@ void Station_addItem_oi(Item * it);
 void Station_addShip_oi(Ship * s);
 void Station_removeShip_oi(Ship * s);
 
-void Station_setShips_oi(void *station, int list);
-
 int Standing_getStanding_oi(int standing);
 
 int Mission_getTargetStation_oi();
 
 int Mission_getType_oi();
-
-int Achievements_gotAllGoldMedals_oi();
 
 int GameText_getText_oi(int id);
 
@@ -2819,10 +2815,6 @@ void FModSound_play_oi(int sound, int id, void *pos, float vol);
 void FModSound_enableReverb_oi(int sound);
 
 void FModSound_setDownPitch_oi(int sound);
-
-void Generator_ctor_oi(Generator * g);
-void Generator_dtor_oi(Generator * g);
-int Generator_getShipBuyList_oi(Station * s);
 
 unsigned ModStation_oi_cameraHandle();
 void ModStation_oi_setCameraLocal(unsigned h, const Matrix &m);
@@ -3146,15 +3138,16 @@ void ModStation::OnInitialize() {
         }
 
         Station *st10 = Globals::status->getStation();
-        if (st10->getIndex() == 10 && Achievements_gotAllGoldMedals_oi() != 0) {
-            Status_getStation_oi();
-            Array<Ship *> *ships = (Array<Ship *> *) (intptr_t) Station_getShips_oi();
+        if (st10->getIndex() == 10 &&
+            static_cast<Achievements *>(Globals::achievements)->gotAllGoldMedals()) {
+            Station *medalStation = Globals::status->getStation();
+            Array<Ship *> *ships = medalStation->getShips();
             bool needNew = ships == 0;
             if (ships != 0) {
                 unsigned i = 0;
                 bool found = false;
                 while (i < ships->size()) {
-                    if (Ship_getIndex_oi() == 8) {
+                    if ((*ships)[i]->getIndex() == 8) {
                         found = true;
                         break;
                     }
@@ -3163,14 +3156,12 @@ void ModStation::OnInitialize() {
                 needNew = !found;
             }
             if (needNew) {
-                Generator *g = (Generator *) ::operator new(1);
-                Generator_ctor_oi(g);
-                void *station = (void *) Status_getStation_oi();
-                Status_getStation_oi();
-                int list = Generator_getShipBuyList_oi((Station *) g);
-                Station_setShips_oi(station, list);
-                Generator_dtor_oi(g);
-                ::operator delete(g);
+                Generator *generator = new Generator();
+                Station *station = Globals::status->getStation();
+                Station *buyStation = Globals::status->getStation();
+                Array<Ship *> *list = generator->getShipBuyList(buyStation);
+                station->setShips(list, false);
+                delete generator;
             }
         }
 
