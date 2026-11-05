@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`ModMainMenu::OnInitialize` global state).
+Original Android ARM GOT relocations identify `Globals::options`,
+`recordHandler`, `switch_to_target_setting`, and `logoIsShown`; the
+source used unwritten placeholders for them on ARM32 and/or ARM64.
+The first-run preview flag now uses the original byte at offset `0x48`;
+the previous `OptionsRecord` field compiled at `0x4e`. Focused
+source-shape rises **96.0% → 98.2%**, strict fuzzy **71.9% → 74.9%**;
+the method remains non-exact. Windows native, ARM64 static, ARMv7
+**209/209**, and strict ARM64 shared linking pass with 53 JNI exports.
+Full corpus: **4,323/4,524** originals in **4,770** pairs,
+**96.78%** mean source-shape, **86.77%** strict fuzzy,
+**2,782 linked-exact**, **1,108 byte-exact**, 201 missing, zero skipped;
+no pair or exact-match member was lost. The changed source has not run
+on a device. Next priority: check `OptionsRecord` field offsets used by
+`MenuTouchWindow`. See [ARM evidence](MODMAINMENU_INIT_GLOBALS_ARM_2026-11-04.md).
+
 Last reviewed: 2026-11-04 (`MTitle` startup/title screen). The
 Android ARM original uses global canvas, sound, layout, image factory,
 and application manager roots; the ARM32 source had null placeholders

@@ -41,12 +41,6 @@ int *g_ModMainMenu_r2d_textId;
 int *g_ModMainMenu_r2d_screenW;
 int *g_ModMainMenu_r2d_screenH;
 
-void *g_ModMainMenu_initOptions;
-void **g_ModMainMenu_initRecord;
-int *g_ModMainMenu_initTouchFlag;
-int *g_ModMainMenu_initMusicSlot;
-int *g_ModMainMenu_initMusic;
-
 void **g_ModMainMenu_updateLayout;
 void **g_ModMainMenu_updateListener;
 
@@ -261,24 +255,15 @@ int ModMainMenu::OnInitialize() {
         goto music;
 
     {
-#if __SIZEOF_POINTER__ == 8
-        OptionsRecord *options = reinterpret_cast<OptionsRecord *>(Globals::options);
-#else
-        OptionsRecord *options = (OptionsRecord *) g_ModMainMenu_initOptions;
-#endif
-        if (options->firstRunPreviewChecked == 0) {
-#if __SIZEOF_POINTER__ == 8
-            void **recordHolder = &Globals::recordHandler;
-#else
-            void **recordHolder = g_ModMainMenu_initRecord;
-#endif
-            void *record = ((RecordHandler *) (*recordHolder))->recordStoreReadPreview(0);
+        if (Globals::options[0x48] == 0) {
+            RecordHandler *recordHandler = static_cast<RecordHandler *>(Globals::recordHandler);
+            void *record = recordHandler->recordStoreReadPreview(0);
             if (record != nullptr) {
                 this->hasSavedGame = 1;
                 delete (GameRecord *) record;
             }
-            options->firstRunPreviewChecked = 1;
-            ((RecordHandler *) (*recordHolder))->saveOptions();
+            Globals::options[0x48] = 1;
+            recordHandler->saveOptions();
         }
 
         Status::gStatus->setPlayingTime(0);
@@ -300,10 +285,10 @@ state30:
     this->state = 1;
 
 music: {
-        int *musicSlot = g_ModMainMenu_initMusicSlot;
-        if (*musicSlot != -1)
-            static_cast<Globals *>(Globals::globals)->playMusicAndFadeOutCurrent(*g_ModMainMenu_initMusic);
-        *musicSlot = -1;
+        int music = Globals::switch_to_target_setting;
+        if (music != -1)
+            static_cast<Globals *>(Globals::globals)->playMusicAndFadeOutCurrent(music);
+        Globals::switch_to_target_setting = -1;
     }
     this->initialized = 1;
     this->state = 100;
@@ -315,7 +300,7 @@ state80:
     this->logoImage = logoImageHandle;
     this->logoActive = 1;
     this->fadeTimer = 0;
-    *g_ModMainMenu_initTouchFlag = 1;
+    Globals::logoIsShown = 1;
     this->state = 0x3c;
     return 60;
 }
