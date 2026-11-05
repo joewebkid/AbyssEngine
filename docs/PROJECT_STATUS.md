@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`MenuTouchWindow::OnTouchEnd` cinematic
+gesture release). Original Android ARM dispatches state `0xb` through
+the iPad and asset-resolution guards before comparing and clearing
+the two touch IDs. The previous source cleared them at function entry,
+even across the earlier choice-window return and on other layouts.
+The corrected branch restores that scope and order. Focused strict
+fuzzy rises **13.5% -> 14.2%** while source-shape changes
+**88.4% -> 86.9%** due to compiler lifetime differences in this large
+switch; the function remains non-exact. Windows native, ARM64 static,
+ARMv7 **209/209**, and strict ARM64 shared linking pass. Full corpus:
+**4,323/4,524** originals in **4,770** pairs, **96.79%** source-shape,
+**86.79%** strict fuzzy, **2,785 linked-exact**, **1,108 byte-exact**,
+201 missing, zero skipped, and no lost pair or exact-match member.
+Gesture behavior is unverified on a device. Next priority: inspect
+the cinematic touch-begin and touch-move guards against original ARM
+before a device validation cycle. See [ARM cinematic release
+evidence](MENUTOUCH_CINEMATIC_END_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`ModMainMenu` touch-pointer forwarding).
 Original Android ARM preserves the incoming touch pointer in `r3`
 for `MenuTouchWindow::OnTouchMove` and `OnTouchEnd`; the reconstructed

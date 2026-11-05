@@ -632,9 +632,15 @@ static inline int _mtw_onTouchEnd_missionsState(void *self, int x, int y) {
     return 0;
 }
 
-static inline int _mtw_onTouchEnd_cinematicState(void *self, int x, int y) {
+static inline int _mtw_onTouchEnd_cinematicState(void *self, int x, int y, void *touchId) {
     auto *window = (MenuTouchWindow *) self;
     if (Globals::iPad != 0 && Globals::iPadAssetsWithLowerRes == 0) {
+        if (touchId != nullptr) {
+            if (window->cinematicTouchIdA == touchId)
+                window->cinematicTouchIdA = nullptr;
+            if (window->cinematicTouchIdB == touchId)
+                window->cinematicTouchIdB = nullptr;
+        }
         window->cinematicTouchState = 0;
         if (window->cinematicBtnA != nullptr &&
             ((TouchButton *) window->cinematicBtnA)->OnTouchEnd(x, y) != 0) {
@@ -1981,14 +1987,6 @@ float MenuTouchWindow::getRelativeScrollStartPos() {
 }
 
 int MenuTouchWindow::OnTouchEnd(int x, int y, void *touchId) {
-    if (this->menuState == 0xb && touchId != 0) {
-        if (this->cinematicTouchIdA == touchId)
-            this->cinematicTouchIdA = 0;
-        if (this->cinematicTouchIdB == touchId)
-            this->cinematicTouchIdB = 0;
-        this->cinematicTouchState = 0;
-    }
-
     this->pendingActivate = 0;
     this->dragging = 0;
 
@@ -2098,7 +2096,7 @@ int MenuTouchWindow::OnTouchEnd(int x, int y, void *touchId) {
             _mtw_onTouchEnd_cargoSummaryState(this, x, y);
             break;
         case 0xb:
-            _mtw_onTouchEnd_cinematicState(this, x, y);
+            _mtw_onTouchEnd_cinematicState(this, x, y, touchId);
             break;
         case 0xc:
             _mtw_onTouchEnd_challengeSelectState(this, x, y);
