@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`Globals::getShipGroup` random segment
+count). Original Android ARM loads `Globals::rnd` and calls
+`AERandom::nextInt(4)`; the ARM32 source had passed a zero pointer to
+an undefined helper. The typed call restores the owner pointer and
+removes that name from the 209-object ARM32 unmatched-symbol inventory
+(**253 -> 252**) with no new name. Focused source-shape rises
+**83.3% -> 83.6%**, strict fuzzy **11.3% -> 13.9%**; the large function
+is still non-exact. Windows native, ARM64 static, ARMv7 **209/209**,
+and strict ARM64 shared linking pass. Full ARM corpus:
+**4,323/4,524** originals in **4,770** pairs, **96.80%**
+source-shape, **86.80%** strict fuzzy, **2,786 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped, and no lost
+exact-match member. Device behavior and full ARM32 shared linking
+remain unverified. Next priority: verify the two unresolved
+`ShaderUpdate...` calls in `Engine.cpp` against original ARM targets.
+See [ARM ship-group evidence](GLOBALS_SHIP_GROUP_RANDOM_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`Globals::init` typed construction and
 `FileRead` lifetime). Original Android ARM allocates and constructs
 `Mission`, `Galaxy`, `Achievements`, `FileRead`, `AERandom`,
