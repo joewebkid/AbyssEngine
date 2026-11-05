@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`ModMainMenu::OnRender2D`). Original Android
+ARM relocations identify the canvas, app manager, font, game-text and
+screen-size globals. The recovered path fixes the logo fade color,
+two `0x44` image-placement flags, pulse alpha, text lookup, width and
+centered position; four unwritten pointer holders are removed.
+Focused source-shape rises **75.8% -> 98.2%**, strict fuzzy
+**45.7% -> 63.9%**; the function remains non-exact. Windows native,
+ARM64 static, ARMv7 **209/209**, and strict ARM64 shared linking pass.
+Full corpus: **4,323/4,524** originals in **4,770** pairs,
+**96.79%** source-shape, **86.78%** strict fuzzy,
+**2,784 linked-exact**, **1,108 byte-exact**, 201 missing, zero
+skipped, and no lost pair or exact-match member. Device behavior
+remains unverified. Next priority: audit the remaining 201 missing
+symbols and choose a behavior-relevant family with original evidence.
+See [ARM rendering evidence](MODMAINMENU_RENDER2D_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`ModMainMenu` input and update globals).
 Original Android ARM GOT relocations identify `Globals::logoIsShown`,
 `Globals::layout`, and `Globals::sound` in the logo-dismissal and frame

@@ -26,11 +26,6 @@ namespace AbyssEngine {
     }
 }
 
-AbyssEngine::String **g_ModMainMenu_r2d_string;
-int *g_ModMainMenu_r2d_textId;
-int *g_ModMainMenu_r2d_screenW;
-int *g_ModMainMenu_r2d_screenH;
-
 ModMainMenu::ModMainMenu() {
     this->initialized = 0;
     this->hasSavedGame = 0;
@@ -147,8 +142,11 @@ void ModMainMenu::OnTouchBegin(int x, int y) {
 }
 
 void ModMainMenu::OnRender2D() {
-    ((PaintCanvas *) (long) this->paintCanvas)->Begin2d();
-    ((PaintCanvas *) (long) this->paintCanvas)->SetColor((unsigned int) this->paintCanvas);
+    PaintCanvas *canvas = sizeof(void *) == 4
+                              ? reinterpret_cast<PaintCanvas *>((intptr_t) this->paintCanvas)
+                              : Globals::Canvas;
+    canvas->Begin2d();
+    canvas->SetColor(0xffffffffu);
     this->cutScene->render2D();
 
     if (this->logoActive == 0) {
@@ -158,38 +156,31 @@ void ModMainMenu::OnRender2D() {
         int color = time <= 0x0f3b
                         ? (int) (((float) time / 3900.0f) * 255.0f) - 0x100
                         : -1;
-        (void) color;
-        ((PaintCanvas *) (long) this->paintCanvas)->SetColor((unsigned int) this->paintCanvas);
+        canvas->SetColor((unsigned int) color);
 
-        PaintCanvas::gCanvas->DrawImage2D((unsigned int) this->logoImage, 0, 0, (unsigned char) 'D');
+        Globals::Canvas->DrawImage2D(this->logoImage, 0, 0, (unsigned char) 0x44,
+                                     (unsigned char) 0x44);
 
         if (this->fadeTimer >= 0x0f3c) {
-            int canvas = (int) (intptr_t) PaintCanvas::gCanvas;
-            float pulse = AbyssEngine::AEMath::Sinf(
-                (float) ApplicationManager::gAppManager->GetSystemTimeMillis() * 0.003f);
-            float signedPulse = pulse > 0.0f ? pulse : -pulse;
-            int alpha = (unsigned int) (signedPulse * 255.0f);
-            (void) alpha;
-            PaintCanvas::gCanvas->SetColor((unsigned char) canvas, 0xff, 0xff, 0xff);
+            float pulseSign = AbyssEngine::AEMath::Sinf(
+                (float) static_cast<ApplicationManager *>(Globals::appManager)->GetSystemTimeMillis() * 0.003f);
+            float pulseValue = AbyssEngine::AEMath::Sinf(
+                (float) static_cast<ApplicationManager *>(Globals::appManager)->GetSystemTimeMillis() * 0.003f);
+            float pulse = pulseSign > 0.0f ? pulseValue : -pulseValue;
+            unsigned int alpha = (unsigned int) (pulse * 255.0f);
+            Globals::Canvas->SetColor(0xff, 0xff, 0xff, (unsigned char) alpha);
 
-            AbyssEngine::String **stringHolder = g_ModMainMenu_r2d_string;
-            int *textIdHolder = g_ModMainMenu_r2d_textId;
-            int drawCanvas = (int) (intptr_t) PaintCanvas::gCanvas;
-            AbyssEngine::String *drawStr = *stringHolder;
-            int text = (int) (long) ((GameText *) (*textIdHolder))->getText(0xc7);
-
-            int screenW = *g_ModMainMenu_r2d_screenW;
-            int textWidth = PaintCanvas::gCanvas->GetTextWidth((unsigned int) drawCanvas, *drawStr);
-
-            int screenH = *g_ModMainMenu_r2d_screenH;
-            int imageHeight = PaintCanvas::gCanvas->GetImage2DHeight((unsigned int) (intptr_t) PaintCanvas::gCanvas);
-            PaintCanvas::gCanvas->DrawString((unsigned int) drawCanvas, *drawStr, text,
-                                (screenW >> 1) - (textWidth >> 1),
-                                (bool) ((char) (screenH >> 1) + (char) (imageHeight >> 1) + '\n'));
+            AbyssEngine::String *drawText = Globals::gameText->getText(0xc7);
+            int textWidth = Globals::Canvas->GetTextWidth(Globals::font,
+                *Globals::gameText->getText(0xc7));
+            int imageHeight = Globals::Canvas->GetImage2DHeight(this->logoImage);
+            int x = (Globals::w >> 1) - (textWidth >> 1);
+            int y = (Globals::h >> 1) + (imageHeight >> 1) + 10;
+            Globals::Canvas->DrawString(Globals::font, *drawText, x, y, false);
         }
     }
 
-    ((PaintCanvas *) (intptr_t) this->paintCanvas)->End2d();
+    canvas->End2d();
 }
 
 int ModMainMenu::OnInitialize() {
