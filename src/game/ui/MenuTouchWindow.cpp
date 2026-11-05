@@ -2618,24 +2618,22 @@ int MenuTouchWindow::OnTouchBegin(int y, int x, void *touchId) {
                 _mtw_TouchButton_OnTouchBegin(this->cinematicBtnB, y, x);
                 GameSettings *steerCtl = (GameSettings *) Globals::options;
                 GameSettings *fireCtl = (GameSettings *) Globals::options;
-                if (touchId != 0 &&
-                    (this->cinematicTouchIdA != 0 || y > 0xd1 || this->cinematicTouchIdB == touchId ||
-                     x <= steerCtl->steerAnchorX - 0x14 ||
-                     steerCtl->steerAnchorX + 300 <= x)) {
-                    if (this->cinematicTouchIdB == touchId || touchId == 0 ||
-                        this->cinematicTouchIdB != 0 || y <= Globals::h - 0xdc ||
-                        x <= fireCtl->fireAnchorX - 0x14 ||
-                        fireCtl->fireAnchorX + 0xe6 <= x) {
-                        this->cinematicTouchState = 0;
-                    } else {
-                        this->cinematicTouchIdB = touchId;
-                        this->cinematicTouchState = 0x100;
-                        this->cinematicAnchorB = x;
-                    }
-                } else {
+                if (touchId != nullptr && this->cinematicTouchIdA == nullptr &&
+                    y <= 0xd1 && this->cinematicTouchIdB != touchId &&
+                    x > steerCtl->steerAnchorX - 0x14 &&
+                    x < steerCtl->steerAnchorX + 300) {
                     this->cinematicTouchIdA = touchId;
                     this->cinematicTouchState = 1;
                     this->cinematicAnchorA = x;
+                } else if (touchId != nullptr && this->cinematicTouchIdA != touchId &&
+                           this->cinematicTouchIdB == nullptr && y > Globals::h - 0xdc &&
+                           x > fireCtl->fireAnchorX - 0x14 &&
+                           x < fireCtl->fireAnchorX + 0xe6) {
+                    this->cinematicTouchIdB = touchId;
+                    this->cinematicTouchState = 0x100;
+                    this->cinematicAnchorB = x;
+                } else {
+                    this->cinematicTouchState = 0;
                 }
             }
         }

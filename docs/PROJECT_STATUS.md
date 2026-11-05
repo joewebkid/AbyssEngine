@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`MenuTouchWindow::OnTouchBegin` cinematic
+gesture assignment). Original Android ARM requires a non-null, unused
+touch ID before assigning the steer or fire control. The prior source
+could mark a null ID active or assign the steer ID to the fire slot.
+The corrected branches preserve focused source-shape **94.7%** and
+strict fuzzy **28.9%**; the large function remains non-exact. Windows
+native, ARM64 static, ARMv7 **209/209**, and strict ARM64 shared
+linking pass. Full corpus: **4,323/4,524** originals in **4,770**
+pairs, **96.79%** source-shape, **86.79%** strict fuzzy,
+**2,785 linked-exact**, **1,108 byte-exact**, 201 missing, zero
+skipped, and no lost pair or exact-match member. Device behavior is
+unverified. The ARM32 object also has an undefined call to
+`_mtw_steerFromTouchId`, which the original-symbol missing list does
+not capture. Next priority: reconstruct that movement branch from
+original ARM and check ARM32 link completeness. See [ARM cinematic
+assignment evidence](MENUTOUCH_CINEMATIC_BEGIN_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`MenuTouchWindow::OnTouchEnd` cinematic
 gesture release). Original Android ARM dispatches state `0xb` through
 the iPad and asset-resolution guards before comparing and clearing

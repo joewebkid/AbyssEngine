@@ -23,6 +23,10 @@ OpenSSL/ARM crypto, **47** zlib, and **74** libzip. These categories
 account for all 201 names; none is a game-class method. The coverage
 gap should therefore be handled by a dependency/toolchain fidelity
 pass, not mistaken for 201 missing gameplay methods.
+This inventory does not measure unresolved references introduced in
+our ARM32 objects: `MenuTouchWindow.o` still references the undefined
+`_mtw_steerFromTouchId` helper. ARM32 link completeness therefore
+requires a separate audit.
 
 Focused ARMv7 verification compiles **209/209** translation units.
 `OnTouchEnd` source-shape rises **98.1% -> 100%** and strict fuzzy
