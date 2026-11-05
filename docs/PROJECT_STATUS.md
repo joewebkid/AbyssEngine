@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`ModMainMenu` release and suspend). Android
+ARM GOT relocations identify the global canvas, layout, image factory,
+sound and record handler used by these methods. Replacing unwritten
+pointer holders restores the resource-release and option-save paths.
+Focused `OnRelease` source-shape rises **97.8% → 100%** and `OnSuspend`
+**95.9% → 100%**; both become linked-exact. Windows native, ARM64
+static, ARMv7 **209/209**, and strict ARM64 shared linking pass with
+53 JNI exports. Full corpus: **4,323/4,524** originals in **4,770**
+pairs, **96.79%** source-shape, **86.78%** strict fuzzy,
+**2,784 linked-exact**, **1,108 byte-exact**, 201 missing, zero skipped,
+and no lost pair or exact-match member. Current runtime behavior is
+unverified on a device. Next priority: restore the original float-bit
+volume argument and sound root in `ModMainMenu::OnResume`. See
+[ARM lifecycle evidence](MODMAINMENU_RELEASE_SUSPEND_GLOBALS_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`MenuTouchWindow::startGOF2` dispatch).
 Android ARM confirms that it resets game state, writes the fade option,
 stops the current music event, plays event `0x8f`, then switches to

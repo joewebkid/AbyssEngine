@@ -25,14 +25,8 @@ namespace AbyssEngine {
     }
 }
 
-void **g_ModMainMenu_releaseReload;
-void **g_ModMainMenu_releaseImageFactory;
-void **g_ModMainMenu_releaseSound;
-
 int *g_ModMainMenu_resumeObj;
 int *g_ModMainMenu_resumeArg;
-
-int *g_ModMainMenu_suspendObj;
 
 int *g_ModMainMenu_touchEndFlag;
 
@@ -80,20 +74,18 @@ void ModMainMenu::OnRelease() {
         delete this->touchWindow;
     this->touchWindow = nullptr;
 
-    PaintCanvas::gCanvas->ReleaseAllResources();
+    Globals::Canvas->ReleaseAllResources();
 
     static_cast<Globals *>(Globals::globals)->loadFont(GameText::getLanguage());
 
-    void **reload = g_ModMainMenu_releaseReload;
-    if (*reload != nullptr) {
-        ((Layout *) (*reload))->reload();
-        ((ImageFactory *) (*g_ModMainMenu_releaseImageFactory))->reload();
-        ((Layout *) (*reload))->initTip();
+    if (Globals::layout != nullptr) {
+        Globals::layout->reload();
+        static_cast<ImageFactory *>(Globals::imageFactory)->reload();
+        Globals::layout->initTip();
     }
 
-    void *sound = *g_ModMainMenu_releaseSound;
-    if (sound != nullptr)
-        ((FModSound *) sound)->freeAllEvents();
+    if (Globals::sound != nullptr)
+        Globals::sound->freeAllEvents();
 }
 
 void ModMainMenu::OnResume() {
@@ -127,9 +119,8 @@ void ModMainMenu::OnTouchMove(int x, int y) {
 }
 
 void ModMainMenu::OnSuspend() {
-    int obj = *g_ModMainMenu_suspendObj;
-    if (obj != 0)
-        ((RecordHandler *) (intptr_t) obj)->saveOptions();
+    if (Globals::recordHandler != nullptr)
+        static_cast<RecordHandler *>(Globals::recordHandler)->saveOptions();
 }
 
 void ModMainMenu::OnTouchEnd(int x, int y, void *touch) {
