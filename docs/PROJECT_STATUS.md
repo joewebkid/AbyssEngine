@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`ModMainMenu::OnResume` volume). Original
+Android ARM reads `Globals::sound`, calls its
+`tryToStopMusicForBGMusic`, then passes the first 32 bits of
+`Globals::options` as a float argument to `FModSound::setVolume(1, ...)`.
+The previous source used unwritten holders and numerically converted
+those bits from `int`. The recovered path raises focused source-shape
+**92.1% → 99.0%**; strict fuzzy changes **86.4% → 80.0%** due to
+instruction ordering, and the function remains non-exact. Windows
+native, ARM64 static, ARMv7 **209/209**, and strict ARM64 shared
+linking pass with 53 JNI exports. Full corpus: **4,323/4,524**
+originals in **4,770** pairs, **96.79%** source-shape,
+**86.78%** strict fuzzy, **2,784 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped, and no lost pair or
+exact-match member. Runtime behavior remains unverified on a device.
+Next priority: recover remaining main-menu input/update global holders.
+See [ARM volume evidence](MODMAINMENU_RESUME_VOLUME_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`ModMainMenu` release and suspend). Android
 ARM GOT relocations identify the global canvas, layout, image factory,
 sound and record handler used by these methods. Replacing unwritten

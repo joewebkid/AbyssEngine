@@ -16,6 +16,7 @@
 #include "engine/core/GameText.h"
 #include "engine/render/ImageFactory.h"
 #include "engine/core/AERandom.h"
+#include <cstring>
 
 int FModSound_tryToStopMusicForBGMusic();
 
@@ -24,9 +25,6 @@ namespace AbyssEngine {
         float Sinf(float value);
     }
 }
-
-int *g_ModMainMenu_resumeObj;
-int *g_ModMainMenu_resumeArg;
 
 int *g_ModMainMenu_touchEndFlag;
 
@@ -89,13 +87,14 @@ void ModMainMenu::OnRelease() {
 }
 
 void ModMainMenu::OnResume() {
-    int *holder = g_ModMainMenu_resumeObj;
-    if (*holder == 0)
+    FModSound **soundSlot = &Globals::sound;
+    if (*soundSlot == nullptr)
         return;
-    if (FModSound_tryToStopMusicForBGMusic() != 0)
+    if ((*soundSlot)->tryToStopMusicForBGMusic() != 0)
         return;
-    int arg = *g_ModMainMenu_resumeArg;
-    ((FModSound *) (intptr_t) * holder)->setVolume(1, (float) arg);
+    float volume;
+    std::memcpy(&volume, Globals::options, sizeof(volume));
+    (*soundSlot)->setVolume(1, volume);
 }
 
 void ModMainMenu::OnRender3D() {
