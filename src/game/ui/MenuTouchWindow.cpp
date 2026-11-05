@@ -1928,7 +1928,6 @@ static inline void _mtw_draw_footer_tail(MenuTouchWindow *window) {
 void _mtw_Ship_addCargo(void *ship, void *item);
 
 #if __SIZEOF_POINTER__ == 4
-float _mtw_FModSound_stop(void *snd);
 #endif
 
 void MenuTouchWindow::showSupernovaMessage() {
@@ -3992,24 +3991,11 @@ void MenuTouchWindow::startSupernova() {
 }
 
 void MenuTouchWindow::startGOF2() {
-    _mtw_Status_resetGame();
-    void *snd = Globals::sound;
-
-#if __SIZEOF_POINTER__ == 8
+    Globals::status->resetGame();
     reinterpret_cast<OptionsRecord *>(Globals::options)->fadeValue = this->fadeValue;
-    if (snd) {
-        auto *sound = static_cast<FModSound *>(snd);
-        sound->stop(sound->currentMusicEvent);
-        sound->play(0x8f, nullptr, nullptr, 0.0f);
-    }
+    FModSound *sound = Globals::sound;
+    sound->stop(sound->currentMusicEvent);
+    sound->play(0x8f, nullptr, nullptr, 0.0f);
     static_cast<AbyssEngine::ApplicationManager *>(Globals::appManager)
         ->SetCurrentApplicationModule(2);
-#else
-    reinterpret_cast<OptionsRecord *>(Globals::options)->fadeValue = this->fadeValue;
-    float v = _mtw_FModSound_stop(snd);
-    _mtw_FModSound_play(snd, 0x8f, 0, v);
-    void *appHolder = Globals::appManager;
-    ModuleTransitionThunk *thunk = (ModuleTransitionThunk *) appHolder;
-    thunk->transitionFn3(appHolder, 2, 0);
-#endif
 }

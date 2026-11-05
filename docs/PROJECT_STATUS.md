@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`MenuTouchWindow::startGOF2` dispatch).
+Android ARM confirms that it resets game state, writes the fade option,
+stops the current music event, plays event `0x8f`, then switches to
+application module 2. The ARM32 source had used an undefined stop
+helper, passed its result as pitch, and invoked a fabricated transition
+thunk. Direct typed calls on both architectures raise focused
+source-shape **84.8% → 97.3%** and strict fuzzy **60.9% → 77.3%**;
+the method is not exact. Windows native, ARM64 static, ARMv7 **209/209**,
+and strict ARM64 shared linking pass with 53 JNI exports. Full corpus:
+**4,323/4,524** originals in **4,770** pairs, mean source-shape
+**96.79%**, strict fuzzy **86.78%**, **2,782 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped, and no lost pair or
+exact-match member. Runtime transition remains unverified on a device.
+Next priority: inspect other menu lifecycle holders and test startup
+when a device is available. See [ARM dispatch evidence](MENUTOUCH_START_GOF2_DISPATCH_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`OptionsRecord` menu offsets). The original
 Android ARM `startGOF2` writes `Globals::options+0x2c`; the previous
 ARMv7 object wrote `+0x30` because C++ alignment shifted the options
