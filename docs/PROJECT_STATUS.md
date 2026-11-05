@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`MenuTouchWindow` sound and sliders).
+Original Android ARM calls `FModSound::play`, checks whether background
+music may stop, then reads slider values and sets volume categories 1,
+2 and 3. The recovered ARM32 path now makes those typed calls directly;
+the previous volume helper omitted the category argument. ARM64 keeps
+its soundless-build guards. Focused `OnTouchMove` source-shape changes
+**91.6% -> 89.2%** and strict fuzzy **32.8% -> 25.4%**;
+`OnTouchBegin` changes **94.7% -> 93.8%** and **28.9% -> 15.6%**.
+Neither is exact. Windows native, ARM64 static, ARMv7 **209/209**,
+and strict ARM64 shared linking pass. Full ARM corpus: **4,323/4,524**
+originals in **4,770** pairs, **96.79%** source-shape, **86.79%**
+strict fuzzy, **2,785 linked-exact**, **1,108 byte-exact**, 201
+missing, zero skipped, and no lost exact-match member. ARM32
+`MenuTouchWindow.o` now has three undefined `_mtw_` helpers; full ARM32
+linking and device behavior remain unverified. Next priority: resolve
+the application-data and leaderboard helpers using original ARM call
+evidence. See [ARM audio and slider evidence](MENUTOUCH_AUDIO_SLIDER_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`MenuTouchWindow::OnTouchMove` cinematic
 gestures). Original Android ARM selects one of two touch identities,
 calls `Globals::setCoordsSteer` or `setCoordsFire` with the matching
