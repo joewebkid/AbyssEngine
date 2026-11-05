@@ -1,5 +1,26 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`Globals::init` typed construction and
+`FileRead` lifetime). Original Android ARM allocates and constructs
+`Mission`, `Galaxy`, `Achievements`, `FileRead`, `AERandom`,
+`Generator` and `FModSound` in the recovered order; the source now
+uses their typed methods with ARM32 size assertions. The same
+`FileRead` lifetime is restored in `getWreckCollision` and
+`getRandomPlanetName`, and `Globals::init` calls the sound method
+directly. Nine undefined reconstruction wrapper names disappear from
+the 209-object ARM32 inventory (**262 -> 253**) with no new names.
+Focused `Globals::init` source-shape rises **86.5% -> 95.6%** and
+strict fuzzy **75.9% -> 83.5%**. Windows native, ARM64 static,
+ARMv7 **209/209**, and strict ARM64 shared linking pass. Full ARM
+corpus: **4,323/4,524** originals in **4,770** pairs, **96.80%**
+source-shape, **86.79%** strict fuzzy, **2,786 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped, no lost exact-match
+member and one gained linked-exact (`getRandomPlanetName`). Device
+behavior and full ARM32 shared linking remain unverified. Next
+priority: resolve the remaining `AERandom_nextIntB` call in
+`Globals.cpp` against original ARM and continue the bounded helper
+audit. See [ARM constructor evidence](GLOBALS_CONSTRUCTORS_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`getAppVersion` / `Engine::InitGL` ARM
 symbol alias). The original ARM ELF exports a zero-size
 `getAppVersion()` symbol at the exact address of the 408-byte

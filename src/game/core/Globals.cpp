@@ -363,10 +363,6 @@ void MatrixSetTranslation(void *m, float x, float y, float z);
 
 int AERandom_nextIntB(int rng, int bound);
 
-void FileRead_ctor(void *self);
-
-void *FileRead_dtor(void *self);
-
 void *Galaxy_dtor(void *g);
 
 void *Status_dtor(void *s);
@@ -383,28 +379,14 @@ void *Achievements_dtor(void *a);
 
 void *ImageFactory_dtor(void *f);
 
-void Mission_ctor(void *m);
-
-void Galaxy_ctor(void *g);
-
-void Achievements_ctor(void *a);
-
-void FileRead_ctor(void *f);
-
-void *FileRead_dtor(void *f);
-
-void AERandom_ctor(void *r);
-
-void Generator_ctor(void *g);
-
-void FModSound_ctor(void *s);
-
-int FModSound_tryToStopMusicForBGMusic();
-
-#if __SIZEOF_POINTER__ == 8
-int FModSound_tryToStopMusicForBGMusic() {
-    return Globals::sound ? Globals::sound->tryToStopMusicForBGMusic() : 0;
-}
+#if __SIZEOF_POINTER__ == 4
+static_assert(sizeof(Mission) == 0x78, "Mission ARM32 allocation");
+static_assert(sizeof(Galaxy) == 8, "Galaxy ARM32 allocation");
+static_assert(sizeof(Achievements) == 0x28, "Achievements ARM32 allocation");
+static_assert(sizeof(FileRead) == 1, "FileRead ARM32 allocation");
+static_assert(sizeof(AERandom) == 8, "AERandom ARM32 allocation");
+static_assert(sizeof(Generator) == 1, "Generator ARM32 allocation");
+static_assert(sizeof(FModSound) == 0x243c, "FModSound ARM32 allocation");
 #endif
 
 extern int g_android_leaderboard_scores[8];
@@ -1478,18 +1460,9 @@ unsigned int Globals::createBillBoard(int halfExtentXY, int halfExtentZ,
 Array<BoundingVolume *> *Globals::getWreckCollision(int kind, AEGeometry *geom) {
     (void) geom;
 
-#if __SIZEOF_POINTER__ == 8
     FileRead *fr = new FileRead();
-#else
-    void *fr = ::operator new(1);
-    FileRead_ctor(fr);
-#endif
-    Array<int> *data = ((FileRead *) fr)->loadWreckCollision(kind);
-#if __SIZEOF_POINTER__ == 8
+    Array<int> *data = fr->loadWreckCollision(kind);
     delete fr;
-#else
-    ::operator delete(FileRead_dtor(fr));
-#endif
 
     Array<BoundingVolume *> *outArr = nullptr;
     if (data != 0) {
@@ -1903,13 +1876,7 @@ int Globals::init(AbyssEngine::ApplicationManager *app, AbyssEngine::Engine *eng
     (void) engine;
     void **missionSlot = &Mission::empty;
     if (*missionSlot == 0) {
-#if __SIZEOF_POINTER__ == 8
         *missionSlot = new Mission();
-#else
-        void *m = ::operator new(0x78);
-        Mission_ctor(m);
-        *missionSlot = m;
-#endif
     }
 
     GameSettingsRecord *settings = (GameSettingsRecord *) Globals::options;
@@ -1931,22 +1898,12 @@ int Globals::init(AbyssEngine::ApplicationManager *app, AbyssEngine::Engine *eng
     *flagFFFF = -1;
     *langSettingSlot = (lang == 0) ? 6 : 0xc;
 
-#if __SIZEOF_POINTER__ == 8
     Galaxy *galaxy = new Galaxy();
-#else
-    void *galaxy = ::operator new(8);
-    Galaxy_ctor(galaxy);
-#endif
     Globals::galaxy = galaxy;
-    Galaxy::gGalaxy = (Galaxy *) galaxy;
-#if __SIZEOF_POINTER__ == 8
+    Galaxy::gGalaxy = galaxy;
     Achievements *ach = new Achievements();
-#else
-    void *ach = ::operator new(0x28);
-    Achievements_ctor(ach);
-#endif
     Globals::achievements = ach;
-    Achievements::gAchievements = (Achievements *) ach;
+    Achievements::gAchievements = ach;
     void *statusStorage = ::operator new(sizeof(Status) > 0x1f0 ? sizeof(Status) : 0x1f0);
     Status *status = new (statusStorage) Status();
     Globals::status = status;
@@ -1954,19 +1911,10 @@ int Globals::init(AbyssEngine::ApplicationManager *app, AbyssEngine::Engine *eng
     ImageFactory *imgFac = new ImageFactory();
     Globals::imageFactory = imgFac;
 
-#if __SIZEOF_POINTER__ == 8
     FileRead *fr = new FileRead();
-#else
-    void *fr = ::operator new(1);
-    FileRead_ctor(fr);
-#endif
-    Globals::items = ((FileRead *) fr)->loadItemsBinary();
-    Globals::ships = ((FileRead *) fr)->loadShipsBinary();
-#if __SIZEOF_POINTER__ == 8
+    Globals::items = fr->loadItemsBinary();
+    Globals::ships = fr->loadShipsBinary();
     delete fr;
-#else
-    ::operator delete(FileRead_dtor(fr));
-#endif
 
     if (Globals::Canvas == nullptr) {
         Globals::Canvas = app->paintCanvas;
@@ -1975,26 +1923,16 @@ int Globals::init(AbyssEngine::ApplicationManager *app, AbyssEngine::Engine *eng
     ApplicationManager::gAppManager = app;
     app->VibrateEnable(0);
 
-#if __SIZEOF_POINTER__ == 8
     AERandom *rng = new AERandom();
-#else
-    void *rng = ::operator new(8);
-    AERandom_ctor(rng);
-#endif
     Globals::globals = this;
 #if __SIZEOF_POINTER__ == 8
     // ARMv7 callers use globals; mirror it for legacy recovered callers on 64-bit hosts.
     Globals::gGlobals = this;
 #endif
     Globals::rnd = rng;
-    AERandom::gRandom = (AbyssEngine::AERandom *) rng;
+    AERandom::gRandom = rng;
 
-#if __SIZEOF_POINTER__ == 8
     Generator *gen = new Generator();
-#else
-    void *gen = ::operator new(1);
-    Generator_ctor(gen);
-#endif
     Globals::generator = gen;
 
     RecordHandler *rh = new RecordHandler();
@@ -2003,14 +1941,9 @@ int Globals::init(AbyssEngine::ApplicationManager *app, AbyssEngine::Engine *eng
     Status::gStatus->resetGame();
     ((RecordHandler *) (*rhSlotP))->loadOptions();
 
-#if __SIZEOF_POINTER__ == 8
-    void *fmod = new FModSound();
-#else
-    void *fmod = ::operator new(0x243c);
-    FModSound_ctor(fmod);
-#endif
+    FModSound *fmod = new FModSound();
     FModSound **fmodSlotP = &Globals::sound;
-    *fmodSlotP = (FModSound *) fmod;
+    *fmodSlotP = fmod;
     (*fmodSlotP)->init();
 
     (*fmodSlotP)->enableCategory(1, settings->sfxVolume);
@@ -2020,7 +1953,7 @@ int Globals::init(AbyssEngine::ApplicationManager *app, AbyssEngine::Engine *eng
     (*fmodSlotP)->setVolume(2, settings->colorG);
     (*fmodSlotP)->setVolume(3, settings->colorB);
 
-    if (FModSound_tryToStopMusicForBGMusic() != 0) {
+    if ((*fmodSlotP)->tryToStopMusicForBGMusic() != 0) {
         settings->sfxVolume = 0;
     }
 
@@ -2397,21 +2330,12 @@ int Globals::getDialogueSoundId(int code, Agent *agent) {
 }
 
 String Globals::getRandomPlanetName() {
-#if __SIZEOF_POINTER__ == 8
     FileRead *f = new FileRead();
-#else
-    FileRead *f = (FileRead *) ::operator new(1);
-    FileRead_ctor(f);
-#endif
     int which = nextInt_71ad0(static_cast<AbyssEngine::AERandom *>(Globals::rnd), 0x64);
     Station *st = f->loadStation(which);
     String name = st->getName();
     delete st;
-#if __SIZEOF_POINTER__ == 8
     delete f;
-#else
-    ::operator delete(FileRead_dtor(f));
-#endif
     return name;
 }
 
