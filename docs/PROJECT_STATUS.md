@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`OptionsRecord` menu offsets). The original
+Android ARM `startGOF2` writes `Globals::options+0x2c`; the previous
+ARMv7 object wrote `+0x30` because C++ alignment shifted the options
+record. Packing the record and asserting four field offsets restores
+the `+0x2c` write and corrects the fields used by the Valkyrie and
+Supernova presets. Focused source-shape rises **84.2% → 84.8%** for
+`startGOF2`, **97.5% → 98.7%** for `startValkyrie`, and
+**96.4% → 97.6%** for `startSupernova`; none is exact. Windows native,
+ARM64 static, ARMv7 **209/209**, and strict ARM64 shared linking pass
+with 53 JNI exports. Full corpus: **4,323/4,524** originals in
+**4,770** pairs, **96.78%** source-shape, **86.78%** strict fuzzy,
+**2,782 linked-exact**, **1,108 byte-exact**, 201 missing, zero skipped,
+and no lost pair or exact-match member. The current revision has not
+run on a device. Next priority: verify the remaining `startGOF2`
+sound and module dispatch against ARM and a live startup trace. See
+[offset evidence](OPTIONSRECORD_MENU_OFFSETS_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`ModMainMenu::OnInitialize` global state).
 Original Android ARM GOT relocations identify `Globals::options`,
 `recordHandler`, `switch_to_target_setting`, and `logoIsShown`; the

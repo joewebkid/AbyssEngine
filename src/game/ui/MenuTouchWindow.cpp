@@ -4005,7 +4005,7 @@ void MenuTouchWindow::startGOF2() {
     static_cast<AbyssEngine::ApplicationManager *>(Globals::appManager)
         ->SetCurrentApplicationModule(2);
 #else
-    ((Status *) Globals::options)->fadeValue = this->fadeValue;
+    reinterpret_cast<OptionsRecord *>(Globals::options)->fadeValue = this->fadeValue;
     float v = _mtw_FModSound_stop(snd);
     _mtw_FModSound_play(snd, 0x8f, 0, v);
     void *appHolder = Globals::appManager;

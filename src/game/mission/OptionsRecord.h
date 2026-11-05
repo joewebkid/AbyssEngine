@@ -6,7 +6,9 @@
 #include "Mission.h"
 #include "engine/render/Engine.h"
 #include "game/world/Wanted.h"
+#include <cstddef>
 
+#pragma pack(push, 1)
 struct OptionsRecord {
     uint8_t field_0x00[8];
     uint16_t flag_word_0x8;
@@ -69,5 +71,11 @@ struct OptionsRecord {
     uint8_t field_0x3c[0xc];
     uint8_t firstRunPreviewChecked;
 };
+#pragma pack(pop)
+
+static_assert(offsetof(OptionsRecord, flag_word_0xd) == 0x0d, "options flag offset");
+static_assert(offsetof(OptionsRecord, fadeValue) == 0x2c, "options fade offset");
+static_assert(offsetof(OptionsRecord, flag_dword_0x32) == 0x32, "options DLC flag offset");
+static_assert(offsetof(OptionsRecord, firstRunPreviewChecked) == 0x48, "options preview offset");
 
 #endif
