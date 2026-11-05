@@ -2,14 +2,12 @@
 #include "engine/core/ApplicationManager.h"
 #include "engine/file/AEFile.h"
 #include "engine/core/GameText.h"
-#include "engine/file/FileInterfaceAndroid.h"
 #include "engine/math/AEMath.h"
 #include "engine/math/Transform.h"
 #include "game/core/String.h"
 #include "engine/render/Mesh.h"
 #include "engine/render/Engine.h"
 #include "engine/render/PaintCanvas.h"
-#include "engine/render/FBOContainer.h"
 #include "engine/math/Quaternion.h"
 #include <GLES2/gl2.h>
 #include <cstdlib>
@@ -60,10 +58,8 @@ static_assert(offsetof(CurveKeyframe, c1) == 0x18, "CurveKeyframe.c1");
 } // anonymous namespace
 
 namespace AbyssEngine {
-    // Defined in EngineFlags.cpp. These must have external linkage so the
-    // flag-gated engine functions cannot be folded to local null-pointer stubs.
-    extern char *g_Engine_fboEnabledFlag;
-    extern char *g_Engine_shaderModeFlag;
+    // Defined in EngineFlags.cpp. This must have external linkage so the
+    // flag-gated engine function cannot be folded to a local null-pointer stub.
     extern char *g_GameText_arabicEnabledFlag;
 
     // ImageFont, SpriteSystem, Curve, Image, AELoadedTexture are defined in
@@ -100,9 +96,6 @@ namespace AbyssEngine {
     long long triDrawn;
     unsigned char ShaderSet;
 
-    Engine *AE_getInitGLThis();
-    int AE_getInitGLWidth();
-    int AE_getInitGLHeight();
 }
 
 unsigned int AELabelObject(unsigned int glIdentifier, unsigned int name, const char *label) {
@@ -203,64 +196,6 @@ namespace AbyssEngine {
             p[5] = 1.0f - v1;
             p[6] = u0;
             p[7] = 1.0f - v1;
-        }
-    }
-}
-
-namespace AbyssEngine {
-    void getAppVersion() {
-        Engine *self = AE_getInitGLThis();
-        int width = AE_getInitGLWidth();
-        int height = AE_getInitGLHeight();
-
-        self->fboContainer = 0;
-        self->framebufferWidth = width;
-        self->framebufferHeight = height;
-        self->viewportWidth = width;
-        self->viewportHeight = height;
-
-        FileInterfaceAndroid *fileIface = new FileInterfaceAndroid();
-        self->fileInterface = fileIface;
-        AEFile::SetInterface((FileInterface *) fileIface);
-
-        self->lastGlError = 0;
-        self->vibrationSupported = 0;
-        self->hasVibration = false;
-
-        char *shaderFlag = g_Engine_shaderModeFlag;
-        self->field_0x40c = 0;
-        self->ResetLightParam();
-        glViewport(0, 0, self->viewportHeight, self->viewportWidth);
-
-        if (*shaderFlag == 0) {
-            glEnable(0x803a);
-            glDisable(0xb50);
-            glLineWidth(1.0f);
-        } else {
-            self->ShaderInit();
-        }
-
-        float zero3[3] = {0, 0, 0};
-        self->field_0x468 = *(const Vector *) zero3;
-        self->lightDirty[0] = 0;
-        self->field_0x474 = *(const Vector *) zero3;
-        self->lightDirty[1] = 0;
-
-        glEnable(0xb71);
-        self->GlEnable(0xde1, true);
-        glDisable(0xbe2);
-        glCullFace(0x405);
-        glEnable(0xb44);
-        self->AfterGLInit();
-        ((PaintCanvas *) *(void **) self->paintCanvas)->Initialize(false);
-
-        self->maxTextureSize = 0;
-        glGetIntegerv(0xd33, reinterpret_cast<GLint *>(&self->maxTextureSize));
-
-        if (*shaderFlag != 0 && *g_Engine_fboEnabledFlag != 0) {
-            FBOContainer *fbo = new FBOContainer(self, String(""));
-            self->fboContainer = fbo;
-            fbo->Create((int) self->framebufferWidth, (int) self->framebufferHeight, true, false);
         }
     }
 }

@@ -1162,6 +1162,14 @@ int Engine::InitGL(bool shaders, int width, int height) {
     return 1;
 }
 
+#if __SIZEOF_POINTER__ == 4
+// The original exports getAppVersion as a zero-size alias of Engine::InitGL.
+asm(".global _ZN11AbyssEngine13getAppVersionEv\n"
+    ".type _ZN11AbyssEngine13getAppVersionEv,%function\n"
+    ".set _ZN11AbyssEngine13getAppVersionEv,_ZN11AbyssEngine6Engine6InitGLEbii\n"
+    ".size _ZN11AbyssEngine13getAppVersionEv,0\n");
+#endif
+
 void Engine::ClearBuffer(uint32_t color) {
     const double scale = 255.0;
     double red = (double) (color >> 24) / scale;

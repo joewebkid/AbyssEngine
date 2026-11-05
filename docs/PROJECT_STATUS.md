@@ -1,5 +1,26 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`getAppVersion` / `Engine::InitGL` ARM
+symbol alias). The original ARM ELF exports a zero-size
+`getAppVersion()` symbol at the exact address of the 408-byte
+`Engine::InitGL(bool,int,int)` body. The reconstruction previously
+emitted a second, nullary initialization body with three undefined
+`AE_getInitGL*` calls. It now emits the same zero-size alias in ARM32
+`Engine.o` and removes the duplicate body. Focused `getAppVersion`
+source-shape rises **94.7% -> 98.1%**, strict fuzzy
+**71.1% -> 76.0%**; `Engine::InitGL` remains **98.1%** source-shape.
+The raw 209-object ARM32 unmatched-symbol inventory falls
+**265 -> 262** with exactly three placeholder names removed. Windows
+native, ARM64 static, ARMv7 **209/209**, and strict ARM64 shared
+linking pass. Full ARM corpus: **4,323/4,524** originals in
+**4,770** pairs, **96.79%** source-shape, **86.79%** strict fuzzy,
+**2,785 linked-exact**, **1,108 byte-exact**, 201 missing, zero
+skipped, and no lost exact-match member. Full ARM32 shared linking and
+device startup remain unverified. Next priority: audit one bounded
+group of remaining ARM32 reconstruction helpers against original
+call targets, beginning with render or game initialization paths.
+See [ARM alias evidence](INITGL_GETAPPVERSION_ALIAS_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (ARM32 vibration and frustum call ABI).
 Original Android ARM tail-calls `Engine::HasVibration` from
 `ApplicationManager::VibrateSupported` and passes a null matrix plus
