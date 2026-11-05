@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`AMeshMerger::render` field layout and
+draw call). Original Android ARM reads its canvas at offset 20 and
+transform ID at offset 28, then tail-calls
+`PaintCanvas::DrawTransform`. The reconstruction had an extra four-byte
+pad and an undefined draw helper. The typed call and original field
+offsets are now restored. Focused source-shape and strict fuzzy rise
+to **100%** from **92.0%** and **60.0%** respectively, gaining
+linked-exact. The raw ARM32 unmatched-symbol inventory falls
+**250 -> 249** across **210** objects, with no new name. Windows
+native, ARM64 static, ARMv7 **210/210**, and strict ARM64 shared
+linking pass. Full ARM corpus: **4,323/4,524** originals in **4,770**
+pairs, **96.80%** mean source-shape, **86.83%** strict fuzzy,
+**2,789 linked-exact**, **1,108 byte-exact**, 201 missing, zero
+skipped, zero wrong-type and no lost exact-match pair. Device
+rendering and full ARM32 shared linking remain unverified. Next
+priority: verify a bounded group of `PaintCanvas` external helpers
+against original call targets and field layout. See
+[ARM mesh-merger evidence](AMESHMERGER_RENDER_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (ARM32 engine shader-update targets).
 Original Android ARM branches from the shader-enabled material and
 light color paths to `Engine::ShaderUpdate`; the reconstructed ARM32

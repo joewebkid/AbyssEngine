@@ -1,8 +1,9 @@
 #include "engine/render/AMeshMerger.h"
+#include "engine/render/PaintCanvas.h"
 
 AMeshMerger::~AMeshMerger() {
 }
 
 void AMeshMerger::render() {
-    AMeshMerger_drawMeshes(this->canvas, this->transformId, 0);
+    this->canvas->DrawTransform(this->transformId, nullptr);
 }
