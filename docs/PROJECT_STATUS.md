@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`SetProjOrthoMatrix` projection call).
+Original Android ARM invokes `PaintCanvas::SetProjectionMatrix3d`
+from this method; the ARM32 source now uses that typed target instead
+of an undefined helper. Focused source-shape remains **81.3%** and
+strict fuzzy **66.7%**; the method is not exact. The raw **211-object**
+ARM32 unmatched-symbol inventory falls **239 -> 238** with no new
+name. Windows native, ARM64 static, ARMv7 **211/211**, and strict
+ARM64 shared linking pass. Full ARM corpus: **4,323/4,524** originals
+in **4,770** pairs, **96.80%** mean source-shape, **86.83%** strict
+fuzzy, **2,789 linked-exact**, **1,108 byte-exact**, 201 missing, zero
+skipped, zero wrong-type and no lost exact-match pair. Device rendering
+and full ARM32 shared linking remain unverified. Next priority: audit
+one game-side undefined call, beginning with `TractorBeam_new`, against
+the original ARM call and object layout. See
+[ARM projection-call evidence](PAINTCANVAS_SET_PROJECTION_CALL_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`PaintCanvas` sensor forwarding). Original
 Android ARM tail-branches from `GetGravValue` and `GetAccelValue` to
 their corresponding `Engine` methods. Both ARM32 wrappers now call

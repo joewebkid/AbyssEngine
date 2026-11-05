@@ -412,8 +412,6 @@ static inline void paintcanvas_ext_gl_disable(unsigned int cap) { glDisable(cap)
 
 static inline void paintcanvas_ext_gl_enable(unsigned int cap) { glEnable(cap); }
 
-void paintcanvas_ext_setprojmatrix3d(void *, float, float, float);
-
 #if __SIZEOF_POINTER__ == 4
 void paintcanvas_ext_camera_apply(void *, unsigned int, unsigned int, unsigned int);
 #endif
@@ -1147,7 +1145,7 @@ static float *paintcanvas_g_pom_b = &paintcanvas_g_pom_b_storage;
 void PaintCanvas::SetProjOrthoMatrix() {
     float g = *paintcanvas_g_pom_persp;
     if (g != -1.0f) {
-        paintcanvas_ext_setprojmatrix3d(this, g, *paintcanvas_g_pom_a, *paintcanvas_g_pom_b);
+        this->SetProjectionMatrix3d(g, *paintcanvas_g_pom_a, *paintcanvas_g_pom_b);
     }
     Engine *eng = this->engine;
     float *r;
