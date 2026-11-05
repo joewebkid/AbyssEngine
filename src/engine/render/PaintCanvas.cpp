@@ -398,8 +398,6 @@ namespace {
 
 }
 
-void paintcanvas_ext_has_vibration(void *);
-
 #if __SIZEOF_POINTER__ == 4
 void MatrixIdentity(void *result, void *matrix);
 #endif
@@ -407,8 +405,6 @@ void MatrixIdentity(void *result, void *matrix);
 #if __SIZEOF_POINTER__ == 4
 void paintcanvas_ext_change_mat(void *, void *, void *);
 #endif
-
-void paintcanvas_ext_vibrate(void *);
 
 void paintcanvas_ext_drawtextlines6(void *, unsigned int, void *, int, int, bool);
 
@@ -646,8 +642,8 @@ unsigned int PaintCanvas::CameraGetCurrent() {
     return cur;
 }
 
-void PaintCanvas::HasVibration() {
-    return paintcanvas_ext_has_vibration(this->engine);
+bool PaintCanvas::HasVibration() {
+    return this->engine->HasVibration();
 }
 
 void *PaintCanvas::CameraGetLocal(unsigned int index) {
@@ -1004,8 +1000,8 @@ void PaintCanvas::SetColor(unsigned int color) {
     return this->engine->SetColor(c0, c1, c2, c3);
 }
 
-void PaintCanvas::Vibrate(unsigned short) {
-    return paintcanvas_ext_vibrate(this->engine);
+void PaintCanvas::Vibrate(unsigned short duration) {
+    return this->engine->Vibrate(duration);
 }
 
 void PaintCanvas::SpriteSystemAddSize(unsigned int index, unsigned short sub, short delta) {

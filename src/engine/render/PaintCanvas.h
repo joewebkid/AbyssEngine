@@ -179,7 +179,7 @@ namespace AbyssEngine {
 
         int GetHeight();
 
-        void HasVibration();
+        bool HasVibration();
 
         void Vibrate(unsigned short);
 

@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`PaintCanvas` vibration calls). Original
+Android ARM tail-branches from `PaintCanvas::HasVibration` and
+`Vibrate` to the corresponding `Engine` methods. Both ARM32 calls now
+use those typed targets, and `HasVibration` returns the engine's
+Boolean result. Both retain **100%** source-shape, **100%** strict
+fuzzy and linked-exact. The raw 210-object ARM32 unmatched-symbol
+inventory falls **249 -> 247** with no new name. Windows native,
+ARM64 static, ARMv7 **210/210**, and strict ARM64 shared linking pass.
+Full ARM corpus: **4,323/4,524** originals in **4,770** pairs,
+**96.80%** mean source-shape, **86.83%** strict fuzzy,
+**2,789 linked-exact**, **1,108 byte-exact**, 201 missing, zero
+skipped, zero wrong-type and no exact-match membership loss. Device
+behavior and full ARM32 shared linking remain unverified. Next
+priority: verify `GetMeshResourceId` name comparison and
+`MeshChangeResourceMaterial` call targets in a separate bounded
+`PaintCanvas` pass. See
+[ARM vibration evidence](PAINTCANVAS_VIBRATION_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`AMeshMerger::render` field layout and
 draw call). Original Android ARM reads its canvas at offset 20 and
 transform ID at offset 28, then tail-calls
