@@ -24,9 +24,11 @@ account for all 201 names; none is a game-class method. The coverage
 gap should therefore be handled by a dependency/toolchain fidelity
 pass, not mistaken for 201 missing gameplay methods.
 This inventory does not measure unresolved references introduced in
-our ARM32 objects: `MenuTouchWindow.o` still references the undefined
-`_mtw_steerFromTouchId` helper. ARM32 link completeness therefore
-requires a separate audit.
+our ARM32 objects. At the time of this audit, `MenuTouchWindow.o`
+referenced the undefined `_mtw_steerFromTouchId` helper; the later
+[cinematic movement recovery](MENUTOUCH_CINEMATIC_MOVE_ARM_2026-11-05.md)
+removes it. Other ARM32 helper references still require a separate
+link-completeness audit.
 
 Focused ARMv7 verification compiles **209/209** translation units.
 `OnTouchEnd` source-shape rises **98.1% -> 100%** and strict fuzzy

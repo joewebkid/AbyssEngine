@@ -42,8 +42,8 @@ in **4,770** pairs: mean source-shape **96.79%**, strict fuzzy
 zero skipped and zero wrong-type matches. No comparison pair or
 exact-match member was lost.
 
-The ARM32 object for `MenuTouchWindow` still references
-`_mtw_steerFromTouchId` without a definition. This is a separate
-link-completeness gap in the reconstructed code, not one of the 201
-missing original symbols. Reconstructing the cinematic movement branch
-is the next priority.
+At the time of this audit, the ARM32 object for `MenuTouchWindow`
+referenced `_mtw_steerFromTouchId` without a definition. This was a
+separate link-completeness gap, not one of the 201 missing original
+symbols. The subsequent [cinematic movement recovery](MENUTOUCH_CINEMATIC_MOVE_ARM_2026-11-05.md)
+removes that reference.

@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`MenuTouchWindow::OnTouchMove` cinematic
+gestures). Original Android ARM selects one of two touch identities,
+calls `Globals::setCoordsSteer` or `setCoordsFire` with the matching
+image geometry, and stores that control's new anchor afterward. The
+recovered shared path replaces an undefined ARM32 helper and avoids
+updating both control groups for a single move. Focused source-shape
+rises **87.7% -> 91.6%**, strict fuzzy **25.7% -> 32.8%**; the function
+remains non-exact. Windows native, ARM64 static, ARMv7 **209/209**, and
+strict ARM64 shared linking pass. Full corpus: **4,323/4,524**
+originals in **4,770** pairs, **96.79%** source-shape,
+**86.79%** strict fuzzy, **2,785 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped, and no lost pair or
+exact-match member. Gesture behavior is unverified on a device.
+`MenuTouchWindow.o` still has seven other undefined `_mtw_` helper
+references, so ARM32 link completeness remains open. Next priority:
+resolve those helpers, beginning with the sound and slider wrappers.
+See [ARM cinematic movement evidence](MENUTOUCH_CINEMATIC_MOVE_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`MenuTouchWindow::OnTouchBegin` cinematic
 gesture assignment). Original Android ARM requires a non-null, unused
 touch ID before assigning the steer or fire control. The prior source

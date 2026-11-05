@@ -3464,8 +3464,6 @@ float MenuTouchWindow::getRelativeScrollHeight() {
     return (float) numer / (float) page;
 }
 
-void _mtw_steerFromTouchId(void *self, int y, int x, void *touchId);
-
 static inline void _mtw_Layout_OnTouchMove(void *layout, int y, int x) {
     ((Layout *) layout)->OnTouchMove(y, x);
 }
@@ -3601,27 +3599,40 @@ int MenuTouchWindow::OnTouchMove(int y, int x, void *touchId) {
             _mtw_MissionsWindow_OnTouchMove(this->missionsWindow, y, x);
             break;
         case 0xa:
-#if __SIZEOF_POINTER__ == 8
-            // Android's cinematic controls are active only for the iPad layout.
-            // Keep its two touch identities and update the existing control coordinates.
             if (Globals::iPad != 0 && Globals::iPadAssetsWithLowerRes == 0) {
                 _mtw_TouchButton_OnTouchMove(this->cinematicBtnA, y, x);
                 _mtw_TouchButton_OnTouchMove(this->cinematicBtnB, y, x);
-                if (touchId == this->cinematicTouchIdA && touchId != nullptr) {
+                if (touchId != nullptr && touchId == this->cinematicTouchIdA) {
                     auto *settings = (GameSettings *) Globals::options;
-                    settings->steerAnchorX += x - this->cinematicAnchorA;
+                    auto *canvas = (PaintCanvas *) Globals::Canvas;
+                    auto *globals = (Globals *) Globals::globals;
+                    globals->setCoordsSteer(settings->steerAnchorX + x - this->cinematicAnchorA,
+                                            canvas->GetImage2DWidth(_mtw_u32(this, 0x1c)),
+                                            canvas->GetImage2DWidth(_mtw_u32(this, 0x24)),
+                                            canvas->GetImage2DWidth(_mtw_u32(this, 0x20)),
+                                            _mtw_u16_ref(this, 0x2e), _mtw_u16_ref(this, 0x30),
+                                            _mtw_u16_ref(this, 0x40), _mtw_u16_ref(this, 0x42),
+                                            _mtw_u16_ref(this, 0x3c), _mtw_u16_ref(this, 0x3e),
+                                            _mtw_u16_ref(this, 0x34), _mtw_u16_ref(this, 0x32),
+                                            _mtw_u16_ref(this, 0x48), _mtw_u16_ref(this, 0x4a));
                     this->cinematicAnchorA = x;
-                    _mtw_apply_ipad_control_coords(this);
-                } else if (touchId == this->cinematicTouchIdB && touchId != nullptr) {
+                } else if (touchId != nullptr && touchId == this->cinematicTouchIdB) {
                     auto *settings = (GameSettings *) Globals::options;
-                    settings->fireAnchorX += x - this->cinematicAnchorB;
+                    auto *canvas = (PaintCanvas *) Globals::Canvas;
+                    auto *globals = (Globals *) Globals::globals;
+                    globals->setCoordsFire(settings->fireAnchorX + x - this->cinematicAnchorB,
+                                           canvas->GetImage2DWidth(_mtw_u32(this, 0x78)),
+                                           _mtw_u32(this, 0x78), _mtw_u32(this, 0x7c),
+                                           _mtw_u32_ref(this, 0x74),
+                                           _mtw_u16_ref(this, 0x60), _mtw_u16_ref(this, 0x62),
+                                           _mtw_u16_ref(this, 0x64), _mtw_u16_ref(this, 0x66),
+                                           _mtw_u16_ref(this, 0x68), _mtw_u16_ref(this, 0x6a),
+                                           _mtw_u16_ref(this, 0x6c), _mtw_u16_ref(this, 0x6e),
+                                           _mtw_u16_ref(this, 0x70), _mtw_u16_ref(this, 0x72),
+                                           _mtw_u16_ref(this, 0x4c), _mtw_u16_ref(this, 0x4e));
                     this->cinematicAnchorB = x;
-                    _mtw_apply_ipad_control_coords(this);
                 }
             }
-#else
-            _mtw_steerFromTouchId(this, y, x, touchId);
-#endif
             break;
         case 0xb: {
             void **arr = (void **) this->buttonsB4;
