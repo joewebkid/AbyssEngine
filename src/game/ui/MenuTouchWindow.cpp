@@ -43,10 +43,6 @@ static inline void _mtw_ChoiceWindow_set(void *cw, void *s1, void *s2, bool b) {
     if (cw && s1 && s2) ((ChoiceWindow *) cw)->set(*(const String *) s1, *(const String *) s2, b);
 }
 
-#if __SIZEOF_POINTER__ == 4
-void _mtw_render3D_inner(void *obj);
-#endif
-
 static inline int _mtw_Layout_OnTouchEnd(void *layout, int x, int y) {
     return ((Layout *) layout)->OnTouchEnd(x, y);
 }
@@ -69,14 +65,14 @@ static inline void _mtw_FModSound_stopAll() { Globals::sound->stopAll(); }
 
 static inline void *_mtw_AppMgr_GetEngine();
 
-#if __SIZEOF_POINTER__ == 8
 static inline void *_mtw_AppMgr_GetApplicationData() {
     auto *app = static_cast<AbyssEngine::ApplicationManager *>(Globals::appManager);
+#if __SIZEOF_POINTER__ == 8
     return app ? app->GetApplicationData() : nullptr;
-}
 #else
-void *_mtw_AppMgr_GetApplicationData();
+    return app->GetApplicationData();
 #endif
+}
 
 static inline uint8_t &_mtw_option_byte(size_t offset) {
     return *(Globals::options + offset);
@@ -156,14 +152,14 @@ static inline void _mtw_AppMgr_SetCurrentApplicationModule(void *app, int id) {
 
 static inline void _mtw_AppMgr_Quit(void *app) { ((AbyssEngine::ApplicationManager *) app)->Quit(); }
 
-#if __SIZEOF_POINTER__ == 8
 static inline void _mtw_Globals_reportLeaderboards() {
     auto *globals = static_cast<Globals *>(Globals::globals);
+#if __SIZEOF_POINTER__ == 8
     if (globals) globals->reportLeaderboards();
-}
 #else
-void _mtw_Globals_reportLeaderboards();
+    globals->reportLeaderboards();
 #endif
+}
 
 extern int g_android_link_game_gp;
 extern int g_android_gp_is_linked;
@@ -1174,10 +1170,6 @@ static inline void *_mtw_RecordHandler_recordStoreReadPreview(void *rh, int slot
     return ((RecordHandler *) rh)->recordStoreReadPreview(slot);
 }
 
-#if __SIZEOF_POINTER__ == 4
-void *_mtw_AppMgr_GetApplicationData();
-#endif
-
 static inline void *_mtw_AppMgr_GetEngine() { return GetEngine(); }
 
 static inline void _mtw_TouchButton_setYPosition(void *btn, int y) {
@@ -1957,11 +1949,7 @@ void MenuTouchWindow::render3D() {
     void *obj = this->missionsWindow;
     if (obj == 0)
         return;
-#if __SIZEOF_POINTER__ == 8
     static_cast<MissionsWindow *>(obj)->render3D();
-#else
-    return _mtw_render3D_inner(obj);
-#endif
 }
 
 bool MenuTouchWindow::inCinematicMode() {

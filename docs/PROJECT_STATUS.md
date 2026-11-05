@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`MenuTouchWindow` remaining ARM32 helper
+calls). Original Android ARM directly invokes
+`ApplicationManager::GetApplicationData` and
+`Globals::reportLeaderboards`. Its `render3D` branches through a
+Thumb/ARM veneer to `MissionsWindow::render3D`. The reconstruction now
+uses those typed calls, removing the last undefined `_mtw_` reference
+from `MenuTouchWindow.o`. Focused `OnTouchEnd` source-shape rises
+**86.9% -> 87.0%**, strict fuzzy **14.2% -> 14.5%**; `render3D`
+retains **100%** source-shape and linked-exact. Windows native,
+ARM64 static, ARMv7 **209/209**, and strict ARM64 shared linking pass.
+Full corpus: **4,323/4,524** originals in **4,770** pairs,
+**96.79%** source-shape, **86.79%** strict fuzzy,
+**2,785 linked-exact**, **1,108 byte-exact**, 201 missing, zero
+skipped, and no lost exact-match member. The absence of these helpers
+does not prove full ARM32 shared linking; device behavior is also
+unverified. Next priority: audit the remaining ARM32 undefined-symbol
+set across the game and distinguish missing game behavior from
+third-party dependencies. See [ARM call evidence](MENUTOUCH_REMAINING_CALLS_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`MenuTouchWindow` sound and sliders).
 Original Android ARM calls `FModSound::play`, checks whether background
 music may stop, then reads slider values and sets volume categories 1,
