@@ -561,8 +561,6 @@ namespace AbyssEngine {
 
         void Vibrate(unsigned short duration);
 
-        void VibrateSupported();
-
         void SetUVMatrix(const AbyssEngine::AEMath::Matrix &matrix);
 
         void SetWorldViewMatrix(const AbyssEngine::AEMath::Matrix &matrix);

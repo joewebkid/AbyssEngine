@@ -31,7 +31,6 @@ namespace AbyssEngine {
         AnimationMode_0 = 0
     };
 
-    int CameraIsSphereinViewFrustum(const AEMath::Vector &center, float radius, Camera *camera);
     int CameraIsSphereinViewFrustum(const AEMath::Vector &center, float radius,
                                    AEMath::Matrix *extra, Camera *camera);
 

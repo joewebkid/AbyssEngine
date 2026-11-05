@@ -901,8 +901,8 @@ void ApplicationManager::VibrateEnable(bool enable) {
     this->vibrateEnabled = enable;
 }
 
-void ApplicationManager::VibrateSupported() {
-    this->engine->VibrateSupported();
+bool ApplicationManager::VibrateSupported() {
+    return this->engine->HasVibration();
 }
 
 bool ApplicationManager::CheckCrack(const char *path) {

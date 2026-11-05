@@ -1,5 +1,25 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (ARM32 vibration and frustum call ABI).
+Original Android ARM tail-calls `Engine::HasVibration` from
+`ApplicationManager::VibrateSupported` and passes a null matrix plus
+the camera to the four-argument `CameraIsSphereinViewFrustum` from
+`Transform::InCameraVF`. The reconstruction used two nonexistent
+signatures. Both call targets and the vibration return type are now
+corrected. Across 209 ARM32 objects the raw unmatched symbol inventory
+falls **267 -> 265**, with exactly those two names removed and no new
+ones; this is not a final-link failure count. Focused `InCameraVF`
+source-shape rises **92.8% -> 93.2%**; strict fuzzy changes
+**48.0% -> 47.8%**. Windows native, ARM64 static, ARMv7 **209/209**,
+and strict ARM64 shared linking pass. Full ARM corpus: **4,323/4,524**
+originals in **4,770** pairs, **96.79%** source-shape, **86.79%**
+strict fuzzy, **2,785 linked-exact**, **1,108 byte-exact**, 201
+missing, zero skipped, and no lost exact-match member. Device behavior
+and full ARM32 shared linking remain unverified. Next priority:
+investigate the `getAppVersion`/`Engine::InitGL` shared-address alias
+and its three undefined getter calls before reconstructing that ABI.
+See [ARM32 call evidence](ARM32_VIBRATION_FRUSTUM_CALLS_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`MenuTouchWindow` remaining ARM32 helper
 calls). Original Android ARM directly invokes
 `ApplicationManager::GetApplicationData` and
