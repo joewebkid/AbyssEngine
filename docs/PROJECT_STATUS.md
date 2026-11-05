@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`ModMainMenu` touch-pointer forwarding).
+Original Android ARM preserves the incoming touch pointer in `r3`
+for `MenuTouchWindow::OnTouchMove` and `OnTouchEnd`; the reconstructed
+callers had passed null. Forwarding it restores gesture identity in
+the receiver. Focused `OnTouchEnd` rises **98.1% -> 100%**
+source-shape and becomes linked-exact; `OnTouchMove` rises
+**35.0% -> 37.0%** and remains non-exact due to call/epilogue shape.
+Windows native, ARM64 static, ARMv7 **209/209**, and strict ARM64 shared
+linking pass. Full corpus: **4,323/4,524** originals in **4,770**
+pairs, **96.79%** source-shape, **86.79%** strict fuzzy,
+**2,785 linked-exact**, **1,108 byte-exact**, 201 missing, zero
+skipped, and no lost pair or exact-match member. The 201 missing
+symbols are all dependencies: 57 C++ ABI/runtime, 23 OpenSSL/ARM
+crypto, 47 zlib, and 74 libzip; none is a game-class method. Touch
+behavior remains unverified on a device. Next priority: inspect the
+`MenuTouchWindow` gesture paths and verify the forwarded identities
+when a test device is available. See [ARM touch evidence and missing
+audit](MODMAINMENU_TOUCH_FORWARD_AND_MISSING_AUDIT_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`ModMainMenu::OnRender2D`). Original Android
 ARM relocations identify the canvas, app manager, font, game-text and
 screen-size globals. The recovered path fixes the logo fade color,

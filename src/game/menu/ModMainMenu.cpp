@@ -96,10 +96,9 @@ void ModMainMenu::OnRender3D() {
 }
 
 void ModMainMenu::OnTouchMove(int x, int y, void *touch) {
-    (void) touch;
     if (this->logoActive != 0)
         return;
-    this->touchWindow->OnTouchMove(x, y, nullptr);
+    this->touchWindow->OnTouchMove(x, y, touch);
 }
 
 void ModMainMenu::OnTouchMove(int x, int y) {
@@ -113,9 +112,8 @@ void ModMainMenu::OnSuspend() {
 }
 
 void ModMainMenu::OnTouchEnd(int x, int y, void *touch) {
-    (void) touch;
     if (this->logoActive == 0) {
-        this->touchWindow->OnTouchEnd(x, y, nullptr);
+        this->touchWindow->OnTouchEnd(x, y, touch);
         Level *level = *(Level **) this->cutScene;
         ((StarSystem *) (intptr_t) level->getStarSystem())->initLight();
         return;
