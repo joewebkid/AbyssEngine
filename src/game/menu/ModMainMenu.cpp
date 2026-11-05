@@ -26,15 +26,10 @@ namespace AbyssEngine {
     }
 }
 
-int *g_ModMainMenu_touchEndFlag;
-
 AbyssEngine::String **g_ModMainMenu_r2d_string;
 int *g_ModMainMenu_r2d_textId;
 int *g_ModMainMenu_r2d_screenW;
 int *g_ModMainMenu_r2d_screenH;
-
-void **g_ModMainMenu_updateLayout;
-void **g_ModMainMenu_updateListener;
 
 ModMainMenu::ModMainMenu() {
     this->initialized = 0;
@@ -132,7 +127,7 @@ void ModMainMenu::OnTouchEnd(int x, int y, void *touch) {
     }
 
     this->logoActive = 0;
-    *g_ModMainMenu_touchEndFlag = 0;
+    Globals::logoIsShown = 0;
 }
 
 void ModMainMenu::OnTouchEnd(int x, int y) {
@@ -311,14 +306,13 @@ void ModMainMenu::OnUpdate() {
 
     this->frameTime = frameTime;
 
-    void **layout = g_ModMainMenu_updateLayout;
-    ((Layout *) (*layout))->update(frameTime);
+    Layout **layoutSlot = &Globals::layout;
+    (*layoutSlot)->update(frameTime);
     this->cutScene->update();
     if (this->logoActive == 0)
         this->touchWindow->update(this->frameTime);
-    ((Layout *) (*layout))->update(this->frameTime);
+    (*layoutSlot)->update(this->frameTime);
 
-    void **listener = g_ModMainMenu_updateListener;
     this->fadeTimer = this->frameTime + this->fadeTimer;
-    ((FModSound *) (*listener))->updateAll(nullptr, nullptr, nullptr, nullptr);
+    Globals::sound->updateAll(nullptr, nullptr, nullptr, nullptr);
 }

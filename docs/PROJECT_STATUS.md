@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`ModMainMenu` input and update globals).
+Original Android ARM GOT relocations identify `Globals::logoIsShown`,
+`Globals::layout`, and `Globals::sound` in the logo-dismissal and frame
+update paths. Replacing three unwritten pointer holders raises focused
+source-shape **96.3% -> 98.1%** for `OnTouchEnd` and **96.4% -> 97.1%**
+for `OnUpdate`; neither is exact. Windows native, ARM64 static, ARMv7
+**209/209**, and strict ARM64 shared linking pass. Full corpus:
+**4,323/4,524** originals in **4,770** pairs, **96.79%** source-shape,
+**86.78%** strict fuzzy, **2,784 linked-exact**, **1,108 byte-exact**,
+201 missing, zero skipped, and no lost pair or exact-match member.
+Runtime behavior remains unverified on a device. Next priority: resolve
+remaining main-menu rendering roots and their behavior from original
+ARM evidence. See [ARM input/update evidence](MODMAINMENU_INPUT_UPDATE_GLOBALS_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`ModMainMenu::OnResume` volume). Original
 Android ARM reads `Globals::sound`, calls its
 `tryToStopMusicForBGMusic`, then passes the first 32 bits of
