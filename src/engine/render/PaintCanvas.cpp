@@ -404,8 +404,6 @@ void MatrixIdentity(void *result, void *matrix);
 
 void paintcanvas_ext_drawtextlines6(void *, unsigned int, void *, int, int, bool);
 
-int paintcanvas_ext_strcmp(void *, void *);
-
 unsigned int paintcanvas_ext_strlen(void *);
 
 void paintcanvas_ext_clear(int);
@@ -1215,7 +1213,7 @@ unsigned int PaintCanvas::GetTextureResourceId(AbyssEngine::String &name) {
         PCResourceView *res = (PCResourceView *) (this->resources.data_)[i];
         if (res && res->type == 2) {
             void *namePtr = *(void **) res->payload;
-            if (paintcanvas_ext_strcmp(&name, namePtr) == 0) {
+            if (name.Compare(static_cast<const char *>(namePtr)) == 0) {
                 return ((PCResourceView *) (this->resources.data_)[i])->id;
             }
         }
@@ -1304,7 +1302,7 @@ unsigned int PaintCanvas::GetMeshResourceId(AbyssEngine::String &name) {
         PCResourceView *res = (PCResourceView *) (this->resources.data_)[i];
         if (res && res->type == 4) {
             void *namePtr = *(void **) res->payload;
-            if (paintcanvas_ext_strcmp(&name, namePtr) == 0) {
+            if (name.Compare(static_cast<const char *>(namePtr)) == 0) {
                 return ((PCResourceView *) (this->resources.data_)[i])->id;
             }
         }

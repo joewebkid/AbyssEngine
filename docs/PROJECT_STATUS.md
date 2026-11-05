@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`PaintCanvas` resource-name comparisons).
+Original Android ARM calls `String::Compare(const char *)` from the
+single-argument mesh and texture resource lookups. Both remaining
+ARM32 `paintcanvas_ext_strcmp` calls now use that typed target. The
+raw **211-object** ARM32 unmatched-symbol inventory falls
+**246 -> 245** with no new name. Focused methods retain **100%**
+source-shape, **100%** strict fuzzy and linked-exact. Windows native,
+ARM64 static, ARMv7 **211/211**, and strict ARM64 shared linking pass.
+Full ARM corpus: **4,323/4,524** originals in **4,770** pairs,
+**96.80%** mean source-shape, **86.83%** strict fuzzy,
+**2,789 linked-exact**, **1,108 byte-exact**, 201 missing, zero
+skipped, zero wrong-type and no lost exact-match pair. Device
+behavior and full ARM32 shared linking remain unverified. Next
+priority: verify `PaintCanvas` display-size helper calls against
+original `Engine` targets, then continue the bounded ARM32 helper
+inventory. See
+[ARM name-lookup evidence](PAINTCANVAS_RESOURCE_NAME_LOOKUP_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`PaintCanvas` resource-name and mesh-material
 calls). Original Android ARM directs `GetMeshResourceId` to
 `String::Compare(const char *)` and two material-changing methods to
