@@ -402,10 +402,6 @@ namespace {
 void MatrixIdentity(void *result, void *matrix);
 #endif
 
-#if __SIZEOF_POINTER__ == 4
-void paintcanvas_ext_change_mat(void *, void *, void *);
-#endif
-
 void paintcanvas_ext_drawtextlines6(void *, unsigned int, void *, int, int, bool);
 
 int paintcanvas_ext_strcmp(void *, void *);
@@ -427,8 +423,6 @@ void paintcanvas_ext_camera_apply(void *, unsigned int, unsigned int, unsigned i
 int paintcanvas_ext_getdisplaywidth(void *);
 
 int paintcanvas_ext_getdisplayheight(void *);
-
-void paintcanvas_ext_mat_intern(AbyssEngine::PaintCanvas *, AbyssEngine::Transform *, AbyssEngine::Material *);
 
 
 int paintcanvas_ext_is_posteffect(void *);
@@ -979,11 +973,7 @@ void PaintCanvas::MeshChangeResourceMaterial(unsigned int meshIndex, unsigned sh
         if (idx + 1 != 0) {
             Mesh *mesh = reinterpret_cast<Mesh *>(this->meshes[meshIndex]);
             Material *mat = this->materials.data_[idx];
-#if __SIZEOF_POINTER__ == 8
             return this->MeshChangeMaterialIntern(mesh, mat);
-#else
-            return paintcanvas_ext_change_mat(this, mesh, mat);
-#endif
         }
     }
 }
@@ -1032,7 +1022,7 @@ unsigned int PaintCanvas::GetMeshResourceId(AbyssEngine::String &name, unsigned 
     for (unsigned int i = 0; i < this->resources.count; ++i) {
         PCResourceView *res = (PCResourceView *) (this->resources.data_)[i];
         if (res && res->type == 4) {
-            if (paintcanvas_ext_strcmp(&name, *(void **) res->payload) == 0) {
+            if (name.Compare(static_cast<const char *>(*(void **) res->payload)) == 0) {
                 PCResourceView *res2 = (PCResourceView *) (this->resources.data_)[i];
                 if (((PCMaterialIdView *) res2->payload)->materialId == p2) {
                     return res2->id;
@@ -1205,13 +1195,6 @@ void PaintCanvas::SetProjOrthoMatrix() {
     this->projOrthoMatrix.m[12] = -1.0f;
     this->projOrthoMatrix.m[13] = 1.0f;
     this->projOrthoMatrix.m[5] = -(float) (2.0 / (double) h);
-}
-
-void PaintCanvas::MeshChangeMaterialIntern(AbyssEngine::Mesh *mesh, AbyssEngine::Material *mat) {
-    if (mesh && mat) {
-        mesh->field_0x30 = mat;
-        return paintcanvas_ext_mat_intern(this, mesh->animation, mat);
-    }
 }
 
 void PaintCanvas::MeshResourceChangeAllMaterial(unsigned short matId, unsigned short value) {
@@ -2004,11 +1987,7 @@ void PaintCanvas::MeshChangeMaterial(unsigned int meshIndex, unsigned short matI
         meshIndex < this->meshCount) {
         Mesh *mesh = reinterpret_cast<Mesh *>(this->meshes[meshIndex]);
         Material *mat = this->materials.data_[matIndex];
-#if __SIZEOF_POINTER__ == 8
         return this->MeshChangeMaterialIntern(mesh, mat);
-#else
-        return paintcanvas_ext_change_mat(this, mesh, mat);
-#endif
     }
 }
 

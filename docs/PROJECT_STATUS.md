@@ -1,5 +1,25 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`PaintCanvas` resource-name and mesh-material
+calls). Original Android ARM directs `GetMeshResourceId` to
+`String::Compare(const char *)` and two material-changing methods to
+`MeshChangeMaterialIntern(Mesh *, Material *)`. Those targets now
+replace undefined ARM32 helpers; the material method's body moved to
+a separate translation unit to retain original external branch
+shapes. The raw **211-object** ARM32 unmatched-symbol inventory falls
+**247 -> 246** with no new name. Focused methods retain **100%**
+source-shape, **100%** strict fuzzy and linked-exact. Windows native,
+ARM64 static, ARMv7 **211/211**, and strict ARM64 shared linking pass.
+Full ARM corpus: **4,323/4,524** originals in **4,770** pairs,
+**96.80%** mean source-shape, **86.83%** strict fuzzy,
+**2,789 linked-exact**, **1,108 byte-exact**, 201 missing, zero
+skipped, zero wrong-type and no lost exact-match symbol. Device
+behavior and full ARM32 shared linking remain unverified. Next
+priority: resolve the remaining `paintcanvas_ext_strcmp` calls in
+`GetMeshResourceId(String &)` and `GetTextureResourceId` against their
+confirmed `String::Compare` targets. See
+[ARM name/material evidence](PAINTCANVAS_NAME_MATERIAL_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`PaintCanvas` vibration calls). Original
 Android ARM tail-branches from `PaintCanvas::HasVibration` and
 `Vibrate` to the corresponding `Engine` methods. Both ARM32 calls now
