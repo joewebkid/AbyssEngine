@@ -1,5 +1,26 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (ARM32 engine shader-update targets).
+Original Android ARM branches from the shader-enabled material and
+light color paths to `Engine::ShaderUpdate`; the reconstructed ARM32
+code instead called two undefined helper names. The calls now target
+the existing engine method, whose body was moved to a separate
+translation unit to preserve the original external branch shape.
+The raw 210-object ARM32 unmatched-symbol inventory falls
+**252 -> 250**, with those two names removed and no new ones.
+`LightSetMaterialColorAmbient` and `LightSetGlobalSceneColorAmbient`
+reach **100%** source-shape and gain linked-exact; the diffuse and
+specular material paths reach **98.6%** source-shape. Windows native,
+ARM64 static, ARMv7 **210/210**, and strict ARM64 shared linking pass.
+Full ARM corpus: **4,323/4,524** originals in **4,770** pairs,
+**96.80%** mean source-shape, **86.82%** strict fuzzy,
+**2,788 linked-exact**, **1,108 byte-exact**, 201 missing, zero
+skipped, zero wrong-type and no lost exact-match symbol. Device
+rendering and full ARM32 shared linking remain unverified. Next
+priority: verify one bounded group of remaining ARM32 helper calls,
+beginning with mesh drawing or paint-canvas paths. See
+[ARM shader-update evidence](ENGINE_SHADER_UPDATE_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`Globals::getShipGroup` random segment
 count). Original Android ARM loads `Globals::rnd` and calls
 `AERandom::nextInt(4)`; the ARM32 source had passed a zero pointer to

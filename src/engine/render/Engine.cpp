@@ -75,14 +75,8 @@ bool AbyssEngine::PostEffectFlag;
 // absent from <GLES2/gl2.h> and are declared locally. All ES 2.0 functions used
 // here (glColorMask, glDepthFunc, glGetString, glDrawElements, glDrawArrays,
 // glGetIntegerv, glLineWidth, glCullFace, glGetError, ...) come from gl.h.
-#if __SIZEOF_POINTER__ == 8
 #define ShaderUpdateRimColor() this->ShaderUpdate()
 #define ShaderUpdateMaterialColor() this->ShaderUpdate()
-#else
-void ShaderUpdateRimColor();
-
-void ShaderUpdateMaterialColor();
-#endif
 
 // The original ARM code accesses these rendering globals through the GOT.
 bool g_Engine_useShaders;
@@ -416,14 +410,6 @@ void Engine::LightSetLightCount(int count) {
 void Engine::SetAddData(void *data, int size) {
     this->addData = data;
     this->addDataSize = size;
-}
-
-void Engine::ShaderUpdate() {
-    uint32_t index = 0;
-    while (index < this->shaders.size()) {
-        this->shaders[index]->Update();
-        index += 1;
-    }
 }
 
 bool Engine::IsExtensionSupported(const char *extension) {
