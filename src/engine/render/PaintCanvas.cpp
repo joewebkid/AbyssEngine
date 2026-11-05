@@ -465,8 +465,6 @@ void paintcanvas_ext_transform_changemat(AbyssEngine::PaintCanvas *, void *, voi
 int paintcanvas_ext_font_get_yoff(void *);
 
 
-void paintcanvas_ext_get_grav(void *);
-
 static inline void paintcanvas_ext_glMatrixMode(unsigned int mode) { glMatrixMode(mode); }
 
 static inline void paintcanvas_ext_gl_depthmask(unsigned int enabled) { glDepthMask(enabled); }
@@ -505,8 +503,6 @@ void paintcanvas_ext_tami_setanimlen(void *tf, int hi, int lo);
 void paintcanvas_ext_tami_setanimstate(void *tf, int a, int b);
 
 void paintcanvas_ext_tami_finalize(void *tf);
-
-void paintcanvas_ext_get_accel(void *);
 
 float paintcanvas_ext_rpm_sinf(float v);
 
@@ -2339,8 +2335,8 @@ void PaintCanvas::MeshCloneMaterial(unsigned int index, unsigned int &out) {
     out = this->materials.count - 1;
 }
 
-void PaintCanvas::GetGravValue() {
-    return paintcanvas_ext_get_grav(this->engine);
+double *PaintCanvas::GetGravValue() {
+    return this->engine->GetGravValue();
 }
 
 static char paintcanvas_g_bg_a = 0;
@@ -2744,8 +2740,8 @@ AbyssEngine::String PaintCanvas::GetReverseString(AbyssEngine::String in) {
     return this->GetReverseString(in, this->field_0x1c == 0);
 }
 
-void PaintCanvas::GetAccelValue() {
-    return paintcanvas_ext_get_accel(this->engine);
+double *PaintCanvas::GetAccelValue() {
+    return this->engine->GetAccelValue();
 }
 
 

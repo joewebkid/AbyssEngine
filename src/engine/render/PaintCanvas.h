@@ -183,9 +183,9 @@ namespace AbyssEngine {
 
         void Vibrate(unsigned short);
 
-        void GetAccelValue();
+        double *GetAccelValue();
 
-        void GetGravValue();
+        double *GetGravValue();
 
         void SwapBuffer();
 

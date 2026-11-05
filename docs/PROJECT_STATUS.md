@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`PaintCanvas` sensor forwarding). Original
+Android ARM tail-branches from `GetGravValue` and `GetAccelValue` to
+their corresponding `Engine` methods. Both ARM32 wrappers now call
+those typed targets and return the engine's `double *` result. Both
+retain **100%** source-shape, **100%** strict fuzzy and linked-exact.
+The raw **211-object** unmatched-symbol inventory falls **241 -> 239**
+with no new name. Windows native, ARM64 static, ARMv7 **211/211**, and
+strict ARM64 shared linking pass. Full ARM corpus:
+**4,323/4,524** originals in **4,770** pairs, **96.80%** mean
+source-shape, **86.83%** strict fuzzy, **2,789 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped, zero wrong-type and
+no lost exact-match pair. Device sensor behavior and full ARM32 shared
+linking remain unverified. Next priority: verify the
+`SetProjOrthoMatrix` call to `SetProjectionMatrix3d` and continue the
+bounded `PaintCanvas` helper audit. See
+[ARM sensor evidence](PAINTCANVAS_SENSOR_FORWARD_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`PaintCanvas` display-size calls).
 Original Android ARM calls `Engine::GetDisplayWidth` and
 `Engine::GetDisplayHeight` from `SetProjOrthoMatrix` and
