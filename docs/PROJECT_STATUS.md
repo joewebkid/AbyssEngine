@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-05 (`PaintCanvas` display-size calls).
+Original Android ARM calls `Engine::GetDisplayWidth` and
+`Engine::GetDisplayHeight` from `SetProjOrthoMatrix` and
+`ResetPersMatrix`. Four ARM32 helper calls now use those typed engine
+targets. The raw **211-object** unmatched-symbol inventory falls
+**245 -> 241** with no new name. Focused source-shape remains
+**81.3%** for `SetProjOrthoMatrix` and **76.0%** for
+`ResetPersMatrix`; neither is exact. Windows native, ARM64 static,
+ARMv7 **211/211**, and strict ARM64 shared linking pass. Full ARM
+corpus: **4,323/4,524** originals in **4,770** pairs,
+**96.80%** mean source-shape, **86.83%** strict fuzzy,
+**2,789 linked-exact**, **1,108 byte-exact**, 201 missing, zero
+skipped, zero wrong-type and no lost exact-match pair. Device
+behavior and full ARM32 shared linking remain unverified. Next
+priority: verify `PaintCanvas` acceleration and gravity forwarding
+against the original `Engine` methods, including return types. See
+[ARM display-size evidence](PAINTCANVAS_DISPLAY_SIZE_ARM_2026-11-05.md).
+
 Last reviewed: 2026-11-05 (`PaintCanvas` resource-name comparisons).
 Original Android ARM calls `String::Compare(const char *)` from the
 single-argument mesh and texture resource lookups. Both remaining

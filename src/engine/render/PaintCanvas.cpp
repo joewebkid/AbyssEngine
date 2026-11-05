@@ -418,10 +418,6 @@ void paintcanvas_ext_setprojmatrix3d(void *, float, float, float);
 void paintcanvas_ext_camera_apply(void *, unsigned int, unsigned int, unsigned int);
 #endif
 
-int paintcanvas_ext_getdisplaywidth(void *);
-
-int paintcanvas_ext_getdisplayheight(void *);
-
 
 int paintcanvas_ext_is_posteffect(void *);
 
@@ -511,10 +507,6 @@ void paintcanvas_ext_tami_setanimstate(void *tf, int a, int b);
 void paintcanvas_ext_tami_finalize(void *tf);
 
 void paintcanvas_ext_get_accel(void *);
-
-int paintcanvas_ext_rpm_dispwidth(void *eng);
-
-int paintcanvas_ext_rpm_dispheight(void *eng);
 
 float paintcanvas_ext_rpm_sinf(float v);
 
@@ -1161,7 +1153,7 @@ void PaintCanvas::SetProjOrthoMatrix() {
     if (g != -1.0f) {
         paintcanvas_ext_setprojmatrix3d(this, g, *paintcanvas_g_pom_a, *paintcanvas_g_pom_b);
     }
-    void *eng = this->engine;
+    Engine *eng = this->engine;
     float *r;
     r = &this->projOrthoMatrix.m[12];
     r[0] = 0.0f;
@@ -1184,10 +1176,10 @@ void PaintCanvas::SetProjOrthoMatrix() {
     r[2] = 0.0f;
     r[3] = 0.0f;
 
-    int w = paintcanvas_ext_getdisplaywidth(eng);
+    int w = eng->GetDisplayWidth();
     this->projOrthoMatrix.m[0] = (float) (2.0 / (double) w);
 
-    int h = paintcanvas_ext_getdisplayheight(this->engine);
+    int h = this->engine->GetDisplayHeight();
     this->projOrthoMatrix.m[10] = -0.05f;
     this->projOrthoMatrix.m[15] = 1.0f;
     this->projOrthoMatrix.m[12] = -1.0f;
@@ -2772,8 +2764,8 @@ static char g_rpm_flag_8d1b8_storage = 0;
 static char *const g_rpm_flag_8d1b8 = &g_rpm_flag_8d1b8_storage;
 
 void PaintCanvas::ResetPersMatrix() {
-    int w = paintcanvas_ext_rpm_dispwidth(this->engine);
-    int h = paintcanvas_ext_rpm_dispheight(this->engine);
+    int w = this->engine->GetDisplayWidth();
+    int h = this->engine->GetDisplayHeight();
     float fov = *g_rpm_fov_8d0dc;
     float s = paintcanvas_ext_rpm_sinf(fov * 0.5f);
     float c = paintcanvas_ext_rpm_cosf(fov * 0.5f);
