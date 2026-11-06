@@ -1,5 +1,27 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`FModSound` language and initialization).
+Original ARM32 initializes FMOD with 32 channels and flags `0x82`,
+uses `english`/`deutsch`, appends `FMOD_GOF2.fev` or
+`data/audio/FMOD_GOF2.fev` according to `lowMemory`, retrieves
+`master`/`music`/`sfx`/`voice` categories, and stores the project
+pointer at offset `0x2404`. These behaviors now replace incorrect
+paths and undefined helper calls. `init` source-shape rises **93.3% ->
+98.9%**, strict fuzzy **77.3% -> 98.2%**; language stays **100%**
+source-shape/strict fuzzy and linked-exact. ARMv7 **211/211**,
+Windows native, ARM64 static, and strict ARM64 shared builds pass;
+the authorized ARM64 silent-audio build keeps language selection
+inactive. Raw ARM32 unresolved names remain **186**: four fictitious
+helpers were replaced by four FMOD methods exported by the original
+`libfmodevent.so`. Full corpus remains **4,323/4,524** originals in
+**4,772** pairs, mean source-shape **96.83%**, strict fuzzy
+**86.93%**, **2,798 linked-exact**, **1,113 byte-exact**, 201 missing,
+zero skipped, zero wrong-type, and 152 extra symbols. Exact membership
+is unchanged. Live audio and a full ARM32 shared link remain
+unverified. Next priority: remaining `FModSound` event/listener
+behavior and its external FMOD boundary. See
+[ARM FMOD initialization evidence](FMOD_INIT_LANGUAGE_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`MGame::successCheck`). Original ARM32
 allocates **0x74** bytes and calls `DialogueWindow::DialogueWindow()`
 at `0x180012`. The source's undefined ARM32 variadic constructor

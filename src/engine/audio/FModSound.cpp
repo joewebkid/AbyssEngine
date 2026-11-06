@@ -4,8 +4,6 @@
 
 #include <cstring>
 
-void FMOD_setLanguage(FMOD::EventSystem *system, uint32_t lang);
-
 static inline int FMOD_Event_stop(FMOD::Event *event, int immediate) { return event->stop(immediate); }
 
 static inline int FMOD_Event_setPaused(FMOD::Event *event, int paused) { return event->setPaused(paused); }
@@ -35,17 +33,6 @@ int FMOD_EventSystem_setReverbProperties(FMOD::EventSystem *system, unsigned cha
 static inline int FMOD_Event_getParameterByIndex(FMOD::Event *event, int idx, FMOD::EventParameter **out) { return event->getParameterByIndex(idx, out); }
 
 static inline int FMOD_EventParameter_setValue(FMOD::EventParameter *p, float v) { return p->setValue(v); }
-
-static inline int FMOD_EventSystem_init(FMOD::EventSystem *system, int maxch, unsigned char *extdriver, int flags) {
-    return system->init(maxch, (FMOD_INITFLAGS)(uintptr_t) extdriver, (void *) (uintptr_t) flags,
-                        (FMOD_EVENT_INITFLAGS) 0);
-}
-
-int FMOD_EventSystem_load(FMOD::EventSystem *system, const char *name, FMOD::EventProject *proj);
-
-void FMOD_EventSystem_getCategory(FMOD::EventSystem *system, FMOD::EventCategory *out);
-
-void FMOD_EventSystem_getProjectByIndex(FMOD::EventSystem *system, FMOD::EventProject *out);
 
 static inline int FMOD_Event_getState(FMOD::Event *event, unsigned *out) { return event->getState(out); }
 
@@ -86,10 +73,14 @@ char *property_name_purge = (char *) "purge";
 static float FModSound_defaultPitch = 0.0f;
 
 void FModSound::setAudioLanguage(int p1) {
-    static const uint32_t langTable[2] = {0, 1};
+#if defined(GOF2_ARM64_SILENT_AUDIO)
+    (void) p1;
+#else
+    static const char *const langTable[2] = {"english", "deutsch"};
     if (!this->system)
         return;
-    FMOD_setLanguage(this->system, langTable[p1 == 1]);
+    this->system->setLanguage(langTable[p1 == 1]);
+#endif
 }
 
 void FModSound::updateEvent3DAttributes(int idx, Vector *a, Vector *b, bool c) {
@@ -142,7 +133,7 @@ void FModSound::release() {
 FModSound::FModSound() {
     this->system = 0;
     this->music = 0;
-    this->initialized = 0;
+    this->project = nullptr;
     this->appRootDir = const_cast<char *>(AEFile::GetAppRootDir());
     this->lowMemory = 1;
     for (int i = 0; i != 4; i++)
@@ -236,7 +227,7 @@ void FModSound::resume(int p1) {
 
 int FModSound::getEventPauseLength(int idx) {
     int out = 0;
-    if (this->initialized != 0 && this->system != 0 && this->categoryEnabled[0] != 0) {
+    if (this->project != 0 && this->system != 0 && this->categoryEnabled[0] != 0) {
         FMOD::Event *h = this->events[idx];
         if (h != 0)
             FMOD_Event_getProperty(h, (unsigned char *) property_name_pause, (unsigned char *) &out, 1);
@@ -261,7 +252,7 @@ void FModSound::enableReverb(int p1) {
 
 float FModSound::getPlayingProgress(int idx) {
     float progress = 0.0f;
-    if (this->initialized != 0 && this->system != 0 &&
+    if (this->project != 0 && this->system != 0 &&
         this->categoryEnabled[0] != 0 &&
         this->events[idx] != 0) {
         FMOD_EVENT_INFO info;
@@ -275,7 +266,7 @@ float FModSound::getPlayingProgress(int idx) {
 }
 
 void FModSound::play(int idx, Vector *pos, Vector *vel, float pitch) {
-    if (this->initialized == 0 || (unsigned int) idx >= 0x8f5 || this->system == 0)
+    if (this->project == 0 || (unsigned int) idx >= 0x8f5 || this->system == 0)
         return;
 
     FMOD::Event *&slot = this->events[idx];
@@ -419,7 +410,7 @@ int FModSound::init() {
         this->fxSlots[i] = -1;
     this->system = nullptr;
     this->music = nullptr;
-    this->initialized = 0;
+    this->project = nullptr;
     this->propSlot = 0;
     this->reverbPreset = -1;
     this->currentMusicEvent = -1;
@@ -427,14 +418,14 @@ int FModSound::init() {
     this->downPitch = 0;
     return 0;
 #else
-    static const char kSuffixA[16] = ".fev";
-    static const char kSuffixB[24] = "_low.fev";
-    static FMOD::EventCategory *kCats[4];
+    static const char kNormalPath[25] = "data/audio/FMOD_GOF2.fev";
+    static const char kLowMemoryPath[14] = "FMOD_GOF2.fev";
+    static const char *const kCategories[4] = {"master", "music", "sfx", "voice"};
 
     for (int i = 0; i != 5; i++)
         this->fxSlots[i] = -1;
     FMOD_EventSystem_Create((FMOD_EVENTSYSTEM **) &this->system);
-    FMOD_EventSystem_init(this->system, 0x20, (unsigned char *) 0x82, 0);
+    this->system->init(0x20, (FMOD_INITFLAGS) 0x82, nullptr);
     setAudioLanguage(GameText::getLanguage());
 
     char path[0x400];
@@ -443,15 +434,15 @@ int FModSound::init() {
     uint8_t lowFlag = this->lowMemory;
     char *end = path + strlen(path);
     if (lowFlag == 0)
-        memcpy(end, kSuffixB, 16);
+        memcpy(end, kNormalPath, sizeof(kNormalPath));
     else
-        memcpy(end, kSuffixA, 14);
-    FMOD_EventSystem_load(this->system, path, 0);
+        memcpy(end, kLowMemoryPath, sizeof(kLowMemoryPath));
+    this->system->load(path, nullptr, nullptr);
     for (int i = 0; i != 4; i++) {
         this->category[i] = 0;
-        FMOD_EventSystem_getCategory(this->system, kCats[i]);
+        this->system->getCategory(kCategories[i], &this->category[i]);
     }
-    FMOD_EventSystem_getProjectByIndex(this->system, 0);
+    this->system->getProjectByIndex(0, &this->project);
     this->propSlot = 0;
     this->reverbPreset = -1;
     this->currentMusicEvent = -1;
@@ -647,7 +638,7 @@ int FModSound::pause(FMOD::Event *e) {
 }
 
 FMOD::Event *FModSound::updateEvent3DAttributes(FMOD::Event *event, int idx, Vector *pos, Vector *vel, bool restart) {
-    if (this->initialized == 0 || this->categoryEnabled[0] == 0)
+    if (this->project == 0 || this->categoryEnabled[0] == 0)
         return event;
 
     int category = (event == 0) ? 0x24 : FMOD_Event_getCategory(event);

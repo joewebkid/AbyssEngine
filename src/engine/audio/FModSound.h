@@ -22,7 +22,7 @@ public:
     FMOD::EventCategory *category[4];
     FMOD::EventSystem *system;
     FMOD::MusicSystem *music;
-    int initialized;
+    FMOD::EventProject *project;
     int reverbPreset;
     int propSlot;
     int fxSlots[5];
