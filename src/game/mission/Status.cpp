@@ -1098,7 +1098,7 @@ static const Step kSteps[] = {
     /*0x2e*/ {0xb, 0, 0x4a, 1}, /*0x2f*/ {0xb, 0, 0x3a, 1}, /*0x30*/ {0x9c, 0, 0x3a, 1},
     /*0x31*/ {0x9c, 0, 0x3e, 1}, /*0x32*/ {0x9c, 0, 0x19, 1}, /*0x33*/ {0xa0, 0, 0x19, 1},
     /*0x34*/ {0, 0, 0, 0}, /*0x35*/ {0xb, 200000, 0x4a, 1}, /*0x36*/ {0xb, 0, 0x65, 1},
-    /*0x37*/ {0x4, 0, 0x66, 1}, /*0x38*/ {0xb, 0, 0x65, 0}, /*0x39*/ {0xa6, 0, 0x65, 1},
+    /*0x37*/ {0x4, 0, 0x66, 1}, /*0x38*/ {0xb, 150000, 0x65, 1}, /*0x39*/ {0xa6, 0, 0x65, 1},
     /*0x3a*/ {0xa3, 0, 0x65, 1}, /*0x3b*/ {0xb, 50000, 0x65, 1}, /*0x3c*/ {0xa4, 0, 0x65, 0},
     /*0x3d*/ {0xb, 0, 100, 0}, /*0x3e*/ {0x4, 0, 0x67, 0}, /*0x3f*/ {0x4, 0, 0x68, 0},
     /*0x40*/ {0xb, 0, 100, 0}, /*0x41*/ {0xb, 0, 0x65, 0}, /*0x42*/ {0x4, 0, 0x68, 1},
@@ -1275,6 +1275,19 @@ void Status::nextCampaignMission(bool advance) {
                 int32_t credited = static_cast<int32_t>(static_cast<uint32_t>(credits) + 40000u);
                 credits = credited & ~(credited >> 31);
             } else if (step == 54) {
+                setShip(getPreviousShip());
+                setPreviousShip(nullptr);
+            } else if (step == 57) {
+                (*missions)[0]->setProductionGoods(179, 10);
+                for (unsigned i = 0; i < this->bluePrints->size(); ++i) {
+                    BluePrint *bp = (*this->bluePrints)[i];
+                    if (bp->getIndex() == 179) {
+                        bp->unlock();
+                        Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
+                        bp->addItem((*items)[127], 5, 101);
+                        break;
+                    }
+                }
                 setShip(getPreviousShip());
                 setPreviousShip(nullptr);
             }

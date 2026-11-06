@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, steps
+56–57). Original Android ARM32 creates campaign
+`Mission(11,150000,101)` at step 56. At step 57 it creates campaign
+`Mission(166,0,101)`, sets production goods `179/10`, unlocks
+blueprint `179` if present, adds catalog item `127` in quantity `5` at station
+`101`, and restores the saved ship. The source restores these effects;
+production-source smoke covers both paths through step 57 at
+`-O0/-O2`. Focused source-shape rises **22.8% -> 23.9%** and strict
+fuzzy **7.1% -> 8.9%**. ARM32 **211/211**, Windows native, ARM64
+static, and strict ARM64 shared builds pass. Raw ARM32 unresolved
+names remain **174** with no membership change. Full corpus:
+**4,323/4,524** originals in **4,772** pairs, mean source-shape
+**96.87%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped, zero wrong-type,
+and 151 extra symbols. No exact membership changed. Live campaign
+progression remains unverified. Next: step 58. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEPS_56_57_ARM_2026-11-07.md).
+
 Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 55).
 Original Android ARM32 saves the old ship, makes template `39`,
 sets race `1`, equips items `181/52/58/83` in slots `0/0/1/2`,

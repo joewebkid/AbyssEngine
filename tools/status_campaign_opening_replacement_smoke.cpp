@@ -171,8 +171,10 @@ int main() {
     otherBlueprint.index = 84;
     BluePrint targetBlueprint;
     targetBlueprint.index = 85;
+    BluePrint productionBlueprint;
+    productionBlueprint.index = 179;
     Array<BluePrint *> blueprints;
-    blueprints.values = {&otherBlueprint, &targetBlueprint};
+    blueprints.values = {&otherBlueprint, &targetBlueprint, &productionBlueprint};
     Ship ship;
     Status status;
     Globals::status = &status;
@@ -369,7 +371,38 @@ int main() {
     }
     delete missions[0];
     missions[0] = nullptr;
-    delete status.ship;
+
+    status.currentCampaignMission = 56;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 57);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 150000 && missions[0]->station == 101);
+    assert(status.previousShip == &ship && status.ship != &ship);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 57;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 58);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 166 && missions[0]->param == 0 && missions[0]->station == 101);
+    assert(missions[0]->productionGoodsA == 179 && missions[0]->productionGoodsB == 10);
+    assert(productionBlueprint.unlocked && productionBlueprint.addedItem == &prototypes[127]);
+    assert(productionBlueprint.addedAmount == 5 && productionBlueprint.addedStation == 101);
+    assert(status.ship == &ship && status.previousShip == nullptr);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    blueprints.values.pop_back();
+    status.ship = shipPrototypes[39].makeShip(-1);
+    status.previousShip = &ship;
+    status.currentCampaignMission = 57;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 58 && status.ship == &ship);
+    assert(status.previousShip == nullptr && missions[0]->productionGoodsA == 179);
+    delete missions[0];
+    missions[0] = nullptr;
+
     status.ship = nullptr;
     assert(ship.raceSetCount == 1);
     delete ship.added;
