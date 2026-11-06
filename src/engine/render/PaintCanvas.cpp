@@ -3378,8 +3378,8 @@ void PaintCanvas::CameraSetPerspective(unsigned int index, float fov, float aspe
     }
 }
 
-void PaintCanvas::DrawRegion2D(unsigned int index, float /*unused*/, int rotSteps,
-                               int pivotX, int pivotY, int transX, float scaleX, float scaleY) {
+void PaintCanvas::DrawRegion2D(unsigned int index, float angle, int pivotX,
+                               int pivotY, int x, int y, float scaleX, float scaleY) {
     if (index >= this->images.count) {
         return;
     }
@@ -3390,10 +3390,10 @@ void PaintCanvas::DrawRegion2D(unsigned int index, float /*unused*/, int rotStep
     }
     SetTexture(img->textureId, 0xffffffffu);
 
-    float rot = static_cast<float>(rotSteps);
     float px = static_cast<float>(pivotX);
     float py = static_cast<float>(pivotY);
-    float tx = static_cast<float>(transX);
+    float tx = static_cast<float>(x);
+    float ty = static_cast<float>(y);
     float negpx = static_cast<float>(-pivotX);
     float negpy = static_cast<float>(-pivotY);
 
@@ -3403,8 +3403,8 @@ void PaintCanvas::DrawRegion2D(unsigned int index, float /*unused*/, int rotStep
     transM[5] = 1.0f;
     transM[10] = 1.0f;
     transM[15] = 1.0f;
-    transM[3] = py + rot * scaleX;
-    transM[7] = tx + px * scaleY;
+    transM[3] = negpx * scaleX;
+    transM[7] = negpy * scaleY;
 
     float pivotM[16];
     memset(pivotM, 0, sizeof(pivotM));
@@ -3412,11 +3412,11 @@ void PaintCanvas::DrawRegion2D(unsigned int index, float /*unused*/, int rotStep
     pivotM[5] = 1.0f;
     pivotM[10] = 1.0f;
     pivotM[15] = 1.0f;
-    pivotM[3] = negpx * scaleX;
-    pivotM[7] = negpy * scaleY;
+    pivotM[3] = tx + px * scaleX;
+    pivotM[7] = ty + py * scaleY;
 
-    float s = AEMath::Sinf(negpx * scaleX);
-    float c = AEMath::Cosf(negpx * scaleX);
+    float s = AEMath::Sinf(angle);
+    float c = AEMath::Cosf(angle);
     float rotM[16];
     memset(rotM, 0, sizeof(rotM));
     rotM[0] = c;

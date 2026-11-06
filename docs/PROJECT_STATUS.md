@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PaintCanvas::DrawRegion2D` coordinates).
+Original ARM passes the float angle directly to `Sinf/Cosf` and
+constructs local translation from the negative scaled pivot, then
+screen translation from position plus scaled pivot. The source had
+ignored the angle and interchanged the two translations; the
+parameter names and formulas are corrected. Target source-shape
+rises **91.7% -> 91.9%**, strict fuzzy **29.4% -> 31.2%**, still
+non-exact. ARMv7 **211/211**, Windows native, ARM64 static, and strict
+ARM64 shared builds pass. Raw ARM32 unresolved names stay **213**.
+Full corpus: **4,323/4,524** originals in **4,772** pairs,
+**96.81%** mean source-shape, **86.88%** strict fuzzy,
+**2,798 linked-exact**, **1,113 byte-exact**, 201 missing, zero
+skipped, zero wrong-type, and 149 extra symbols. Exact membership is
+unchanged. Live rendering and full ARM32 shared linking remain
+unverified. Next priority: the other `DrawRegion2D` overload and a
+device-level coordinate comparison. See
+[ARM coordinate evidence](PAINTCANVAS_DRAW_REGION_2D_COORDINATES_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PaintCanvas::DrawRegion2D` matrix tail).
 Original ARM and GOT relocation confirm three matrix multiplies in
 the order rotation × translation, pivot × result, result × scale.

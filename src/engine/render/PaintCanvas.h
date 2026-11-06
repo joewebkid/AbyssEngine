@@ -216,7 +216,7 @@ namespace AbyssEngine {
         void DrawImage2D(unsigned int index, int x, int y, int w, int h, unsigned char alignFlags,
                          unsigned char anchorFlags, unsigned char flipFlags);
 
-        void DrawRegion2D(unsigned int index, float unused, int rotSteps, int pivotX, int pivotY, int transX,
+        void DrawRegion2D(unsigned int index, float angle, int pivotX, int pivotY, int x, int y,
                           float scaleX, float scaleY);
 
         void DrawRegion2D(unsigned int index, int srcX, int srcY, int destW, int destH, float angle, int pivotX,
