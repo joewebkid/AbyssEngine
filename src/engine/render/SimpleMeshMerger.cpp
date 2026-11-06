@@ -4,7 +4,13 @@
 #include "engine/math/AEMath.h"
 #include "engine/render/PaintCanvas.h"
 
-uint16_t aeabi_uidiv16(uint16_t a, uint16_t b);
+#if defined(__arm__)
+uint16_t aeabi_uidiv16(uint16_t a, uint16_t b) __asm__("__aeabi_uidiv");
+#else
+static inline uint16_t aeabi_uidiv16(uint16_t a, uint16_t b) {
+    return a / b;
+}
+#endif
 
 SimpleMeshMerger::SimpleMeshMerger(const Array<unsigned short> &meshIds,
                                    Array<Matrix> transforms,

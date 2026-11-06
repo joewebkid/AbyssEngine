@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`MeshMerger` and `SimpleMeshMerger` ARM EABI
+calls). Original Android ARM confirms seven `__aeabi_uidiv` and four
+`__aeabi_memcpy4` calls across mesh construction, initialization, and
+updates. Two undefined C++ placeholder names now bind to those ARM32
+runtime symbols, with ordinary division and `memcpy` on Windows and
+ARM64. ARMv7 **211/211**, Windows native, ARM64 static, and strict
+ARM64 shared builds pass. The raw ARM32 unmatched-symbol inventory
+falls **227 -> 225** with no new name. Full corpus: **4,323/4,524**
+originals in **4,772** pairs, **96.81%** mean source-shape,
+**86.88%** strict fuzzy, **2,798 linked-exact**, **1,113 byte-exact**,
+201 missing, zero skipped, zero wrong-type, and 149 extra symbols.
+All linked-exact and byte-exact memberships are preserved. Live
+merged-mesh behavior and full ARM32 shared linking remain unverified.
+Next priority: original call targets of remaining `PaintCanvas`
+placeholders. See [ARM EABI evidence](MESH_MERGER_ARM_EABI_CALLS_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`ParticleSystemManager::cameraToggle` and
 `String::PrintOut` call targets). Original Android ARM confirms that
 camera changes release and reinitialize sprite resources and that

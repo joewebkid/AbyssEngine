@@ -6,9 +6,18 @@
 #include <cstring>
 
 
-uint16_t aeabi_uidiv16(uint16_t a, uint16_t b);
+#if defined(__arm__)
+uint16_t aeabi_uidiv16(uint16_t a, uint16_t b) __asm__("__aeabi_uidiv");
+void aeabi_memcpy4(void *dst, const void *src, uint32_t n) __asm__("__aeabi_memcpy4");
+#else
+static inline uint16_t aeabi_uidiv16(uint16_t a, uint16_t b) {
+    return a / b;
+}
 
-void aeabi_memcpy4(void *dst, const void *src, uint32_t n);
+static inline void aeabi_memcpy4(void *dst, const void *src, uint32_t n) {
+    std::memcpy(dst, src, n);
+}
+#endif
 
 MeshMerger::MeshMerger(const Array<uint16_t> &meshIds, Array<Matrix> transforms,
                        PaintCanvas *canvas, uint16_t flags) {
