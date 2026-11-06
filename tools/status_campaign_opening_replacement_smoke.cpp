@@ -26,6 +26,7 @@ struct Mission {
     bool visible = true;
     Mission() : Mission(0, 0, 0) {}
     Mission(int t, int p, int s) : type(t), param(p), station(s) {}
+    int getStatusValue() { return statusValue; }
     void setStatusValue(int value) { statusValue = value; }
     void setProductionGoods(int a, int b) { productionGoodsA = a; productionGoodsB = b; }
     void setVisible(bool value) { visible = value; }
@@ -425,6 +426,33 @@ int main() {
     assert(missions[0]->statusValue == 0 && status.field_10c == 0);
     assert(status.field_90->values == std::vector<int>({56, 45, 22}));
     assert(productionBlueprint.locked && secondProductionBlueprint.locked);
+    Mission *previousMission = missions[0];
+    status.currentCampaignMission = 59;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 60);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 50000 && missions[0]->station == 101);
+    assert(missions[0]->statusValue == 0);
+    delete previousMission;
+    delete missions[0];
+    missions[0] = nullptr;
+
+    Mission completedMission(163, 0, 101);
+    completedMission.statusValue = 2;
+    missions[0] = &completedMission;
+    status.currentCampaignMission = 59;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 60 && missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 150000);
+    assert(missions[0]->statusValue == 1);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    completedMission.statusValue = -1;
+    missions[0] = &completedMission;
+    status.currentCampaignMission = 59;
+    status.nextCampaignMission(true);
+    assert(missions[0]->param == 0 && missions[0]->statusValue == 0);
     delete missions[0];
     missions[0] = nullptr;
     delete status.field_90;

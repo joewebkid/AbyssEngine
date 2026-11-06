@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 59).
+Original Android ARM32 reads the previous mission's status value,
+sets the next campaign mission's amount to `(value + 1) * 50000`,
+and sets its status flag according to whether that value is positive.
+The source restores this behavior with 32-bit wraparound;
+production-source smoke covers values `0`, `2`, and `-1` at
+`-O0/-O2`. Focused source-shape rises **26.0% -> 27.1%** and strict
+fuzzy **9.2% -> 9.6%**. ARM32 **211/211**, Windows native, ARM64
+static, and strict ARM64 shared builds pass. Raw ARM32 unresolved
+names remain **174** with no membership change. Full corpus:
+**4,323/4,524** originals in **4,772** pairs, mean source-shape
+**96.88%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped, zero wrong-type,
+and 151 extra symbols. No exact membership changed. Live campaign
+progression remains unverified. Step 60 already matches its original
+ordinary mission; next: step 61. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEP_59_ARM_2026-11-07.md).
+
 Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 58).
 Original Android ARM32 replaces the route-state array with
 `[56,45,22]`, locks every blueprint with index `179`, creates

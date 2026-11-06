@@ -1256,6 +1256,13 @@ void Status::nextCampaignMission(bool advance) {
             if (bp->getIndex() == 179)
                 bp->lock();
         }
+    } else if (step == 59) {
+        int previousStatus = (*missions)[0]->getStatusValue();
+        int32_t amount = static_cast<int32_t>((static_cast<uint32_t>(previousStatus) + 1u) * 50000u);
+        Mission *m = new Mission(11, amount, 101);
+        setCampaignMission(m);
+        m->setStatusValue(previousStatus > 0);
+        return;
     }
 
     Mission *tailMission;
