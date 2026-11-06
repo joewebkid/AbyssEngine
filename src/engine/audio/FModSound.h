@@ -53,7 +53,8 @@ public:
 
     void release();
 
-    FModSound *stop(FMOD::Event *e);
+    // ARM returns this for null and FMOD_RESULT for a live event.
+    uintptr_t stop(FMOD::Event *e);
 
     void stop(int p1);
 

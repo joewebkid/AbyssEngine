@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`FModSound` music fade and event stop).
+Original ARM32 tail-calls `setParamValue` for `fadeOutNow` and
+`FMOD::Event::stop(false)` for a live event; two undefined stand-ins
+are removed. The stop overload exposes its mixed raw return register
+as `uintptr_t`. ARMv7 **211/211**, Windows native, ARM64 static, and
+strict ARM64 shared builds pass. Raw ARM32 unresolved names fall
+**180 -> 178**, with no new name. Full corpus: **4,323/4,524**
+originals in **4,772** pairs, mean source-shape **96.87%**, strict
+fuzzy **86.97%**, **2,802 linked-exact**, **1,116 byte-exact**, 201
+missing, zero skipped, zero wrong-type, and 151 extra symbols.
+Neither exact set gained or lost a member. Live audio and full ARM32
+shared linking remain unverified. See
+[ARM fade/stop evidence](FMOD_FADE_STOP_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`FModSound` reverb). Original ARM32 uses
 typed FMOD reverb methods and copies `FMOD_PRESET_OFF` when disabling;
 the previous code passed 80 zero bytes and called two undefined

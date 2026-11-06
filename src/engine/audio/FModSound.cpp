@@ -8,13 +8,9 @@ static inline int FMOD_Event_stop(FMOD::Event *event, int immediate) { return ev
 
 static inline int FMOD_Event_setPaused(FMOD::Event *event, int paused) { return event->setPaused(paused); }
 
-void FMOD_fade(FModSound *self, int a, int s, float v);
-
 static inline void FMOD_EventSystem_unload(FMOD::EventSystem *system) { system->unload(); }
 
 static inline void FMOD_EventSystem_release(FMOD::EventSystem *system) { system->release(); }
-
-FModSound *FMOD_Event_stop_p(FMOD::Event *event, int immediate);
 
 static inline int FMOD_Event_setPitch(FMOD::Event *event, float pitch, int mode) { return event->setPitch(pitch, (FMOD_EVENT_PITCHUNITS) mode); }
 
@@ -86,7 +82,7 @@ void FModSound::fadeOutNow() {
         return;
     if (this->fadeTargetMusicEvent == s)
         return;
-    FMOD_fade(this, 0, s, kFade);
+    setParamValue(0, s, kFade);
 }
 
 void FModSound::release() {
@@ -119,10 +115,14 @@ FModSound::FModSound() {
     this->listenerUp = 0;
 }
 
-FModSound *FModSound::stop(FMOD::Event *e) {
+uintptr_t FModSound::stop(FMOD::Event *e) {
     if (e == 0)
-        return this;
-    return FMOD_Event_stop_p(e, 0);
+        return reinterpret_cast<uintptr_t>(this);
+#if defined(GOF2_ARM64_SILENT_AUDIO)
+    return reinterpret_cast<uintptr_t>(this);
+#else
+    return static_cast<uintptr_t>(e->stop(false));
+#endif
 }
 
 void FModSound::setVolume(int p1, float vol) {
