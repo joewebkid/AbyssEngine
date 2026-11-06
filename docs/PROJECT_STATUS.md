@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`Status::nextCampaignMission`, steps
+24–26). Original ARM32 marks the first cargo item with index `0x83`
+unsaleable at step 24, resets Status fields `0x7c/0x80` at step 25,
+and creates three campaign missions `(156,0,-1)`, `(4,0,48)`, and
+`(11,0,10)`. Those paths are restored; production-source smoke covers
+steps 0–26 at `-O0/-O2`. Focused source-shape rises **11.2% ->
+12.1%**, strict fuzzy falls **4.8% -> 4.6%**. ARM32 **211/211**,
+Windows native, ARM64 static, and strict ARM64 shared builds pass.
+Raw ARM32 unresolved names remain **174**. Full corpus:
+**4,323/4,524** originals in **4,772** pairs, mean source-shape
+**96.87%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped, zero wrong-type,
+and 151 extra symbols. No exact membership changed. Live campaign
+progression remains unverified. Next: steps 27–29. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEPS_24_26_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`Mission` target-name setters). Original
 ARM32 adds the target `String` field offset (`0x1c` or `0x4c`) and
 tail-branches to `String::operator=`. Both setters now return the
