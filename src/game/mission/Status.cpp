@@ -1094,7 +1094,7 @@ static const Step kSteps[] = {
     /*0x22*/ {0xb, 0, 0x1d, 1}, /*0x23*/ {0xc, 0, 0x1b, 1}, /*0x24*/ {0xa0, 0, 0x1b, 1},
     /*0x25*/ {0x4, 0, 0x16, 1}, /*0x26*/ {0xb, 0, 0x1e, 1}, /*0x27*/ {0xa1, 0, -1, 1},
     /*0x28*/ {0x4, 0, -1, 1}, /*0x29*/ {0xa0, 0, -1, 1}, /*0x2a*/ {0xb, 0, 10, 1},
-    /*0x2b*/ {0xb, 0, 10, 0}, /*0x2c*/ {0, 0, 0, 1}, /*0x2d*/ {0xb, 0, 0x4a, 0},
+    /*0x2b*/ {0xb, 0, 10, 1}, /*0x2c*/ {0, 0, 0, 1}, /*0x2d*/ {0, 0, 0, 0},
     /*0x2e*/ {0xb, 0, 0x3a, 0}, /*0x2f*/ {0xb, 0, 0x3a, 0}, /*0x30*/ {0x9c, 0, 0x3a, 0},
     /*0x31*/ {0x9c, 0, 0x3e, 0}, /*0x32*/ {0x9c, 0, 0x19, 0}, /*0x33*/ {0xa0, 0, 0x19, 0},
     /*0x34*/ {0, 0, 0, 0}, /*0x35*/ {0xb, 0, 0x4a, 0}, /*0x36*/ {0xb, 0, 0x65, 1},
@@ -1201,6 +1201,11 @@ void Status::nextCampaignMission(bool advance) {
     } else if (step == 41) {
         this->field_7c = -10;
         this->field_80 = -10;
+    } else if (step == 44) {
+        this->field_7c = -10;
+        this->field_80 = -10;
+    } else if (step == 45) {
+        return;
     }
 
     Mission *tailMission;
@@ -1227,6 +1232,11 @@ void Status::nextCampaignMission(bool advance) {
                 m->setProductionGoods(164, 50);
             else if (step == 36)
                 (*missions)[0]->setVisible(false);
+            else if (step == 44) {
+                (*missions)[0]->setVisible(false);
+                int32_t credited = static_cast<int32_t>(static_cast<uint32_t>(credits) + 40000u);
+                credits = credited & ~(credited >> 31);
+            }
             return;
         }
         tailMission = m;

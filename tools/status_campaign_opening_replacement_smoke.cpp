@@ -99,6 +99,7 @@ struct Status {
     int field_0x104 = 0;
     int currentCampaignMission = 0;
     int missionCount = 0;
+    int32_t credits = 0;
     int field_7c = -1;
     int field_80 = -1;
     unsigned char field_0x17c = 0;
@@ -171,15 +172,16 @@ int main() {
     Item questCargo;
     questCargo.prototypeIndex = 0x83;
     ship.cargo.values.push_back(&questCargo);
-    const int types[43] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11,
+    const int types[45] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11,
                            11, 11, 150, 4, 11, 4, 11, 156, 156, 189, 4,
                            11, 11, 4, 156, 4, 11, 4, 4, 156, 11, 11, 8, 11, 11, 12, 160, 4, 11,
-                           161, 4, 160, 11};
-    const int stations[43] = {78, 78, 78, 78, 78, 78, 78, 78, 78, 79,
+                           161, 4, 160, 11, 11, 0};
+    const int stations[45] = {78, 78, 78, 78, 78, 78, 78, 78, 78, 79,
                               76, 79, 0, 79, 98, 98, 98, 56, 55, 55, 55,
                               55, 10, 48, -1, 48, 10, 91, -1, 91, 98, 10, 10, 30, 29, 27, 27, 22, 30,
-                              -1, -1, -1, 10};
-    for (int step = 1; step <= 42; ++step) {
+                              -1, -1, -1, 10, 10, 0};
+    for (int step = 1; step <= 44; ++step) {
+        if (step == 44) status.credits = 100;
         status.currentCampaignMission = step;
         status.nextCampaignMission(true);
         assert(status.currentCampaignMission == step + 1);
@@ -190,7 +192,7 @@ int main() {
         assert(missions[0]->statusValue ==
                (step == 1 ? 10 : step == 3 ? 25 : step == 12 ? 42 :
                 step == 19 ? 6 : -1));
-        assert(missions[0]->visible == (step != 12 && step != 36));
+        assert(missions[0]->visible == (step != 12 && step != 36 && step != 44));
         if (step == 3) assert(ship.cargoSetCount == 1);
         if (step == 5) assert(ship.cargoClearCount == 1);
         if (step == 7) {
@@ -220,9 +222,23 @@ int main() {
             assert(targetBlueprint.addedAmount == 50 && targetBlueprint.addedStation == 10);
         }
         if (step == 41) assert(status.field_7c == -10 && status.field_80 == -10);
+        if (step == 44) {
+            assert(status.field_7c == -10 && status.field_80 == -10);
+            assert(status.credits == 40100);
+        }
         delete missions[0];
         missions[0] = nullptr;
     }
+    status.currentCampaignMission = 45;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 46 && missions[0] == nullptr);
+
+    status.currentCampaignMission = 44;
+    status.credits = 0x7fffffff;
+    status.nextCampaignMission(true);
+    assert(status.credits == 0 && missions[0] != nullptr && !missions[0]->visible);
+    delete missions[0];
+    missions[0] = nullptr;
     assert(ship.raceSetCount == 1);
     delete ship.added;
     delete targetBlueprint.addedItem;

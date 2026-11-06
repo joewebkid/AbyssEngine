@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, steps
+43–45). Original Android ARM32 assigns `Mission(11,0,10)` at step
+43, creates a hidden default campaign mission and adds 40,000
+clamped credits at step 44, and creates no mission at step 45. The
+source restores these paths; production-source smoke covers steps
+0–44 and the step 45 return at `-O0/-O2`. Focused source-shape rises
+**14.4% -> 15.0%** while strict fuzzy falls **6.2% -> 5.8%**.
+ARM32 **211/211**, Windows native, ARM64 static, and strict ARM64
+shared builds pass. Raw ARM32 unresolved names remain **174** with
+no membership change. Full corpus: **4,323/4,524** originals in
+**4,772** pairs, mean source-shape **96.87%**, strict fuzzy
+**86.98%**, **2,802 linked-exact**, **1,116 byte-exact**, 201
+missing, zero skipped, zero wrong-type, and 151 extra symbols. No
+exact membership changed. Live campaign progression remains
+unverified. Next: step 46 and ship changes at steps 47–48. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEPS_43_45_ARM_2026-11-07.md).
+
 Last reviewed: 2026-11-06 (`Status::nextCampaignMission`, steps
 39–42). Original Android ARM32 assigns mission tuples `(161,0,-1)`,
 `(4,0,-1)`, `(160,0,-1)`, and `(11,0,10)` to the campaign slot;
