@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PaintCanvas::DrawRegion2D` matrix tail).
+Original ARM and GOT relocation confirm three matrix multiplies in
+the order rotation × translation, pivot × result, result × scale.
+The reconstruction incorrectly reused the pivot in the final
+multiply and called four undefined matrix helpers; it now uses the
+confirmed `MatrixSetScaling`, `AEMath::operator*`, and
+`SetWorldViewMatrix` path. Target source-shape rises **91.4% ->
+91.7%**, strict fuzzy **29.3% -> 29.4%**, still non-exact. ARMv7
+**211/211**, Windows native, ARM64 static, and strict ARM64 shared
+builds pass. Raw ARM32 unresolved names fall **217 -> 213** with no
+new name. Full corpus: **4,323/4,524** originals in **4,772** pairs,
+**96.81%** mean source-shape, **86.88%** strict fuzzy,
+**2,798 linked-exact**, **1,113 byte-exact**, 201 missing, zero
+skipped, zero wrong-type, and 149 extra symbols. Exact membership is
+unchanged. Live region rendering and full ARM32 shared linking remain
+unverified. Next priority: verify translation, pivot, and rotation
+coordinate construction in this overload. See
+[ARM matrix evidence](PAINTCANVAS_DRAW_REGION_2D_MATRIX_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PaintCanvas::DrawRegion2D` call targets).
 Original Android ARM confirms image restoration, texture slot
 `0xffffffff`, inline signed-to-float conversions, `AEMath::Sinf/Cosf`,

@@ -523,14 +523,6 @@ void paintcanvas_ext_rpm_loadproj(void *eng, void *m);
 void *paintcanvas_ext_tc_findres(void *self, unsigned short id);
 
 
-void paintcanvas_ext_dr2_setscaling(void *out, float x, float y, float z);
-
-void paintcanvas_ext_dr2_mtx_mul(void *out, void *a, void *b);
-
-void paintcanvas_ext_dr2_mtx_assign(void *dst, void *src);
-
-void paintcanvas_ext_dr2_setwvm(void *self, void *m);
-
 static inline void paintcanvas_ext_gl_blendfunc(unsigned int src, unsigned int dst) {
     glBlendFunc(src, dst);
 }
@@ -3434,18 +3426,17 @@ void PaintCanvas::DrawRegion2D(unsigned int index, float /*unused*/, int rotStep
     *(unsigned int *) &rotM[1] = *(unsigned int *) &s ^ 0x80000000;
     rotM[4] = s;
 
-    float scaleBuf[16];
-    paintcanvas_ext_dr2_setscaling(scaleBuf, scaleX, scaleY, 1.0f);
+    Matrix scaling(1.0f, 0.0f, 0.0f, 0.0f,
+                   0.0f, 1.0f, 0.0f, 0.0f,
+                   0.0f, 0.0f, 1.0f, 0.0f,
+                   1.0f, 1.0f, 1.0f);
+    AEMath::MatrixSetScaling(scaling, scaleX, scaleY, 1.0f);
+    Matrix composed = *reinterpret_cast<const Matrix *>(rotM) *
+                      *reinterpret_cast<const Matrix *>(transM);
+    Matrix scratch = *reinterpret_cast<const Matrix *>(pivotM) * composed;
+    composed = scratch * scaling;
 
-    float composed[16];
-    paintcanvas_ext_dr2_mtx_mul(scaleBuf, rotM, transM);
-    paintcanvas_ext_dr2_mtx_assign(composed, scaleBuf);
-    float scratch[16];
-    paintcanvas_ext_dr2_mtx_mul(scratch, pivotM, composed);
-    paintcanvas_ext_dr2_mtx_mul(scaleBuf, scratch, pivotM);
-    paintcanvas_ext_dr2_mtx_assign(composed, scaleBuf);
-
-    paintcanvas_ext_dr2_setwvm(this, composed);
+    SetWorldViewMatrix(composed);
     glDisable(0xb44);
     AbyssEngine::MeshDraw(this->engine,
                           reinterpret_cast<Mesh *>(((PCImage2DView *) ((char **) this->images.data_)[index])->mesh));
