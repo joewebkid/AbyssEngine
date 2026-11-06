@@ -1,5 +1,26 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`FModSound` music/category calls).
+Original ARM32 dispatches `MusicSystem::promptCue` and
+`setParameterValue`, `EventCategory::setVolume`, `stopAllEvents`, and
+`getInfo` through their typed virtual methods. Re-enabling the music
+category calls `FModSound::play`. Six undefined helper calls are
+replaced with those targets. `promptMusicCue`, `setMusicParamValue`,
+and `setVolume` become **byte-exact** and **linked-exact**;
+`enableCategory` source-shape rises **79.0% -> 94.7%**,
+`stopAllSoundFXEvents` **69.1% -> 99.0%**, and
+`pauseAllPlayingSoundFXEvents` **89.7% -> 97.1%**. ARMv7 **211/211**,
+Windows native, ARM64 static, and strict ARM64 shared builds pass.
+Raw ARM32 unresolved names fall **185 -> 179**. Full corpus:
+**4,323/4,524** originals in **4,772** pairs, mean source-shape
+**96.87%** (from **96.84%**), strict fuzzy **86.97%** (from
+**86.94%**), **2,801 linked-exact** (from 2,798), **1,116 byte-exact**
+(from 1,113), 201 missing, zero skipped, zero wrong-type, and 151
+extra symbols. No exact membership was lost. Live audio and full ARM32
+shared linking remain unverified. Next priority: remaining FMOD
+reverb/fade/stop helper boundaries. See
+[ARM music/category evidence](FMOD_MUSIC_CATEGORY_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`FModSound::play`). Original ARM32 uses
 `getEventBySystemID(id, INFOONLY=4, ...)` for an empty slot and
 `getEventBySystemID(id, DEFAULT=0, ...)` before playback; it obtains

@@ -41,19 +41,7 @@ static inline int FMOD_EventSystem_getProject(FMOD::EventSystem *system, const c
 static inline int FMOD_Event_getParentGroup(FMOD::Event *event, FMOD::EventGroup **out) { return event->getParentGroup(out); }
 static inline int FMOD_Event_getCategory(FMOD::Event *event, FMOD::EventCategory **out = 0) { return event->getCategory(out); }
 
-void FMOD_play(FModSound *self, int a, unsigned char *b, float v);
-
 static inline int FMOD_Event_start(FMOD::Event *event) { return event->start(); }
-
-void FMOD_MusicSystem_promptCue(FMOD::MusicSystem *music, int cueId);
-
-void FMOD_MusicSystem_setParameterValue(FMOD::MusicSystem *music, int paramId, float v);
-
-void FMOD_EventCategory_setVolume(FMOD::EventCategory *category, float volume);
-
-void FMOD_EventCategory_stopAllEvents(FMOD::EventCategory *category);
-
-int FMOD_EventCategory_getInfo(FMOD::EventCategory *category, int *index, char **name);
 
 char *property_name_pause = (char *) "pause";
 char *property_name_purge = (char *) "purge";
@@ -91,7 +79,7 @@ void FModSound::resumeAll() {
 void FModSound::promptMusicCue(int p1) {
     if (!this->music)
         return;
-    FMOD_MusicSystem_promptCue(this->music, p1);
+    this->music->promptCue(p1);
 }
 
 static const float kFade = 0.1f;
@@ -147,7 +135,7 @@ void FModSound::setVolume(int p1, float vol) {
     FMOD::EventCategory *h = this->category[p1];
     if (!h)
         return;
-    FMOD_EventCategory_setVolume(h, vol);
+    h->setVolume(vol);
 }
 
 void FModSound::pauseAll() {
@@ -183,7 +171,7 @@ void FModSound::stop(int p1) {
 void FModSound::setMusicParamValue(int p1, float p2) {
     if (!this->music)
         return;
-    FMOD_MusicSystem_setParameterValue(this->music, p1, p2);
+    this->music->setParameterValue(p1, p2);
 }
 
 void FModSound::setSoundVolume(int p1, float vol) {
@@ -370,7 +358,7 @@ void FModSound::stopAllSoundFXEvents() {
         if ((j & 0x7fffffff) == 4)
             break;
         FMOD::EventCategory *c = cats[i];
-        FMOD_EventCategory_stopAllEvents(c);
+        c->stopAllEvents();
     }
 }
 
@@ -755,7 +743,7 @@ void FModSound::pauseAllPlayingSoundFXEvents() {
                 FMOD_Event_getCategory(h, &cat);
                 int categoryIndex = 0;
                 char *categoryName = 0;
-                FMOD_EventCategory_getInfo(cat, &categoryIndex, &categoryName);
+                cat->getInfo(&categoryIndex, &categoryName);
                 if (categoryIndex == 1)
                     FMOD_Event_setPaused(this->events[i], 1);
             }
@@ -774,9 +762,9 @@ void FModSound::enableCategory(int p1, bool enable) {
 
     this->categoryEnabled[p1] = enable ? 1 : 0;
     if (!enable) {
-        FMOD_EventCategory_stopAllEvents(cat);
+        cat->stopAllEvents();
     } else if (p1 == 1 && this->currentMusicEvent >= 0) {
-        FMOD_play(this, this->currentMusicEvent, 0, 0.0f);
+        this->play(this->currentMusicEvent, nullptr, nullptr, 0.0f);
     }
 
     uint8_t any = 0;
