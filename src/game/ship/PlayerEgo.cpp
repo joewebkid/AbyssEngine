@@ -231,13 +231,6 @@ void Vec_assign(void *dst, const void *src);
 
 
 
-#if __SIZEOF_POINTER__ == 8
-static inline void PlayEngineSound_(PlayerEgo *self) { self->PlayEngineSound(); }
-#else
-void PlayEngineSound_(PlayerEgo * self);
-#endif
-
-
 void Mat_mul(void *out, const void *a, const void *b);
 
 void MatrixGetPosition(void *, void *);
@@ -2580,7 +2573,7 @@ void PlayerEgo::dockToDockingPoint(KIPlayer *kip, Radar *radar) {
             Globals::Canvas->CameraSetCurrent(
                 (unsigned int) (((TargetFollowCamera *) (intptr_t) this->targetFollowCamera)->id));
             this->levelScript->resetCamera(this->level);
-            PlayEngineSound_(this);
+            this->PlayEngineSound();
             this->dockingPointIndex = 3;
             ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->setLookAtCam(true);
             ((TargetFollowCamera *) (((void *&) this->targetFollowCamera)))->useTargetsUpVector(false);
@@ -2602,7 +2595,7 @@ void PlayerEgo::dockToDockingPoint(KIPlayer *kip, Radar *radar) {
     }
 
     if (undock) {
-        PlayEngineSound_(this);
+        this->PlayEngineSound();
         this->dockedFlag = 0;
         this->field_0x1a1 = 0;
         this->field_0x145 = 0;

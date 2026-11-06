@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PlayerEgo::dockToDockingPoint` engine-sound
+calls). Original Android ARM calls `PlayerEgo::PlayEngineSound` twice
+from the docking/undocking paths; both ARM32 sites now use that typed
+target instead of an undefined helper. Focused source-shape remains
+**97.7%**, strict fuzzy **66.4%**; the method is non-exact. The raw
+**211-object** ARM32 unmatched-symbol inventory falls **237 -> 236**
+with no new name. Windows native, ARM64 static, ARMv7 **211/211**, and
+strict ARM64 shared linking pass. Full ARM corpus:
+**4,323/4,524** originals in **4,770** pairs, **96.80%** mean
+source-shape, **86.83%** strict fuzzy, **2,789 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped, zero wrong-type and
+no lost exact-match pair. Device docking audio and full ARM32 shared
+linking remain unverified. Next priority: audit another bounded
+game-side unresolved call against original ARM, beginning with
+`TransformGetLocal`. See
+[ARM docking-sound evidence](PLAYER_DOCK_ENGINE_SOUND_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PlayerEgo::setShip` tractor-beam
 construction). Original Android ARM allocates 28 bytes, calls the
 typed `TractorBeam(AEGeometry *, int)` constructor, and stores the
