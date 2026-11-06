@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`Mission` target-name setters). Original
+ARM32 adds the target `String` field offset (`0x1c` or `0x4c`) and
+tail-branches to `String::operator=`. Both setters now return the
+assignment's `String&` result. Clang 7 still emits a call and
+epilogue, so each rises only **5.7% -> 19.4%** source-shape and
+**0% -> 28.6%** strict fuzzy; neither is exact. ARMv7 **211/211**,
+Windows native, ARM64 static, and strict ARM64 shared builds pass.
+Raw ARM32 unresolved names remain **174**. Full corpus:
+**4,323/4,524** originals in **4,772** pairs, mean source-shape
+**96.87%**, strict fuzzy **86.98%**, **2,802 linked-exact**, **1,116
+byte-exact**, 201 missing, zero skipped, zero wrong-type, and 151
+extra symbols. No exact membership changed. The next recovery
+priority is a larger behavioral gap rather than another two-instruction
+compiler-shape mismatch. See
+[ARM mission setter evidence](MISSION_TARGET_SETTERS_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`KIPlayer` engine sound). The original
 ARM32 branches from four `KIPlayer` methods to the corresponding
 `Player` sound methods. The ARM32 source now makes those calls

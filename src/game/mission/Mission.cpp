@@ -40,9 +40,8 @@ void Mission::setProductionGoods(int a, int b) {
     this->productionGoodsB = b;
 }
 
-void *Mission::setTargetName(String rhs) {
-    this->targetName = rhs;
-    return &this->targetName;
+String &Mission::setTargetName(String rhs) {
+    return this->targetName = rhs;
 }
 
 String Mission::getClientName() {
@@ -65,9 +64,8 @@ void Mission::setInstantActionMission(bool v) {
     this->instantAction = v;
 }
 
-void *Mission::setTargetSystemName(const String &rhs) {
-    this->targetSystemName = rhs;
-    return &this->targetSystemName;
+String &Mission::setTargetSystemName(const String &rhs) {
+    return this->targetSystemName = rhs;
 }
 
 void Mission::setVisible(bool v) {

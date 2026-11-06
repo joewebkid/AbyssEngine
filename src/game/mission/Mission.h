@@ -71,11 +71,11 @@ public:
 
     void setProductionGoods(int a, int b);
 
-    void *setTargetName(String rhs);
+    String &setTargetName(String rhs);
 
     void setTargetStation(int idx);
 
-    void *setTargetSystemName(const String &rhs);
+    String &setTargetSystemName(const String &rhs);
 
     void setVisible(bool v);
 
