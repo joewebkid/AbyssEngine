@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`MGame::successCheck`). Original ARM32
+allocates **0x74** bytes and calls `DialogueWindow::DialogueWindow()`
+at `0x180012`. The source's undefined ARM32 variadic constructor
+stand-in was replaced by the typed C++ constructor call. Focused
+source-shape rises **98.5% -> 98.8%**, strict fuzzy **90.0% ->
+90.3%**, still non-exact. ARMv7 **211/211**, Windows native, ARM64
+static, and strict ARM64 shared builds pass. Raw ARM32 unresolved
+names fall **187 -> 186**. Full corpus remains **4,323/4,524**
+originals in **4,772** pairs, mean source-shape **96.83%**, strict
+fuzzy **86.93%**, **2,798 linked-exact**, **1,113 byte-exact**, 201
+missing, zero skipped, zero wrong-type, and 152 extra symbols. Exact
+membership is unchanged. Live mission-success behavior and full
+ARM32 shared linking remain unverified. See
+[ARM dialogue constructor evidence](MGAME_SUCCESS_DIALOGUE_CTOR_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`Layout::getPulseValue`). Both original
 ARM32 calls at `0xd4c18` and `0xd4c34` target
 `AbyssEngine::AEMath::Sinf`. The source now uses that real target for
