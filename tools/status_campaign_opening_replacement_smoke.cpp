@@ -60,6 +60,10 @@ struct BluePrint {
 };
 
 struct Ship {
+    struct EquipmentCall { int index; int slot; Item *item; };
+    int prototypeIndex = -1;
+    int madePrice = 0;
+    std::vector<EquipmentCall> equipmentCalls;
     Item *oldEquipment = nullptr;
     Item *removed = nullptr;
     Item *added = nullptr;
@@ -72,6 +76,13 @@ struct Ship {
     int removedCargoAmount = -1;
     Array<Item *> equipment;
     Array<Item *> cargo;
+    ~Ship() { for (const EquipmentCall &call : equipmentCalls) delete call.item; }
+    Ship *makeShip(int price) {
+        Ship *copy = new Ship();
+        copy->prototypeIndex = prototypeIndex;
+        copy->madePrice = price;
+        return copy;
+    }
     void setCargo(int value) { assert(value == 0); ++cargoSetCount; }
     void removeAllCargo() { ++cargoClearCount; }
     int removeCargo(int index, int amount) {
@@ -87,11 +98,17 @@ struct Ship {
     }
     void removeEquipment(Item *item) { removed = item; }
     void addEquipment(Item *item) { added = item; }
+    void setEquipment(Item *item, int slot) {
+        equipmentCalls.push_back({item->prototypeIndex, slot, item});
+    }
     void setRace(int value) { race = value; ++raceSetCount; }
 };
 
-struct Globals { static void *items; };
+struct Status;
+struct Globals { static void *items; static void *ships; static Status *status; };
 void *Globals::items = nullptr;
+void *Globals::ships = nullptr;
+Status *Globals::status = nullptr;
 
 struct Status {
     int64_t playingTime = 0;
@@ -100,17 +117,24 @@ struct Status {
     int currentCampaignMission = 0;
     int missionCount = 0;
     int32_t credits = 0;
+    int field_0x30 = -1;
     int field_7c = -1;
     int field_80 = -1;
     unsigned char field_0x17c = 0;
     Array<bool> *systemVisibilities = nullptr;
     Array<BluePrint *> *bluePrints = nullptr;
     Ship *ship = nullptr;
+    Ship *previousShip = nullptr;
     Mission *mission = nullptr;
     Array<Mission *> *missions = nullptr;
     void setCampaignMission(Mission *value) {
         value->campaign = true;
         (*missions)[0] = value;
+    }
+    void setPreviousShip(Ship *value) { previousShip = value; }
+    void setShip(Ship *value) {
+        if (ship != nullptr) delete ship;
+        ship = value;
     }
     void nextCampaignMission(bool advance);
 };
@@ -118,15 +142,25 @@ struct Status {
 #include "status_campaign_opening_replacement_under_test.inc"
 
 int main() {
-    Item prototypes[165];
-    Item *catalog[165];
-    for (int i = 0; i != 165; ++i) {
+    Item prototypes[178];
+    Item *catalog[178];
+    for (int i = 0; i != 178; ++i) {
         prototypes[i].prototypeIndex = i;
         catalog[i] = &prototypes[i];
     }
     Array<Item *> items;
-    items.values.assign(catalog, catalog + 165);
+    items.values.assign(catalog, catalog + 178);
     Globals::items = &items;
+
+    Ship shipPrototypes[42];
+    Ship *shipCatalog[42];
+    for (int i = 0; i != 42; ++i) {
+        shipPrototypes[i].prototypeIndex = i;
+        shipCatalog[i] = &shipPrototypes[i];
+    }
+    Array<Ship *> ships;
+    ships.values.assign(shipCatalog, shipCatalog + 42);
+    Globals::ships = &ships;
 
     Array<Mission *> missions;
     missions.values.resize(2);
@@ -140,6 +174,7 @@ int main() {
     blueprints.values = {&otherBlueprint, &targetBlueprint};
     Ship ship;
     Status status;
+    Globals::status = &status;
     status.playingTime = 0x1234567887654321LL;
     status.missionCount = 41;
     status.ship = &ship;
@@ -172,14 +207,14 @@ int main() {
     Item questCargo;
     questCargo.prototypeIndex = 0x83;
     ship.cargo.values.push_back(&questCargo);
-    const int types[45] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11,
+    const int types[49] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11,
                            11, 11, 150, 4, 11, 4, 11, 156, 156, 189, 4,
                            11, 11, 4, 156, 4, 11, 4, 4, 156, 11, 11, 8, 11, 11, 12, 160, 4, 11,
-                           161, 4, 160, 11, 11, 0};
-    const int stations[45] = {78, 78, 78, 78, 78, 78, 78, 78, 78, 79,
+                           161, 4, 160, 11, 11, 0, 0, 11, 11, 156};
+    const int stations[49] = {78, 78, 78, 78, 78, 78, 78, 78, 78, 79,
                               76, 79, 0, 79, 98, 98, 98, 56, 55, 55, 55,
                               55, 10, 48, -1, 48, 10, 91, -1, 91, 98, 10, 10, 30, 29, 27, 27, 22, 30,
-                              -1, -1, -1, 10, 10, 0};
+                              -1, -1, -1, 10, 10, 0, 0, 74, 58, 58};
     for (int step = 1; step <= 44; ++step) {
         if (step == 44) status.credits = 100;
         status.currentCampaignMission = step;
@@ -233,12 +268,47 @@ int main() {
     status.nextCampaignMission(true);
     assert(status.currentCampaignMission == 46 && missions[0] == nullptr);
 
+    status.field_0x30 = 123;
+    for (int step = 46; step <= 48; ++step) {
+        status.currentCampaignMission = step;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == step + 1);
+        assert(missions[0] != nullptr && missions[0]->campaign);
+        assert(missions[0]->type == types[step] && missions[0]->param == 0);
+        assert(missions[0]->station == stations[step]);
+        if (step == 46) assert(status.ship == &ship);
+        if (step == 47) {
+            assert(status.previousShip == &ship && status.ship != &ship);
+            assert(status.ship->prototypeIndex == 9 && status.ship->madePrice == -1);
+            assert(status.ship->race == 1 && status.ship->raceSetCount == 1);
+            assert(status.field_0x30 == 0 && status.ship->equipmentCalls.size() == 2);
+            assert(status.ship->equipmentCalls[0].index == 58 && status.ship->equipmentCalls[0].slot == 0);
+            assert(status.ship->equipmentCalls[1].index == 83 && status.ship->equipmentCalls[1].slot == 1);
+        }
+        if (step == 48) {
+            assert(status.previousShip == &ship && status.ship != &ship);
+            assert(status.ship->prototypeIndex == 41 && status.ship->madePrice == -1);
+            assert(status.ship->race == 1 && status.ship->raceSetCount == 1);
+            const int indices[6] = {177, 177, 177, 58, 83, 52};
+            const int slots[6] = {0, 1, 2, 0, 1, 2};
+            assert(status.ship->equipmentCalls.size() == 6);
+            for (int i = 0; i < 6; ++i) {
+                assert(status.ship->equipmentCalls[i].index == indices[i]);
+                assert(status.ship->equipmentCalls[i].slot == slots[i]);
+            }
+        }
+        delete missions[0];
+        missions[0] = nullptr;
+    }
+
     status.currentCampaignMission = 44;
     status.credits = 0x7fffffff;
     status.nextCampaignMission(true);
     assert(status.credits == 0 && missions[0] != nullptr && !missions[0]->visible);
     delete missions[0];
     missions[0] = nullptr;
+    delete status.ship;
+    status.ship = nullptr;
     assert(ship.raceSetCount == 1);
     delete ship.added;
     delete targetBlueprint.addedItem;

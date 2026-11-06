@@ -1095,7 +1095,7 @@ static const Step kSteps[] = {
     /*0x25*/ {0x4, 0, 0x16, 1}, /*0x26*/ {0xb, 0, 0x1e, 1}, /*0x27*/ {0xa1, 0, -1, 1},
     /*0x28*/ {0x4, 0, -1, 1}, /*0x29*/ {0xa0, 0, -1, 1}, /*0x2a*/ {0xb, 0, 10, 1},
     /*0x2b*/ {0xb, 0, 10, 1}, /*0x2c*/ {0, 0, 0, 1}, /*0x2d*/ {0, 0, 0, 0},
-    /*0x2e*/ {0xb, 0, 0x3a, 0}, /*0x2f*/ {0xb, 0, 0x3a, 0}, /*0x30*/ {0x9c, 0, 0x3a, 0},
+    /*0x2e*/ {0xb, 0, 0x4a, 1}, /*0x2f*/ {0xb, 0, 0x3a, 1}, /*0x30*/ {0x9c, 0, 0x3a, 1},
     /*0x31*/ {0x9c, 0, 0x3e, 0}, /*0x32*/ {0x9c, 0, 0x19, 0}, /*0x33*/ {0xa0, 0, 0x19, 0},
     /*0x34*/ {0, 0, 0, 0}, /*0x35*/ {0xb, 0, 0x4a, 0}, /*0x36*/ {0xb, 0, 0x65, 1},
     /*0x37*/ {0x4, 0, 0x66, 0}, /*0x38*/ {0xb, 0, 0x65, 0}, /*0x39*/ {0xa6, 0, 0x65, 1},
@@ -1206,6 +1206,26 @@ void Status::nextCampaignMission(bool advance) {
         this->field_80 = -10;
     } else if (step == 45) {
         return;
+    } else if (step == 47) {
+        setPreviousShip(this->ship);
+        this->ship = 0;
+        Array<Ship *> *ships = static_cast<Array<Ship *> *>(Globals::ships);
+        setShip((*ships)[9]->makeShip(-1));
+        this->ship->setRace(1);
+        Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
+        Globals::status->ship->setEquipment((*items)[58]->makeItem(), 0);
+        Globals::status->ship->setEquipment((*items)[83]->makeItem(), 1);
+        Globals::status->field_0x30 = 0;
+    } else if (step == 48) {
+        Array<Ship *> *ships = static_cast<Array<Ship *> *>(Globals::ships);
+        setShip((*ships)[41]->makeShip(-1));
+        this->ship->setRace(1);
+        Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
+        for (int slot = 0; slot < 3; ++slot)
+            Globals::status->ship->setEquipment((*items)[177]->makeItem(), slot);
+        Globals::status->ship->setEquipment((*items)[58]->makeItem(), 0);
+        Globals::status->ship->setEquipment((*items)[83]->makeItem(), 1);
+        Globals::status->ship->setEquipment((*items)[52]->makeItem(), 2);
     }
 
     Mission *tailMission;

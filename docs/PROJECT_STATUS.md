@@ -1,6 +1,25 @@
 # Project Status
 
 Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, steps
+46–48). Original Android ARM32 assigns campaign `Mission(11,0,74)`
+at step 46. Step 47 preserves the old ship, makes template `9`,
+equips items `58/83`, clears Status field `0x30`, and creates
+campaign `Mission(11,0,58)`. Step 48 makes template `41`, equips
+three copies of item `177` and then items `58/83/52`, and creates
+campaign `Mission(156,0,58)`. These paths are restored;
+production-source smoke covers steps 0–48 at `-O0/-O2`. Focused
+source-shape rises **15.0% -> 19.6%** and strict fuzzy **5.8% ->
+6.6%**. ARM32 **211/211**, Windows native, ARM64 static, and strict
+ARM64 shared builds pass. Raw ARM32 unresolved names remain **174**
+with no membership change. Full corpus: **4,323/4,524** originals
+in **4,772** pairs, mean source-shape **96.87%**, strict fuzzy
+**86.98%**, **2,802 linked-exact**, **1,116 byte-exact**, 201
+missing, zero skipped, zero wrong-type, and 151 extra symbols. No
+exact membership changed. Live campaign progression remains
+unverified. Next: steps 49–50. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEPS_46_48_ARM_2026-11-07.md).
+
+Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, steps
 43–45). Original Android ARM32 assigns `Mission(11,0,10)` at step
 43, creates a hidden default campaign mission and adds 40,000
 clamped credits at step 44, and creates no mission at step 45. The
