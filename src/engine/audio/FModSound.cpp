@@ -43,10 +43,6 @@ static inline int FMOD_Event_getCategory(FMOD::Event *event, FMOD::EventCategory
 
 void FMOD_play(FModSound *self, int a, unsigned char *b, float v);
 
-int FMOD_EventSystem_getEventBySystemID(unsigned int system, int id, FMOD::Event **out);
-
-int FMOD_Event_set3DAttributes(FMOD::Event *event, Vector *pos, Vector *vel);
-
 static inline int FMOD_Event_start(FMOD::Event *event) { return event->start(); }
 
 void FMOD_MusicSystem_promptCue(FMOD::MusicSystem *music, int cueId);
@@ -257,86 +253,92 @@ float FModSound::getPlayingProgress(int idx) {
 }
 
 void FModSound::play(int idx, Vector *pos, Vector *vel, float pitch) {
-    if (this->project == 0 || (unsigned int) idx >= 0x8f5 || this->system == 0)
+#if defined(GOF2_ARM64_SILENT_AUDIO)
+    (void) idx;
+    (void) pos;
+    (void) vel;
+    (void) pitch;
+    return;
+#else
+    if (this->project == nullptr || (unsigned int) idx >= 0x8f5 || this->system == nullptr)
         return;
 
     FMOD::Event *&slot = this->events[idx];
+    bool alreadyLoaded = slot != nullptr;
     FMOD::Event *event = slot;
-    bool freshLookup = (event == 0);
-
-    if (freshLookup) {
-        FMOD::Event *ev = 0;
-        FMOD_EventSystem_getEventBySystemID((unsigned int) (uintptr_t) this->system, idx, &ev);
-        event = ev;
-    }
-
-    if (event == 0)
+    if (!alreadyLoaded)
+        this->system->getEventBySystemID(idx, FMOD_EVENT_INFOONLY, &event);
+    if (event == nullptr)
         return;
 
-    float basePitch = (this->downPitch == 0) ? FModSound_defaultPitch : -1.0f;
-    FMOD_Event_setPitch(event, basePitch, 1);
+    float basePitch = this->downPitch == 0 ? FModSound_defaultPitch : -1.0f;
+    event->setPitch(basePitch, (FMOD_EVENT_PITCHUNITS) 1);
     if (pitch != 0.0f)
-        FMOD_Event_setPitch(event, pitch, 0);
+        event->setPitch(pitch, (FMOD_EVENT_PITCHUNITS) 0);
 
-    int category = FMOD_Event_getCategory(event);
-
-    if (category == 0) {
-        if (this->currentMusicEvent == 0)
-            this->currentMusicEvent = idx;
-        else if (category > 2)
-            return;
-
-        if (this->categoryEnabled[idx] == 0)
-            return;
-
-        bool havePos = false, haveVel = false;
-        if (pos != 0) {
-            if (this->eventPos == 0)
-                this->eventPos = new Vector();
-            *this->eventPos = *pos;
-            havePos = true;
-        }
-        if (vel != 0) {
-            if (this->eventVel == 0)
-                this->eventVel = new Vector();
-            *this->eventVel = *vel;
-            haveVel = true;
-        }
-
-        if (freshLookup) {
-            FMOD::Event *dummy = 0;
-            if (FMOD_EventSystem_getEventBySystemID(
-                    (unsigned int) (uintptr_t) this->system, idx, &dummy) != 0)
-                return;
-            slot = event;
-        }
-
-        if (havePos || haveVel) {
-            Vector *p = havePos ? this->eventPos : 0;
-            Vector *v = haveVel ? this->eventVel : 0;
-            FMOD_Event_set3DAttributes(slot, p, v);
-        }
-
-        int got = 0;
-        if (FMOD_Event_getProperty(slot, (unsigned char *) property_name_purge, (unsigned char *) &got) == 0 &&
-            this->currentMusicEvent == 1) {
-            for (unsigned int i = 0; i <= 4; i++) {
-                if (this->fxSlots[i] == -1) {
-                    this->fxSlots[i] = idx;
-                    break;
-                }
+    FMOD::EventCategory *category = nullptr;
+    if (event->getCategory(&category) != FMOD_OK) {
+        if (slot != nullptr) {
+            FMOD::EventGroup *group = nullptr;
+            if (slot->getParentGroup(&group) == FMOD_OK) {
+                group->freeEventData(slot, false);
+                slot = nullptr;
             }
         }
-        FMOD_Event_start(slot);
-    } else {
-        if (slot != 0) {
-            FMOD::EventGroup *group = 0;
-            if (FMOD_Event_getParentGroup(slot, &group) == 0) {
-                group->freeEventData(slot, false);
-                slot = 0;
+        return;
+    }
+
+    int categoryIndex = 0;
+    char *categoryName = nullptr;
+    category->getInfo(&categoryIndex, &categoryName);
+    if (categoryIndex == 0)
+        this->currentMusicEvent = idx;
+    else if (categoryIndex > 2)
+        return;
+    if (this->categoryEnabled[categoryIndex + 1] == 0)
+        return;
+
+    bool havePos = false;
+    bool haveVel = false;
+    if (pos != nullptr) {
+        if (this->eventPos == nullptr)
+            this->eventPos = new Vector();
+        *this->eventPos = *pos;
+        havePos = true;
+    }
+    if (vel != nullptr) {
+        if (this->eventVel == nullptr)
+            this->eventVel = new Vector();
+        *this->eventVel = *vel;
+        haveVel = true;
+    }
+
+    if (!alreadyLoaded) {
+        FMOD::Event *ready = nullptr;
+        if (this->system->getEventBySystemID(idx, FMOD_EVENT_DEFAULT, &ready) != FMOD_OK)
+            return;
+        slot = ready;
+    }
+
+    if (havePos || haveVel) {
+        const FMOD_VECTOR *eventPosition = havePos
+                ? reinterpret_cast<const FMOD_VECTOR *>(this->eventPos) : nullptr;
+        const FMOD_VECTOR *eventVelocity = haveVel
+                ? reinterpret_cast<const FMOD_VECTOR *>(this->eventVel) : nullptr;
+        slot->set3DAttributes(eventPosition, eventVelocity, nullptr);
+    }
+
+    int purge = 0;
+    if (slot->getProperty(property_name_purge, &purge, true) == FMOD_OK && purge == 1) {
+        for (unsigned i = 0; i < 5; ++i) {
+            if (this->fxSlots[i] == -1) {
+                this->fxSlots[i] = idx;
+                break;
             }
         }
     }
+    slot->start();
+#endif
 }
 
 bool FModSound::resume(FMOD::Event *e) {

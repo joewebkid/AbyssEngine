@@ -1,5 +1,26 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`FModSound::play`). Original ARM32 uses
+`getEventBySystemID(id, INFOONLY=4, ...)` for an empty slot and
+`getEventBySystemID(id, DEFAULT=0, ...)` before playback; it obtains
+the category index through `EventCategory::getInfo`, checks
+`categoryEnabled[index + 1]`, and tracks the event only when its
+`purge` property equals one. The previous source omitted lookup
+modes, used the result code or event ID as a category index, and
+tested the music-event field instead of `purge`. These behaviors and
+the invalid-slot cleanup are restored. Target source-shape rises
+**89.7% -> 91.6%**, while strict fuzzy falls **58.4% -> 51.0%**;
+it remains non-exact. ARMv7 **211/211**, Windows native, ARM64 static,
+and strict ARM64 shared builds pass; silent ARM64 performs no playback.
+Raw ARM32 unresolved names fall **187 -> 185** as two fictitious
+lookup/3D helper calls disappear. Full corpus: **4,323/4,524**
+originals in **4,772** pairs, mean source-shape **96.84%**, strict
+fuzzy **86.94%**, **2,798 linked-exact**, **1,113 byte-exact**, 201
+missing, zero skipped, zero wrong-type, and **151** extra symbols
+(from 152). Exact membership is unchanged. Live playback and full
+ARM32 shared linking remain unverified. Next priority: remaining FMOD
+music/category methods. See [ARM play evidence](FMOD_PLAY_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`FModSound::updateEvent3DAttributes`).
 Original ARM32 retries an invalid event handle through FMOD's
 information-only lookup (mode `0x4`), checks the actual category
