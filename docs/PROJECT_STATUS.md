@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PaintCanvas::DrawRegion2D` call targets).
+Original Android ARM confirms image restoration, texture slot
+`0xffffffff`, inline signed-to-float conversions, `AEMath::Sinf/Cosf`,
+`glDisable`, `MeshDraw`, and `glEnable`. Eight undefined call
+placeholders are replaced. The target overload rises **87.6% ->
+91.4%** source-shape and **26.7% -> 29.3%** strict fuzzy; it remains
+non-exact. ARMv7 **211/211**, Windows native, ARM64 static, and strict
+ARM64 shared builds pass. Raw ARM32 unresolved names fall **225 ->
+217** with no new name. Full corpus: **4,323/4,524** originals in
+**4,772** pairs, **96.81%** mean source-shape, **86.88%** strict fuzzy,
+**2,798 linked-exact**, **1,113 byte-exact**, 201 missing, zero
+skipped, zero wrong-type, and 149 extra symbols. All linked-exact and
+byte-exact memberships are preserved. Live region rendering and full
+ARM32 shared linking remain unverified. Next priority: check the
+remaining matrix and world-view call arguments in this overload.
+See [ARM DrawRegion2D evidence](PAINTCANVAS_DRAW_REGION_2D_CALLS_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`MeshMerger` and `SimpleMeshMerger` ARM EABI
 calls). Original Android ARM confirms seven `__aeabi_uidiv` and four
 `__aeabi_memcpy4` calls across mesh construction, initialization, and

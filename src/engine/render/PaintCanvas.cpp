@@ -523,16 +523,6 @@ void paintcanvas_ext_rpm_loadproj(void *eng, void *m);
 void *paintcanvas_ext_tc_findres(void *self, unsigned short id);
 
 
-void paintcanvas_ext_dr2_restore(unsigned int flag, void *img);
-
-void paintcanvas_ext_dr2_settexture(void *self, unsigned int tex);
-
-float paintcanvas_ext_dr2_signedtofloat(int v, unsigned int mode);
-
-float paintcanvas_ext_dr2_sinf(float v);
-
-float paintcanvas_ext_dr2_cosf(float v);
-
 void paintcanvas_ext_dr2_setscaling(void *out, float x, float y, float z);
 
 void paintcanvas_ext_dr2_mtx_mul(void *out, void *a, void *b);
@@ -540,12 +530,6 @@ void paintcanvas_ext_dr2_mtx_mul(void *out, void *a, void *b);
 void paintcanvas_ext_dr2_mtx_assign(void *dst, void *src);
 
 void paintcanvas_ext_dr2_setwvm(void *self, void *m);
-
-void paintcanvas_ext_dr2_gldisable(unsigned int cap);
-
-void paintcanvas_ext_dr2_meshdraw(void *eng, void *mesh);
-
-void paintcanvas_ext_dr2_glenable(unsigned int cap);
 
 static inline void paintcanvas_ext_gl_blendfunc(unsigned int src, unsigned int dst) {
     glBlendFunc(src, dst);
@@ -3409,17 +3393,17 @@ void PaintCanvas::DrawRegion2D(unsigned int index, float /*unused*/, int rotStep
     }
     PCImage2DView *img = (PCImage2DView *) ((char **) this->images.data_)[index];
     if (img->restoreFlag != 0) {
-        paintcanvas_ext_dr2_restore(img->restoreFlag, img);
+        RestoreImage2D(reinterpret_cast<Image2D *>(img));
         img = (PCImage2DView *) ((char **) this->images.data_)[index];
     }
-    paintcanvas_ext_dr2_settexture(this, img->textureId);
+    SetTexture(img->textureId, 0xffffffffu);
 
-    float rot = paintcanvas_ext_dr2_signedtofloat(rotSteps, 0);
-    float px = paintcanvas_ext_dr2_signedtofloat(pivotX, 0);
-    float py = paintcanvas_ext_dr2_signedtofloat(pivotY, 0);
-    float tx = paintcanvas_ext_dr2_signedtofloat(transX, 0);
-    float negpx = paintcanvas_ext_dr2_signedtofloat(-pivotX, 0);
-    float negpy = paintcanvas_ext_dr2_signedtofloat(-pivotY, 0);
+    float rot = static_cast<float>(rotSteps);
+    float px = static_cast<float>(pivotX);
+    float py = static_cast<float>(pivotY);
+    float tx = static_cast<float>(transX);
+    float negpx = static_cast<float>(-pivotX);
+    float negpy = static_cast<float>(-pivotY);
 
     float transM[16];
     memset(transM, 0, sizeof(transM));
@@ -3439,8 +3423,8 @@ void PaintCanvas::DrawRegion2D(unsigned int index, float /*unused*/, int rotStep
     pivotM[3] = negpx * scaleX;
     pivotM[7] = negpy * scaleY;
 
-    float s = paintcanvas_ext_dr2_sinf(negpx * scaleX);
-    float c = paintcanvas_ext_dr2_cosf(negpx * scaleX);
+    float s = AEMath::Sinf(negpx * scaleX);
+    float c = AEMath::Cosf(negpx * scaleX);
     float rotM[16];
     memset(rotM, 0, sizeof(rotM));
     rotM[0] = c;
@@ -3462,10 +3446,10 @@ void PaintCanvas::DrawRegion2D(unsigned int index, float /*unused*/, int rotStep
     paintcanvas_ext_dr2_mtx_assign(composed, scaleBuf);
 
     paintcanvas_ext_dr2_setwvm(this, composed);
-    paintcanvas_ext_dr2_gldisable(0xb44);
-    paintcanvas_ext_dr2_meshdraw(this->engine,
-                                 ((PCImage2DView *) ((char **) this->images.data_)[index])->mesh);
-    paintcanvas_ext_dr2_glenable(0xb44);
+    glDisable(0xb44);
+    AbyssEngine::MeshDraw(this->engine,
+                          reinterpret_cast<Mesh *>(((PCImage2DView *) ((char **) this->images.data_)[index])->mesh));
+    glEnable(0xb44);
 }
 
 void PaintCanvas::MeshSetTriangle(unsigned int meshIndex, unsigned short tri,
