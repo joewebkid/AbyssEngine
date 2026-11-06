@@ -1,5 +1,26 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PaintCanvas` transform picking).
+REA/IDA and original ARM show the index and recursive overloads
+inverse-transform `(x, y, z)`, preserve the original shift, test
+`MeshIntersect` with shifted X/Z, and return `(-1, -1)` on misses.
+The source had swapped coordinates, zeroed the recursive shift,
+returned zero on misses, and called undefined helpers. Index
+source-shape rises **85.4% -> 97.8%** and strict fuzzy **29.9% ->
+82.5%**; recursive source-shape rises **80.4% -> 92.9%** and strict
+fuzzy **26.1% -> 60.9%**. Both remain non-exact. ARMv7 **211/211**,
+Windows native, ARM64 static, and strict ARM64 shared builds pass.
+Raw ARM32 unresolved names fall **205 -> 195**. Full corpus:
+**4,323/4,524** originals in **4,772** pairs, mean source-shape
+**96.83%** (from 96.82%), strict fuzzy **86.91%** (from 86.89%),
+**2,798 linked-exact**, **1,113 byte-exact**, 201 missing, zero
+skipped, zero wrong-type, and 149 extra symbols. Exact membership is
+unchanged. The 201 missing names are bundled ZIP/zlib/OpenSSL and C++
+runtime functions, not separately absent gameplay methods. Live
+touch picking and full ARM32 shared linking remain unverified. Next
+priority: remaining gameplay placeholders in the ARM32 inventory.
+See [ARM picking evidence](PAINTCANVAS_TRANSFORM_PICK_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PaintCanvas::SetProjectionMatrix3d`
 depth). Original ARM computes matrix element 14 in double precision
 and converts back to float; the source used float throughout. The
@@ -12,8 +33,8 @@ names stay **205**. Full corpus: **4,323/4,524** originals in
 **86.89%**, **2,798 linked-exact**, **1,113 byte-exact**, 201 missing,
 zero skipped, zero wrong-type, and 149 extra symbols. Exact
 membership is unchanged. Live projection and full ARM32 shared
-linking remain unverified. Next priority: recover a missing,
-runtime-relevant ARM function. See
+linking remain unverified. Next priority: restore an unresolved
+gameplay call target. See
 [ARM depth evidence](PAINTCANVAS_SET_PROJECTION_DEPTH_ARM_2026-11-06.md).
 
 Last reviewed: 2026-11-06 (`PaintCanvas::ResetPersMatrix`).

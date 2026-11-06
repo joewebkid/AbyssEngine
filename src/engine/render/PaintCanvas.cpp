@@ -528,31 +528,6 @@ void paintcanvas_ext_smfg_pushmat(const float *m, void *array);
 
 
 
-void paintcanvas_ext_tg2d_memcpy(void *dst, void *src, unsigned int n);
-
-float paintcanvas_ext_tg2d_signedtofloat(int v, unsigned int mode);
-
-void paintcanvas_ext_tg2d_invtransformvec(void *outMat, void *vec);
-
-void paintcanvas_ext_tg2d_vec_assign(void *dst, void *src);
-
-void paintcanvas_ext_tg2d_inner(void *out, void *self, void *tf, int x, int y);
-
-void paintcanvas_ext_tg2d_errmsg(void *out);
-
-float paintcanvas_ext_tg2di_signedtofloat(int v, unsigned int mode);
-
-void paintcanvas_ext_tg2di_meshintersect(void *out, float a, float b, void *mesh);
-
-void paintcanvas_ext_tg2di_memcpy(void *dst, void *src, unsigned int n);
-
-void paintcanvas_ext_tg2di_invtransformvec(void *outMat, void *vec);
-
-void paintcanvas_ext_tg2di_vec_assign(void *dst, void *src);
-
-void paintcanvas_ext_tg2di_inner(void *out, void *self, void *childtf, int x, int y);
-
-
 static inline int pc_GetWidth(AbyssEngine::PaintCanvas *self) { return self->GetWidth(); }
 static inline int pc_GetHeight(AbyssEngine::PaintCanvas *self) { return self->GetHeight(); }
 
@@ -4236,33 +4211,24 @@ void PaintCanvas::ReleaseAllResources() {
 }
 
 
-static const unsigned int g_tg2d_defval_7b590 = 0;
-
 AbyssEngine::PickedTextureRegion
 PaintCanvas::TransformGet2DPickedTextureRegion(unsigned int transformIndex, int x, int y, int z,
-                                               int w) {
+                                               int shift) {
     PickedTextureRegion result;
-    char matbuf[60];
-    char vecbuf[64];
 
     if (transformIndex < this->transformCount) {
-        char *tf = ((char **) this->transforms)[transformIndex];
-        paintcanvas_ext_tg2d_memcpy(vecbuf, tf, 0x3c);
-        float fy = paintcanvas_ext_tg2d_signedtofloat(y, 0);
-        float fz = paintcanvas_ext_tg2d_signedtofloat(z, 0);
-        float fx = paintcanvas_ext_tg2d_signedtofloat(w, 0);
-        float vin[3];
-        vin[0] = fy;
-        vin[1] = fz;
-        vin[2] = fx;
-        paintcanvas_ext_tg2d_invtransformvec(matbuf, vecbuf);
-        paintcanvas_ext_tg2d_vec_assign(vin, matbuf);
+        Transform *tf = reinterpret_cast<Transform *>(this->transforms[transformIndex]);
+        Matrix matrix = tf->worldMatrix;
+        Vector position = {static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)};
+        position = AEMath::MatrixInverseTransformVector(matrix, position);
         result = this->TransformGet2DPickedTextureRegion(
-            reinterpret_cast<Transform *>(tf), x, (int) vin[0], (int) vin[1], 0);
+            tf, static_cast<int>(position.x), static_cast<int>(position.y),
+            static_cast<int>(position.z), shift);
     } else {
-        result.u = *(const float *) &g_tg2d_defval_7b590;
-        result.v = *(const float *) &g_tg2d_defval_7b590;
-        paintcanvas_ext_tg2d_errmsg(&result);
+        result.u = -1.0f;
+        result.v = -1.0f;
+        fprintf(stderr, "TransformGet2DPickedTextureRegion Error %d >= %d\n",
+                transformIndex, this->transformCount);
     }
     return result;
 }
@@ -4329,56 +4295,37 @@ void PaintCanvas::MaterialCreate(unsigned short resId, unsigned int &out) {
 }
 
 
-static const unsigned int g_tg2di_neg1_8b588 = 0;
-
 AbyssEngine::PickedTextureRegion
-PaintCanvas::TransformGet2DPickedTextureRegion(Transform *transform, int x, int y, int z, int w) {
+PaintCanvas::TransformGet2DPickedTextureRegion(Transform *transform, int x, int y, int z, int shift) {
     PickedTextureRegion result;
-    PCTransformView *tf = (PCTransformView *) transform;
-    int shift = w;
-    float vy = paintcanvas_ext_tg2di_signedtofloat((y >> shift) >> shift, 0);
-    float vx = paintcanvas_ext_tg2di_signedtofloat((z >> shift) >> shift, 0);
+    float qx = static_cast<float>((x >> shift) >> shift);
+    float qz = static_cast<float>((z >> shift) >> shift);
 
     unsigned int i = 0;
-    bool found = false;
-    while (i < tf->meshCount) {
-        void *mesh = tf->meshData[i];
-        paintcanvas_ext_tg2di_meshintersect(&result, vx, vy, mesh);
-        i++;
-        if (result.u != -1.0f && result.v != -1.0f) {
-            found = true;
-            break;
-        }
-    }
-    if (found) {
-        return result;
-    }
-
-    float fy = paintcanvas_ext_tg2di_signedtofloat(z, 0);
-    float fx = paintcanvas_ext_tg2di_signedtofloat(y, 0);
-    float fz = paintcanvas_ext_tg2di_signedtofloat(w, 0);
-
-    i = 0;
-    while (i < tf->childCount) {
-        char vecbuf[64];
-        char matbuf[60];
-        char *child = (char *) tf->childData[i];
-        paintcanvas_ext_tg2di_memcpy(vecbuf, child, 0x3c);
-        float vin[3];
-        vin[0] = fx;
-        vin[1] = fy;
-        vin[2] = fz;
-        paintcanvas_ext_tg2di_invtransformvec(matbuf, vecbuf);
-        paintcanvas_ext_tg2di_vec_assign(vin, matbuf);
-        result = this->TransformGet2DPickedTextureRegion(
-            reinterpret_cast<Transform *>(child), x, (int) vin[0], (int) vin[1], 0);
+    while (i < transform->meshes.count) {
+        result = MeshIntersect(qx, qz, transform->meshes.data_[i]);
         i++;
         if (result.u != -1.0f && result.v != -1.0f) {
             return result;
         }
     }
-    result.u = *(const float *) &g_tg2di_neg1_8b588;
-    result.v = *(const float *) &g_tg2di_neg1_8b588;
+
+    i = 0;
+    while (i < transform->children.count) {
+        Transform *child = transform->children.data_[i];
+        Matrix matrix = child->worldMatrix;
+        Vector position = {static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)};
+        position = AEMath::MatrixInverseTransformVector(matrix, position);
+        result = this->TransformGet2DPickedTextureRegion(
+            child, static_cast<int>(position.x), static_cast<int>(position.y),
+            static_cast<int>(position.z), shift);
+        i++;
+        if (result.u != -1.0f && result.v != -1.0f) {
+            return result;
+        }
+    }
+    result.u = -1.0f;
+    result.v = -1.0f;
     return result;
 }
 

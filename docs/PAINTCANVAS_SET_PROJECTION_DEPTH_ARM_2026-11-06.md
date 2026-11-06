@@ -29,6 +29,6 @@ membership sets are unchanged. These rounded means do not show the
 improvement in this one function.
 
 Live perspective rendering and full ARM32 shared linking remain
-unverified. Next priority: select a missing, runtime-relevant ARM
-function and recover its behavior from static evidence; validate
+unverified. Next priority: restore an unresolved gameplay call from
+static ARM evidence; validate
 projection on a device when available.

@@ -370,12 +370,8 @@ namespace AbyssEngine {
 }
 
 namespace AbyssEngine {
-    struct Vec2 {
-        float u, v;
-    };
-
-    Vec2 MeshIntersect(float qx, float qz, Mesh *mesh) {
-        Vec2 out;
+    PickedTextureRegion MeshIntersect(float qx, float qz, Mesh *mesh) {
+        PickedTextureRegion out;
         unsigned int i = 0;
 
         for (;;) {

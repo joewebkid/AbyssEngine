@@ -12,6 +12,7 @@
 #include "engine/render/Image.h"
 #include "engine/render/Image2D.h"
 #include "engine/render/AELoadedTexture.h"
+#include "engine/render/PickedTextureRegion.h"
 
 #include "engine/math/AEMath.h"
 
@@ -20,6 +21,7 @@ namespace AbyssEngine {
     class Engine;
     class Material;
     class PaintCanvas;
+    class Mesh;
 }
 
 using ::AbyssEngine::Engine;
@@ -45,6 +47,8 @@ namespace AbyssEngine {
     int TextureCreateFromFileIntern(Engine *engine, const char *path, ImageCallback callback, void *userData,
                                     unsigned int *outIds, float scale, AELoadedTexture *loadedTexture,
                                     bool managed);
+
+    PickedTextureRegion MeshIntersect(float qx, float qz, Mesh *mesh);
 
     struct ESMatrix {
         float m[4][4];
