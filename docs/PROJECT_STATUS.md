@@ -1,6 +1,23 @@
 # Project Status
 
 Last reviewed: 2026-11-06 (`Status::nextCampaignMission`, steps
+39–42). Original Android ARM32 assigns mission tuples `(161,0,-1)`,
+`(4,0,-1)`, `(160,0,-1)`, and `(11,0,10)` to the campaign slot;
+step 41 also writes `-10` to Status fields `0x7c/0x80`. The source
+restores those effects; production-source smoke covers steps 0–42
+at `-O0/-O2`. Focused source-shape rises **14.2% -> 14.4%** and
+strict fuzzy **6.1% -> 6.2%**. ARM32 **211/211**, Windows native,
+ARM64 static, and strict ARM64 shared builds pass. Raw ARM32
+unresolved names remain **174**, with no membership change. Full
+corpus: **4,323/4,524** originals in **4,772** pairs, mean
+source-shape **96.87%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped, zero wrong-type,
+and 151 extra symbols. No exact membership changed. Live campaign
+progression remains unverified. Next: steps 43–45, especially the
+step 44 field, credit, and visibility effects. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEPS_39_42_ARM_2026-11-06.md).
+
+Last reviewed: 2026-11-06 (`Status::nextCampaignMission`, steps
 37–38). The original Android ARM32 assigns both existing mission
 tuples `(4,0,22)` and `(11,0,30)` to the campaign slot. The source
 now does so; production-source smoke covers steps 0–38 at `-O0/-O2`.

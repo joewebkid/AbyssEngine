@@ -171,13 +171,15 @@ int main() {
     Item questCargo;
     questCargo.prototypeIndex = 0x83;
     ship.cargo.values.push_back(&questCargo);
-    const int types[39] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11,
+    const int types[43] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11,
                            11, 11, 150, 4, 11, 4, 11, 156, 156, 189, 4,
-                           11, 11, 4, 156, 4, 11, 4, 4, 156, 11, 11, 8, 11, 11, 12, 160, 4, 11};
-    const int stations[39] = {78, 78, 78, 78, 78, 78, 78, 78, 78, 79,
+                           11, 11, 4, 156, 4, 11, 4, 4, 156, 11, 11, 8, 11, 11, 12, 160, 4, 11,
+                           161, 4, 160, 11};
+    const int stations[43] = {78, 78, 78, 78, 78, 78, 78, 78, 78, 79,
                               76, 79, 0, 79, 98, 98, 98, 56, 55, 55, 55,
-                              55, 10, 48, -1, 48, 10, 91, -1, 91, 98, 10, 10, 30, 29, 27, 27, 22, 30};
-    for (int step = 1; step <= 38; ++step) {
+                              55, 10, 48, -1, 48, 10, 91, -1, 91, 98, 10, 10, 30, 29, 27, 27, 22, 30,
+                              -1, -1, -1, 10};
+    for (int step = 1; step <= 42; ++step) {
         status.currentCampaignMission = step;
         status.nextCampaignMission(true);
         assert(status.currentCampaignMission == step + 1);
@@ -217,6 +219,7 @@ int main() {
             assert(targetBlueprint.addedItem->prototypeIndex == 164);
             assert(targetBlueprint.addedAmount == 50 && targetBlueprint.addedStation == 10);
         }
+        if (step == 41) assert(status.field_7c == -10 && status.field_80 == -10);
         delete missions[0];
         missions[0] = nullptr;
     }
