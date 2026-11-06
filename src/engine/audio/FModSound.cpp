@@ -24,10 +24,6 @@ static inline int FMOD_Event_getProperty(FMOD::Event *event, unsigned char *prop
 
 static inline int FMOD_EventSystem_getNumReverbPresets(FMOD::EventSystem *system, int *out) { return system->getNumReverbPresets(out); }
 
-int FMOD_EventSystem_getReverbPresetByIndex(FMOD::EventSystem *system, int idx, unsigned char *props, char **name);
-
-int FMOD_EventSystem_setReverbProperties(FMOD::EventSystem *system, unsigned char *props);
-
 static inline int FMOD_Event_getParameterByIndex(FMOD::Event *event, int idx, FMOD::EventParameter **out) { return event->getParameterByIndex(idx, out); }
 
 static inline int FMOD_EventParameter_setValue(FMOD::EventParameter *p, float v) { return p->setValue(v); }
@@ -211,18 +207,23 @@ int FModSound::getEventPauseLength(int idx) {
 }
 
 void FModSound::enableReverb(int p1) {
+#if defined(GOF2_ARM64_SILENT_AUDIO)
+    (void) p1;
+#else
     if (!this->system)
         return;
-    char buf[0x54];
-    if (FMOD_EventSystem_getNumReverbPresets(this->system, (int *) (buf + 0x50)) != 0)
+    FMOD_REVERB_PROPERTIES props;
+    int count;
+    if (FMOD_EventSystem_getNumReverbPresets(this->system, &count) != 0)
         return;
-    if (*(int *) (buf + 0x50) <= p1)
+    if (count <= p1)
         return;
     if (this->reverbPreset == p1)
         return;
     this->reverbPreset = p1;
-    if (FMOD_EventSystem_getReverbPresetByIndex(this->system, p1, (unsigned char *) buf, 0) == 0)
-        FMOD_EventSystem_setReverbProperties(this->system, (unsigned char *) buf);
+    if (this->system->getReverbPresetByIndex(p1, &props, 0) == 0)
+        this->system->setReverbProperties(&props);
+#endif
 }
 
 float FModSound::getPlayingProgress(int idx) {
@@ -374,12 +375,13 @@ int FModSound::pause(int p1) {
 }
 
 void FModSound::disableReverb() {
-    static const unsigned char kRev[0x50] = {0};
+#if !defined(GOF2_ARM64_SILENT_AUDIO)
+    static const FMOD_REVERB_PROPERTIES kOff = FMOD_PRESET_OFF;
     if (this->system) {
-        unsigned char buf[0x50];
-        memcpy(buf, kRev, 0x50);
-        FMOD_EventSystem_setReverbProperties(this->system, buf);
+        FMOD_REVERB_PROPERTIES props = kOff;
+        this->system->setReverbProperties(&props);
     }
+#endif
     this->reverbPreset = -1;
 }
 
