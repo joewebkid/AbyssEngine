@@ -124,23 +124,6 @@ namespace {
     static const float g_PE_ss_emBias = 0.1f;
 }
 
-// Local 4-wide row-major matrix buffer used to build a transform on the stack.
-// 0x30 bytes; the named diagonal members live at offsets 0x0/0x14/0x28.
-struct PE_MatrixBuf {
-    float m00;        // 0x00
-    float pad0[4];    // 0x04..0x13
-    float m11;        // 0x14
-    float pad1[4];    // 0x18..0x27
-    float m22;        // 0x28
-    float pad2[1];    // 0x2c
-};
-#if __SIZEOF_POINTER__ == 4
-static_assert(sizeof(PE_MatrixBuf) == 0x30, "PE_MatrixBuf size");
-static_assert(__builtin_offsetof(PE_MatrixBuf, m00) == 0x00, "m00");
-static_assert(__builtin_offsetof(PE_MatrixBuf, m11) == 0x14, "m11");
-static_assert(__builtin_offsetof(PE_MatrixBuf, m22) == 0x28, "m22");
-#endif
-
 static inline Status *PE_status() { return Status::gStatus; }
 
 
@@ -210,17 +193,6 @@ static inline __attribute__((always_inline)) float PE_yawRampDelta(float rate, i
     return rate * (float) frameTime / ((3.3f - sensitivity) * 20.0f);
 }
 
-
-void Mat_assign(void *dst, const void *src);
-
-#if __SIZEOF_POINTER__ == 8
-static inline void Vec_assign(void *dst, const void *src) {
-    *static_cast<AbyssEngine::AEMath::Vector *>(dst) =
-        *static_cast<const AbyssEngine::AEMath::Vector *>(src);
-}
-#else
-void Vec_assign(void *dst, const void *src);
-#endif
 
 
 
@@ -2101,8 +2073,6 @@ int PlayerEgo::killLiberator() {
     return 1;
 }
 
-void Mat_assign(void *dst, const void *src);
-
 void PlayerEgo::roll(int amount) {
     if (this->rolling == 0)
         return;
@@ -2639,19 +2609,12 @@ void PlayerEgo::draw(bool allowHud) {
         return;
     }
 
-    PE_MatrixBuf m;
-    for (unsigned i = 0; i < sizeof(m); i++) ((unsigned char *) &m)[i] = 0;
-    m.m00 = 1.0f;
-    m.m11 = 1.0f;
-    m.m22 = 1.0f;
-
-    bool aligned = (this->autoPilot != 0 && this->turretActive != 0);
-#if __SIZEOF_POINTER__ == 4
-    if (!aligned)
-        Mat_assign(&m, ((AEGeometry *) (this->geometry))->getMatrix());
-#else
-    (void) aligned; // The local matrix is never read after this assignment.
-#endif
+    Matrix m(1.0f, 0.0f, 0.0f, 0.0f,
+             0.0f, 1.0f, 0.0f, 0.0f,
+             0.0f, 0.0f, 0.0f, 0.0f,
+             0.0f, 0.0f, 1.0f);
+    if (this->autoPilot == 0 || this->turretActive == 0)
+        m = this->geometry->getMatrix();
 
     void *canvas = (void *) PaintCanvas::gCanvas;
     PaintCanvas::gCanvas->SetColor((unsigned int) (0xffffffff));
@@ -3884,7 +3847,7 @@ void PlayerEgo::setShip(int race, int group) {
         this->emergencyVal1 = ((Item *) ((Ship *) (PE_status()->getShip()))->getFirstEquipmentOfSort(0x1b))->
                 getAttribute(41);
         void *tf = PaintCanvas::gCanvas->TransformGetTransform((unsigned int) (this->field_0x4->transform));
-        Vec_assign(&this->emergencyVec, &((AbyssEngine::Transform *) tf)->boundingCenter);
+        this->emergencyVec = ((AbyssEngine::Transform *) tf)->boundingCenter;
         tf = PaintCanvas::gCanvas->TransformGetTransform((unsigned int) (this->field_0x4->transform));
         this->emergencyVal2 = ((AbyssEngine::Transform *) tf)->boundingRadius / g_PE_ss_emDiv + g_PE_ss_emBias;
     }

@@ -1,5 +1,25 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PlayerEgo` matrix/vector assignments).
+Original Android ARM calls typed `AEMath::Matrix::operator=` in
+`draw` and `AEMath::Vector::operator=` in `setShip`. ARM32 now uses
+those calls instead of undefined `Mat_assign` and `Vec_assign`
+helpers. The draw local is now a 60-byte `Matrix` with the original
+unit-value offsets, replacing a 48-byte buffer that was too small
+for the assignment. `draw` source-shape/strict fuzzy rise
+**86.4%/53.9% -> 88.3%/59.7%**; `setShip` stays **98.4%/83.4%**.
+Neither is exact. The raw **211-object** ARM32 unmatched-symbol
+inventory falls **231 -> 229**. Windows native, ARM64 static, ARMv7
+**211/211**, and strict ARM64 shared linking pass. Full ARM corpus:
+**4,323/4,524** originals in **4,772** pairs, **96.81%** mean
+source-shape, **86.85%** strict fuzzy, **2,792 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped, zero wrong-type and
+no lost exact-match pair. Live draw and emergency-system behavior and
+full ARM32 shared linking remain unverified. Next priority: inspect
+the remaining mismatches in `PlayerEgo::draw`, including its
+214-versus-178-instruction size gap. See
+[ARM assignment evidence](PLAYER_MATRIX_VECTOR_ASSIGN_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`GameRecord::load` array ownership).
 The original Android ARM conditionally calls typed `Array<bool>` or
 `Array<int>` destructors followed by `operator delete` for four old
