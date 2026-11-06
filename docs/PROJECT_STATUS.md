@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`Status::nextCampaignMission`, step 36).
+The original Android ARM32 creates campaign `Mission(160,0,27)`
+and hides its first array entry. The source now restores both effects;
+production-source smoke covers steps 0–36 at `-O0/-O2`. Focused
+source-shape rises **14.0% -> 14.2%** and strict fuzzy **5.8% ->
+6.1%**. ARM32 **211/211**, Windows native, ARM64 static, and strict
+ARM64 shared builds pass. Raw ARM32 unresolved names remain **174**.
+Full corpus: **4,323/4,524** originals in **4,772** pairs, mean
+source-shape **96.87%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped, zero wrong-type,
+and 151 extra symbols. No exact membership changed. Live campaign
+progression remains unverified. Next: steps 37–38. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEP_36_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`Status::nextCampaignMission`, steps
 34–35). The original Android ARM32 assigns both existing mission
 tuples `(11,0,29)` and `(12,0,27)` to the campaign slot. The source
