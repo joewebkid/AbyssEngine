@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PaintCanvas::SetProjectionMatrix3d`
+depth). Original ARM computes matrix element 14 in double precision
+and converts back to float; the source used float throughout. The
+confirmed precision and operation order are restored. Target
+source-shape rises **95.3% -> 96.7%**, strict fuzzy **52.6% ->
+56.9%**, still non-exact. ARMv7 **211/211**, Windows native, ARM64
+static, and strict ARM64 shared builds pass. Raw ARM32 unresolved
+names stay **205**. Full corpus: **4,323/4,524** originals in
+**4,772** pairs, mean source-shape **96.82%**, strict fuzzy
+**86.89%**, **2,798 linked-exact**, **1,113 byte-exact**, 201 missing,
+zero skipped, zero wrong-type, and 149 extra symbols. Exact
+membership is unchanged. Live projection and full ARM32 shared
+linking remain unverified. Next priority: recover a missing,
+runtime-relevant ARM function. See
+[ARM depth evidence](PAINTCANVAS_SET_PROJECTION_DEPTH_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PaintCanvas::ResetPersMatrix`).
 Original ARM relocations and call veneers identify the perspective
 globals, `AEMath::Sinf/Cosf`, shader path, and OpenGL calls. The

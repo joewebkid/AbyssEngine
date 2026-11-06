@@ -1766,8 +1766,11 @@ void PaintCanvas::SetProjectionMatrix3d(float fov, float nearPlane,
     }
 
     this->projMatrix3d.m[11] = -1.0f;
-    this->projMatrix3d.m[10] = (nearPlane + farPlane) / (nearPlane - farPlane);
-    this->projMatrix3d.m[14] = ((farPlane + farPlane) * nearPlane) / (nearPlane - farPlane);
+    float depth = nearPlane - farPlane;
+    double twiceFar = static_cast<double>(farPlane) + static_cast<double>(farPlane);
+    this->projMatrix3d.m[10] = (nearPlane + farPlane) / depth;
+    this->projMatrix3d.m[14] = static_cast<float>(
+        (twiceFar * static_cast<double>(nearPlane)) / static_cast<double>(depth));
 }
 
 
