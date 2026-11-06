@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`FModSound::updateAll` and `play`).
+Original ARM32 passes listener position, up, velocity, and forward
+vectors in that ABI order to FMOD and releases finished events through
+`FMOD::EventGroup::freeEventData(event, false)`. Direct typed calls
+replace two undefined stand-ins and avoid truncating the system
+pointer to `int`. `updateAll` source-shape rises **80.6% -> 84.4%**,
+strict fuzzy **45.8% -> 64.9%**; `play` rises **87.8% -> 89.7%** and
+**51.9% -> 58.4%**. ARMv7 **211/211**, Windows native, ARM64 static,
+and strict ARM64 shared builds pass; the authorized silent ARM64 path
+does not update FMOD. Raw ARM32 unresolved names fall **186 -> 185**.
+Full corpus: **4,323/4,524** originals in **4,772** pairs, mean
+source-shape **96.83%**, strict fuzzy **86.94%** (from **86.93%**),
+**2,798 linked-exact**, **1,113 byte-exact**, 201 missing, zero
+skipped, zero wrong-type, and 152 extra symbols. Exact membership is
+unchanged. Live audio and full ARM32 shared linking remain unverified.
+Next priority: event lookup and category handling in
+`FModSound::updateEvent3DAttributes`. See
+[ARM listener/event evidence](FMOD_LISTENER_EVENT_CLEANUP_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`FModSound` language and initialization).
 Original ARM32 initializes FMOD with 32 channels and flags `0x82`,
 uses `english`/`deutsch`, appends `FMOD_GOF2.fev` or

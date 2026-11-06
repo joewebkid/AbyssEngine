@@ -14,8 +14,6 @@ static inline void FMOD_EventSystem_unload(FMOD::EventSystem *system) { system->
 
 static inline void FMOD_EventSystem_release(FMOD::EventSystem *system) { system->release(); }
 
-int FMOD_EventSystem_freeEventData(FMOD::EventSystem *system, FMOD::Event *event, int waitUntilReady);
-
 FModSound *FMOD_Event_stop_p(FMOD::Event *event, int immediate);
 
 static inline int FMOD_Event_setPitch(FMOD::Event *event, float pitch, int mode) { return event->setPitch(pitch, (FMOD_EVENT_PITCHUNITS) mode); }
@@ -50,13 +48,6 @@ int FMOD_EventSystem_getEventBySystemID(unsigned int system, int id, FMOD::Event
 int FMOD_Event_set3DAttributes(FMOD::Event *event, Vector *pos, Vector *vel);
 
 static inline int FMOD_Event_start(FMOD::Event *event) { return event->start(); }
-
-int FMOD_EventSystem_set3DListenerAttributes(int system, unsigned char *zero, Vector *pos, Vector *vel,
-                                             Vector *forward);
-
-static inline int FMOD_EventSystem_update(int system) {
-    return ((FMOD::EventSystem *) (uintptr_t) system)->update();
-}
 
 void FMOD_MusicSystem_promptCue(FMOD::MusicSystem *music, int cueId);
 
@@ -341,7 +332,7 @@ void FModSound::play(int idx, Vector *pos, Vector *vel, float pitch) {
         if (slot != 0) {
             FMOD::EventGroup *group = 0;
             if (FMOD_Event_getParentGroup(slot, &group) == 0) {
-                FMOD_EventSystem_freeEventData(this->system, slot, 0);
+                group->freeEventData(slot, false);
                 slot = 0;
             }
         }
@@ -495,7 +486,14 @@ void FModSound::getParam(const char *name, int idx) {
 }
 
 void FModSound::updateAll(Vector *pos, Vector *vel, Vector *forward, Vector *up) {
-    int system = (int) (uintptr_t) this->system;
+#if defined(GOF2_ARM64_SILENT_AUDIO)
+    (void) pos;
+    (void) vel;
+    (void) forward;
+    (void) up;
+    return;
+#else
+    FMOD::EventSystem *system = this->system;
     if (system == 0)
         return;
 
@@ -537,11 +535,16 @@ void FModSound::updateAll(Vector *pos, Vector *vel, Vector *forward, Vector *up)
         Vector *pPos = havePos ? this->listenerPos : 0;
         Vector *pUp = haveUp ? this->listenerUp : 0;
         Vector *pVel = haveVel ? this->listenerVel : 0;
-        FMOD_EventSystem_set3DListenerAttributes(system, 0, pPos, pUp, pVel);
+        Vector *pFwd = haveFwd ? this->listenerForward : 0;
+        system->set3DListenerAttributes(
+                0, reinterpret_cast<const FMOD_VECTOR *>(pPos),
+                reinterpret_cast<const FMOD_VECTOR *>(pUp),
+                reinterpret_cast<const FMOD_VECTOR *>(pVel),
+                reinterpret_cast<const FMOD_VECTOR *>(pFwd));
     }
 
 afterListener:
-    FMOD_EventSystem_update(system);
+    system->update();
 
     for (int i = 0; i != 5; i++) {
         int slotIdx = this->fxSlots[i];
@@ -554,12 +557,13 @@ afterListener:
         if (slotIdx != -1 && ev != 0 && isPlaying(slotIdx) == 0) {
             FMOD::EventGroup *group = 0;
             if (FMOD_Event_getParentGroup(*evp, &group) == 0) {
-                FMOD_EventSystem_freeEventData(this->system, *evp, 0);
+                group->freeEventData(*evp, false);
                 *evp = 0;
                 this->fxSlots[i] = -1;
             }
         }
     }
+#endif
 }
 
 unsigned FModSound::isPlaying(int p1) {
