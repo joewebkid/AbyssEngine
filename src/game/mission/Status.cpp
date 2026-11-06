@@ -1096,8 +1096,8 @@ static const Step kSteps[] = {
     /*0x28*/ {0x4, 0, -1, 1}, /*0x29*/ {0xa0, 0, -1, 1}, /*0x2a*/ {0xb, 0, 10, 1},
     /*0x2b*/ {0xb, 0, 10, 1}, /*0x2c*/ {0, 0, 0, 1}, /*0x2d*/ {0, 0, 0, 0},
     /*0x2e*/ {0xb, 0, 0x4a, 1}, /*0x2f*/ {0xb, 0, 0x3a, 1}, /*0x30*/ {0x9c, 0, 0x3a, 1},
-    /*0x31*/ {0x9c, 0, 0x3e, 0}, /*0x32*/ {0x9c, 0, 0x19, 0}, /*0x33*/ {0xa0, 0, 0x19, 0},
-    /*0x34*/ {0, 0, 0, 0}, /*0x35*/ {0xb, 0, 0x4a, 0}, /*0x36*/ {0xb, 0, 0x65, 1},
+    /*0x31*/ {0x9c, 0, 0x3e, 1}, /*0x32*/ {0x9c, 0, 0x19, 1}, /*0x33*/ {0xa0, 0, 0x19, 1},
+    /*0x34*/ {0, 0, 0, 0}, /*0x35*/ {0xb, 200000, 0x4a, 1}, /*0x36*/ {0xb, 0, 0x65, 1},
     /*0x37*/ {0x4, 0, 0x66, 0}, /*0x38*/ {0xb, 0, 0x65, 0}, /*0x39*/ {0xa6, 0, 0x65, 1},
     /*0x3a*/ {0xa3, 0, 0x65, 1}, /*0x3b*/ {0xb, 50000, 0x65, 1}, /*0x3c*/ {0xa4, 0, 0x65, 0},
     /*0x3d*/ {0xb, 0, 100, 0}, /*0x3e*/ {0x4, 0, 0x67, 0}, /*0x3f*/ {0x4, 0, 0x68, 0},
@@ -1118,12 +1118,17 @@ void Status::nextCampaignMission(bool advance) {
     int prevTimeHi = (int) (this->playingTime >> 32);
 
     int step = this->currentCampaignMission;
-    int next = step + 1;
-
-    for (int k = 0; k < 3; k = k + 1) {
-        if (next == g_ncmAchTable[k])
-            this->field_0x17c = 1;
-    }
+    int next;
+    do {
+        next = step + 1;
+        for (int k = 0; k < 3; k = k + 1) {
+            if (next == g_ncmAchTable[k])
+                this->field_0x17c = 1;
+        }
+        if (step != 52)
+            break;
+        step = next;
+    } while (true);
 
     this->currentCampaignMission = next;
     this->field_0x100 = prevTimeLo;
@@ -1250,7 +1255,7 @@ void Status::nextCampaignMission(bool advance) {
                 m->setStatusValue(6);
             else if (step == 32)
                 m->setProductionGoods(164, 50);
-            else if (step == 36)
+            else if (step == 36 || step == 51)
                 (*missions)[0]->setVisible(false);
             else if (step == 44) {
                 (*missions)[0]->setVisible(false);

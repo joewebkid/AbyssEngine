@@ -207,14 +207,14 @@ int main() {
     Item questCargo;
     questCargo.prototypeIndex = 0x83;
     ship.cargo.values.push_back(&questCargo);
-    const int types[49] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11,
+    const int types[54] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11,
                            11, 11, 150, 4, 11, 4, 11, 156, 156, 189, 4,
                            11, 11, 4, 156, 4, 11, 4, 4, 156, 11, 11, 8, 11, 11, 12, 160, 4, 11,
-                           161, 4, 160, 11, 11, 0, 0, 11, 11, 156};
-    const int stations[49] = {78, 78, 78, 78, 78, 78, 78, 78, 78, 79,
+                           161, 4, 160, 11, 11, 0, 0, 11, 11, 156, 156, 156, 160, 0, 11};
+    const int stations[54] = {78, 78, 78, 78, 78, 78, 78, 78, 78, 79,
                               76, 79, 0, 79, 98, 98, 98, 56, 55, 55, 55,
                               55, 10, 48, -1, 48, 10, 91, -1, 91, 98, 10, 10, 30, 29, 27, 27, 22, 30,
-                              -1, -1, -1, 10, 10, 0, 0, 74, 58, 58};
+                              -1, -1, -1, 10, 10, 0, 0, 74, 58, 58, 62, 25, 25, 0, 74};
     for (int step = 1; step <= 44; ++step) {
         if (step == 44) status.credits = 100;
         status.currentCampaignMission = step;
@@ -300,6 +300,39 @@ int main() {
         delete missions[0];
         missions[0] = nullptr;
     }
+
+    for (int step = 49; step <= 53; ++step) {
+        if (step == 52) {
+            g_ncmAchTable[0] = 53;
+            status.field_0x17c = 0;
+        }
+        status.currentCampaignMission = step;
+        status.nextCampaignMission(true);
+        const int selectedStep = step == 52 ? 53 : step;
+        assert(status.currentCampaignMission == (step == 52 ? 54 : step + 1));
+        assert(missions[0] != nullptr && missions[0]->campaign);
+        assert(missions[0]->type == types[selectedStep]);
+        assert(missions[0]->param == (selectedStep == 53 ? 200000 : 0));
+        assert(missions[0]->station == stations[selectedStep]);
+        assert(missions[0]->visible == (selectedStep != 51));
+        if (step == 52) {
+            assert(status.field_0x17c == 1);
+            g_ncmAchTable[0] = 0;
+        }
+        delete missions[0];
+        missions[0] = nullptr;
+    }
+
+    g_ncmAchTable[0] = 54;
+    status.field_0x17c = 0;
+    status.currentCampaignMission = 52;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 54 && status.field_0x17c == 1);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 200000);
+    delete missions[0];
+    missions[0] = nullptr;
+    g_ncmAchTable[0] = 0;
 
     status.currentCampaignMission = 44;
     status.credits = 0x7fffffff;

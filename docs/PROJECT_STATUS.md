@@ -1,6 +1,25 @@
 # Project Status
 
 Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, steps
+49–53). Original Android ARM32 creates campaign missions
+`(156,0,62)`, `(156,0,25)`, and `(160,0,25)` at steps 49–51;
+step 51 hides its mission. Step 52 re-enters the shared achievement
+loop, advances to 54, and dispatches step 53's campaign
+`Mission(11,200000,74)`. The source restores these paths;
+production-source smoke covers steps 0–53 at `-O0/-O2` and both
+achievement checks in step 52. Focused source-shape remains
+**19.6%** and strict fuzzy changes **6.6% -> 6.5%**. ARM32
+**211/211**, Windows native, ARM64 static, and strict ARM64 shared
+builds pass. Raw ARM32 unresolved names remain **174** with no
+membership change. Full corpus: **4,323/4,524** originals in
+**4,772** pairs, mean source-shape **96.87%**, strict fuzzy
+**86.98%**, **2,802 linked-exact**, **1,116 byte-exact**, 201
+missing, zero skipped, zero wrong-type, and 151 extra symbols. No
+exact membership changed. Live campaign progression remains
+unverified. Next: step 54's restored-ship path. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEPS_49_53_ARM_2026-11-07.md).
+
+Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, steps
 46–48). Original Android ARM32 assigns campaign `Mission(11,0,74)`
 at step 46. Step 47 preserves the old ship, makes template `9`,
 equips items `58/83`, clears Status field `0x30`, and creates
