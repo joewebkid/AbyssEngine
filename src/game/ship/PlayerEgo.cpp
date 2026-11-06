@@ -150,7 +150,10 @@ static inline Status *PE_status() { return Status::gStatus; }
 #if __SIZEOF_POINTER__ == 8
 static inline int aeabi_idiv_(int a, int b) { return a / b; }
 #else
-int aeabi_idiv_(int a, int b);
+extern "C" int __aeabi_idiv(int a, int b);
+static inline __attribute__((always_inline)) int aeabi_idiv_(int a, int b) {
+    return __aeabi_idiv(a, b);
+}
 #endif
 
 static inline __attribute__((always_inline)) float PE_pitchRampDelta(PlayerEgo *self, float rate, int frameTime) {

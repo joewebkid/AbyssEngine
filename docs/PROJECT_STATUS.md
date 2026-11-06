@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PlayerEgo` ARM32 movement division).
+Original ARM calls `__aeabi_idiv` with divisor 63 in `right`,
+`left`, `down`, and `up`; the source called an undefined C++
+stand-in on ARM32. The direct runtime target is restored without
+emitting an extra helper symbol. Focused source-shape/strict fuzzy
+scores remain right **88.1%/67.4%**, left **88.3%/71.5%**, down
+**88.0%/71.4%**, and up **88.4%/74.7%**; all remain non-exact.
+ARMv7 **211/211**, Windows native, ARM64 static, and strict ARM64
+shared builds pass. Raw ARM32 unresolved names fall **189 -> 188**.
+Full corpus: **4,323/4,524** originals in **4,772** pairs, mean
+source-shape **96.83%**, strict fuzzy **86.93%**,
+**2,798 linked-exact**, **1,113 byte-exact**, 201 missing, zero
+skipped, zero wrong-type, and 152 extra symbols. Exact membership is
+unchanged. Live movement and full ARM32 shared linking remain
+unverified. Next priority: remaining gameplay-specific ARM32 calls,
+including UI sine. See
+[ARM division-target evidence](PLAYER_EGO_ARM32_DIVISION_TARGET_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PlayerEgo::stopShooting`). Original ARM
 tail veneers identify the single-slot and slot-plus-channel
 `Player::stopShooting` overloads. Direct typed calls replace two
