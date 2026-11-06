@@ -110,10 +110,6 @@ namespace {
     static const float g_PE_strafeLoadK = 0.4f;
     static const float g_PE_strafeLoadB = 0.6f;
     static const float g_PE_strafeAccelK = 0.002f;
-    static float *g_PE_dr_posLock = nullptr;
-    static float *g_PE_dr_posNoLock = nullptr;
-    static float *g_PE_dr_posBlink = nullptr;
-    static float *g_PE_dr_posNormal = nullptr;
     static const float g_PE_upd_handlingBias = 2.7f;
     static const float g_PE_t_timerDiv = 500.0f;
     static const float g_PE_t_pctScale = 100.0f;
@@ -2617,33 +2613,32 @@ void PlayerEgo::draw(bool allowHud) {
     if (this->autoPilot == 0 || this->turretActive == 0)
         m = this->geometry->getMatrix();
 
-    void *canvas = (void *) PaintCanvas::gCanvas;
-    PaintCanvas::gCanvas->SetColor((unsigned int) (0xffffffff));
+    Globals::Canvas->SetColor((unsigned int) (0xffffffff));
 
     if (this->turretActive != 0
         && ((Ship *) (PE_status()->getShip()))->getFirstEquipmentOfSort(0x23) != 0) {
         if (((Radar *) (this->field_0x14))->isPlasmaInRange() != 0) {
-            float *p = g_PE_dr_posLock;
-            ((PaintCanvas *) (long) (canvas))->DrawImage2D((unsigned int) (this->radarBlipImage4), (int) p[0],
-                                                           (int) p[1], (unsigned char) (0x11), (unsigned char) (0x44));
+            Globals::Canvas->DrawImage2D((unsigned int) (this->radarBlipImage4),
+                                              (int) crosshairPos.x, (int) crosshairPos.y,
+                                              (unsigned char) (0x11), (unsigned char) (0x44));
         } else {
-            float *p = g_PE_dr_posNoLock;
-            ((PaintCanvas *) (long) (canvas))->DrawImage2D((unsigned int) (this->radarBlipImage3), (int) p[0],
-                                                           (int) p[1], (unsigned char) (0x11), (unsigned char) (0x44));
+            Globals::Canvas->DrawImage2D((unsigned int) (this->radarBlipImage3),
+                                              (int) crosshairPos.x, (int) crosshairPos.y,
+                                              (unsigned char) (0x11), (unsigned char) (0x44));
         }
     } else {
         if ((char &) this->level->field_30 != 0) {
-            float *p = g_PE_dr_posBlink;
-            ((PaintCanvas *) (long) (canvas))->DrawImage2D((unsigned int) (this->radarBlipImage2), (int) p[0],
-                                                           (int) p[1], (unsigned char) (0x11), (unsigned char) (0x44));
+            Globals::Canvas->DrawImage2D((unsigned int) (this->radarBlipImage2),
+                                              (int) crosshairPos.x, (int) crosshairPos.y,
+                                              (unsigned char) (0x11), (unsigned char) (0x44));
             int t = this->crosshairBlinkTimer + this->shakeIntensity;
             this->crosshairBlinkTimer = t;
             if (t >= 0xc9)
                 (char &) this->level->field_30 = 0;
         } else {
-            float *p = g_PE_dr_posNormal;
-            ((PaintCanvas *) (long) (canvas))->DrawImage2D((unsigned int) (this->radarBlipImage1), (int) p[0],
-                                                           (int) p[1], (unsigned char) (0x11), (unsigned char) (0x44));
+            Globals::Canvas->DrawImage2D((unsigned int) (this->radarBlipImage1),
+                                              (int) crosshairPos.x, (int) crosshairPos.y,
+                                              (unsigned char) (0x11), (unsigned char) (0x44));
             this->crosshairBlinkTimer = 0;
         }
     }

@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PlayerEgo::draw` reticle coordinates).
+Original Android ARM loads one static `PlayerEgo::crosshairPos`
+through GOT slot `0x21027c` in all four `DrawImage2D` paths. The
+source now reads that vector instead of four null float pointers and
+uses the confirmed `Globals::Canvas` pointer without a
+64-bit-truncating cast.
+Focused `draw` source-shape/strict fuzzy rise **88.5%/61.2% ->
+95.7%/88.6%**, still non-exact. ARMv7 **211/211**, Windows native,
+ARM64 static and strict ARM64 shared linking pass. The raw
+**211-object** ARM32 unmatched-symbol inventory remains **229**.
+Full ARM corpus: **4,323/4,524** originals in **4,772** pairs,
+**96.81%** mean source-shape, **86.88%** strict fuzzy,
+**2,799 linked-exact**, **1,113 byte-exact**, 201 missing, zero
+skipped, zero wrong-type and no lost exact-match pair. Live reticle
+output and full ARM32 shared linking remain unverified. Next
+priority: inspect the remaining `draw` branch and matrix-lifetime
+differences without changing behavior merely for the match score.
+See [ARM reticle evidence](PLAYER_DRAW_CROSSHAIR_POS_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PlayerEgo::update` auto-turret time gate).
 Original Android ARM reads the signed 64-bit `LevelScript::scriptTime`
 at `+0x08` only when the market-system byte at `PlayerEgo+0x354`
