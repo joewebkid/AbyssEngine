@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PlayerEgo` local-matrix rotation).
+Original Android ARM loads `Globals::Canvas` from its GOT entry and
+calls typed `PaintCanvas::TransformGetLocal` and
+`AEMath::MatrixSetRotation` from `setRotation` and `rotate`. The ARM32
+source previously dereferenced uninitialized pointer placeholders;
+the confirmed call chain is now restored. Both functions reach
+**100%** source-shape, **100%** strict fuzzy and linked-exact, from
+**88.4%/54.0%** and **94.7%/88.9%** respectively. The raw **211-object**
+ARM32 unmatched-symbol inventory falls **236 -> 234** with no new
+name. Windows native, ARM64 static, ARMv7 **211/211**, and strict
+ARM64 shared linking pass. Full ARM corpus: **4,323/4,524** originals
+in **4,770** pairs, **96.81%** mean source-shape, **86.84%** strict
+fuzzy, **2,791 linked-exact**, **1,108 byte-exact**, 201 missing,
+zero skipped, zero wrong-type and no lost exact-match pair. Device
+rotation behavior and full ARM32 shared linking remain unverified.
+Next priority: verify the invalid-transform identity fallback inside
+`PaintCanvas::TransformGetLocal`. See
+[ARM rotation evidence](PLAYER_ROTATION_LOCAL_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PlayerEgo::dockToDockingPoint` engine-sound
 calls). Original Android ARM calls `PlayerEgo::PlayEngineSound` twice
 from the docking/undocking paths; both ARM32 sites now use that typed

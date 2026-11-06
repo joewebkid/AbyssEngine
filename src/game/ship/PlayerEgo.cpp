@@ -52,9 +52,7 @@ namespace AbyssEngine {
 }
 
 namespace {
-    void *g_setRotation_transform;
     void *g_dockToPlanet_fmod;
-    void *g_rotate_transform;
     static PlayerEgo *g_PlayerEgo_singleton = nullptr;
     static const float g_PE_rollNudge = 0.17f;
     static const float g_PE_strafeDist = 10000.0f; // ARM initManeuver literal at 0xa1b70.
@@ -183,10 +181,6 @@ void stopShooting_extA(void *, int);
 
 void stopShooting_extB(void *, int, int);
 #endif
-
-void *TransformGetLocal(void *, int);
-
-void MatrixSetRotation(void *, void *, float, float, float);
 
 
 
@@ -1141,21 +1135,13 @@ void PlayerEgo::shake(int amount) {
 }
 
 void PlayerEgo::setRotation(float rx, float ry, float rz) {
-    char local[60];
     this->rotateX = rx;
     this->rotateY = ry;
     this->rotateZ = rz;
-#if __SIZEOF_POINTER__ == 8
     auto *matrix = static_cast<Matrix *>(
         Globals::Canvas->TransformGetLocal(this->field_0x4->transform));
-    if (matrix)
-        AbyssEngine::AEMath::MatrixSetRotation(
-            *matrix, this->rotateX, this->rotateY, this->rotateZ);
-#else
-    void *t = *(void **) g_setRotation_transform;
-    void *m = TransformGetLocal(t, this->field_0x4->transform);
-    MatrixSetRotation(local, m, this->rotateX, this->rotateY, this->rotateZ);
-#endif
+    AbyssEngine::AEMath::MatrixSetRotation(
+        *matrix, this->rotateX, this->rotateY, this->rotateZ);
 }
 
 
@@ -2493,22 +2479,13 @@ int PlayerEgo::setTurretMode(bool enable) {
 }
 
 void PlayerEgo::rotate(float rx, float ry, float rz) {
-    char local[60];
     this->rotateX = this->rotateX + rx;
     this->rotateY = this->rotateY + ry;
     this->rotateZ = this->rotateZ + rz;
-#if __SIZEOF_POINTER__ == 8
     auto *matrix = static_cast<Matrix *>(
         Globals::Canvas->TransformGetLocal(this->field_0x4->transform));
-    if (matrix)
-        AbyssEngine::AEMath::MatrixSetRotation(
-            *matrix, this->rotateX, this->rotateY, this->rotateZ);
-#else
-    int ido = this->field_0x4->transform;
-    void *t = *(void **) g_rotate_transform;
-    void *m = TransformGetLocal(t, ido);
-    MatrixSetRotation(local, m, this->rotateX, this->rotateY, this->rotateZ);
-#endif
+    AbyssEngine::AEMath::MatrixSetRotation(
+        *matrix, this->rotateX, this->rotateY, this->rotateZ);
 }
 
 
