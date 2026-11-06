@@ -501,25 +501,6 @@ void paintcanvas_ext_tami_setanimstate(void *tf, int a, int b);
 
 void paintcanvas_ext_tami_finalize(void *tf);
 
-float paintcanvas_ext_rpm_sinf(float v);
-
-float paintcanvas_ext_rpm_cosf(float v);
-
-float paintcanvas_ext_rpm_signedtofloat(int v, unsigned int mode);
-
-void paintcanvas_ext_rpm_glMatrixMode(unsigned int mode);
-
-void paintcanvas_ext_rpm_glLoadIdentity();
-
-void paintcanvas_ext_rpm_glScalef(float x, float y, float z);
-
-void paintcanvas_ext_rpm_glLoadMatrixf(void *m);
-
-void paintcanvas_ext_rpm_glFinish();
-
-void paintcanvas_ext_rpm_loadproj(void *eng, void *m);
-
-
 void *paintcanvas_ext_tc_findres(void *self, unsigned short id);
 
 
@@ -2706,28 +2687,13 @@ double *PaintCanvas::GetAccelValue() {
 }
 
 
-static float g_rpm_fov_8d0dc_storage = 0.0f;
-static float *const g_rpm_fov_8d0dc = &g_rpm_fov_8d0dc_storage;
-
-static const unsigned int g_rpm_const_8d234 = 0;
-
-static float g_rpm_near_8d196_storage = 0.0f;
-static float *const g_rpm_near_8d196 = &g_rpm_near_8d196_storage;
-
-static float g_rpm_far_8d1a4_storage = 0.0f;
-static float *const g_rpm_far_8d1a4 = &g_rpm_far_8d1a4_storage;
-
-static char g_rpm_flag_8d1b8_storage = 0;
-static char *const g_rpm_flag_8d1b8 = &g_rpm_flag_8d1b8_storage;
-
 void PaintCanvas::ResetPersMatrix() {
     int w = this->engine->GetDisplayWidth();
     int h = this->engine->GetDisplayHeight();
-    float fov = *g_rpm_fov_8d0dc;
-    float s = paintcanvas_ext_rpm_sinf(fov * 0.5f);
-    float c = paintcanvas_ext_rpm_cosf(fov * 0.5f);
-    float fw = paintcanvas_ext_rpm_signedtofloat(w, 0);
-    float fh = paintcanvas_ext_rpm_signedtofloat(h, 0);
+    float s = AEMath::Sinf(i_fov * 0.5f);
+    float c = AEMath::Cosf(i_fov * 0.5f);
+    float fw = static_cast<float>(w);
+    float fh = static_cast<float>(h);
 
     memset(&this->projMatrix3d.m[12], 0, 0x10);
     memset(&this->projMatrix3d.m[0], 0, 0x10);
@@ -2757,24 +2723,25 @@ void PaintCanvas::ResetPersMatrix() {
         }
     }
 
-    float n = *g_rpm_near_8d196;
-    float fr = *g_rpm_far_8d1a4;
-    this->projMatrix3d.m[11] = g_rpm_const_8d234;
-    this->projMatrix3d.m[10] = (n + fr) / (fr - n);
-    this->projMatrix3d.m[14] = ((n + n) * fr) / (fr - n);
+    float farPlane = i_zFar;
+    float nearPlane = i_zNear;
+    float depth = nearPlane - farPlane;
+    double twiceFar = static_cast<double>(farPlane) + static_cast<double>(farPlane);
+    this->projMatrix3d.m[11] = -1.0f;
+    this->projMatrix3d.m[10] = (farPlane + nearPlane) / depth;
+    this->projMatrix3d.m[14] = static_cast<float>(
+        (twiceFar * static_cast<double>(nearPlane)) / static_cast<double>(depth));
 
-    if (*g_rpm_flag_8d1b8 == 0) {
-        paintcanvas_ext_rpm_glMatrixMode(0x1702);
-        paintcanvas_ext_rpm_glLoadIdentity();
-        float sc;
-        *(unsigned int *) &sc = g_rpm_const_8d234;
-        paintcanvas_ext_rpm_glScalef(1.0f, sc, 1.0f);
-        paintcanvas_ext_rpm_glMatrixMode(0x1701);
-        paintcanvas_ext_rpm_glLoadMatrixf(&this->projMatrix3d.m[0]);
-        paintcanvas_ext_rpm_glMatrixMode(0x1700);
-        paintcanvas_ext_rpm_glFinish();
+    if (Engine::enableShader == 0) {
+        glMatrixMode(0x1702);
+        glLoadIdentity();
+        glScalef(1.0f, -1.0f, 1.0f);
+        glMatrixMode(0x1701);
+        glLoadMatrixf(&this->projMatrix3d.m[0]);
+        glMatrixMode(0x1700);
+        glLoadIdentity();
     } else {
-        paintcanvas_ext_rpm_loadproj(this->engine, &this->projMatrix3d.m[0]);
+        this->engine->SetPerspMatrix(&this->projMatrix3d.m[0]);
     }
 }
 

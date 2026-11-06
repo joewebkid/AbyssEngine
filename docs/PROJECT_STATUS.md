@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PaintCanvas::ResetPersMatrix`).
+Original ARM relocations and call veneers identify the perspective
+globals, `AEMath::Sinf/Cosf`, shader path, and OpenGL calls. The
+source had zero-filled local stand-ins, an incorrect matrix constant,
+and an undefined `glFinish` stand-in where the original calls
+`glLoadIdentity`; these are restored. Target source-shape rises
+**76.0% -> 98.7%**, strict fuzzy **50.9% -> 75.6%**, still
+non-exact. ARMv7 **211/211**, Windows native, ARM64 static, and strict
+ARM64 shared builds pass. Raw ARM32 unresolved names fall **213 ->
+205**. Full corpus: **4,323/4,524** originals in **4,772** pairs,
+mean source-shape **96.82%**, strict fuzzy **86.89%**,
+**2,798 linked-exact**, **1,113 byte-exact**, 201 missing, zero
+skipped, zero wrong-type, and 149 extra symbols. Exact membership is
+unchanged. Live perspective-reset rendering and full ARM32 shared
+linking remain unverified. Next priority: verify
+`SetProjectionMatrix3d` and projection consumers. See
+[ARM perspective-reset evidence](PAINTCANVAS_RESET_PERS_MATRIX_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (cropped `PaintCanvas::DrawRegion2D`).
 Original ARM writes a zero to the twelfth vertex-position float and
 composes `T(position+pivot) * R(angle) * T(-pivot)` through two matrix
