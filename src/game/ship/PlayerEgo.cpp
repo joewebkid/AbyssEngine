@@ -1677,6 +1677,7 @@ PlayerEgo::PlayerEgo(Player *player) {
     this->driveCharge = 0;
     this->driveChargeMax = 0;
     this->chargingDrive = 0;
+    this->autoTurretEnabled = 1;
 
     Ship *ship = (Ship *) PE_status()->getShip();
     this->boostTimer = 0;
@@ -1781,7 +1782,7 @@ PlayerEgo::PlayerEgo(Player *player) {
     PaintCanvas::gCanvas->Image2DCreate(0x1f5d, this->radarBlipImage4);
     PaintCanvas::gCanvas->Image2DCreate(0x548, this->dockArrowImage);
 
-    this->autoTurretEnabled = PE_status()->inBlackMarketSystem();
+    this->field_0x354 = PE_status()->inBlackMarketSystem();
     this->steerLimit = ((this->handling * 750.0f) / 63.0f) * 1.2f;
     this->steerScale = 15.139357f; // Android +0x288: 0x41723ace.
     for (float &angle : this->steerAngleHistory) angle = 0.0f;
@@ -2589,8 +2590,8 @@ void PlayerEgo::draw(bool allowHud) {
 
     bool full;
     if (this->computerControlled != 0 || ((PlayerEgo *) (this))->isDead() != 0 || this->freeze != 0
-        || allowHud == 0 || ((char &) this->dockingState) != 0 || this->dockingToPlanet != 0 || this->dockedToStream !=
-        0) {
+        || allowHud == 0 || ((char &) this->dockingState) != 0 || this->dockedToStream != 0
+        || reinterpret_cast<const uint8_t *>(&this->docked)[1] != 0) {
         full = false;
     } else {
         full = true;

@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PlayerEgo` adjacent state bytes).
+Original Android ARM distinguishes the market-system byte at
+`PlayerEgo+0x354`, auto-turret enabled at `+0x355`, and docking-point
+flag at `+0x356`. The source now preserves all three and corrects
+the two stream-state bytes checked in `draw`. ARMv7 **211/211**,
+Windows native, ARM64 static and strict ARM64 shared linking pass.
+Seven `PlayerEgo` functions gain linked-exact and five gain
+byte-exact, with no losses; `draw` source-shape/strict fuzzy rise
+**88.3%/59.7% -> 88.5%/61.2%**. The raw **211-object** ARM32
+unmatched-symbol inventory remains **229**. Full ARM corpus:
+**4,323/4,524** originals in **4,772** pairs, **96.81%** mean
+source-shape, **86.88%** strict fuzzy, **2,799 linked-exact**,
+**1,113 byte-exact**, 201 missing, zero skipped, zero wrong-type and
+no lost exact-match pair. Live docking/autoturret behavior and full
+ARM32 shared linking remain unverified. Next priority: restore the
+`+0x354` market/time gate in `PlayerEgo::update`. See
+[ARM state-byte evidence](PLAYER_FLAGS_SPLIT_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PlayerEgo` matrix/vector assignments).
 Original Android ARM calls typed `AEMath::Matrix::operator=` in
 `draw` and `AEMath::Vector::operator=` in `setShip`. ARM32 now uses
