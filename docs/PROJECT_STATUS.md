@@ -1,6 +1,22 @@
 # Project Status
 
 Last reviewed: 2026-11-06 (`Status::nextCampaignMission`, steps
+30–32). Original ARM32 assigns all three new missions to the
+campaign slot. Step 32 then calls
+`Mission::setProductionGoods(164, 50)`; the source now restores
+these paths. Production-source smoke covers steps 0–32 at
+`-O0/-O2`. Focused source-shape rises **12.3% -> 12.6%** and strict
+fuzzy **5.3% -> 5.5%**. ARM32 **211/211**, Windows native, ARM64
+static, and strict ARM64 shared builds pass. Raw ARM32 unresolved
+names remain **174**. Full corpus: **4,323/4,524** originals in
+**4,772** pairs, mean source-shape **96.87%**, strict fuzzy
+**86.98%**, **2,802 linked-exact**, **1,116 byte-exact**, 201
+missing, zero skipped, zero wrong-type, and 151 extra symbols. No
+exact membership changed. Live campaign progression remains
+unverified. Next: step 33 cargo and blueprint path. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEPS_30_32_ARM_2026-11-06.md).
+
+Last reviewed: 2026-11-06 (`Status::nextCampaignMission`, steps
 27–29). Original ARM32 writes `18/91` to Status fields `0x7c/0x80`
 on step 27 and assigns all three new missions to the campaign slot.
 Those paths are restored; production-source smoke covers steps 0–29

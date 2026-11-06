@@ -17,11 +17,14 @@ struct Mission {
     int param;
     int station;
     int statusValue = -1;
+    int productionGoodsA = -1;
+    int productionGoodsB = -1;
     bool campaign = false;
     bool visible = true;
     Mission() : Mission(0, 0, 0) {}
     Mission(int t, int p, int s) : type(t), param(p), station(s) {}
     void setStatusValue(int value) { statusValue = value; }
+    void setProductionGoods(int a, int b) { productionGoodsA = a; productionGoodsB = b; }
     void setVisible(bool value) { visible = value; }
 };
 
@@ -138,19 +141,19 @@ int main() {
     Item questCargo;
     questCargo.prototypeIndex = 0x83;
     ship.cargo.values.push_back(&questCargo);
-    const int types[30] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11,
+    const int types[33] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11,
                            11, 11, 150, 4, 11, 4, 11, 156, 156, 189, 4,
-                           11, 11, 4, 156, 4, 11, 4, 4, 156};
-    const int stations[30] = {78, 78, 78, 78, 78, 78, 78, 78, 78, 79,
+                           11, 11, 4, 156, 4, 11, 4, 4, 156, 11, 11, 8};
+    const int stations[33] = {78, 78, 78, 78, 78, 78, 78, 78, 78, 79,
                               76, 79, 0, 79, 98, 98, 98, 56, 55, 55, 55,
-                              55, 10, 48, -1, 48, 10, 91, -1, 91};
-    for (int step = 1; step <= 29; ++step) {
+                              55, 10, 48, -1, 48, 10, 91, -1, 91, 98, 10, 10};
+    for (int step = 1; step <= 32; ++step) {
         status.currentCampaignMission = step;
         status.nextCampaignMission(true);
         assert(status.currentCampaignMission == step + 1);
         assert(missions[0] != nullptr && missions[0]->campaign);
         assert(missions[0]->type == types[step]);
-        assert(missions[0]->param == (step == 22 ? 20000 : 0));
+        assert(missions[0]->param == (step == 22 ? 20000 : step == 30 ? 30000 : 0));
         assert(missions[0]->station == stations[step]);
         assert(missions[0]->statusValue ==
                (step == 1 ? 10 : step == 3 ? 25 : step == 12 ? 42 :
@@ -173,6 +176,10 @@ int main() {
         if (step == 24) assert(questCargo.unsaleable && !carried.unsaleable);
         if (step == 25) assert(status.field_7c == -1 && status.field_80 == -1);
         if (step == 27) assert(status.field_7c == 18 && status.field_80 == 91);
+        if (step == 32) {
+            assert(missions[0]->productionGoodsA == 164);
+            assert(missions[0]->productionGoodsB == 50);
+        }
         delete missions[0];
         missions[0] = nullptr;
     }
