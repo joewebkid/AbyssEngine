@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 66).
+Original Android ARM32 creates campaign `Mission(4,0,104)` with
+status value zero, then adds copies of catalog items `60/61/62`,
+each with amount `5` and price `0`, to the current station. The
+source restores these calls; production-source smoke covers the
+campaign through step 66 at `-O0/-O2`. Focused source-shape rises
+**27.3% -> 28.9%** and strict fuzzy **7.5% -> 7.8%**. ARM32
+**211/211**, Windows native, ARM64 static, and strict ARM64 shared
+builds pass. Raw ARM32 unresolved names remain **174** with no
+membership change. Full corpus: **4,323/4,524** originals in
+**4,772** pairs, mean source-shape **96.88%**, strict fuzzy
+**86.98%**, **2,802 linked-exact**, **1,116 byte-exact**, 201 missing,
+zero skipped, zero wrong-type, and 151 extra symbols. No exact
+membership changed. Live campaign progression remains unverified.
+Next: step 67. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEP_66_ARM_2026-11-07.md).
+
 Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, steps
 61–62). Original Android ARM32 sets system visibility index `22`
 before ordinary `Mission(11,0,100)` at step 61 and index `24`

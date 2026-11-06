@@ -42,6 +42,11 @@ struct Item {
         copy->amount = quantity;
         return copy;
     }
+    Item *makeItem(int quantity, int newPrice) {
+        Item *copy = makeItem(quantity);
+        copy->price = newPrice;
+        return copy;
+    }
     void setUnsaleable(bool value) { unsaleable = value; }
     int getIndex() { return prototypeIndex; }
     int getSinglePrice() { return price; }
@@ -110,6 +115,11 @@ struct Ship {
     void setRace(int value) { race = value; ++raceSetCount; }
 };
 
+struct Station {
+    std::vector<Item *> addedItems;
+    void addItem(Item *item) { addedItems.push_back(item); }
+};
+
 struct Status;
 struct Globals { static void *items; static void *ships; static Status *status; };
 void *Globals::items = nullptr;
@@ -132,6 +142,7 @@ struct Status {
     Array<BluePrint *> *bluePrints = nullptr;
     Array<int> *field_90 = nullptr;
     Ship *ship = nullptr;
+    Station *station = nullptr;
     Ship *previousShip = nullptr;
     Mission *mission = nullptr;
     Array<Mission *> *missions = nullptr;
@@ -184,11 +195,13 @@ int main() {
     Array<BluePrint *> blueprints;
     blueprints.values = {&otherBlueprint, &targetBlueprint, &productionBlueprint};
     Ship ship;
+    Station station;
     Status status;
     Globals::status = &status;
     status.playingTime = 0x1234567887654321LL;
     status.missionCount = 41;
     status.ship = &ship;
+    status.station = &station;
     status.missions = &missions;
     status.systemVisibilities = &visibilities;
     status.bluePrints = &blueprints;
@@ -469,6 +482,33 @@ int main() {
         delete missions[0];
         missions[0] = nullptr;
     }
+
+    for (int step = 63; step <= 65; ++step) {
+        status.currentCampaignMission = step;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == step + 1);
+        assert(missions[0] != nullptr && !missions[0]->campaign);
+        assert(missions[0]->type == (step == 63 ? 4 : 11));
+        assert(missions[0]->param == 0 && missions[0]->station == (step == 63 ? 104 : step == 64 ? 100 : 101));
+        delete missions[0];
+        missions[0] = nullptr;
+    }
+
+    for (int i = 60; i <= 62; ++i) prototypes[i].price = 42;
+    status.currentCampaignMission = 66;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 67);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 4 && missions[0]->param == 0 && missions[0]->station == 104);
+    assert(missions[0]->statusValue == 0);
+    assert(station.addedItems.size() == 3);
+    for (int i = 0; i < 3; ++i) {
+        assert(station.addedItems[i]->prototypeIndex == 60 + i);
+        assert(station.addedItems[i]->amount == 5 && station.addedItems[i]->price == 0);
+    }
+    delete missions[0];
+    missions[0] = nullptr;
+    for (Item *item : station.addedItems) delete item;
     delete status.field_90;
 
     status.ship = nullptr;

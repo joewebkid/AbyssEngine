@@ -1316,6 +1316,12 @@ void Status::nextCampaignMission(bool advance) {
             } else if (step == 58) {
                 (*missions)[0]->setStatusValue(0);
                 Globals::status->field_10c = 0;
+            } else if (step == 66) {
+                (*missions)[0]->setStatusValue(0);
+                Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
+                Globals::status->station->addItem((*items)[60]->makeItem(5, 0));
+                Globals::status->station->addItem((*items)[61]->makeItem(5, 0));
+                Globals::status->station->addItem((*items)[62]->makeItem(5, 0));
             }
             return;
         }
