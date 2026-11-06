@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`GameRecord::load` array ownership).
+The original Android ARM conditionally calls typed `Array<bool>` or
+`Array<int>` destructors followed by `operator delete` for four old
+`Status` arrays. ARM32 now uses those calls instead of an undefined
+`Array_dtor` placeholder. `GameRecord::load` stays **97.6%**
+source-shape and **69.0%** strict fuzzy, non-exact. The raw
+**211-object** ARM32 unmatched-symbol inventory falls **232 -> 231**.
+Windows native, ARM64 static, ARMv7 **211/211**, and strict ARM64
+shared linking pass. Full ARM corpus: **4,323/4,524** unique
+originals in **4,772** pairs, **96.81%** mean source-shape,
+**86.85%** strict fuzzy, **2,792 linked-exact**, **1,108 byte-exact**,
+201 missing, zero skipped, zero wrong-type and no lost exact-match
+pair. The linked-exact gain is the newly emitted `Array<int>`
+destructor in this unit. Live save loading and full ARM32 shared
+linking remain unverified. Next priority: inspect the `Mat_assign`
+and `Vec_assign` placeholders in `PlayerEgo`. See
+[ARM deletion evidence](GAMERECORD_ARRAY_DELETE_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`ParticleSystemManager::init`).
 Original Android ARM tail-calls `ParticleSystemManager::update(0)`
 through a veneer to its PLT entry after enabling the manager. The

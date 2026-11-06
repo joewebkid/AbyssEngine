@@ -147,8 +147,6 @@ GameRecord::GameRecord() {
 
 typedef uint32_t uint;
 
-long Array_dtor(void *self);
-
 // The saved flag block is Globals::hints, not a PlayerEgo object.
 #pragma pack(push, 1)
 struct HintsSaveBlock {
@@ -204,7 +202,6 @@ void GameRecord::load() {
     auto *missionFlags = reinterpret_cast<MissionFlags *>(Globals::options);
     bool campaignLocked;
     int campaignStage;
-    void *deadArray;
     Array<uint8_t> *srcByteArray;
     Array<uint32_t> *srcVec;
     BluePrint *blueprint;
@@ -346,32 +343,17 @@ stationStackLoaded:
     ((Station *) Status::gStatus->voidStation)->setShips(this->getArray184(), true);
     st = Status::gStatus;
     if (st->field_94 != (Array<bool> *) 0x0) {
-#if __SIZEOF_POINTER__ == 8
         delete st->field_94;
-#else
-        deadArray = (void *) Array_dtor(st->field_94);
-        ::operator delete(deadArray);
-#endif
         st = Status::gStatus;
     }
     st->field_94 = this->getFlags68();
     if (st->field_98 != (Array<bool> *) 0x0) {
-#if __SIZEOF_POINTER__ == 8
         delete st->field_98;
-#else
-        deadArray = (void *) Array_dtor(st->field_98);
-        ::operator delete(deadArray);
-#endif
         st = Status::gStatus;
     }
     st->field_98 = this->getFlags6c();
     if (st->field_90 != (Array<int> *) 0x0) {
-#if __SIZEOF_POINTER__ == 8
         delete st->field_90;
-#else
-        deadArray = (void *) Array_dtor(st->field_90);
-        ::operator delete(deadArray);
-#endif
         st = Status::gStatus;
     }
     st->field_90 = this->getArray70();
@@ -391,12 +373,7 @@ stationStackLoaded:
     st->field_a4 = this->field_0x7c;
     st->field_a8 = this->field_0x80;
     if (st->field_ac != (Array<bool> *) 0x0) {
-#if __SIZEOF_POINTER__ == 8
         delete st->field_ac;
-#else
-        deadArray = (void *) Array_dtor(st->field_ac);
-        ::operator delete(deadArray);
-#endif
         st = Status::gStatus;
     }
     st->field_ac = this->getFlags84();
