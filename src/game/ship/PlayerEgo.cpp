@@ -2288,24 +2288,12 @@ float PlayerEgo::up(int frameTime, float delta) {
     return target;
 }
 
-void Mat_mul(void *out, const void *a, const void *b);
-
 void PlayerEgo::shoot(int weapon, int type) {
-    int hi = weapon >> 31;
     if (this->turretActive != 0) {
-        void *m1 = ((AEGeometry *) (this->geometry))->getMatrix();
-        void *m2 = ((AEGeometry *) (this->turretGeometry))->getMatrix();
-#if __SIZEOF_POINTER__ == 8
-        Matrix mat = *static_cast<Matrix *>(m1) * *static_cast<Matrix *>(m2);
-#else
-        float combined[0x30 / sizeof(float)];
-        Mat_mul(combined, m1, m2);
-        Matrix mat;
-        for (int k = 0; k < 15; ++k) mat.m[k] = combined[k];
-        mat.m[15] = 1.0f;
-#endif
-        long long pos = ((long long) hi << 32) | (unsigned int) weapon;
-        static_cast<Player *>(this->player)->shoot(2, pos, hi < 0, mat);
+        Matrix &m1 = ((AEGeometry *) this->geometry)->getMatrix();
+        Matrix &m2 = ((AEGeometry *) this->turretGeometry)->getMatrix();
+        Matrix mat = m1 * m2;
+        static_cast<Player *>(this->player)->shoot(2, static_cast<long long>(weapon), false, mat);
         return;
     }
 
@@ -2315,11 +2303,11 @@ void PlayerEgo::shoot(int weapon, int type) {
     Player *player = static_cast<Player *>(this->player);
     if (type == 1) {
         int idx = this->currentSecondaryWeaponIndex;
-        long long pos = ((long long) hi << 32) | (unsigned int) idx;
-        player->shoot(1, idx, pos, hi < 0);
+        if (!player->shoot(1, idx, static_cast<long long>(weapon), false)) {
+            this->currentSecondaryWeaponIndex = -1;
+        }
     } else {
-        long long pos = ((long long) hi << 32) | (unsigned int) weapon;
-        player->shoot(type, weapon, pos, hi < 0);
+        player->shoot(type, static_cast<long long>(weapon), false);
     }
 }
 

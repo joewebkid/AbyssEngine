@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PlayerEgo::shoot`). Original ARM uses
+`AEMath::operator*` for turret matrices and three distinct
+`Player::shoot` overloads. The source used an undefined matrix
+helper, read and wrote beyond matrix storage, passed wrong weapon and
+boolean values, and omitted the secondary-weapon failure reset.
+These paths are restored. Target source-shape rises **84.1% ->
+100.0%**, strict fuzzy **25.1% -> 99.0%**, still non-exact. ARMv7
+**211/211**, Windows native, ARM64 static, and strict ARM64 shared
+builds pass. Raw ARM32 unresolved names fall **192 -> 191**. Full
+corpus: **4,323/4,524** originals in **4,772** pairs, mean
+source-shape **96.83%**, strict fuzzy **86.93%** (from 86.91%),
+**2,798 linked-exact**, **1,113 byte-exact**, 201 missing, zero
+skipped, zero wrong-type, and 152 extra symbols. Exact membership is
+unchanged. Live shooting and full ARM32 shared linking remain
+unverified. Next priority: `PlayerEgo::stopShooting` call targets.
+See [ARM shooting evidence](PLAYER_EGO_SHOOT_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PaintCanvas` ARM32 camera/font call
 closure). Original ARM tail veneers identify `SetProjectionMatrix3d`
 and `ImageFontSetYOffset`/`ImageFontGetYOffset` as the three targets.
