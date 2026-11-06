@@ -1090,7 +1090,7 @@ static const Step kSteps[] = {
     /*0x16*/ {0xb, 20000, 10, 1},/*0x17*/ {0x4, 0, 0x30, 1}, /*0x18*/ {0x9c, 0, -1, 1},
     /*0x19*/ {0x4, 0, 0x30, 1}, /*0x1a*/ {0xb, 0, 10, 1}, /*0x1b*/ {0x4, 0, 0x5b, 1},
     /*0x1c*/ {0x4, 0, -1, 1}, /*0x1d*/ {0x9c, 0, 0x5b, 1}, /*0x1e*/ {0xb, 30000, 0x62, 1},
-    /*0x1f*/ {0xb, 0, 10, 1}, /*0x20*/ {0x8, 0, 10, 1}, /*0x21*/ {0xb, 0, 0x1d, 0},
+    /*0x1f*/ {0xb, 0, 10, 1}, /*0x20*/ {0x8, 0, 10, 1}, /*0x21*/ {0xb, 0, 0x1e, 1},
     /*0x22*/ {0xb, 0, 0x1d, 0}, /*0x23*/ {0xc, 0, 0x1b, 0}, /*0x24*/ {0xa0, 0, 0x1b, 0},
     /*0x25*/ {0x4, 0, 0x16, 0}, /*0x26*/ {0xb, 0, 0x1e, 0}, /*0x27*/ {0xa1, 0, -1, 0},
     /*0x28*/ {0x4, 0, -1, 0}, /*0x29*/ {0xa0, 0, -1, 0}, /*0x2a*/ {0xb, 0, 10, 0},
@@ -1187,6 +1187,17 @@ void Status::nextCampaignMission(bool advance) {
     } else if (step == 27) {
         this->field_7c = 18;
         this->field_80 = 0x5b;
+    } else if (step == 33) {
+        this->ship->removeCargo(164, 50);
+        for (unsigned i = 0; i < this->bluePrints->size(); ++i) {
+            BluePrint *bp = (*this->bluePrints)[i];
+            if (bp->getIndex() == 85) {
+                bp->unlock();
+                Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
+                bp->addItem((*items)[164]->makeItem(), 50, 10);
+                break;
+            }
+        }
     }
 
     Mission *tailMission;

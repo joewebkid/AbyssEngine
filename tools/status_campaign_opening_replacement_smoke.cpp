@@ -44,6 +44,21 @@ struct Item {
     void setPrice(int value) { price = value; }
 };
 
+struct BluePrint {
+    int index = -1;
+    bool unlocked = false;
+    Item *addedItem = nullptr;
+    int addedAmount = -1;
+    int addedStation = -1;
+    int getIndex() { return index; }
+    void unlock() { unlocked = true; }
+    void addItem(Item *item, int amount, int station) {
+        addedItem = item;
+        addedAmount = amount;
+        addedStation = station;
+    }
+};
+
 struct Ship {
     Item *oldEquipment = nullptr;
     Item *removed = nullptr;
@@ -53,10 +68,17 @@ struct Ship {
     int cargoClearCount = 0;
     int race = 1;
     int raceSetCount = 0;
+    int removedCargoIndex = -1;
+    int removedCargoAmount = -1;
     Array<Item *> equipment;
     Array<Item *> cargo;
     void setCargo(int value) { assert(value == 0); ++cargoSetCount; }
     void removeAllCargo() { ++cargoClearCount; }
+    int removeCargo(int index, int amount) {
+        removedCargoIndex = index;
+        removedCargoAmount = amount;
+        return 0;
+    }
     Array<Item *> *getEquipment() { return &equipment; }
     Array<Item *> *getCargo() { return &cargo; }
     Item *getFirstEquipmentOfSort(int sort) {
@@ -81,6 +103,7 @@ struct Status {
     int field_80 = -1;
     unsigned char field_0x17c = 0;
     Array<bool> *systemVisibilities = nullptr;
+    Array<BluePrint *> *bluePrints = nullptr;
     Ship *ship = nullptr;
     Mission *mission = nullptr;
     Array<Mission *> *missions = nullptr;
@@ -94,20 +117,26 @@ struct Status {
 #include "status_campaign_opening_replacement_under_test.inc"
 
 int main() {
-    Item prototypes[87];
-    Item *catalog[87];
-    for (int i = 0; i != 87; ++i) {
+    Item prototypes[165];
+    Item *catalog[165];
+    for (int i = 0; i != 165; ++i) {
         prototypes[i].prototypeIndex = i;
         catalog[i] = &prototypes[i];
     }
     Array<Item *> items;
-    items.values.assign(catalog, catalog + 87);
+    items.values.assign(catalog, catalog + 165);
     Globals::items = &items;
 
     Array<Mission *> missions;
     missions.values.resize(2);
     Array<bool> visibilities;
     visibilities.values.resize(7);
+    BluePrint otherBlueprint;
+    otherBlueprint.index = 84;
+    BluePrint targetBlueprint;
+    targetBlueprint.index = 85;
+    Array<BluePrint *> blueprints;
+    blueprints.values = {&otherBlueprint, &targetBlueprint};
     Ship ship;
     Status status;
     status.playingTime = 0x1234567887654321LL;
@@ -115,6 +144,7 @@ int main() {
     status.ship = &ship;
     status.missions = &missions;
     status.systemVisibilities = &visibilities;
+    status.bluePrints = &blueprints;
 
     status.nextCampaignMission(true);
     assert(status.currentCampaignMission == 1);
@@ -141,13 +171,13 @@ int main() {
     Item questCargo;
     questCargo.prototypeIndex = 0x83;
     ship.cargo.values.push_back(&questCargo);
-    const int types[33] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11,
+    const int types[34] = {11, 154, 11, 154, 11, 158, 4, 11, 11, 11,
                            11, 11, 150, 4, 11, 4, 11, 156, 156, 189, 4,
-                           11, 11, 4, 156, 4, 11, 4, 4, 156, 11, 11, 8};
-    const int stations[33] = {78, 78, 78, 78, 78, 78, 78, 78, 78, 79,
+                           11, 11, 4, 156, 4, 11, 4, 4, 156, 11, 11, 8, 11};
+    const int stations[34] = {78, 78, 78, 78, 78, 78, 78, 78, 78, 79,
                               76, 79, 0, 79, 98, 98, 98, 56, 55, 55, 55,
-                              55, 10, 48, -1, 48, 10, 91, -1, 91, 98, 10, 10};
-    for (int step = 1; step <= 32; ++step) {
+                              55, 10, 48, -1, 48, 10, 91, -1, 91, 98, 10, 10, 30};
+    for (int step = 1; step <= 33; ++step) {
         status.currentCampaignMission = step;
         status.nextCampaignMission(true);
         assert(status.currentCampaignMission == step + 1);
@@ -180,9 +210,17 @@ int main() {
             assert(missions[0]->productionGoodsA == 164);
             assert(missions[0]->productionGoodsB == 50);
         }
+        if (step == 33) {
+            assert(ship.removedCargoIndex == 164 && ship.removedCargoAmount == 50);
+            assert(targetBlueprint.unlocked && !otherBlueprint.unlocked);
+            assert(targetBlueprint.addedItem != nullptr);
+            assert(targetBlueprint.addedItem->prototypeIndex == 164);
+            assert(targetBlueprint.addedAmount == 50 && targetBlueprint.addedStation == 10);
+        }
         delete missions[0];
         missions[0] = nullptr;
     }
     assert(ship.raceSetCount == 1);
     delete ship.added;
+    delete targetBlueprint.addedItem;
 }

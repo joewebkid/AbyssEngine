@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`Status::nextCampaignMission`, step 33).
+Original ARM32 removes cargo `(164,50)`, locates blueprint `85`,
+unlocks it, adds a catalog item `164` with arguments `(50,10)`, and
+creates campaign `Mission(11,0,30)`. Those effects are restored;
+production-source smoke covers steps 0–33 at `-O0/-O2`. Focused
+source-shape rises **12.6% -> 14.0%** and strict fuzzy **5.5% ->
+5.8%**. ARM32 **211/211**, Windows native, ARM64 static, and strict
+ARM64 shared builds pass. Raw ARM32 unresolved names remain **174**.
+Full corpus: **4,323/4,524** originals in **4,772** pairs, mean
+source-shape **96.87%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped, zero wrong-type,
+and 151 extra symbols. No exact membership changed. Live campaign
+progression remains unverified. Next: steps 34–35. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEP_33_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`Status::nextCampaignMission`, steps
 30–32). Original ARM32 assigns all three new missions to the
 campaign slot. Step 32 then calls
