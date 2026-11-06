@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PaintCanvas` identity fallbacks).
+Original Android ARM confirms `AEMath::MatrixIdentity` in the invalid
+index paths of `TransformGetLocal` and `CameraGetLocal`. The ARM32
+source now calls that typed function instead of an undefined helper.
+Both methods retain **100%** source-shape, **100%** strict fuzzy and
+linked-exact. The raw **211-object** ARM32 unmatched-symbol inventory
+falls **234 -> 233**, removing only that helper. Windows native,
+ARM64 static, ARMv7 **211/211**, and strict ARM64 shared linking pass.
+Full ARM corpus: **4,323/4,524** originals in **4,770** pairs,
+**96.81%** mean source-shape, **86.84%** strict fuzzy,
+**2,791 linked-exact**, **1,108 byte-exact**, 201 missing, zero
+skipped, zero wrong-type and no exact-match membership changes.
+Device behavior for invalid indices and full ARM32 shared linking
+remain unverified. See
+[ARM fallback evidence](PAINTCANVAS_IDENTITY_FALLBACK_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PlayerEgo` local-matrix rotation).
 Original Android ARM loads `Globals::Canvas` from its GOT entry and
 calls typed `PaintCanvas::TransformGetLocal` and

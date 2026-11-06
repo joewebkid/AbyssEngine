@@ -399,7 +399,6 @@ namespace {
 }
 
 #if __SIZEOF_POINTER__ == 4
-void MatrixIdentity(void *result, void *matrix);
 #endif
 
 void paintcanvas_ext_drawtextlines6(void *, unsigned int, void *, int, int, bool);
@@ -629,14 +628,8 @@ void *PaintCanvas::CameraGetLocal(unsigned int index) {
     if (index < this->cameras.count) {
         result = ((PCCameraView *) (this->cameras.data_)[index])->localMatrix;
     } else {
-#if __SIZEOF_POINTER__ == 8
         result = &this->identityMatrix;
         AEMath::MatrixIdentity(*static_cast<Matrix *>(result));
-#else
-        char tmp[60];
-        result = &this->identityMatrix;
-        MatrixIdentity(tmp, result);
-#endif
     }
     return result;
 }
@@ -880,14 +873,8 @@ void *PaintCanvas::TransformGetLocal(unsigned int index) {
     if (index < this->transformCount) {
         result = (this->transforms)[index];
     } else {
-#if __SIZEOF_POINTER__ == 8
         result = &this->identityMatrix;
         AEMath::MatrixIdentity(*static_cast<Matrix *>(result));
-#else
-        char tmp[60];
-        result = &this->identityMatrix;
-        MatrixIdentity(tmp, result);
-#endif
     }
     return result;
 }
