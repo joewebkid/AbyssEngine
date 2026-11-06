@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 55).
+Original Android ARM32 saves the old ship, makes template `39`,
+sets race `1`, equips items `181/52/58/83` in slots `0/0/1/2`,
+and creates campaign `Mission(4,0,102)`. The source restores this
+sequence; production-source smoke covers the campaign through step
+55 at `-O0/-O2`. Focused source-shape rises **20.4% -> 22.8%**
+while strict fuzzy falls **7.7% -> 7.1%**. ARM32 **211/211**,
+Windows native, ARM64 static, and strict ARM64 shared builds pass.
+Raw ARM32 unresolved names remain **174** with no membership change.
+Full corpus: **4,323/4,524** originals in **4,772** pairs, mean
+source-shape **96.87%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped, zero wrong-type,
+and 151 extra symbols. No exact membership changed. Live campaign
+progression remains unverified. Next: step 56. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEP_55_ARM_2026-11-07.md).
+
 Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 54).
 Original Android ARM32 marks visibility index `23`, creates
 campaign `Mission(11,0,101)`, restores the saved ship, and clears

@@ -143,14 +143,14 @@ struct Status {
 #include "status_campaign_opening_replacement_under_test.inc"
 
 int main() {
-    Item prototypes[178];
-    Item *catalog[178];
-    for (int i = 0; i != 178; ++i) {
+    Item prototypes[182];
+    Item *catalog[182];
+    for (int i = 0; i != 182; ++i) {
         prototypes[i].prototypeIndex = i;
         catalog[i] = &prototypes[i];
     }
     Array<Item *> items;
-    items.values.assign(catalog, catalog + 178);
+    items.values.assign(catalog, catalog + 182);
     Globals::items = &items;
 
     Ship shipPrototypes[42];
@@ -351,6 +351,25 @@ int main() {
     assert(status.ship == &ship && status.previousShip == nullptr);
     delete missions[0];
     missions[0] = nullptr;
+
+    status.currentCampaignMission = 55;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 56);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 4 && missions[0]->param == 0 && missions[0]->station == 102);
+    assert(status.previousShip == &ship && status.ship != &ship);
+    assert(status.ship->prototypeIndex == 39 && status.ship->madePrice == -1);
+    assert(status.ship->race == 1 && status.ship->raceSetCount == 1);
+    const int step55Indices[4] = {181, 52, 58, 83};
+    const int step55Slots[4] = {0, 0, 1, 2};
+    assert(status.ship->equipmentCalls.size() == 4);
+    for (int i = 0; i < 4; ++i) {
+        assert(status.ship->equipmentCalls[i].index == step55Indices[i]);
+        assert(status.ship->equipmentCalls[i].slot == step55Slots[i]);
+    }
+    delete missions[0];
+    missions[0] = nullptr;
+    delete status.ship;
     status.ship = nullptr;
     assert(ship.raceSetCount == 1);
     delete ship.added;
