@@ -1,5 +1,24 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`ParticleSystemManager::init`).
+Original Android ARM tail-calls `ParticleSystemManager::update(0)`
+through a veneer to its PLT entry after enabling the manager. The
+ARM32 source now uses that typed call instead of an undefined
+`_psm_firstUpdate` placeholder; the method returns `void`, consistent
+with its only recovered caller discarding the result. Focused
+source-shape and strict fuzzy rise **97.1%/88.9% -> 100%/100%**;
+the function remains non-exact due to local-branch versus PLT call
+encoding. The raw **211-object** ARM32 unmatched-symbol inventory
+falls **233 -> 232**. Windows native, ARM64 static, ARMv7 **211/211**,
+and strict ARM64 shared linking pass. Full ARM corpus:
+**4,323/4,524** originals in **4,770** pairs, **96.81%** mean
+source-shape, **86.85%** strict fuzzy, **2,791 linked-exact**,
+**1,108 byte-exact**, 201 missing, zero skipped, zero wrong-type and
+no lost exact-match pair. Live particle behavior and full ARM32
+shared linking remain unverified. Next priority: examine the four
+`Array_dtor` placeholders in `GameRecord` loading. See
+[ARM init evidence](PARTICLE_MANAGER_INIT_UPDATE_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PaintCanvas` identity fallbacks).
 Original Android ARM confirms `AEMath::MatrixIdentity` in the invalid
 index paths of `TransformGetLocal` and `CameraGetLocal`. The ARM32

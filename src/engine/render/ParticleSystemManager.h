@@ -122,7 +122,7 @@ public:
 
     int addSystem(AbyssEngine::AEMath::Matrix const *matrix, ParticleSettings::ParticleSet set, bool flag);
 
-    int init();
+    void init();
 
     void resetSystem(int handle);
 

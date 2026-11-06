@@ -13,8 +13,6 @@
 
 void _psm_constructAfterCamera(void *self);
 
-int _psm_firstUpdate(void *self, int a, int b, int c);
-
 
 ParticleSystemManager::ParticleSystemManager(
     PaintCanvas *canvas, ParticleSettings::CameraSet cameraSet, unsigned short spriteTex,
@@ -406,16 +404,11 @@ int ParticleSystemManager::addSystem(AbyssEngine::AEMath::Matrix const *matrix,
     return handle;
 }
 
-int ParticleSystemManager::init() {
+void ParticleSystemManager::init() {
     initSprites();
     initMesh();
     this->enabled = 1;
-#if __SIZEOF_POINTER__ == 8
     update(0);
-    return 0;
-#else
-    return _psm_firstUpdate(this, 0, 0, 0);
-#endif
 }
 
 void ParticleSystemManager::resetSystem(int handle) {
