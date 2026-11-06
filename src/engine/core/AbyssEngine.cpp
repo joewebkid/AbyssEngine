@@ -15,6 +15,28 @@
 #include <cstdint>
 #include <cstring>
 
+#if __SIZEOF_POINTER__ == 4
+// ARMv7 callers pass the camera's float fields as raw argument words.
+void paintcanvas_ext_camera_apply(void *canvas, unsigned int fovBits,
+                                  unsigned int nearBits, unsigned int farBits) {
+    float fov, nearPlane, farPlane;
+    std::memcpy(&fov, &fovBits, sizeof(fov));
+    std::memcpy(&nearPlane, &nearBits, sizeof(nearPlane));
+    std::memcpy(&farPlane, &farBits, sizeof(farPlane));
+    static_cast<AbyssEngine::PaintCanvas *>(canvas)->SetProjectionMatrix3d(
+        fov, nearPlane, farPlane);
+}
+
+void paintcanvas_ext_font_set_yoff(void *font, int yOffset) {
+    AbyssEngine::ImageFontSetYOffset(static_cast<AbyssEngine::ImageFont *>(font),
+                                     static_cast<short>(yOffset));
+}
+
+int paintcanvas_ext_font_get_yoff(void *font) {
+    return AbyssEngine::ImageFontGetYOffset(static_cast<AbyssEngine::ImageFont *>(font));
+}
+#endif
+
 int paintcanvas_ext_transform_tricount(AbyssEngine::PaintCanvas *canvas, void *transform) {
     return canvas->TransformGetTriCount(static_cast<AbyssEngine::Transform *>(transform));
 }

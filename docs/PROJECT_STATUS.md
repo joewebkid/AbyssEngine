@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PaintCanvas` ARM32 camera/font call
+closure). Original ARM tail veneers identify `SetProjectionMatrix3d`
+and `ImageFontSetYOffset`/`ImageFontGetYOffset` as the three targets.
+ARM32-only ABI bridges now make those previously undefined calls
+functional while preserving the three callers' **100% source-shape**,
+**100% strict fuzzy**, and linked-exact results. ARMv7 **211/211**,
+Windows native, ARM64 static, and strict ARM64 shared builds pass.
+Raw ARM32 unresolved names fall **195 -> 192**. Full corpus:
+**4,323/4,524** originals in **4,772** pairs, mean source-shape
+**96.83%**, strict fuzzy **86.91%**, **2,798 linked-exact**,
+**1,113 byte-exact**, 201 missing, zero skipped, zero wrong-type.
+Exact membership is unchanged. Extra symbols rise **149 -> 152**,
+exactly the three bridge names. Live ARM32 camera/font behavior and
+full ARM32 shared linking remain unverified. Next priority:
+remaining gameplay-specific ARM32 placeholders. See
+[ARM camera/font bridge evidence](PAINTCANVAS_CAMERA_FONT_ARM32_BRIDGES_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PaintCanvas` transform picking).
 REA/IDA and original ARM show the index and recursive overloads
 inverse-transform `(x, y, z)`, preserve the original shift, test
