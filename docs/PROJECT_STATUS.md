@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`KIPlayer` engine sound). The original
+ARM32 branches from four `KIPlayer` methods to the corresponding
+`Player` sound methods. The ARM32 source now makes those calls
+directly and removes four undefined stand-ins. Focused ARMv7 retains
+**100%** source-shape and strict fuzzy and linked-exact for all four.
+ARMv7 **211/211**, Windows native, ARM64 static, and strict ARM64
+shared builds pass. Raw ARM32 unresolved names fall **178 -> 174**.
+Full corpus: **4,323/4,524** originals in **4,772** pairs, mean
+source-shape **96.87%**, strict fuzzy **86.97%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped, zero wrong-type, and
+151 extra symbols. No exact membership changed. Full ARM32 shared
+linking and live audio remain unverified. Next source recovery
+priority: low-shape mission target-name setters. See
+[ARM KIPlayer evidence](KIPLAYER_ENGINE_SOUND_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`FModSound` music fade and event stop).
 Original ARM32 tail-calls `setParamValue` for `fadeOutNow` and
 `FMOD::Event::stop(false)` for a live event; two undefined stand-ins
