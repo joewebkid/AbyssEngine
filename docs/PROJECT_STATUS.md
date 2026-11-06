@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PlayerEgo::setShip` tractor-beam
+construction). Original Android ARM allocates 28 bytes, calls the
+typed `TractorBeam(AEGeometry *, int)` constructor, and stores the
+pointer in the ship object. The ARM32 source now performs that
+sequence instead of calling an undefined helper. Focused source-shape
+rises **97.8% -> 98.4%**, strict fuzzy **79.2% -> 83.4%**; the large
+function remains non-exact. The raw **211-object** ARM32
+unmatched-symbol inventory falls **238 -> 237** with no new name.
+Windows native, ARM64 static, ARMv7 **211/211**, and strict ARM64
+shared linking pass. Full ARM corpus: **4,323/4,524** originals in
+**4,770** pairs, **96.80%** mean source-shape, **86.83%** strict
+fuzzy, **2,789 linked-exact**, **1,108 byte-exact**, 201 missing,
+zero skipped, zero wrong-type and no lost exact-match pair. Device
+equipment behavior and full ARM32 shared linking remain unverified.
+Next priority: verify the two `PlayEngineSound_` calls in
+`PlayerEgo::dockToDockingPoint` against original ARM. See
+[ARM tractor evidence](PLAYER_SET_SHIP_TRACTOR_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-05 (`SetProjOrthoMatrix` projection call).
 Original Android ARM invokes `PaintCanvas::SetProjectionMatrix3d`
 from this method; the ARM32 source now uses that typed target instead

@@ -240,16 +240,6 @@ void PlayEngineSound_(PlayerEgo * self);
 
 void Mat_mul(void *out, const void *a, const void *b);
 
-#if __SIZEOF_POINTER__ == 8
-static inline void *TractorBeam_new(void *geo, int kind) {
-    return new TractorBeam(static_cast<AEGeometry *>(geo), kind);
-}
-#else
-void *TractorBeam_new(void *geo, int kind);
-#endif
-
-
-
 void MatrixGetPosition(void *, void *);
 
 void PlayerEgo::setVisible(bool v) {
@@ -3895,7 +3885,7 @@ void PlayerEgo::setShip(int race, int group) {
         void *it = (void *) ((Ship *) (PE_status()->getShip()))->getFirstEquipmentOfSort(0xd);
         int idx = ((Item *) (it))->getIndex();
         int kind = (idx < 0x48) ? idx - 0x44 : 3;
-        void *tb = TractorBeam_new(this->geometry, kind);
+        void *tb = new TractorBeam(this->geometry, kind);
         this->tractorBeam = tb;
         Globals::gGlobals->addSoundResourceToList(0x0);
         Globals::gGlobals->addSoundResourceToList(0x4);
