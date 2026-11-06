@@ -1244,6 +1244,18 @@ void Status::nextCampaignMission(bool advance) {
         Globals::status->ship->setEquipment((*items)[52]->makeItem(), 0);
         Globals::status->ship->setEquipment((*items)[58]->makeItem(), 1);
         Globals::status->ship->setEquipment((*items)[83]->makeItem(), 2);
+    } else if (step == 58) {
+        delete Globals::status->field_90;
+        Globals::status->field_90 = new Array<int>();
+        ArraySetLength(3, *Globals::status->field_90);
+        (*Globals::status->field_90)[0] = 56;
+        (*Globals::status->field_90)[1] = 45;
+        (*Globals::status->field_90)[2] = 22;
+        for (unsigned i = 0; i < this->bluePrints->size(); ++i) {
+            BluePrint *bp = (*this->bluePrints)[i];
+            if (bp->getIndex() == 179)
+                bp->lock();
+        }
     }
 
     Mission *tailMission;
@@ -1290,6 +1302,9 @@ void Status::nextCampaignMission(bool advance) {
                 }
                 setShip(getPreviousShip());
                 setPreviousShip(nullptr);
+            } else if (step == 58) {
+                (*missions)[0]->setStatusValue(0);
+                Globals::status->field_10c = 0;
             }
             return;
         }

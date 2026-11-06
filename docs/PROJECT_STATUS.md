@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 58).
+Original Android ARM32 replaces the route-state array with
+`[56,45,22]`, locks every blueprint with index `179`, creates
+campaign `Mission(163,0,101)` with status value `0`, and clears
+`field_10c`. The source restores this sequence; production-source
+smoke covers the campaign through step 58 at `-O0/-O2`. Focused
+source-shape rises **23.9% -> 26.0%** and strict fuzzy **8.9% ->
+9.2%**. ARM32 **211/211**, Windows native, ARM64 static, and strict
+ARM64 shared builds pass. Raw ARM32 unresolved names remain **174**
+with no membership change. Full corpus: **4,323/4,524** originals
+in **4,772** pairs, mean source-shape **96.88%**, strict fuzzy
+**86.98%**, **2,802 linked-exact**, **1,116 byte-exact**, 201 missing,
+zero skipped, zero wrong-type, and 151 extra symbols. No exact
+membership changed. Live campaign progression remains unverified.
+Next: step 59. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEP_58_ARM_2026-11-07.md).
+
 Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, steps
 56–57). Original Android ARM32 creates campaign
 `Mission(11,150000,101)` at step 56. At step 57 it creates campaign

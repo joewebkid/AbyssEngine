@@ -11,6 +11,9 @@ template <typename T> struct Array {
 template <typename T> void ArrayAdd(T value, Array<T> &array) {
     array.values.push_back(value);
 }
+template <typename T> void ArraySetLength(unsigned count, Array<T> &array) {
+    array.values.resize(count);
+}
 
 struct Mission {
     int type;
@@ -47,11 +50,13 @@ struct Item {
 struct BluePrint {
     int index = -1;
     bool unlocked = false;
+    bool locked = false;
     Item *addedItem = nullptr;
     int addedAmount = -1;
     int addedStation = -1;
     int getIndex() { return index; }
     void unlock() { unlocked = true; }
+    void lock() { locked = true; }
     void addItem(Item *item, int amount, int station) {
         addedItem = item;
         addedAmount = amount;
@@ -120,9 +125,11 @@ struct Status {
     int field_0x30 = -1;
     int field_7c = -1;
     int field_80 = -1;
+    int field_10c = -1;
     unsigned char field_0x17c = 0;
     Array<bool> *systemVisibilities = nullptr;
     Array<BluePrint *> *bluePrints = nullptr;
+    Array<int> *field_90 = nullptr;
     Ship *ship = nullptr;
     Ship *previousShip = nullptr;
     Mission *mission = nullptr;
@@ -402,6 +409,25 @@ int main() {
     assert(status.previousShip == nullptr && missions[0]->productionGoodsA == 179);
     delete missions[0];
     missions[0] = nullptr;
+
+    BluePrint secondProductionBlueprint;
+    secondProductionBlueprint.index = 179;
+    blueprints.values.push_back(&productionBlueprint);
+    blueprints.values.push_back(&secondProductionBlueprint);
+    status.field_90 = new Array<int>();
+    status.field_90->values = {-1};
+    status.field_10c = 123;
+    status.currentCampaignMission = 58;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 59);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 163 && missions[0]->param == 0 && missions[0]->station == 101);
+    assert(missions[0]->statusValue == 0 && status.field_10c == 0);
+    assert(status.field_90->values == std::vector<int>({56, 45, 22}));
+    assert(productionBlueprint.locked && secondProductionBlueprint.locked);
+    delete missions[0];
+    missions[0] = nullptr;
+    delete status.field_90;
 
     status.ship = nullptr;
     assert(ship.raceSetCount == 1);
