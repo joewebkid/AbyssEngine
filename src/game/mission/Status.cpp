@@ -1263,6 +1263,10 @@ void Status::nextCampaignMission(bool advance) {
         setCampaignMission(m);
         m->setStatusValue(previousStatus > 0);
         return;
+    } else if (step == 61) {
+        (*this->systemVisibilities)[22] = true;
+    } else if (step == 62) {
+        (*this->systemVisibilities)[24] = true;
     }
 
     Mission *tailMission;

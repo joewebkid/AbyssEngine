@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, steps
+61–62). Original Android ARM32 sets system visibility index `22`
+before ordinary `Mission(11,0,100)` at step 61 and index `24`
+before ordinary `Mission(4,0,103)` at step 62. The source restores
+both visibility writes; production-source smoke covers the campaign
+through step 62 at `-O0/-O2`. Focused source-shape rises **27.1% ->
+27.3%** while strict fuzzy falls **9.6% -> 7.5%**. ARM32 **211/211**,
+Windows native, ARM64 static, and strict ARM64 shared builds pass.
+Raw ARM32 unresolved names remain **174** with no membership change.
+Full corpus: **4,323/4,524** originals in **4,772** pairs, mean
+source-shape **96.88%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped, zero wrong-type,
+and 151 extra symbols. No exact membership changed. Live campaign
+progression remains unverified. Steps 63–65 already match their
+ordinary mission tuples; next: step 66's equipment changes. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEPS_61_62_ARM_2026-11-07.md).
+
 Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 59).
 Original Android ARM32 reads the previous mission's status value,
 sets the next campaign mission's amount to `(value + 1) * 50000`,

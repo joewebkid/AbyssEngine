@@ -174,7 +174,7 @@ int main() {
     Array<Mission *> missions;
     missions.values.resize(2);
     Array<bool> visibilities;
-    visibilities.values.resize(24);
+    visibilities.values.resize(34);
     BluePrint otherBlueprint;
     otherBlueprint.index = 84;
     BluePrint targetBlueprint;
@@ -455,6 +455,20 @@ int main() {
     assert(missions[0]->param == 0 && missions[0]->statusValue == 0);
     delete missions[0];
     missions[0] = nullptr;
+
+    assert(!visibilities[22] && !visibilities[24]);
+    for (int step = 60; step <= 62; ++step) {
+        status.currentCampaignMission = step;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == step + 1);
+        assert(missions[0] != nullptr && !missions[0]->campaign);
+        assert(missions[0]->type == (step == 62 ? 4 : step == 60 ? 164 : 11));
+        assert(missions[0]->param == 0 && missions[0]->station == (step == 62 ? 103 : step == 60 ? 101 : 100));
+        assert(visibilities[22] == (step >= 61));
+        assert(visibilities[24] == (step >= 62));
+        delete missions[0];
+        missions[0] = nullptr;
+    }
     delete status.field_90;
 
     status.ship = nullptr;
