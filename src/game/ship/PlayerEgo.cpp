@@ -148,22 +148,6 @@ static inline Status *PE_status() { return Status::gStatus; }
 
 
 #if __SIZEOF_POINTER__ == 8
-static inline void stopShooting_extA(void *player, int slot) {
-    static_cast<Player *>(player)->stopShooting(slot);
-}
-
-static inline void stopShooting_extB(void *player, int slot, int channel) {
-    static_cast<Player *>(player)->stopShooting(slot, channel);
-}
-#else
-void stopShooting_extA(void *, int);
-
-void stopShooting_extB(void *, int, int);
-#endif
-
-
-
-#if __SIZEOF_POINTER__ == 8
 static inline int aeabi_idiv_(int a, int b) { return a / b; }
 #else
 int aeabi_idiv_(int a, int b);
@@ -1073,16 +1057,16 @@ void PlayerEgo::pitchAllPrimaryGuns(float) {
 
 void PlayerEgo::stopShooting(int param) {
     if (this->turretActive != 0) {
-        stopShooting_extA(this->player, 2);
+        static_cast<Player *>(this->player)->stopShooting(2);
         return;
     }
     if (((PlayerEgo *) (this))->isDead() != 0) return;
-    void *p = this->player;
+    Player *p = static_cast<Player *>(this->player);
     if (param == 1) {
-        stopShooting_extB(p, 1, this->currentSecondaryWeaponIndex);
+        p->stopShooting(1, this->currentSecondaryWeaponIndex);
         return;
     }
-    stopShooting_extA(p, param);
+    p->stopShooting(param);
 }
 
 

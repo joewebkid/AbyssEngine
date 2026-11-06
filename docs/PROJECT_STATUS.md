@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PlayerEgo::stopShooting`). Original ARM
+tail veneers identify the single-slot and slot-plus-channel
+`Player::stopShooting` overloads. Direct typed calls replace two
+undefined ARM32 stand-ins while preserving the original branches.
+Target source-shape stays **100.0%**, strict fuzzy **95.8%**, still
+non-exact. ARMv7 **211/211**, Windows native, ARM64 static, and strict
+ARM64 shared builds pass. Raw ARM32 unresolved names fall **191 ->
+189**. Full corpus: **4,323/4,524** originals in **4,772** pairs,
+mean source-shape **96.83%**, strict fuzzy **86.93%**,
+**2,798 linked-exact**, **1,113 byte-exact**, 201 missing, zero
+skipped, zero wrong-type, and 152 extra symbols. Exact membership is
+unchanged. Live weapon-stop behavior and full ARM32 shared linking
+remain unverified. Next priority: remaining gameplay-specific ARM32
+placeholders, including movement division and UI sine. See
+[ARM stop-shooting evidence](PLAYER_EGO_STOP_SHOOTING_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PlayerEgo::shoot`). Original ARM uses
 `AEMath::operator*` for turret matrices and three distinct
 `Player::shoot` overloads. The source used an undefined matrix
