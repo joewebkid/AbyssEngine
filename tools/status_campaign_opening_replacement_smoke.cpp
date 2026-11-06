@@ -132,6 +132,7 @@ struct Status {
         (*missions)[0] = value;
     }
     void setPreviousShip(Ship *value) { previousShip = value; }
+    Ship *getPreviousShip() const { return previousShip; }
     void setShip(Ship *value) {
         if (ship != nullptr) delete ship;
         ship = value;
@@ -165,7 +166,7 @@ int main() {
     Array<Mission *> missions;
     missions.values.resize(2);
     Array<bool> visibilities;
-    visibilities.values.resize(7);
+    visibilities.values.resize(24);
     BluePrint otherBlueprint;
     otherBlueprint.index = 84;
     BluePrint targetBlueprint;
@@ -340,7 +341,16 @@ int main() {
     assert(status.credits == 0 && missions[0] != nullptr && !missions[0]->visible);
     delete missions[0];
     missions[0] = nullptr;
-    delete status.ship;
+
+    assert(!visibilities[23] && status.previousShip == &ship && status.ship != &ship);
+    status.currentCampaignMission = 54;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 55 && visibilities[23]);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 0 && missions[0]->station == 101);
+    assert(status.ship == &ship && status.previousShip == nullptr);
+    delete missions[0];
+    missions[0] = nullptr;
     status.ship = nullptr;
     assert(ship.raceSetCount == 1);
     delete ship.added;

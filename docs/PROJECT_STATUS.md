@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 54).
+Original Android ARM32 marks visibility index `23`, creates
+campaign `Mission(11,0,101)`, restores the saved ship, and clears
+the saved pointer. The source restores those effects;
+production-source smoke covers the sequence through step 54 at
+`-O0/-O2`. Focused source-shape rises **19.6% -> 20.4%** and
+strict fuzzy **6.5% -> 7.7%**. ARM32 **211/211**, Windows native,
+ARM64 static, and strict ARM64 shared builds pass. Raw ARM32
+unresolved names remain **174** with no membership change. Full
+corpus: **4,323/4,524** originals in **4,772** pairs, mean
+source-shape **96.87%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped, zero wrong-type,
+and 151 extra symbols. No exact membership changed. Live campaign
+progression remains unverified. Next: step 55. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEP_54_ARM_2026-11-07.md).
+
 Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, steps
 49–53). Original Android ARM32 creates campaign missions
 `(156,0,62)`, `(156,0,25)`, and `(160,0,25)` at steps 49–51;

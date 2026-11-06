@@ -1231,6 +1231,8 @@ void Status::nextCampaignMission(bool advance) {
         Globals::status->ship->setEquipment((*items)[58]->makeItem(), 0);
         Globals::status->ship->setEquipment((*items)[83]->makeItem(), 1);
         Globals::status->ship->setEquipment((*items)[52]->makeItem(), 2);
+    } else if (step == 54) {
+        (*this->systemVisibilities)[23] = true;
     }
 
     Mission *tailMission;
@@ -1261,6 +1263,9 @@ void Status::nextCampaignMission(bool advance) {
                 (*missions)[0]->setVisible(false);
                 int32_t credited = static_cast<int32_t>(static_cast<uint32_t>(credits) + 40000u);
                 credits = credited & ~(credited >> 31);
+            } else if (step == 54) {
+                setShip(getPreviousShip());
+                setPreviousShip(nullptr);
             }
             return;
         }
