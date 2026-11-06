@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (cropped `PaintCanvas::DrawRegion2D`).
+Original ARM writes a zero to the twelfth vertex-position float and
+composes `T(position+pivot) * R(angle) * T(-pivot)` through two matrix
+multiplications. The source left that vertex component stale and
+flattened the matrix sequence; both are restored. Target source-shape
+rises **74.2% -> 90.4%**, strict fuzzy **19.1% -> 31.5%**, still
+non-exact. ARMv7 **211/211**, Windows native, ARM64 static, and strict
+ARM64 shared builds pass. Raw ARM32 unresolved names stay **213**.
+Full corpus: **4,323/4,524** originals in **4,772** pairs, mean
+source-shape **96.82%** (from 96.81%), strict fuzzy **86.89%** (from
+86.88%), **2,798 linked-exact**, **1,113 byte-exact**, 201 missing,
+zero skipped, zero wrong-type, and 149 extra symbols. Exact membership
+is unchanged. Live cropped-region rendering and full ARM32 shared
+linking remain unverified. Next priority: confirm remaining math and
+GL call targets in `PaintCanvas::SetProjectionMatrix3d`. See
+[ARM cropped-region evidence](PAINTCANVAS_DRAW_REGION_2D_CROP_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PaintCanvas::DrawRegion2D` coordinates).
 Original ARM passes the float angle directly to `Sinf/Cosf` and
 constructs local translation from the negative scaled pivot, then

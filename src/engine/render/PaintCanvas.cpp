@@ -4029,6 +4029,7 @@ void PaintCanvas::DrawRegion2D(unsigned int index, int srcX, int srcY,
     verts[8] = 0.0f;
     verts[9] = 0.0f;
     verts[10] = fh;
+    verts[11] = 0.0f;
 
     float u0 = (float) mesh->regionB;
     float w = (float) mesh->regionA;
@@ -4059,18 +4060,29 @@ void PaintCanvas::DrawRegion2D(unsigned int index, int srcX, int srcY,
     blend[1] = 1;
     blend[2] = 0x20003;
 
-    const float px = (float) pivotX;
-    const float py = (float) pivotY;
     const float tx = (float) (x + pivotX);
     const float ty = (float) (y + pivotY);
+    const float negpx = (float) (-pivotX);
+    const float negpy = (float) (-pivotY);
     const float s = AEMath::Sinf(angle);
     const float c = AEMath::Cosf(angle);
-    // Android 0x78538 composes T(x+pivot) * R(angle) * T(-pivot).
-    const Matrix composed(
-        c, -s, 0.0f, tx - c * px + s * py,
-        s, c, 0.0f, ty - s * px - c * py,
+    const Matrix unpivot(
+        1.0f, 0.0f, 0.0f, negpx,
+        0.0f, 1.0f, 0.0f, negpy,
         0.0f, 0.0f, 1.0f, 0.0f,
         1.0f, 1.0f, 1.0f);
+    const Matrix rotation(
+        c, -s, 0.0f, 0.0f,
+        s, c, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 1.0f);
+    const Matrix position(
+        1.0f, 0.0f, 0.0f, tx,
+        0.0f, 1.0f, 0.0f, ty,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 1.0f);
+    Matrix composed = rotation * unpivot;
+    composed = position * composed;
 
     this->SetWorldViewMatrix(composed);
     glDisable(0xb44);
