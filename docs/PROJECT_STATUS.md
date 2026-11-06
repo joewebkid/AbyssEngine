@@ -1,5 +1,19 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`Layout::getPulseValue`). Both original
+ARM32 calls at `0xd4c18` and `0xd4c34` target
+`AbyssEngine::AEMath::Sinf`. The source now uses that real target for
+both evaluations, removing its undefined ARM32 `Sinf` stand-in.
+Focused source-shape remains **97.0%**, strict fuzzy **83.6%**, and
+non-exact. ARMv7 **211/211**, Windows native, ARM64 static, and strict
+ARM64 shared builds pass. Raw ARM32 unresolved names fall **188 ->
+187**. Full corpus remains **4,323/4,524** originals in **4,772**
+pairs, mean source-shape **96.83%**, strict fuzzy **86.93%**,
+**2,798 linked-exact**, **1,113 byte-exact**, 201 missing, zero
+skipped, zero wrong-type, and 152 extra symbols. Exact membership is
+unchanged. Live UI behavior and full ARM32 shared linking remain
+unverified. See [ARM pulse sine evidence](LAYOUT_PULSE_SINE_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PlayerEgo` ARM32 movement division).
 Original ARM calls `__aeabi_idiv` with divisor 63 in `right`,
 `left`, `down`, and `up`; the source called an undefined C++

@@ -66,16 +66,10 @@ int Layout::OnTouchBegin(int x, int y) {
     return btn->OnTouchBegin(x, y);
 }
 
-#if __SIZEOF_POINTER__ == 8
-static inline float Sinf(float value) { return AbyssEngine::AEMath::Sinf(value); }
-#else
-float Sinf(float);
-#endif
-
 float Layout::getPulseValue(float speed) {
     Status *status = Status::gStatus;
-    float a = Sinf((float) status->getPlayingTime() * speed);
-    float b = Sinf((float) status->getPlayingTime() * speed);
+    float a = AbyssEngine::AEMath::Sinf((float) status->getPlayingTime() * speed);
+    float b = AbyssEngine::AEMath::Sinf((float) status->getPlayingTime() * speed);
     return a > 0.0f ? b : -b;
 }
 
