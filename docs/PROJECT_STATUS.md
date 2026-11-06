@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`PlayerEgo::update` auto-turret time gate).
+Original Android ARM reads the signed 64-bit `LevelScript::scriptTime`
+at `+0x08` only when the market-system byte at `PlayerEgo+0x354`
+is set, and skips auto-turret work below **10,000**. This missing
+condition is restored. Focused `update` source-shape/strict fuzzy
+rise **90.1%/25.1% -> 90.3%/30.1%**, still non-exact. ARMv7
+**211/211**, Windows native, ARM64 static and strict ARM64 shared
+linking pass. The raw **211-object** ARM32 unmatched-symbol inventory
+stays **229**, with no new name. Full ARM corpus: **4,323/4,524**
+originals in **4,772** pairs, **96.81%** mean source-shape,
+**86.88%** strict fuzzy, **2,799 linked-exact**, **1,113 byte-exact**,
+201 missing, zero skipped, zero wrong-type and no lost exact-match
+pair. Live auto-turret behavior and full ARM32 shared linking remain
+unverified. Next priority: recover the crosshair coordinate sources
+in `PlayerEgo::draw`, which still uses null pointer placeholders.
+See [ARM time-gate evidence](PLAYER_AUTOTURRET_SCRIPT_TIME_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PlayerEgo` adjacent state bytes).
 Original Android ARM distinguishes the market-system byte at
 `PlayerEgo+0x354`, auto-turret enabled at `+0x355`, and docking-point

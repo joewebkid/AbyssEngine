@@ -2654,7 +2654,6 @@ void PlayerEgo::draw(bool allowHud) {
 // IDA 0x9ce38: _ZN9PlayerEgo6updateEiP5RadarP3HudP5RadioP11LevelScriptibi
 void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript *script, int arg5, bool arg6,
                        int arg7) {
-    (void) script;
     (void) arg5;
 
     if (((void *&) this->hud) == 0)
@@ -3150,7 +3149,8 @@ void PlayerEgo::update(int dt, Radar *radar, Hud *hud, Radio *radio, LevelScript
         && this->turretActive == 0 && (((uint32_t &) this->dockingPointIndex) | 1) != 3)
         ((PlayerEgo *) (this))->updateManeuver();
 
-    if (this->autoTurretEquipped != 0 && this->autoTurretEnabled != 0) {
+    if (this->autoTurretEquipped != 0 && this->autoTurretEnabled != 0
+        && (this->field_0x354 == 0 || script->scriptTime >= 10000)) {
         if (((PlayerEgo *) (this))->isDead() == 0) {
             ((PlayerEgo *) (this))->handleAutoTurret(dt);
         } else {
