@@ -11,9 +11,6 @@
 #include "engine/render/PaintCanvas.h"
 #include "engine/render/ParticleSettingsRef.h"
 
-void _psm_constructAfterCamera(void *self);
-
-
 ParticleSystemManager::ParticleSystemManager(
     PaintCanvas *canvas, ParticleSettings::CameraSet cameraSet, unsigned short spriteTex,
     bool spriteFlag, unsigned short meshTex, bool meshFlag) {
@@ -183,7 +180,7 @@ void ParticleSystemManager::cameraToggle(ParticleSettings::CameraSet cam) {
         return;
     this->cameraSet = cam;
     releaseSprites();
-    _psm_constructAfterCamera(this);
+    initSprites();
 }
 
 unsigned int ParticleSystemManager::addMeshSystem(AbyssEngine::AEMath::Matrix const *matrix,

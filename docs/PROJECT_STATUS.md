@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`ParticleSystemManager::cameraToggle` and
+`String::PrintOut` call targets). Original Android ARM confirms that
+camera changes release and reinitialize sprite resources and that
+`PrintOut` frees the buffer returned by `GetAEChar`. Both undefined
+placeholder calls are replaced with the confirmed targets. ARMv7
+**211/211**, Windows native, ARM64 static, and strict ARM64 shared
+builds pass; raw ARM32 unresolved names fall **229 -> 227**. The full
+corpus still compares **4,323/4,524** originals in **4,772** pairs,
+with **96.81%** mean source-shape, **86.88%** strict fuzzy,
+**2,798 linked-exact**, **1,113 byte-exact**, 201 missing, zero
+skipped, zero wrong-type, and 149 extra symbols. The sole lost
+linked-exact flag is `cameraToggle`: its old, incorrect call target
+was hidden by relocation masking. No byte-exact pair is lost. Live
+behavior and full ARM32 shared linking remain unverified. Next
+priority: audit the remaining placeholder call targets by PLT and
+relocation evidence. See [ARM call-target evidence](PARTICLE_CAMERA_STRING_PRINT_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`PlayerEgo::draw` reticle coordinates).
 Original Android ARM loads one static `PlayerEgo::crosshairPos`
 through GOT slot `0x21027c` in all four `DrawImage2D` paths. The

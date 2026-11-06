@@ -4,8 +4,6 @@
 #include <cstdlib>
 #include <cstring>
 
-void String_printImpl(const char *s);
-
 namespace AbyssEngine {
     unsigned short *computeFloatString(float value, int precision,
                                        int *exponentOut, int *negativeOut, int mode);
@@ -647,8 +645,8 @@ String::operator const unsigned short *() const {
 }
 
 void String::PrintOut() {
-    char *bytes = ((String *) (this))->GetAEChar();
-    String_printImpl(bytes);
+    char *bytes = GetAEChar();
+    delete[] bytes;
 }
 
 String::String() : data(nullptr), length(0) {
