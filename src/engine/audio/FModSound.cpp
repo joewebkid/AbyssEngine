@@ -642,85 +642,106 @@ int FModSound::pause(FMOD::Event *e) {
 }
 
 FMOD::Event *FModSound::updateEvent3DAttributes(FMOD::Event *event, int idx, Vector *pos, Vector *vel, bool restart) {
-    if (this->project == 0 || this->categoryEnabled[0] == 0)
+#if defined(GOF2_ARM64_SILENT_AUDIO)
+    (void) idx;
+    (void) pos;
+    (void) vel;
+    (void) restart;
+    return event;
+#else
+    if (this->project == nullptr || this->categoryEnabled[0] == 0)
         return event;
 
-    int category = (event == 0) ? 0x24 : FMOD_Event_getCategory(event);
+    FMOD::EventCategory *category = nullptr;
+    int categoryIndex = 0;
+    char *categoryName = nullptr;
 
-    if (event == 0 || category == 0x24) {
-        FMOD::Event *ev = 0;
-        if (FMOD_EventSystem_getEventBySystemID((unsigned int) (uintptr_t) this->system,
-                                                idx, &ev) != 0)
-            return event;
-        if (FMOD_Event_getCategory(ev) != 0)
-            return event;
-        if (this->categoryEnabled[idx + 1] == 0)
-            return event;
+    if (event != nullptr) {
+        FMOD_RESULT result = event->getCategory(&category);
+        if (result != FMOD_ERR_INVALID_HANDLE) {
+            if (result != FMOD_OK)
+                return nullptr;
+            if (category->getInfo(&categoryIndex, &categoryName) != FMOD_OK)
+                return event;
+            if (this->categoryEnabled[categoryIndex + 1] == 0)
+                return event;
 
-        Vector *posPtr = 0;
-        Vector *velPtr = 0;
-        bool havePos = false;
-        if (pos != 0) {
-            if (this->eventPos == 0)
-                this->eventPos = new Vector();
-            *this->eventPos = *pos;
-            posPtr = this->eventPos;
-            havePos = true;
-        }
-        if (vel != 0) {
-            if (this->eventVel == 0)
-                this->eventVel = new Vector();
-            *this->eventVel = *vel;
-            velPtr = this->eventVel;
-            posPtr = havePos ? this->eventPos : 0;
-        } else if (!havePos) {
-            return event;
-        } else {
-            posPtr = this->eventPos;
-        }
+            bool havePos = false;
+            bool haveVel = false;
+            if (pos != nullptr) {
+                if (this->eventPos == nullptr)
+                    this->eventPos = new Vector();
+                *this->eventPos = *pos;
+                havePos = true;
+            }
+            if (vel != nullptr) {
+                if (this->eventVel == nullptr)
+                    this->eventVel = new Vector();
+                *this->eventVel = *vel;
+                haveVel = true;
+            }
+            if (!havePos && !haveVel)
+                return nullptr;
 
-        if (FMOD_Event_set3DAttributes(ev, posPtr, velPtr) == 0) {
-            FMOD::Event *dummy = 0;
-            if (FMOD_EventSystem_getEventBySystemID(
-                    (unsigned int) (uintptr_t) this->system, idx, &dummy) == 0)
-                FMOD_Event_start(ev);
+            const FMOD_VECTOR *eventPosition = havePos
+                    ? reinterpret_cast<const FMOD_VECTOR *>(this->eventPos) : nullptr;
+            const FMOD_VECTOR *eventVelocity = haveVel
+                    ? reinterpret_cast<const FMOD_VECTOR *>(this->eventVel) : nullptr;
+            if (event->set3DAttributes(eventPosition, eventVelocity, nullptr) != FMOD_OK)
+                return nullptr;
+            if (restart) {
+                unsigned state = 0;
+                event->getState(&state);
+                if ((state & 8u) != 0)
+                    event->stop(true);
+                event->start();
+            }
+            return event;
         }
-        return ev;
     }
 
-    if (this->categoryEnabled[idx + 1] == 0)
-        return event;
+    FMOD::Event *info = nullptr;
+    if (this->system->getEventBySystemID(
+            idx, FMOD_EVENT_INFOONLY, &info) != FMOD_OK)
+        return nullptr;
+    if (info->getCategory(&category) != FMOD_OK)
+        return nullptr;
+    if (category->getInfo(&categoryIndex, &categoryName) != FMOD_OK)
+        return nullptr;
+    if (this->categoryEnabled[categoryIndex + 1] == 0)
+        return nullptr;
 
-    Vector *posPtr = 0;
-    Vector *velPtr = 0;
     bool havePos = false;
-    if (pos != 0) {
-        if (this->eventPos == 0)
+    bool haveVel = false;
+    if (pos != nullptr) {
+        if (this->eventPos == nullptr)
             this->eventPos = new Vector();
         *this->eventPos = *pos;
-        posPtr = this->eventPos;
         havePos = true;
     }
-    if (vel != 0) {
-        if (this->eventVel == 0)
+    if (vel != nullptr) {
+        if (this->eventVel == nullptr)
             this->eventVel = new Vector();
         *this->eventVel = *vel;
-        velPtr = this->eventVel;
-        posPtr = havePos ? this->eventPos : 0;
-    } else if (!havePos) {
-        return event;
-    } else {
-        posPtr = this->eventPos;
+        haveVel = true;
     }
+    if (!havePos && !haveVel)
+        return nullptr;
 
-    if (FMOD_Event_set3DAttributes(event, posPtr, velPtr) == 0 && restart) {
-        unsigned int state = 0;
-        FMOD_Event_getState(event, &state);
-        if ((int) (state << 0x1c) < 0)
-            FMOD_Event_stop(event, false);
-        FMOD_Event_start(event);
-    }
-    return event;
+    const FMOD_VECTOR *eventPosition = havePos
+            ? reinterpret_cast<const FMOD_VECTOR *>(this->eventPos) : nullptr;
+    const FMOD_VECTOR *eventVelocity = haveVel
+            ? reinterpret_cast<const FMOD_VECTOR *>(this->eventVel) : nullptr;
+    if (info->set3DAttributes(eventPosition, eventVelocity, nullptr) != FMOD_OK)
+        return nullptr;
+
+    FMOD::Event *ready = nullptr;
+    if (this->system->getEventBySystemID(
+            idx, FMOD_EVENT_DEFAULT, &ready) != FMOD_OK)
+        return nullptr;
+    ready->start();
+    return ready;
+#endif
 }
 
 void FModSound::pauseAllPlayingSoundFXEvents() {

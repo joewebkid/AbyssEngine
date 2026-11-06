@@ -1,5 +1,26 @@
 # Project Status
 
+Last reviewed: 2026-11-06 (`FModSound::updateEvent3DAttributes`).
+Original ARM32 retries an invalid event handle through FMOD's
+information-only lookup (mode `0x4`), checks the actual category
+index, updates 3D attributes, then obtains and starts the normal
+event (mode `0`). The previous source omitted lookup modes, indexed
+category flags by event ID, and could return the wrong event. These
+paths and the existing-event restart are restored. Target
+source-shape rises **79.7% -> 87.0%**, strict fuzzy **29.3% ->
+43.8%**, still non-exact. ARMv7 **211/211**, Windows native, ARM64
+static, and strict ARM64 shared builds pass; silent ARM64 returns the
+input event without FMOD calls. Raw ARM32 unresolved names rise **185
+-> 187** because two real FMOD methods, both exported by the original
+`libfmodevent.so`, replace inline placeholder behavior. Full corpus:
+**4,323/4,524** originals in **4,772** pairs, mean source-shape
+**96.84%** (from **96.83%**), strict fuzzy **86.94%**,
+**2,798 linked-exact**, **1,113 byte-exact**, 201 missing, zero
+skipped, zero wrong-type, and 152 extra symbols. Exact membership is
+unchanged. Live event behavior and full ARM32 shared linking remain
+unverified. Next priority: `FModSound::play` event lookup and category
+handling. See [ARM event lookup evidence](FMOD_EVENT_LOOKUP_ARM_2026-11-06.md).
+
 Last reviewed: 2026-11-06 (`FModSound::updateAll` and `play`).
 Original ARM32 passes listener position, up, velocity, and forward
 vectors in that ABI order to FMOD and releases finished events through
