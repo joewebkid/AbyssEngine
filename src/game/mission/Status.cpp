@@ -1267,6 +1267,8 @@ void Status::nextCampaignMission(bool advance) {
         (*this->systemVisibilities)[22] = true;
     } else if (step == 62) {
         (*this->systemVisibilities)[24] = true;
+    } else if (step == 68) {
+        Globals::status->ship->removeCargo(175);
     }
 
     Mission *tailMission;
@@ -1322,6 +1324,8 @@ void Status::nextCampaignMission(bool advance) {
                 Globals::status->station->addItem((*items)[60]->makeItem(5, 0));
                 Globals::status->station->addItem((*items)[61]->makeItem(5, 0));
                 Globals::status->station->addItem((*items)[62]->makeItem(5, 0));
+            } else if (step == 67) {
+                (*missions)[0]->setProductionGoods(175, 1);
             }
             return;
         }

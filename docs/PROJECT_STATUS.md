@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, steps
+67–68). Original Android ARM32 creates campaign `Mission(8,0,66)`
+with production goods `175/1`, then at step 68 removes cargo item
+`175` from the current ship before ordinary `Mission(6,0,66)`.
+The source restores these calls; production-source smoke covers the
+campaign through step 68 at `-O0/-O2`. Focused source-shape rises
+**28.9% -> 29.5%** and strict fuzzy **7.8% -> 11.9%**. ARM32
+**211/211**, Windows native, ARM64 static, and strict ARM64 shared
+builds pass. Raw ARM32 unresolved names remain **174** with no
+membership change. Full corpus: **4,323/4,524** originals in
+**4,772** pairs, mean source-shape **96.88%**, strict fuzzy
+**86.98%**, **2,802 linked-exact**, **1,116 byte-exact**, 201 missing,
+zero skipped, zero wrong-type, and 151 extra symbols. No exact
+membership changed. Live campaign progression remains unverified.
+Steps 69–70 already match their original ordinary missions; next:
+step 71. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEPS_67_68_ARM_2026-11-07.md).
+
 Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 66).
 Original Android ARM32 creates campaign `Mission(4,0,104)` with
 status value zero, then adds copies of catalog items `60/61/62`,

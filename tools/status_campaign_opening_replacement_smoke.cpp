@@ -85,6 +85,7 @@ struct Ship {
     int raceSetCount = 0;
     int removedCargoIndex = -1;
     int removedCargoAmount = -1;
+    int removedAllCargoIndex = -1;
     Array<Item *> equipment;
     Array<Item *> cargo;
     ~Ship() { for (const EquipmentCall &call : equipmentCalls) delete call.item; }
@@ -101,6 +102,7 @@ struct Ship {
         removedCargoAmount = amount;
         return 0;
     }
+    void removeCargo(int index) { removedAllCargoIndex = index; }
     Array<Item *> *getEquipment() { return &equipment; }
     Array<Item *> *getCargo() { return &cargo; }
     Item *getFirstEquipmentOfSort(int sort) {
@@ -509,6 +511,23 @@ int main() {
     delete missions[0];
     missions[0] = nullptr;
     for (Item *item : station.addedItems) delete item;
+
+    status.currentCampaignMission = 67;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 68);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 8 && missions[0]->param == 0 && missions[0]->station == 66);
+    assert(missions[0]->productionGoodsA == 175 && missions[0]->productionGoodsB == 1);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 68;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 69 && ship.removedAllCargoIndex == 175);
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 6 && missions[0]->param == 0 && missions[0]->station == 66);
+    delete missions[0];
+    missions[0] = nullptr;
     delete status.field_90;
 
     status.ship = nullptr;
