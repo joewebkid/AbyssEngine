@@ -78,6 +78,7 @@ struct Ship {
     Item *oldEquipment = nullptr;
     Item *removed = nullptr;
     Item *added = nullptr;
+    std::vector<Item *> addedCargo;
     int requestedSort = -1;
     int cargoSetCount = 0;
     int cargoClearCount = 0;
@@ -111,6 +112,7 @@ struct Ship {
     }
     void removeEquipment(Item *item) { removed = item; }
     void addEquipment(Item *item) { added = item; }
+    void addCargo(Item *item) { addedCargo.push_back(item); }
     void setEquipment(Item *item, int slot) {
         equipmentCalls.push_back({item->prototypeIndex, slot, item});
     }
@@ -528,6 +530,38 @@ int main() {
     assert(missions[0]->type == 6 && missions[0]->param == 0 && missions[0]->station == 66);
     delete missions[0];
     missions[0] = nullptr;
+
+    for (int step = 69; step <= 70; ++step) {
+        status.currentCampaignMission = step;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == step + 1);
+        assert(missions[0] != nullptr && !missions[0]->campaign);
+        assert(missions[0]->type == (step == 69 ? 6 : 11));
+        assert(missions[0]->param == 0 && missions[0]->station == (step == 69 ? 65 : 66));
+        delete missions[0];
+        missions[0] = nullptr;
+    }
+
+    BluePrint firstFinalBlueprint;
+    BluePrint secondFinalBlueprint;
+    firstFinalBlueprint.index = 183;
+    secondFinalBlueprint.index = 183;
+    blueprints.values.push_back(&firstFinalBlueprint);
+    blueprints.values.push_back(&secondFinalBlueprint);
+    prototypes[175].price = 77;
+    status.field_10c = 9;
+    status.currentCampaignMission = 71;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 72);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 164 && missions[0]->param == 150000 && missions[0]->station == 101);
+    assert(firstFinalBlueprint.unlocked && secondFinalBlueprint.unlocked);
+    assert(ship.addedCargo.size() == 1 && ship.addedCargo[0]->prototypeIndex == 175);
+    assert(ship.addedCargo[0]->amount == 1 && ship.addedCargo[0]->price == 77);
+    assert(status.field_10c == 0);
+    delete missions[0];
+    missions[0] = nullptr;
+    delete ship.addedCargo[0];
     delete status.field_90;
 
     status.ship = nullptr;
