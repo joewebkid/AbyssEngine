@@ -1283,6 +1283,21 @@ void Status::nextCampaignMission(bool advance) {
         Item *equipment = Globals::status->ship->getFirstEquipmentOfSort(18);
         if (equipment != nullptr)
             equipment->setUnsaleable(true);
+    } else if (step == 77) {
+        Ship *currentShip = Globals::status->ship;
+        Item *equipment = currentShip->getFirstEquipmentOfSort(18);
+        if (equipment != nullptr) {
+            currentShip->removeEquipment(equipment);
+        } else {
+            Item *cargo = currentShip->getCargo(85);
+            if (cargo != nullptr)
+                currentShip->removeCargo(cargo);
+        }
+        for (unsigned i = 0; i < this->bluePrints->size(); ++i) {
+            BluePrint *bp = (*this->bluePrints)[i];
+            if (!bp->isEmpty() && bp->getStationIndex() == 101)
+                bp->reset();
+        }
     }
 
     Mission *tailMission;

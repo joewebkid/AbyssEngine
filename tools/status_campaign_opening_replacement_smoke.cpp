@@ -55,12 +55,18 @@ struct Item {
 
 struct BluePrint {
     int index = -1;
+    int stationIndex = -1;
+    bool empty = false;
+    int resetCount = 0;
     bool unlocked = false;
     bool locked = false;
     Item *addedItem = nullptr;
     int addedAmount = -1;
     int addedStation = -1;
     int getIndex() { return index; }
+    int getStationIndex() { return stationIndex; }
+    bool isEmpty() { return empty; }
+    void reset() { ++resetCount; }
     void unlock() { unlocked = true; }
     void lock() { locked = true; }
     void addItem(Item *item, int amount, int station) {
@@ -87,6 +93,8 @@ struct Ship {
     int removedCargoIndex = -1;
     int removedCargoAmount = -1;
     int removedAllCargoIndex = -1;
+    int requestedCargoIndex = -1;
+    Item *removedCargoItem = nullptr;
     Array<Item *> equipment;
     Array<Item *> cargo;
     ~Ship() { for (const EquipmentCall &call : equipmentCalls) delete call.item; }
@@ -104,8 +112,15 @@ struct Ship {
         return 0;
     }
     void removeCargo(int index) { removedAllCargoIndex = index; }
+    void removeCargo(Item *item) { removedCargoItem = item; }
     Array<Item *> *getEquipment() { return &equipment; }
     Array<Item *> *getCargo() { return &cargo; }
+    Item *getCargo(int index) {
+        requestedCargoIndex = index;
+        for (Item *item : cargo.values)
+            if (item->prototypeIndex == index) return item;
+        return nullptr;
+    }
     Item *getFirstEquipmentOfSort(int sort) {
         requestedSort = sort;
         return oldEquipment;
@@ -603,6 +618,43 @@ int main() {
     assert(!old.unsaleable && missions[0] != nullptr && !missions[0]->campaign);
     delete missions[0];
     missions[0] = nullptr;
+
+    BluePrint firstStationBlueprint;
+    BluePrint secondStationBlueprint;
+    BluePrint emptyStationBlueprint;
+    BluePrint otherStationBlueprint;
+    firstStationBlueprint.stationIndex = 101;
+    secondStationBlueprint.stationIndex = 101;
+    emptyStationBlueprint.stationIndex = 101;
+    emptyStationBlueprint.empty = true;
+    otherStationBlueprint.stationIndex = 100;
+    blueprints.values.push_back(&firstStationBlueprint);
+    blueprints.values.push_back(&secondStationBlueprint);
+    blueprints.values.push_back(&emptyStationBlueprint);
+    blueprints.values.push_back(&otherStationBlueprint);
+    Item cargo85;
+    cargo85.prototypeIndex = 85;
+    ship.cargo.values.push_back(&cargo85);
+    for (int mode = 0; mode < 3; ++mode) {
+        ship.oldEquipment = mode == 0 ? &old : nullptr;
+        ship.removed = nullptr;
+        ship.removedCargoItem = nullptr;
+        ship.requestedCargoIndex = -1;
+        if (mode == 2) ship.cargo.values.pop_back();
+        status.currentCampaignMission = 77;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == 78 && ship.requestedSort == 18);
+        assert(missions[0] != nullptr && !missions[0]->campaign);
+        assert(missions[0]->type == 4 && missions[0]->param == 0 && missions[0]->station == 101);
+        assert(ship.removed == (mode == 0 ? &old : nullptr));
+        assert(ship.requestedCargoIndex == (mode == 0 ? -1 : 85));
+        assert(ship.removedCargoItem == (mode == 1 ? &cargo85 : nullptr));
+        assert(firstStationBlueprint.resetCount == mode + 1);
+        assert(secondStationBlueprint.resetCount == mode + 1);
+        assert(emptyStationBlueprint.resetCount == 0 && otherStationBlueprint.resetCount == 0);
+        delete missions[0];
+        missions[0] = nullptr;
+    }
     delete status.field_90;
 
     status.ship = nullptr;

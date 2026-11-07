@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 77).
+Original Android ARM32 removes equipment of sort `18` when present;
+otherwise it removes cargo item `85` when present. It then resets
+every nonempty blueprint for station `101` and creates ordinary
+`Mission(4,0,101)`. The source restores all three paths;
+production-source smoke covers them at `-O0/-O2`. Focused
+source-shape rises **31.6% -> 33.2%** and strict fuzzy **10.8% ->
+12.4%**. ARM32 **211/211**, Windows native, ARM64 static, and strict
+ARM64 shared builds pass. Raw ARM32 unresolved names remain **174**
+with no membership change. Full corpus: **4,323/4,524** originals
+in **4,772** pairs, mean source-shape **96.88%**, strict fuzzy
+**86.98%**, **2,802 linked-exact**, **1,116 byte-exact**, 201 missing,
+zero skipped, zero wrong-type, and 151 extra symbols. No exact
+membership changed. Live campaign progression remains unverified.
+Steps 78–82 already match their original missions; next: step 83.
+See [ARM campaign evidence](STATUS_CAMPAIGN_STEP_77_ARM_2026-11-07.md).
+
 Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 76).
 Original Android ARM32 looks for ship equipment of sort `18` and
 marks the first matching item unsaleable before ordinary
