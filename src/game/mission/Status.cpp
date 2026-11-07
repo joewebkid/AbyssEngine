@@ -1298,6 +1298,18 @@ void Status::nextCampaignMission(bool advance) {
             if (!bp->isEmpty() && bp->getStationIndex() == 101)
                 bp->reset();
         }
+    } else if (step == 83) {
+        Ship *currentShip = Globals::status->ship;
+        Item *equipment = currentShip->getFirstEquipmentOfSort(18);
+        if (equipment != nullptr) {
+            equipment->setUnsaleable(false);
+        } else {
+            Item *cargo = currentShip->getCargo(85);
+            if (cargo != nullptr)
+                cargo->setUnsaleable(false);
+        }
+        Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
+        currentShip->addCargo((*items)[85]->makeItem(1));
     }
 
     Mission *tailMission;

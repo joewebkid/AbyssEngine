@@ -579,6 +579,7 @@ int main() {
     delete missions[0];
     missions[0] = nullptr;
     delete ship.addedCargo[0];
+    ship.addedCargo.clear();
 
     for (int step = 72; step <= 74; ++step) {
         status.currentCampaignMission = step;
@@ -652,6 +653,40 @@ int main() {
         assert(firstStationBlueprint.resetCount == mode + 1);
         assert(secondStationBlueprint.resetCount == mode + 1);
         assert(emptyStationBlueprint.resetCount == 0 && otherStationBlueprint.resetCount == 0);
+        delete missions[0];
+        missions[0] = nullptr;
+    }
+
+    for (int step = 78; step <= 82; ++step) {
+        status.currentCampaignMission = step;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == step + 1);
+        assert(missions[0] != nullptr && !missions[0]->campaign);
+        assert(missions[0]->type == (step == 78 ? 165 : step == 79 ? 1 : step == 80 ? 4 : 11));
+        assert(missions[0]->param == 0 && missions[0]->station == (step == 78 || step == 80 ? -1 : 100));
+        delete missions[0];
+        missions[0] = nullptr;
+    }
+
+    prototypes[85].price = 55;
+    for (int mode = 0; mode < 3; ++mode) {
+        old.unsaleable = true;
+        cargo85.unsaleable = true;
+        ship.oldEquipment = mode == 0 ? &old : nullptr;
+        ship.requestedCargoIndex = -1;
+        if (mode == 1) ship.cargo.values.push_back(&cargo85);
+        if (mode == 2) ship.cargo.values.pop_back();
+        status.currentCampaignMission = 83;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == 84 && ship.requestedSort == 18);
+        assert(missions[0] != nullptr && !missions[0]->campaign);
+        assert(missions[0]->type == 0 && missions[0]->param == 0 && missions[0]->station == 0);
+        assert(ship.requestedCargoIndex == (mode == 0 ? -1 : 85));
+        assert(old.unsaleable == (mode != 0) && cargo85.unsaleable == (mode != 1));
+        assert(ship.addedCargo.size() == 1 && ship.addedCargo[0]->prototypeIndex == 85);
+        assert(ship.addedCargo[0]->amount == 1 && ship.addedCargo[0]->price == 55);
+        delete ship.addedCargo[0];
+        ship.addedCargo.clear();
         delete missions[0];
         missions[0] = nullptr;
     }

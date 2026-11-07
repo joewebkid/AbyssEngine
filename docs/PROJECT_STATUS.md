@@ -1,5 +1,23 @@
 # Project Status
 
+Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 83).
+Original Android ARM32 clears the unsaleable flag on ship equipment
+of sort `18` when present, or on cargo item `85` as a fallback.
+It then adds a fresh copy of catalog item `85` to the ship's cargo
+and creates an ordinary empty mission. The source restores all
+three paths; production-source smoke covers them at `-O0/-O2`.
+Focused source-shape rises **33.2% -> 34.5%** and strict fuzzy
+**12.4% -> 12.9%**. ARM32 **211/211**, Windows native, ARM64 static,
+and strict ARM64 shared builds pass. Raw ARM32 unresolved names
+remain **174** with no membership change. Full corpus:
+**4,323/4,524** originals in **4,772** pairs, mean source-shape
+**96.88%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped, zero wrong-type,
+and 151 extra symbols. No exact membership changed. Live campaign
+progression remains unverified. Steps 84–86 already match their
+original missions; next: step 87. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEP_83_ARM_2026-11-07.md).
+
 Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 77).
 Original Android ARM32 removes equipment of sort `18` when present;
 otherwise it removes cargo item `85` when present. It then resets
