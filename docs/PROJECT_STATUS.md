@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 74).
+Original Android ARM32 removes ships from the current station
+before ordinary `Mission(11,0,100)`. The source restores this call;
+production-source smoke covers the campaign through step 74 at
+`-O0/-O2`. Focused source-shape rises **30.7% -> 31.1%** while
+strict fuzzy falls **9.4% -> 9.1%**. ARM32 **211/211**, Windows
+native, ARM64 static, and strict ARM64 shared builds pass. Raw
+ARM32 unresolved names remain **174** with no membership change.
+Full corpus: **4,323/4,524** originals in **4,772** pairs, mean
+source-shape **96.88%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped, zero wrong-type,
+and 151 extra symbols. No exact membership changed. Live campaign
+progression remains unverified. Step 75 already matches its original
+ordinary mission; next: step 76. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEP_74_ARM_2026-11-07.md).
+
 Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 71).
 Original Android ARM32 unlocks all blueprints with index `183`,
 adds one copy of catalog item `175` to the ship's cargo, creates

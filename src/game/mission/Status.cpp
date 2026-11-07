@@ -1277,6 +1277,8 @@ void Status::nextCampaignMission(bool advance) {
         }
         Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
         Globals::status->ship->addCargo((*items)[175]->makeItem(1));
+    } else if (step == 74) {
+        Globals::status->station->removeShips();
     }
 
     Mission *tailMission;

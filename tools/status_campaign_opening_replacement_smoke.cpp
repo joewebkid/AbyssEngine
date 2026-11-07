@@ -121,7 +121,9 @@ struct Ship {
 
 struct Station {
     std::vector<Item *> addedItems;
+    int removeShipsCount = 0;
     void addItem(Item *item) { addedItems.push_back(item); }
+    void removeShips() { ++removeShipsCount; }
 };
 
 struct Status;
@@ -562,6 +564,18 @@ int main() {
     delete missions[0];
     missions[0] = nullptr;
     delete ship.addedCargo[0];
+
+    for (int step = 72; step <= 74; ++step) {
+        status.currentCampaignMission = step;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == step + 1);
+        assert(missions[0] != nullptr && !missions[0]->campaign);
+        assert(missions[0]->type == (step == 72 ? 10 : 11));
+        assert(missions[0]->param == 0 && missions[0]->station == (step == 72 ? 81 : 100));
+        assert(station.removeShipsCount == (step == 74 ? 1 : 0));
+        delete missions[0];
+        missions[0] = nullptr;
+    }
     delete status.field_90;
 
     status.ship = nullptr;
