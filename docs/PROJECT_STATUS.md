@@ -1,5 +1,21 @@
 # Project Status
 
+Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 76).
+Original Android ARM32 looks for ship equipment of sort `18` and
+marks the first matching item unsaleable before ordinary
+`Mission(11,0,101)`. The source restores this conditional behavior;
+production-source smoke checks both equipment paths through step
+76 at `-O0/-O2`. Focused source-shape rises **31.1% -> 31.6%** and
+strict fuzzy **9.1% -> 10.8%**. ARM32 **211/211**, Windows native,
+ARM64 static, and strict ARM64 shared builds pass. Raw ARM32
+unresolved names remain **174** with no membership change. Full
+corpus: **4,323/4,524** originals in **4,772** pairs, mean
+source-shape **96.88%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped, zero wrong-type,
+and 151 extra symbols. No exact membership changed. Live campaign
+progression remains unverified. Next: step 77. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEP_76_ARM_2026-11-07.md).
+
 Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 74).
 Original Android ARM32 removes ships from the current station
 before ordinary `Mission(11,0,100)`. The source restores this call;

@@ -576,6 +576,33 @@ int main() {
         delete missions[0];
         missions[0] = nullptr;
     }
+
+    status.currentCampaignMission = 75;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 76 && missions[0] != nullptr);
+    assert(!missions[0]->campaign && missions[0]->type == 11);
+    assert(missions[0]->param == 0 && missions[0]->station == 100);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    old.unsaleable = false;
+    ship.oldEquipment = &old;
+    status.currentCampaignMission = 76;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 77 && ship.requestedSort == 18);
+    assert(old.unsaleable && missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 0 && missions[0]->station == 101);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    old.unsaleable = false;
+    ship.oldEquipment = nullptr;
+    status.currentCampaignMission = 76;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 77 && ship.requestedSort == 18);
+    assert(!old.unsaleable && missions[0] != nullptr && !missions[0]->campaign);
+    delete missions[0];
+    missions[0] = nullptr;
     delete status.field_90;
 
     status.ship = nullptr;

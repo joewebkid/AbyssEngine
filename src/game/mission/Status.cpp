@@ -1279,6 +1279,10 @@ void Status::nextCampaignMission(bool advance) {
         Globals::status->ship->addCargo((*items)[175]->makeItem(1));
     } else if (step == 74) {
         Globals::status->station->removeShips();
+    } else if (step == 76) {
+        Item *equipment = Globals::status->ship->getFirstEquipmentOfSort(18);
+        if (equipment != nullptr)
+            equipment->setUnsaleable(true);
     }
 
     Mission *tailMission;
