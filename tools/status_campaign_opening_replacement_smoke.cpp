@@ -690,6 +690,20 @@ int main() {
         delete missions[0];
         missions[0] = nullptr;
     }
+
+    status.currentCampaignMission = 87;
+    ship.removedCargoIndex = -1;
+    ship.removedCargoAmount = -1;
+    visibilities[27] = false;
+    visibilities[28] = false;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 88);
+    assert(ship.removedCargoIndex == 104 && ship.removedCargoAmount == 10);
+    assert(visibilities[27] && visibilities[28]);
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 4 && missions[0]->param == 0 && missions[0]->station == 109);
+    delete missions[0];
+    missions[0] = nullptr;
     delete status.field_90;
 
     status.ship = nullptr;

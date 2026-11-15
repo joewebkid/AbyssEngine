@@ -1,5 +1,20 @@
 # Project Status
 
+Last reviewed: 2026-11-15 (`Status::nextCampaignMission`, step 87).
+Original Android ARM32 removes ten units of cargo item `104`, marks
+systems `27` and `28` visible, then creates ordinary
+`Mission(4,0,109)`. The source and production-code smoke restore and
+check all three effects at `-O0/-O2`. Focused source-shape rises
+**34.5% -> 34.7%** while strict fuzzy falls **12.9% -> 11.5%**;
+the function remains non-exact. ARM32 **211/211**, Windows native,
+ARM64 static, and strict ARM64 shared builds pass. Full corpus:
+**4,323/4,524** originals in **4,772** pairs, mean source-shape
+**96.88%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped or wrong-type, and
+151 extra symbols. Neither exact membership set loses a function.
+Live campaign progression remains unverified. Next: step 88.
+See [ARM campaign evidence](STATUS_CAMPAIGN_STEP_87_ARM_2026-11-15.md).
+
 Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 83).
 Original Android ARM32 clears the unsaleable flag on ship equipment
 of sort `18` when present, or on cargo item `85` as a fallback.
