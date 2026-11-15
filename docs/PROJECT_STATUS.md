@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-15 (`Status::nextCampaignMission`, step 88).
+Original Android ARM32 decrements `stationsVisited`, clears the
+visited byte for station `109`, then creates ordinary
+`Mission(11,0,10)`. The source and production-code smoke restore
+and check these effects at `-O0/-O2`. Focused source-shape rises
+**34.7% -> 35.6%** and strict fuzzy **11.5% -> 13.4%**;
+the function remains non-exact. ARM32 **211/211**, Windows native,
+ARM64 static, and strict ARM64 shared builds pass. Full corpus:
+**4,323/4,524** originals in **4,772** pairs, mean source-shape
+**96.88%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped or wrong-type, and
+151 extra symbols. Neither exact membership set loses a function.
+Live campaign progression remains unverified. Next: audit missing
+startup functions using runtime evidence, then inspect the campaign
+fallback after step 88. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEP_88_ARM_2026-11-15.md).
+
 Last reviewed: 2026-11-15 (`Status::nextCampaignMission`, step 87).
 Original Android ARM32 removes ten units of cargo item `104`, marks
 systems `27` and `28` visible, then creates ordinary

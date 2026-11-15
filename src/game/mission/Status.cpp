@@ -1109,7 +1109,7 @@ static const Step kSteps[] = {
     /*0x4f*/ {0x1, 0, 100, 0}, /*0x50*/ {0x4, 0, -1, 0}, /*0x51*/ {0xb, 0, 100, 0},
     /*0x52*/ {0xb, 0, 100, 0}, /*0x53*/ {0, 0, 0, 0}, /*0x54*/ {0xa4, 0, 0, 0},
     /*0x55*/ {0xb, 0, 100, 0}, /*0x56*/ {0x4, 0, 10, 0}, /*0x57*/ {0x4, 0, 0x6d, 0},
-    /*0x58*/ {0x4, 0, 0x6d, 0},
+    /*0x58*/ {0xb, 0, 10, 0},
 };
 
 void Status::nextCampaignMission(bool advance) {
@@ -1314,6 +1314,9 @@ void Status::nextCampaignMission(bool advance) {
         Globals::status->ship->removeCargo(104, 10);
         (*Globals::status->systemVisibilities)[27] = true;
         (*Globals::status->systemVisibilities)[28] = true;
+    } else if (step == 88) {
+        --Globals::status->stationsVisited;
+        static_cast<Galaxy *>(Globals::galaxy)->getVisited()[109] = 0;
     }
 
     Mission *tailMission;

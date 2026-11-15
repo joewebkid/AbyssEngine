@@ -141,10 +141,16 @@ struct Station {
     void removeShips() { ++removeShipsCount; }
 };
 
+struct Galaxy {
+    uint8_t visited[110] = {};
+    uint8_t *getVisited() { return visited; }
+};
+
 struct Status;
-struct Globals { static void *items; static void *ships; static Status *status; };
+struct Globals { static void *items; static void *ships; static void *galaxy; static Status *status; };
 void *Globals::items = nullptr;
 void *Globals::ships = nullptr;
+void *Globals::galaxy = nullptr;
 Status *Globals::status = nullptr;
 
 struct Status {
@@ -153,6 +159,7 @@ struct Status {
     int field_0x104 = 0;
     int currentCampaignMission = 0;
     int missionCount = 0;
+    int stationsVisited = 0;
     int32_t credits = 0;
     int field_0x30 = -1;
     int field_7c = -1;
@@ -217,6 +224,8 @@ int main() {
     blueprints.values = {&otherBlueprint, &targetBlueprint, &productionBlueprint};
     Ship ship;
     Station station;
+    Galaxy galaxy;
+    Globals::galaxy = &galaxy;
     Status status;
     Globals::status = &status;
     status.playingTime = 0x1234567887654321LL;
@@ -702,6 +711,17 @@ int main() {
     assert(visibilities[27] && visibilities[28]);
     assert(missions[0] != nullptr && !missions[0]->campaign);
     assert(missions[0]->type == 4 && missions[0]->param == 0 && missions[0]->station == 109);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 88;
+    status.stationsVisited = 17;
+    galaxy.visited[109] = 1;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 89 && status.stationsVisited == 16);
+    assert(galaxy.visited[109] == 0);
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 0 && missions[0]->station == 10);
     delete missions[0];
     missions[0] = nullptr;
     delete status.field_90;
