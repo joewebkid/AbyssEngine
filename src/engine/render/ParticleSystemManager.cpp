@@ -233,43 +233,23 @@ void ParticleSystemManager::renderSprites() {
 }
 
 void ParticleSystemManager::systemSetMatrix(int handle, AbyssEngine::AEMath::Matrix const *matrix) {
-    IParticleSystem *sys;
-    if (handle == -1) {
-        sys = nullptr;
+    if (handle == -1)
+        return;
+    if ((handle << 0x11) < 0) {
+        reinterpret_cast<IParticleSystem **>(this->meshSystems)[handle & ~0x4000]->setMatrix(matrix);
     } else {
-        IParticleSystem **arr;
-        int idx;
-        if (handle << 0x11 < 0) {
-            arr = reinterpret_cast<IParticleSystem **>(this->meshSystems);
-            idx = handle & 0x3fffffff;
-        } else {
-            arr = reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_);
-            idx = handle;
-        }
-        sys = arr[idx];
+        reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_)[handle]->setMatrix(matrix);
     }
-    if (sys != nullptr)
-        sys->setMatrix(matrix);
 }
 
 void ParticleSystemManager::setParticleSetBySet(int handle, ParticleSettings::ParticleSet set) {
-    IParticleSystem *sys;
-    if (handle == -1) {
-        sys = nullptr;
+    if (handle == -1)
+        return;
+    if ((handle << 0x11) < 0) {
+        reinterpret_cast<IParticleSystem **>(this->meshSystems)[handle & ~0x4000]->setParticleSet(set);
     } else {
-        IParticleSystem **arr;
-        int idx;
-        if (handle << 0x11 < 0) {
-            arr = reinterpret_cast<IParticleSystem **>(this->meshSystems);
-            idx = handle & 0x3fffffff;
-        } else {
-            arr = reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_);
-            idx = handle;
-        }
-        sys = arr[idx];
+        reinterpret_cast<IParticleSystem **>(this->spriteSystems.data_)[handle]->setParticleSet(set);
     }
-    if (sys != nullptr)
-        sys->setParticleSet(set);
 }
 
 void ParticleSystemManager::enableSystemUpdate(int handle, bool enable) {

@@ -231,9 +231,32 @@ static const int g_cg_soundTable[233] = {
     2275, 2276, 2278, 2277, 2280
 };
 
-static int *g_crm_counts8 = nullptr;
+static const int g_crm_counts8[8] = {2, 2, 2, 4, 3, 3, 2, 3};
 
-static int *g_crm_table8 = nullptr;
+static const int g_crm_table8[42] = {
+    26, 2453, 0, 2454,
+    26, 2455, 0, 2456,
+    26, 2457, 0, 2458,
+    26, 2459, 0, 2460,
+    26, 2461, 0, 2462,
+    26, 2463, 31, 2464,
+    26, 2465, 0, 2466,
+    26, 2467, 0, 2468,
+    26, 2469, 0, 2470,
+    31, 2471, 26, 2472, 0, 2473
+};
+
+static const int g_crm_counts10[2] = {2, 3};
+
+static const int g_crm_table10[10] = {
+    10000, 3132, 0, 3133, 10000, 3136, 0, 3137, 10000, 3138
+};
+
+static const int g_crm_counts12[2] = {2, 2};
+
+static const int g_crm_table12[8] = {
+    0, 3134, 10000, 3135, 0, 3139, 10000, 3140
+};
 
 static float g_up_eqMax = 0;
 
@@ -1279,16 +1302,16 @@ void Level::createRadioMessage(int type, int sub) {
                 break;
             }
             int base = (type == 0) ? 0x1aa : 0x1ad;
-            id = AERandom::gRandom->nextInt() + base;
+            id = AERandom::gRandom->nextInt(3) + base;
             break;
         }
         case 3:
             this->field_1b0 = 1;
-            id = AERandom::gRandom->nextInt() + 0x1b3;
+            id = AERandom::gRandom->nextInt(3) + 0x1b3;
             break;
         case 4:
             this->field_68 = 1;
-            id = AERandom::gRandom->nextInt() + 0x1b6;
+            id = AERandom::gRandom->nextInt(3) + 0x1b6;
             break;
         case 5: id = 0x1bb;
             extraDelay = 0;
@@ -1296,16 +1319,16 @@ void Level::createRadioMessage(int type, int sub) {
         case 6: id = 0x1bc;
             extraDelay = 0;
             break;
-        case 9: id = AERandom::gRandom->nextInt() + 0x1c1;
+        case 9: id = AERandom::gRandom->nextInt(2) + 0x1c1;
             break;
-        case 10: id = AERandom::gRandom->nextInt() + 0x1c3;
+        case 10: id = AERandom::gRandom->nextInt(2) + 0x1c3;
             break;
-        case 0xb: id = AERandom::gRandom->nextInt() + 0x1c5;
+        case 0xb: id = AERandom::gRandom->nextInt(2) + 0x1c5;
             break;
         case 0xc: id = 0x1c5;
             extraDelay = 0;
             break;
-        case 0xd: id = AERandom::gRandom->nextInt() + 0x1c7;
+        case 0xd: id = AERandom::gRandom->nextInt(2) + 0x1c7;
             break;
         case 0xe: {
             int *st = (int *) Status::gStatus->field_90;
@@ -1331,12 +1354,12 @@ void Level::createRadioMessage(int type, int sub) {
             break;
         }
         case 8: {
-            int stage = AERandom::gRandom->nextInt();
+            int stage = AERandom::gRandom->nextInt(8);
             int off = 0;
             for (int k = 0; k < stage; k = k + 1)
                 off = off + g_crm_counts8[k];
             int cnt = g_crm_counts8[stage];
-            RadioStageEntry *tbl = (RadioStageEntry *) g_crm_table8 + off;
+            const RadioStageEntry *tbl = reinterpret_cast<const RadioStageEntry *>(g_crm_table8) + off;
             for (int k = 0; k < cnt; k = k + 1) {
                 int delay = (k == 0) ? 5000 : (k - 1);
                 int arg = tbl[k].radioStageEntry;
@@ -1348,13 +1371,66 @@ void Level::createRadioMessage(int type, int sub) {
             builtInline = true;
             break;
         }
+        case 0x10: {
+            int off = 0;
+            for (int k = 0; k < (int) r2; k = k + 1)
+                off = off + g_crm_counts10[k];
+            int cnt = g_crm_counts10[r2];
+            const RadioStageEntry *tbl = reinterpret_cast<const RadioStageEntry *>(g_crm_table10) + off;
+            for (int k = 0; k < cnt; k = k + 1) {
+                int delay = (k == 0) ? 5000 : (k - 1);
+                int spk = tbl[k].radioStageEntry;
+                if (spk == 10000) spk += (int) r2;
+                RadioMessage *m = (RadioMessage *) ::operator new(0x28);
+                int kind = (k == 0) ? 5 : 6;
+                new(m) RadioMessage(tbl[k].textID, spk, kind, delay);
+                ArrayAdd(m, *(this->messages));
+            }
+            if ((r2 | 4) == 6) {
+                id = AERandom::gRandom->nextInt(5) + 0xc4a;
+                speaker = 10000 + (int) r2;
+                extraDelay = 0;
+            } else {
+                builtInline = true;
+            }
+            break;
+        }
+        case 0x11:
+            id = AERandom::gRandom->nextInt(5) + 0xc4f;
+            speaker = 0;
+            extraDelay = *(int *) ((char *) this->player->levelScript + 8) + 6000;
+            break;
+        case 0x12: {
+            if (r2 < 2) {
+                int off = 0;
+                for (int k = 0; k < (int) r2; k = k + 1)
+                    off = off + g_crm_counts12[k];
+                int cnt = g_crm_counts12[r2];
+                const RadioStageEntry *tbl = reinterpret_cast<const RadioStageEntry *>(g_crm_table12) + off;
+                for (int k = 0; k < cnt; k = k + 1) {
+                    int delay = (k == 0) ? 5000 : (k - 1);
+                    int spk = tbl[k].radioStageEntry;
+                    if (spk == 10000) spk += (int) r2;
+                    RadioMessage *m = (RadioMessage *) ::operator new(0x28);
+                    int kind = (k == 0) ? 5 : 6;
+                    new(m) RadioMessage(tbl[k].textID, spk, kind, delay);
+                    ArrayAdd(m, *(this->messages));
+                }
+                builtInline = true;
+            } else {
+                id = AERandom::gRandom->nextInt(5) + 0xc45;
+                speaker = 0;
+                extraDelay = 0;
+            }
+            break;
+        }
         case 0x13: {
             RadioMessage *m = (RadioMessage *) ::operator new(0x28);
             AbyssEngine::AERandom *rng = AERandom::gRandom;
-            new(m) RadioMessage(rng->nextInt() + 0xaf4, 0, 5, 0x5dc);
+            new(m) RadioMessage(rng->nextInt(4) + 0xaf4, 0, 5, 0x5dc);
             ArrayAdd(m, *(this->messages));
             m = (RadioMessage *) ::operator new(0x28);
-            new(m) RadioMessage(rng->nextInt() + 0xafa, 0, 6, 0);
+            new(m) RadioMessage(rng->nextInt(4) + 0xafa, 0, 6, 0);
             ArrayAdd(m, *(this->messages));
             builtInline = true;
             break;
@@ -1396,7 +1472,7 @@ void Level::createRadioMessage(int type, int sub) {
         default:
             if (type == 7 || type == 0xc || type == 0xe) {
             } else {
-                id = AERandom::gRandom->nextInt() + 0x1bd;
+                id = AERandom::gRandom->nextInt(3) + 0x1bd;
             }
             break;
     }

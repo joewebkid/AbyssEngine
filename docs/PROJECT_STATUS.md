@@ -1,5 +1,29 @@
 # Project Status
 
+Last reviewed: 2026-11-17 (`ParticleSystemManager` bitmask & `Level::createRadioMessage` recovery).
+Fixed two high-impact behavioral bugs:
+1. `ParticleSystemManager::systemSetMatrix` and `setParticleSetBySet`
+   (`src/engine/render/ParticleSystemManager.cpp`) masked mesh-system
+   handles with `handle & 0x3fffffff` instead of `handle & ~0x4000`
+   (out-of-bounds read by `0x4000` elements) and added a redundant
+   null-check; both rose **21.4% -> 82.8%** fuzzy (**58.3% -> 93.1%**
+   source-shape).
+2. `Level::createRadioMessage(int, int)` (`src/game/world/Level.cpp`)
+   dereferenced `g_crm_counts8 = nullptr` and `g_crm_table8 = nullptr`
+   (causing Clang `-Oz` to emit `udf #254` and drop `case 8` / `case
+   0x10..0x12`) and omitted the upper bound on `AERandom::nextInt(...)`.
+   Restoring the `.rodata` tables (`g_crm_counts8`, `g_crm_table8`,
+   `g_crm_counts10/12`, `g_crm_table10/12`), `nextInt(N)` bounds, and
+   `case 0x10..0x12` raised `createRadioMessage` **21.5% -> 44.7%** fuzzy
+   (**67.0% -> 90.7%** source-shape).
+ARM32 **211/211**, Windows native, ARM64 static, and strict ARM64 shared
+(`_work/libgof2hdaa_level_psm_20261117.so`) builds pass. Full corpus:
+**4,323/4,524** originals in **4,776** pairs, mean source-shape **97.1%**,
+strict fuzzy **87.5%** (from **87.4%**), **3,034** 100%-fuzzy (from
+**3,033**, +1), **2,850 linked-exact** (from **2,849**, +1), **1,135
+byte-exact**, 201 missing, zero skipped or wrong-type, and 151 extra
+symbols.
+
 Last reviewed: 2026-11-17 (`ApplicationManager` layout and `OnUpdate` recovery).
 Original Android ARM32 `AbyssEngine::ApplicationManager` embeds `modules`,
 `moduleIds`, and `actionTable` by value (`+68`, `+80`, `+136`), aligns
