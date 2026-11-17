@@ -67,8 +67,8 @@ namespace {
         int flags;                // +0x0c
     };
 
-    inline ActionEntry *action_entries(Array<long long> *table) {
-        return reinterpret_cast<ActionEntry *>(table->data());
+    inline ActionEntry *action_entries(Array<long long> &table) {
+        return reinterpret_cast<ActionEntry *>(table.data());
     }
 }
 
@@ -111,9 +111,8 @@ namespace {
 }
 
 ApplicationManager::ApplicationManager(Engine *engine) {
-    this->modules = new Array<IApplicationModule *>();
-    this->moduleIds = new Array<unsigned int>();
-    this->actionTable = new Array<long long>();
+    this->currentKey = 0;
+    this->currentKeyHigh = 0;
 
     this->frameTimeMs = 0;
     this->previousFrameTimeMs = 0;
@@ -136,6 +135,7 @@ ApplicationManager::ApplicationManager(Engine *engine) {
     this->loadingCallback = 0;
     this->resumeCallback = 0;
     this->soundFxEnabled = true;
+    this->musicEnabled = true;
     this->vibrateEnabled = true;
     this->orientationTrackingEnabled = false;
 
@@ -163,15 +163,15 @@ ApplicationManager::~ApplicationManager() {
         module_vtable(module)->release(module);
     }
 
-    for (unsigned int i = 0; i < this->modules->size(); ++i) {
-        void *entry = (*this->modules)[i];
+    for (unsigned int i = 0; i < this->modules.size(); ++i) {
+        void *entry = this->modules[i];
         if (entry != 0) {
             module_vtable(entry)->destroy(entry);
         }
-        (*this->modules)[i] = 0;
+        this->modules[i] = 0;
     }
-    ArrayRemoveAll(*(this->modules));
-    ArrayRemoveAll(*(this->moduleIds));
+    ArrayRemoveAll(this->modules);
+    ArrayRemoveAll(this->moduleIds);
 
     delete this->paintCanvas;
     this->paintCanvas = 0;
@@ -195,10 +195,6 @@ ApplicationManager::~ApplicationManager() {
         delete[] reinterpret_cast<char *>(key_header(keys));
     }
     this->keyMappingTable = 0;
-
-    delete this->actionTable;
-    delete this->moduleIds;
-    delete this->modules;
 }
 
 void ApplicationManager::SetApplicationModule(IApplicationModule *module) {
@@ -217,10 +213,10 @@ void ApplicationManager::SetCurrentApplicationModule(unsigned int id) {
         }
     }
 
-    unsigned int count = this->moduleIds->size();
+    unsigned int count = this->moduleIds.size();
     for (unsigned int index = 0; index < count; ++index) {
-        if ((*this->moduleIds)[index] == id) {
-            void *module = (*this->modules)[index];
+        if (this->moduleIds[index] == id) {
+            void *module = this->modules[index];
             this->state = this->currentModule != 0;
             this->currentModuleId = id;
             this->pendingModule = module;
@@ -230,10 +226,10 @@ void ApplicationManager::SetCurrentApplicationModule(unsigned int id) {
 }
 
 void *ApplicationManager::GetApplicationModule(unsigned int id) {
-    unsigned int count = this->moduleIds->size();
+    unsigned int count = this->moduleIds.size();
     for (unsigned int index = 0; index < count; ++index) {
-        if ((int) (*this->moduleIds)[index] == (int) id) {
-            return (*this->modules)[index];
+        if ((int) this->moduleIds[index] == (int) id) {
+            return this->modules[index];
         }
     }
     return 0;
@@ -284,7 +280,7 @@ void ApplicationManager::Suspend() {
 void ApplicationManager::OnUpdate(long long now) {
     this->engine->PreUpdate();
 
-    if (this->orientationTrackingEnabled) {
+    if (Engine::CheckForOrientationChange) {
         this->CheckForOrientationChange();
     }
     if (this->soundResource != 0 && this->soundFxEnabled) {
@@ -353,8 +349,20 @@ void ApplicationManager::OnUpdate(long long now) {
             this->previousFrameTimeMs = previous;
             this->frameTimeMs = static_cast<uint64_t>(now);
             this->currentTimeMs += this->frameTimeMs - previous;
+            if (AbyssEngine::performanceTest) {
+                ++AbyssEngine::performanceFrameCounter;
+                AbyssEngine::performanceTime += static_cast<long long>(this->frameTimeMs - previous);
+            }
             void *module = this->currentModule;
             if (module != 0) {
+                AbyssEngine::fpsTimer += static_cast<int>(this->frameTimeMs - previous);
+                ++AbyssEngine::fpsCounter;
+                if (AbyssEngine::fpsTimer > 1000) {
+                    AbyssEngine::currentFps = AbyssEngine::fpsCounter;
+                    AbyssEngine::fpsCounter = 0;
+                    AbyssEngine::fpsTimer -= 1000;
+                }
+
                 ModuleVTable *vtable = module_vtable(module);
                 Engine *engine = this->engine;
                 if (Engine::enableShader) {
@@ -381,7 +389,158 @@ void ApplicationManager::OnUpdate(long long now) {
                 if (resume == 0 || !resume(this->paintCanvas, this->resumeCallbackData)) {
                     vtable->onUpdate(module);
                 }
+
+                engine = this->engine;
+                if (engine->field_0x74) {
+                    engine->shaderModeFlag = 0;
+                    engine->statsEnabled = 0;
+                    this->paintCanvas->SetColor(0, 255, 0, 255);
+
+                    const unsigned int font = static_cast<unsigned int>(this->engine->field_0x78);
+                    const int lineH = this->paintCanvas->GetTextHeight(font);
+                    this->paintCanvas->DrawString(
+                        font, String("fps: ") + String(AbyssEngine::currentFps), 5, 5, false);
+                    this->paintCanvas->DrawString(
+                        font, String("t3D: ") + String(this->engine->triangleCountA),
+                        5, lineH + 10, false);
+                    this->paintCanvas->DrawString(
+                        font, String("t2D: ") + String(this->engine->triangleCountB),
+                        5, lineH * 2 + 15, false);
+                    this->paintCanvas->DrawString(
+                        font, String("d3D: ") + String(this->engine->drawCallCountA),
+                        5, lineH * 3 + 20, false);
+                    this->paintCanvas->DrawString(
+                        font, String("d2D: ") + String(this->engine->drawCallCountB),
+                        5, lineH * 4 + 25, false);
+                    this->paintCanvas->DrawString(
+                        font, String("vfC: ") + String(this->paintCanvas->culledCount),
+                        5, lineH * 5 + 30, false);
+                    this->paintCanvas->DrawString(
+                        font,
+                        String("T: ") + String(this->lastTouchX) + String("  ") + String(this->lastTouchY),
+                        5, lineH * 6 + 35, false);
+                    this->paintCanvas->DrawString(
+                        font, String("vbo3D: ") + String(this->engine->triangleCountA),
+                        5, lineH * 7 + 35, false);
+                    this->paintCanvas->DrawString(
+                        font,
+                        String("vRam: ") + String(this->engine->textureByteCounter >> 20) +
+                        String(" + ") + String(Engine::vboSize >> 10),
+                        5, lineH * 8 + 35, false);
+                    this->paintCanvas->DrawString(
+                        font, String("lodDist: ") + String(Engine::LodDistShader),
+                        5, lineH * 9 + 35, false);
+
+                    const int canvasW = this->paintCanvas->GetWidth();
+                    this->paintCanvas->DrawString(
+                        font, Engine::vendor,
+                        (canvasW - this->paintCanvas->GetTextWidth(font, Engine::vendor)) / 2,
+                        5, false);
+                    this->paintCanvas->DrawString(
+                        font, Engine::renderer,
+                        (this->paintCanvas->GetWidth() - this->paintCanvas->GetTextWidth(font, Engine::renderer)) / 2,
+                        this->paintCanvas->GetTextHeight(font) + 10, false);
+
+                    if (Engine::enableShader) {
+                        this->paintCanvas->DrawString(
+                            font, String("ES2"),
+                            this->paintCanvas->GetWidth() - this->paintCanvas->GetTextWidth(font, String("ES2 ")),
+                            5, false);
+                    }
+                }
+
+                if (AbyssEngine::performanceTestEnded) {
+                    this->paintCanvas->SetColor(0, 255, 0, 255);
+                    long long sec = AbyssEngine::performanceTime / 1000LL;
+                    int avgFps = static_cast<int>(AbyssEngine::performanceFrameCounter * 1000LL / AbyssEngine::performanceTime);
+                    long long avgTri = AbyssEngine::triDrawn / sec;
+                    String msg = String("PerfTest ended: ") + String(avgFps) + String(" / ") +
+                                 String(static_cast<int>(sec)) + String(" / ") + String(avgTri);
+                    const unsigned int font = static_cast<unsigned int>(this->engine->field_0x78);
+                    this->paintCanvas->DrawString(
+                        font, msg,
+                        this->paintCanvas->GetWidth() / 2 - this->paintCanvas->GetTextWidth(font, msg) / 2,
+                        5, false);
+                }
+
+                if (AbyssEngine::performanceTest) {
+                    AbyssEngine::triDrawn += static_cast<long long>(
+                        this->engine->triangleCountClientA + this->engine->triangleCountClientB +
+                        this->engine->triangleCountA + this->engine->triangleCountB);
+                    this->paintCanvas->SetColor(0, 255, 0, 255);
+                    int sec = static_cast<int>(AbyssEngine::performanceTime / 1000LL);
+                    String msg = String("PerfTest (") + String(AbyssEngine::performanceModulSwitches) +
+                                 String("/") + String(AbyssEngine::performanceOverallModulSwitches) +
+                                 String(") : ") + String(sec) + String("   ") +
+                                 String(AbyssEngine::triDrawn);
+                    const unsigned int font = static_cast<unsigned int>(this->engine->field_0x78);
+                    this->paintCanvas->DrawString(
+                        font, msg, this->paintCanvas->GetWidth() / 2, 5, false);
+                }
             }
+            break;
+        }
+        case 6: {
+            if (this->currentTimeMs == 0 && this->paintCanvas->WarmUpTexture()) {
+                this->state = 5;
+                this->currentTimeMs = 0;
+                this->frameTimeMs = static_cast<uint64_t>(now);
+                this->previousFrameTimeMs = static_cast<uint64_t>(now) - 1;
+                this->keyState = 0;
+                AbyssEngine::loadMesh = 0;
+                AbyssEngine::loadTexture = 0;
+                break;
+            }
+            const uint64_t previous = this->frameTimeMs;
+            this->previousFrameTimeMs = previous;
+            this->frameTimeMs = static_cast<uint64_t>(now);
+            this->currentTimeMs += this->frameTimeMs - previous;
+            if (this->currentTimeMs > 500) {
+                this->currentTimeMs = 0;
+            }
+            break;
+        }
+        case 7: {
+            if (static_cast<unsigned int>(AbyssEngine::loadTexture) < this->paintCanvas->cubeTextures.count ||
+                static_cast<unsigned int>(AbyssEngine::loadMesh) < this->paintCanvas->meshCount) {
+                if (AbyssEngine::loadTexture == 0 && this->resumeCallback != 0 &&
+                    this->currentModule != 0 &&
+                    module_vtable(this->currentModule)->showLoading(this->currentModule) != 0) {
+                    this->resumeCallback(this->paintCanvas, this->resumeCallbackData);
+                }
+                if (static_cast<unsigned int>(AbyssEngine::loadTexture) < this->paintCanvas->cubeTextures.count) {
+                    AELoadedTexture *tex = this->paintCanvas->cubeTextures.data_[AbyssEngine::loadTexture];
+                    if (tex != 0 && !tex->valid) {
+                        char *aeName = tex->name.GetAEChar();
+                        unsigned int dummyOut = 0;
+                        AbyssEngine::TextureCreateFromFileIntern(
+                            this->engine, aeName, 0, 0, &dummyOut, tex->scale, tex, true);
+                        delete[] aeName;
+                    }
+                    ++AbyssEngine::loadTexture;
+                }
+                for (int i = 0; i < 10; ++i) {
+                    if (static_cast<unsigned int>(AbyssEngine::loadMesh) < this->paintCanvas->meshCount) {
+                        this->paintCanvas->MeshConvertToVBO(static_cast<unsigned int>(AbyssEngine::loadMesh));
+                        ++AbyssEngine::loadMesh;
+                    }
+                }
+                const uint64_t previous = this->frameTimeMs;
+                this->previousFrameTimeMs = previous;
+                this->frameTimeMs = static_cast<uint64_t>(now);
+                this->currentTimeMs += this->frameTimeMs - previous;
+                if (this->currentTimeMs > 500) {
+                    this->currentTimeMs = 0;
+                }
+                break;
+            }
+            this->state = 5;
+            this->currentTimeMs = 0;
+            this->frameTimeMs = static_cast<uint64_t>(now);
+            this->previousFrameTimeMs = static_cast<uint64_t>(now) - 1;
+            this->keyState = 0;
+            AbyssEngine::loadMesh = 0;
+            AbyssEngine::loadTexture = 0;
             break;
         }
         default:
@@ -417,7 +576,7 @@ void ApplicationManager::OnKeyPress(int key) {
             this->keyStateHigh |= keyHigh;
 
             ActionEntry *entries = action_entries(this->actionTable);
-            for (unsigned int i = 0; i < this->actionTable->size(); i += 2) {
+            for (unsigned int i = 0; i < this->actionTable.size(); i += 2) {
                 ActionEntry *entry = &entries[i / 2];
                 if (entry->keyIndex == keyIndex && entry->flags == 0) {
                     actionLow |= entry->actionLow;
@@ -465,7 +624,7 @@ void ApplicationManager::OnKeyRelease(int key) {
             this->keyStateHigh &= ~keyHigh;
 
             ActionEntry *entries = action_entries(this->actionTable);
-            for (unsigned int i = 0; i < this->actionTable->size(); i += 2) {
+            for (unsigned int i = 0; i < this->actionTable.size(); i += 2) {
                 ActionEntry *entry = &entries[i / 2];
                 if (entry->keyIndex == keyIndex && entry->flags == 0) {
                     actionLow |= entry->actionLow;
@@ -703,8 +862,8 @@ void ApplicationManager::CheckForOrientationChange() {
 }
 
 void ApplicationManager::ConfigRegisterAction(long long value, long long key) {
-    ArrayAdd(value, *(this->actionTable));
-    ArrayAdd(key, *(this->actionTable));
+    ArrayAdd(value, this->actionTable);
+    ArrayAdd(key, this->actionTable);
 }
 
 void *ApplicationManager::ConfigGetKeysForAction(long long action) {
@@ -712,7 +871,7 @@ void *ApplicationManager::ConfigGetKeysForAction(long long action) {
     int high = (int) (action >> 32);
     Array<String *> *result = 0;
 
-    for (unsigned int index = 0; index < this->actionTable->size(); index += 2) {
+    for (unsigned int index = 0; index < this->actionTable.size(); index += 2) {
         ActionEntry *entry = &action_entries(this->actionTable)[index / 2];
         int actionLow = (int) entry->actionLow;
         int actionHigh = (int) entry->actionHigh;
@@ -830,7 +989,7 @@ void ApplicationManager::SoundPauseSounds() {
 }
 
 void ApplicationManager::SoundResume() {
-    if ((this->soundResource != 0 && this->soundFxEnabled) || this->musicEnabled) {
+    if (this->soundResource != 0) {
         this->soundResource->resume();
     }
 }
@@ -968,8 +1127,8 @@ void ApplicationManager::SoundSet(const AESoundInfo *info, int count) {
 void ApplicationManager::RegisterApplicationModule(unsigned int id, IApplicationModule *module) {
     if (module != 0) {
         module->SetApplicationManager(this);
-        ArrayAdd(module, *(this->modules));
-        ArrayAdd(id, *(this->moduleIds));
+        ArrayAdd(module, this->modules);
+        ArrayAdd(id, this->moduleIds);
     }
 }
 

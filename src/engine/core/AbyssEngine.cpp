@@ -90,7 +90,7 @@ namespace AbyssEngine {
     int currentUsedShaderIndex;
 
     // Namespace-scope globals present in the original binary (defined for symbol parity).
-    float currentFps;
+    int currentFps;
     float debugTouch[4];
     int fpsCounter;
     int SwapCounter;
@@ -113,7 +113,7 @@ namespace AbyssEngine {
     float i_fov;
     float i_zFar;
     float i_zNear;
-    float fpsTimer;
+    int fpsTimer;
     int loadMesh;
     long long triDrawn;
     unsigned char ShaderSet;

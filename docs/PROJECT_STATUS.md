@@ -1,5 +1,30 @@
 # Project Status
 
+Last reviewed: 2026-11-17 (`ApplicationManager` layout and `OnUpdate` recovery).
+Original Android ARM32 `AbyssEngine::ApplicationManager` embeds `modules`,
+`moduleIds`, and `actionTable` by value (`+68`, `+80`, `+136`), aligns
+64-bit key/action masks to 8 bytes (`+8`, `+128`, `+152`, `+160`), and
+places `engine` at `+168`, `soundResource` at `+172`, `lastTouchX/Y` at
+`+180/+184`. `AbyssEngine::currentFps` and `AbyssEngine::fpsTimer` are
+`int`, not `float`. Restoring the inline `Array` layout, `musicEnabled =
+true` in the constructor, `SoundResume()`, and `OnUpdate(long long)`
+(orientation check via `Engine::CheckForOrientationChange`, FPS/PerfTest
+counters and HUD, debug overlay, and switch cases 6 `WarmUpTexture` and
+7 `loadTexture`/`loadMesh`) raises `engine/core/ApplicationManager` from
+**63.0% -> 83.9%** fuzzy (**89.1% -> 94.6%** source-shape, **10 -> 51**
+linked-exact, **1 -> 20** byte-exact), with `OnUpdate` rising **14.4% ->
+86.3%** source-shape (**8.5% -> 26.3%** fuzzy). ARM32 **211/211**,
+Windows native, ARM64 static, and strict ARM64 shared
+(`_work/libgof2hdaa_appmgr_20261117.so`) builds pass. Full corpus:
+**4,323/4,524** originals in **4,776** pairs, mean source-shape
+**97.1%** (from **96.96%**), strict fuzzy **87.4%** (from **87.06%**),
+**3,033** 100%-fuzzy (from **2,991**, +42), **2,849 linked-exact** (from
+**2,808**, +41), **1,135 byte-exact** (from **1,116**, +19), 201 missing,
+zero skipped or wrong-type, and 151 extra symbols. Next: inspect
+remaining `<50%` targets (`MenuTouchWindow::draw`, `CutScene(int)`,
+`Transform::InsertKeyFrame_old`, `Layout::Layout`,
+`ParticleSettings::init`).
+
 Last reviewed: 2026-11-17 (`VirtualInput` `F` and `keyIsPressed`).
 Original Android ARM32 `F(unsigned int)` (`0x6b2d4`) uses the Blowfish
 S-box `S[4][256]` rather than an uninitialized `g_hashTable`, and

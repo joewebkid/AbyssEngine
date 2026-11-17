@@ -37,8 +37,13 @@ namespace AbyssEngine {
     class ApplicationManager {
     public:
         PaintCanvas *paintCanvas;
-        uint32_t currentKey;
-        uint32_t currentKeyHigh;
+        union {
+            uint64_t currentKey64;
+            struct {
+                uint32_t currentKey;
+                uint32_t currentKeyHigh;
+            };
+        };
         char *keyMappingTable;
         bool orientationTrackingEnabled;
         void *currentModule;
@@ -52,21 +57,36 @@ namespace AbyssEngine {
         ConfigReader *configReader;
         int state;
         int savedState;
-        Array<IApplicationModule *> *modules;
-        Array<unsigned int> *moduleIds;
+        Array<IApplicationModule *> modules;
+        Array<unsigned int> moduleIds;
         unsigned int currentModuleId;
         void *pendingModule;
         void *applicationData;
         uint64_t currentTimeMs;
         uint64_t frameTimeMs;
         uint64_t previousFrameTimeMs;
-        uint32_t keyState;
-        uint32_t keyStateHigh;
-        Array<long long> *actionTable;
-        uint32_t actionMask;
-        uint32_t actionMaskHigh;
-        uint32_t actionState;
-        uint32_t actionStateHigh;
+        union {
+            uint64_t keyState64;
+            struct {
+                uint32_t keyState;
+                uint32_t keyStateHigh;
+            };
+        };
+        Array<long long> actionTable;
+        union {
+            uint64_t actionMask64;
+            struct {
+                uint32_t actionMask;
+                uint32_t actionMaskHigh;
+            };
+        };
+        union {
+            uint64_t actionState64;
+            struct {
+                uint32_t actionState;
+                uint32_t actionStateHigh;
+            };
+        };
         Engine *engine;
         AESoundRessource *soundResource;
         bool soundFxEnabled;
