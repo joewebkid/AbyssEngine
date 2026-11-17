@@ -1,5 +1,27 @@
 # Project Status
 
+Last reviewed: 2026-11-17 (`Globals::~Globals()`).
+Original Android ARM32 (`0xe3444`–`0xe35da`, 166 instructions) saves
+options on `Globals::recordHandler`, deletes the global singletons and
+arrays (`galaxy`, `status`, `gameText`, `rnd`, `layout`, `generator`,
+`recordHandler`, `instantActionPlayerName`, `sound`, `items`, `ships`,
+`achievements`, `imageFactory`), releases `this->soundResources` via
+`ArrayRelease`, and clears `Globals::globals`. The prior source had
+all 14 `gG_*` slot pointers set to `nullptr` and called eight undefined
+`*_dtor` stand-ins, folding the destructor to 1 instruction. Replacing
+them with real `Globals::...` members and typed `delete`/`ArrayRelease`
+restores the full destructor: `D1Ev`/`D2Ev` rise **0.1% -> 97.8%**
+source-shape and **0.0% -> 54.8%** strict fuzzy (**166/166**
+instructions, **100%** control-flow and call-count match). ARM32
+**211/211**, Windows native, ARM64 static, and strict ARM64 shared
+builds pass. Full corpus: **4,323/4,524** originals in **4,776** pairs
+(from **4,772**), mean source-shape **96.92%** (from **96.88%**), strict
+fuzzy **87.02%** (from **86.98%**), **2,806 linked-exact** (from
+**2,802**, +4 in `Globals`), **1,116 byte-exact**, 201 missing, zero
+skipped or wrong-type, and 151 extra symbols. Next: recover
+`VirtualInput` (`F`, `keyIsPressed`) and other `<50%` source-shape
+targets. See [ARM destructor evidence](GLOBALS_DTOR_ARM_2026-11-17.md).
+
 Last reviewed: 2026-11-16 (`Status::nextCampaignMission`, steps 121–161
 and `> 161` fallback). Original Android ARM32 dispatches steps 121–161
 (`0x79`–`0xa1`) and `> 161` (`0xa9ee4`) to complete the 162-entry `tbh`

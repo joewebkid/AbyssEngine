@@ -361,22 +361,6 @@ int idiv(int a, int b);
 
 void MatrixSetTranslation(void *m, float x, float y, float z);
 
-void *Galaxy_dtor(void *g);
-
-void *Status_dtor(void *s);
-
-void *AERandom_dtor(void *r);
-
-void *Layout_dtor(void *l);
-
-void *Generator_dtor(void *g);
-
-void *FModSound_dtor(void *s);
-
-void *Achievements_dtor(void *a);
-
-void *ImageFactory_dtor(void *f);
-
 #if __SIZEOF_POINTER__ == 4
 static_assert(sizeof(Mission) == 0x78, "Mission ARM32 allocation");
 static_assert(sizeof(Galaxy) == 8, "Galaxy ARM32 allocation");
@@ -1598,115 +1582,86 @@ Globals::Globals() {
     self->soundResources = 0;
 }
 
-static void **const gG_recordHandler = nullptr;
-static void **const gG_galaxy = nullptr;
-static void **const gG_status = nullptr;
-static void **const gG_gameText = nullptr;
-static void **const gG_random = nullptr;
-static void **const gG_layout = nullptr;
-static void **const gG_generator = nullptr;
-static void **const gG_polyObj = nullptr;
-static void **const gG_fmod = nullptr;
-static void **const gG_items = nullptr;
-static void **const gG_ships = nullptr;
-static void **const gG_achievements = nullptr;
-static void **const gG_imageFactory = nullptr;
-static int **const gG_tail = nullptr;
-
 struct PolymorphicSingleton {
     virtual ~PolymorphicSingleton() {
     }
 };
 
 Globals::~Globals() {
-    void **rhSlot = gG_recordHandler;
-    if (*rhSlot != 0) {
-        ((RecordHandler *) (*rhSlot))->saveOptions();
+    if (Globals::recordHandler != nullptr) {
+        static_cast<RecordHandler *>(Globals::recordHandler)->saveOptions();
     }
-    void **galSlot = gG_galaxy;
-    if (*galSlot != 0) {
-        ::operator delete(Galaxy_dtor(*galSlot));
+    if (Globals::galaxy != nullptr) {
+        delete static_cast<Galaxy *>(Globals::galaxy);
     }
-    *galSlot = 0;
-    void **statSlot = gG_status;
-    if (*statSlot != 0) {
-        ::operator delete(Status_dtor(*statSlot));
+    Globals::galaxy = nullptr;
+    if (Globals::status != nullptr) {
+        delete static_cast<Status *>(Globals::status);
     }
-    *statSlot = 0;
-    void **gtSlot = gG_gameText;
-    if (*gtSlot != 0) {
-        delete (GameText *) (*gtSlot);
+    Globals::status = nullptr;
+    if (Globals::gameText != nullptr) {
+        delete Globals::gameText;
     }
-    *gtSlot = 0;
-    void **rngSlot = gG_random;
-    if (*rngSlot != 0) {
-        ::operator delete(AERandom_dtor(*rngSlot));
+    Globals::gameText = nullptr;
+    if (Globals::rnd != nullptr) {
+        delete static_cast<AbyssEngine::AERandom *>(Globals::rnd);
     }
-    *rngSlot = 0;
-    void **laySlot = gG_layout;
-    if (*laySlot != 0) {
-        ::operator delete(Layout_dtor(*laySlot));
+    Globals::rnd = nullptr;
+    if (Globals::layout != nullptr) {
+        delete Globals::layout;
     }
-    *laySlot = 0;
-    void **genSlot = gG_generator;
-    if (*genSlot != 0) {
-        ::operator delete(Generator_dtor(*genSlot));
+    Globals::layout = nullptr;
+    if (Globals::generator != nullptr) {
+        delete static_cast<Generator *>(Globals::generator);
     }
-    *genSlot = 0;
-    if (*rhSlot != 0) {
-        delete (RecordHandler *) (*rhSlot);
+    Globals::generator = nullptr;
+    if (Globals::recordHandler != nullptr) {
+        delete static_cast<RecordHandler *>(Globals::recordHandler);
     }
-    *rhSlot = 0;
-    void **polySlot = gG_polyObj;
-    void *poly = *polySlot;
-    if (poly != 0) {
-        delete static_cast<PolymorphicSingleton *>(poly);
+    Globals::recordHandler = nullptr;
+    if (Globals::instantActionPlayerName != nullptr) {
+        delete static_cast<PolymorphicSingleton *>(Globals::instantActionPlayerName);
     }
-    *polySlot = 0;
-    void **fmodSlot = gG_fmod;
-    if (*fmodSlot != 0) {
-        ::operator delete(FModSound_dtor(*fmodSlot));
+    Globals::instantActionPlayerName = nullptr;
+    if (Globals::sound != nullptr) {
+        delete Globals::sound;
     }
-    *fmodSlot = 0;
-    void **itemSlot = gG_items;
-    if (*itemSlot != 0) {
-        Array<Item *> *items = (Array<Item *> *) *itemSlot;
+    Globals::sound = nullptr;
+    if (Globals::items != nullptr) {
+        Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
         ArrayReleaseClasses(*items);
         delete items;
     }
-    *itemSlot = 0;
-    void **shipSlot = gG_ships;
-    if (*shipSlot != 0) {
-        Array<Ship *> *ships = (Array<Ship *> *) *shipSlot;
+    Globals::items = nullptr;
+    if (Globals::ships != nullptr) {
+        Array<Ship *> *ships = static_cast<Array<Ship *> *>(Globals::ships);
         ArrayReleaseClasses(*ships);
         delete ships;
     }
-    *shipSlot = 0;
-    if (*galSlot != 0) {
-        ::operator delete(Galaxy_dtor(*galSlot));
+    Globals::ships = nullptr;
+    if (Globals::galaxy != nullptr) {
+        delete static_cast<Galaxy *>(Globals::galaxy);
     }
-    *galSlot = 0;
-    void **achSlot = gG_achievements;
-    if (*achSlot != 0) {
-        ::operator delete(Achievements_dtor(*achSlot));
+    Globals::galaxy = nullptr;
+    if (Globals::achievements != nullptr) {
+        delete static_cast<Achievements *>(Globals::achievements);
     }
-    *achSlot = 0;
-    if (*statSlot != 0) {
-        ::operator delete(Status_dtor(*statSlot));
+    Globals::achievements = nullptr;
+    if (Globals::status != nullptr) {
+        delete static_cast<Status *>(Globals::status);
     }
-    *statSlot = 0;
-    void **ifSlot = gG_imageFactory;
-    if (*ifSlot != 0) {
-        ::operator delete(ImageFactory_dtor(*ifSlot));
+    Globals::status = nullptr;
+    if (Globals::imageFactory != nullptr) {
+        delete static_cast<ImageFactory *>(Globals::imageFactory);
     }
-    *ifSlot = 0;
+    Globals::imageFactory = nullptr;
 
-    if (this->soundResources != 0) {
-        ArrayRemoveAll(*(this->soundResources));
+    if (this->soundResources != nullptr) {
+        ArrayRelease(*(this->soundResources));
         delete this->soundResources;
     }
-    this->soundResources = 0;
-    **gG_tail = 0;
+    this->soundResources = nullptr;
+    Globals::globals = nullptr;
 }
 
 void Globals::drawLines(unsigned int font, Array<String *> *lines, int baseX, int startY,
