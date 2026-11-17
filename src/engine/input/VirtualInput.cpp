@@ -19,6 +19,7 @@ using AbyssEngine::AEMath::VectorSignedToFloat;
 
 extern int g_mouseCaptured __attribute__((visibility("hidden")));
 extern int g_useJoystick __attribute__((visibility("hidden")));
+extern "C" unsigned int S[4][256];
 
 bool g_virtualInputSlowMotion;
 bool g_virtualInputSpeedUp;
@@ -129,15 +130,11 @@ namespace {
 
     VirtualKey *const g_arrowKeys = g_virtualKeys;
 
-    int g_actionKeyState;
-
     constexpr int kDelayedKeyMax = 0x401;
     int g_delayedKeys[kDelayedKeyMax];
     int g_delayedKeyCount;
 
     constexpr int kTouchWindowBase = 0x578;
-
-    const unsigned int *const *g_hashTable;
 
     constexpr float kAxisCenter = 0.5f;
     constexpr float kAxisStep = 0.1f;
@@ -153,18 +150,12 @@ namespace {
 }
 
 extern "C" unsigned int F(unsigned int value) {
-    const unsigned int *table = *g_hashTable;
-    const unsigned int *col0 = table;
-    const unsigned int *col1 = table + 0x100;
-    const unsigned int *col2 = table + 0x200;
-    const unsigned int *col3 = table + 0x300;
-
     const unsigned int byte0 = value & 0xff;
     const unsigned int byte1 = (value >> 8) & 0xff;
     const unsigned int byte2 = (value >> 16) & 0xff;
     const unsigned int byte3 = value >> 24;
 
-    return (col2[byte1] ^ (col0[byte3] + col1[byte2])) + col3[byte0];
+    return (S[2][byte1] ^ (S[0][byte3] + S[1][byte2])) + S[3][byte0];
 }
 
 void MouseInput(int dx, int dy) {
@@ -489,7 +480,9 @@ bool ArrowKeyPressed() {
 }
 
 bool keyIsPressed() {
-    return ArrowKeyPressed() || g_actionKeyState != 0;
+    return (g_arrowKeys[0].pressed | g_arrowKeys[1].pressed |
+            g_arrowKeys[2].pressed | g_arrowKeys[3].pressed |
+            g_mouseCaptured) != 0;
 }
 
 namespace {

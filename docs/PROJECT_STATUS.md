@@ -1,5 +1,22 @@
 # Project Status
 
+Last reviewed: 2026-11-17 (`VirtualInput` `F` and `keyIsPressed`).
+Original Android ARM32 `F(unsigned int)` (`0x6b2d4`) uses the Blowfish
+S-box `S[4][256]` rather than an uninitialized `g_hashTable`, and
+`keyIsPressed()` (`0x6a668`) computes the bitwise OR of
+`keys[0..3].pressed` and `g_mouseCaptured` rather than testing an unused
+`g_actionKeyState`. Replacing both placeholders restores both functions
+to **100.0% source-shape**, **100.0% strict fuzzy**, and
+**linked-exact** (`19/19` and `21/21` instructions). ARM32 **211/211**,
+Windows native, ARM64 static, and strict ARM64 shared builds pass. Full
+corpus: **4,323/4,524** originals in **4,776** pairs, mean source-shape
+**96.96%** (from **96.92%**), strict fuzzy **87.06%** (from **87.02%**),
+**2,808 linked-exact** (from **2,806**, +2), **1,116 byte-exact**, 201
+missing, zero skipped or wrong-type, and 151 extra symbols. Next:
+inspect `Engine::GlEnable` (`43.8%` source-shape) and remaining `<50%`
+targets. See
+[ARM VirtualInput evidence](VIRTUALINPUT_F_KEYPRESSED_ARM_2026-11-17.md).
+
 Last reviewed: 2026-11-17 (`Globals::~Globals()`).
 Original Android ARM32 (`0xe3444`–`0xe35da`, 166 instructions) saves
 options on `Globals::recordHandler`, deletes the global singletons and
