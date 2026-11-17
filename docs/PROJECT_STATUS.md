@@ -1,36 +1,153 @@
 # Project Status
 
-Last reviewed: 2026-11-15 (`Status::nextCampaignMission`, step 88).
+Last reviewed: 2026-11-16 (`Status::nextCampaignMission`, steps 121–161
+and `> 161` fallback). Original Android ARM32 dispatches steps 121–161
+(`0x79`–`0xa1`) and `> 161` (`0xa9ee4`) to complete the 162-entry `tbh`
+table: step 121 clears unsaleable on cargo `209`, calls `removeCargo(209,
+1)`, and creates ordinary `Mission(11, 0, 10)`; step 128 re-enters the
+achievement loop like step 52; steps 127, 129, and 161 create hidden
+default campaign `Mission()`; steps 125, 132, 133, 143 (`removeCargo(210,
+1)`), and 160 create campaign missions with `setStatusValue(0)`; step
+134 creates campaign `Mission(174, 0, 103)` (`setProductionGoods(155,
+140)`, `setStatusValue(0)`); step 138 marks `systemVisibilities[31]` and
+creates campaign `Mission(168, 0, 131)` (`setStatusValue(10)`,
+`field_178 = 0`); step 140 unlocks blueprint `210` and adds items
+`201..204` (`847/834/861/892`, station `112`) before ordinary
+`Mission(11, 0, 78)`; step 141 adds cargo stacks `197x15`, `196x1`,
+`198x1` before ordinary `Mission(4, 0, 79)`; step 142 creates campaign
+`Mission(8, 0, 112)` (`setProductionGoods(210, 1)`); remaining steps
+`122..159` create their ordinary missions; and `step > 161` returns
+without constructing a mission. The source (`kSteps[0x00..0xa1]`, loop,
+branches, and `> 161` return) and production-code smoke restore and
+check all transitions at `-O0/-O2`. Focused source-shape rises **38.5%
+-> 44.1%** while strict fuzzy changes **14.3% -> 12.8%** (`1,017 ->
+1,274` generated instructions vs `2,884` original); the function remains
+non-exact. ARM32 **211/211**, Windows native, ARM64 static, and strict
+ARM64 shared builds pass. Full corpus: **4,323/4,524** originals in
+**4,772** pairs, mean source-shape **96.88%**, strict fuzzy **86.98%**,
+**2,802 linked-exact**, **1,116 byte-exact**, 201 missing, zero skipped
+or wrong-type, and 151 extra symbols. Neither exact membership set gains
+or loses a function. Live campaign progression remains unverified. Next:
+audit missing functions or other low-match methods. See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEPS_121_161_ARM_2026-11-16.md).
+
+Last reviewed: 2026-11-16 (`Status::nextCampaignMission`, steps 102–120).
+Original Android ARM32 dispatches steps 102–120 (`0x66`–`0x78`) through
+`0xaac60`–`0xaae98`, `0xaa278`–`0xaa2ae`, `0xab7f4`–`0xab854`,
+`0xab9f4`–`0xaba2c`, and `0xa9ee4`: ordinary missions at steps 102
+`(11,0,10)`, 104 `(4,0,109)`, 105 `(4,0,111)`, 107 `(11,0,10)`, 109
+`(171,0,10)`, 110 `(171,0,38)`, 113 `(4,0,83)`, 114 `(171,0,82)`, and
+119 `(4,0,40)`; blueprint `206` unlock + `addItem(163, 10, 10)` +
+campaign `Mission(166, 0, 10)` (`setProductionGoods(206, 1)`) at step
+103; early no-mission return at step 106; campaign `Mission(170,0,114)`
+and `Mission(171,0,93)` (`setStatusValue(0)`) at steps 108 and 115;
+campaign `Mission(172, 0, 38)` (`setProductionGoods(146, 1)`) at step
+111; `removeCargo(146, 1)` + ordinary `Mission(171, 0, 82)` at step
+112; `systemVisibilities[30] = true` + ordinary `Mission(11, 0, 126)`
+at step 116; campaign `Mission(8, 0, 126)` and `Mission(8, 0, 93)`
+(`setProductionGoods(209, 1)`) at steps 117 and 120; and cargo `209`
+`setUnsaleable(true)` + campaign `Mission(170, 0, 10)`
+(`setStatusValue(0)`) at step 118. The source (`kSteps[0x66..0x78]` and
+pre/post step branches) and production-code smoke restore and check all
+nineteen transitions at `-O0/-O2`. Focused source-shape rises **38.3% ->
+38.5%** and strict fuzzy **12.1% -> 14.3%** (`1,038 -> 1,017` generated
+instructions vs `2,884` original); the function remains non-exact. ARM32
+**211/211**, Windows native, ARM64 static, and strict ARM64 shared
+builds pass. Full corpus: **4,323/4,524** originals in **4,772** pairs,
+mean source-shape **96.88%**, strict fuzzy **86.98%**, **2,802
+linked-exact**, **1,116 byte-exact**, 201 missing, zero skipped or
+wrong-type, and 151 extra symbols. Neither exact membership set gains or
+loses a function. Live campaign progression remains unverified. Next:
+inspect step 121 (`0x79` -> `0xaae9c`). See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEPS_102_120_ARM_2026-11-16.md).
+
+Last reviewed: 2026-11-16 (`Status::nextCampaignMission`, steps 91–101).
+Original Android ARM32 dispatches steps 91–101 (`0x5b`–`0x65`) through
+`0xaaa7a`–`0xaac5c` and `0xaa25c`: campaign `Mission(184, 0, 113)` at
+step 91 (`setProductionGoods(0, 10)`, `setStatusValue(10)`), ordinary
+`Mission(11, 0, 114)` at step 92, cargo item `205` + campaign
+`Mission(184, 0, 111)` (`setProductionGoods(0, 83)`,
+`setStatusValue(83)`, `field_178 = 0`) at step 93, campaign
+`Mission(170, 0, 10)` (`setStatusValue(0)`) at steps 94 and 98, ordinary
+missions `(11,0,98)`, `(4,0,85)`, `(4,0,98)`, `(11,0,98)` at steps 95,
+96, 99, 100, `systemVisibilities[29] = true` + ordinary
+`Mission(11, 0, 120)` at step 97, and cargo item `207` + campaign
+`Mission(184, 0, 113)` (`setProductionGoods(0, 1700)`,
+`setStatusValue(1700)`) at step 101. The source (`kSteps[0x5b..0x65]` and
+pre/post step branches) and production-code smoke restore and check all
+eleven transitions at `-O0/-O2`. Focused source-shape rises **35.9% ->
+38.3%** while strict fuzzy changes **12.2% -> 12.1%** (`933 -> 1,038`
+generated instructions vs `2,884` original; `ordered_control_flow_match`
+**14.0% -> 16.2%**); the function remains non-exact. ARM32 **211/211**,
+Windows native, ARM64 static, and strict ARM64 shared builds pass. Full
+corpus: **4,323/4,524** originals in **4,772** pairs, mean source-shape
+**96.88%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped or wrong-type, and
+151 extra symbols. Neither exact membership set gains or loses a
+function. Live campaign progression remains unverified. Next: inspect
+steps 102+ (`0x66..0xa1`). See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEPS_91_101_ARM_2026-11-16.md).
+
+Last reviewed: 2026-11-16 (`Status::nextCampaignMission`, step 90).
+Original Android ARM32 dispatches step 90 (`0x5a`) to `0xaaa38`: it
+marks systems `27` and `28` visible, creates campaign
+`Mission(184, 0, 110)`, calls `setProductionGoods(0, 10)` and
+`setStatusValue(10)` (`0xab0e2`–`0xab0f4`), and clears `field_178`.
+The source (`kSteps[0x5a]` and pre/post step-90 branches) and
+production-code smoke restore and check all effects at `-O0/-O2`.
+Focused source-shape rises **35.2% -> 35.9%** and strict fuzzy
+**11.3% -> 12.2%** (`915 -> 933` generated instructions vs `2,884`
+original); the function remains non-exact. ARM32 **211/211**, Windows
+native, ARM64 static, and strict ARM64 shared builds pass. Full
+corpus: **4,323/4,524** originals in **4,772** pairs, mean source-shape
+**96.88%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped or wrong-type, and
+151 extra symbols. Neither exact membership set gains or loses a
+function. Live campaign progression remains unverified. Next: inspect
+step 91 (`0x5b` -> `0xaaa7a`). See
+[ARM campaign evidence](STATUS_CAMPAIGN_STEP_90_ARM_2026-11-16.md).
+
+Last reviewed: 2026-11-16 (`Status::nextCampaignMission`, steps 87–89
+alignment). Re-checking the Thumb-2 branch table (`0xa9ac6: tbh`) showed
+an off-by-one shift in the 2026-11-15 step 87–88 edits: `tbh[87]`
+dispatches out-of-line to `0xaa240` (ordinary `Mission(11,0,10)` with no
+side effects), `tbh[88]` dispatches to `0xaa97a` (`removeCargo(104, 10)`,
+`systemVisibilities[27..28] = true`, ordinary `Mission(4,0,109)`), and
+`tbh[89]` dispatches to `0xaa9ba` (`--stationsVisited`,
+`Galaxy::getVisited()[109] = 0`, ordinary `Mission(11,0,10)`). The
+source (`kSteps[0x57..0x59]` and `step == 88`/`89` branches) and
+production-code smoke now match and verify all three transitions at
+`-O0/-O2`. Focused source-shape changes **35.6% -> 35.2%** and strict
+fuzzy **13.4% -> 11.3%** (`928 -> 915` generated instructions vs `2,884`
+original; `ordered_control_flow_match` rises **14.6% -> 16.3%**); the
+function remains non-exact. ARM32 **211/211**, Windows native, ARM64
+static, and strict ARM64 shared builds pass. Full corpus:
+**4,323/4,524** originals in **4,772** pairs, mean source-shape
+**96.88%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
+**1,116 byte-exact**, 201 missing, zero skipped or wrong-type, and
+151 extra symbols. Neither exact membership set gains or loses a
+function. Live campaign progression remains unverified. Next: inspect
+step 90 (`0x5a` -> `0xaaa38`) and subsequent Supernova campaign steps, or
+audit missing startup functions using runtime evidence. See
+[step 87 evidence](STATUS_CAMPAIGN_STEP_87_ARM_2026-11-15.md) and
+[steps 88–89 evidence](STATUS_CAMPAIGN_STEP_88_ARM_2026-11-15.md).
+
+Last reviewed: 2026-11-15 (`Status::nextCampaignMission`, step 88,
+superseded by 2026-11-16 step 87–89 alignment above).
 Original Android ARM32 decrements `stationsVisited`, clears the
 visited byte for station `109`, then creates ordinary
-`Mission(11,0,10)`. The source and production-code smoke restore
-and check these effects at `-O0/-O2`. Focused source-shape rises
-**34.7% -> 35.6%** and strict fuzzy **11.5% -> 13.4%**;
-the function remains non-exact. ARM32 **211/211**, Windows native,
-ARM64 static, and strict ARM64 shared builds pass. Full corpus:
-**4,323/4,524** originals in **4,772** pairs, mean source-shape
-**96.88%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
-**1,116 byte-exact**, 201 missing, zero skipped or wrong-type, and
-151 extra symbols. Neither exact membership set loses a function.
-Live campaign progression remains unverified. Next: audit missing
-startup functions using runtime evidence, then inspect the campaign
-fallback after step 88. See
+`Mission(11,0,10)` at `tbh[89]` (`0xaa9ba`). Initial 2026-11-15 recovery
+placed this at step 88 (`34.7% -> 35.6%` source-shape, `11.5% -> 13.4%`
+strict fuzzy). See
 [ARM campaign evidence](STATUS_CAMPAIGN_STEP_88_ARM_2026-11-15.md).
 
-Last reviewed: 2026-11-15 (`Status::nextCampaignMission`, step 87).
+Last reviewed: 2026-11-15 (`Status::nextCampaignMission`, step 87,
+superseded by 2026-11-16 step 87–89 alignment above).
 Original Android ARM32 removes ten units of cargo item `104`, marks
 systems `27` and `28` visible, then creates ordinary
-`Mission(4,0,109)`. The source and production-code smoke restore and
-check all three effects at `-O0/-O2`. Focused source-shape rises
-**34.5% -> 34.7%** while strict fuzzy falls **12.9% -> 11.5%**;
-the function remains non-exact. ARM32 **211/211**, Windows native,
-ARM64 static, and strict ARM64 shared builds pass. Full corpus:
-**4,323/4,524** originals in **4,772** pairs, mean source-shape
-**96.88%**, strict fuzzy **86.98%**, **2,802 linked-exact**,
-**1,116 byte-exact**, 201 missing, zero skipped or wrong-type, and
-151 extra symbols. Neither exact membership set loses a function.
-Live campaign progression remains unverified. Next: step 88.
-See [ARM campaign evidence](STATUS_CAMPAIGN_STEP_87_ARM_2026-11-15.md).
+`Mission(4,0,109)` at `tbh[88]` (`0xaa97a`). Initial 2026-11-15 recovery
+placed this at step 87 (`34.5% -> 34.7%` source-shape, `12.9% -> 11.5%`
+strict fuzzy). See [ARM campaign evidence](STATUS_CAMPAIGN_STEP_87_ARM_2026-11-15.md).
 
 Last reviewed: 2026-11-07 (`Status::nextCampaignMission`, step 83).
 Original Android ARM32 clears the unsaleable flag on ship equipment

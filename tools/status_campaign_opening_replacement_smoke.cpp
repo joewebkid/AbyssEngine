@@ -60,9 +60,11 @@ struct BluePrint {
     int resetCount = 0;
     bool unlocked = false;
     bool locked = false;
+    struct AddedItemCall { Item *item; int amount; int station; };
     Item *addedItem = nullptr;
     int addedAmount = -1;
     int addedStation = -1;
+    std::vector<AddedItemCall> addedItems;
     int getIndex() { return index; }
     int getStationIndex() { return stationIndex; }
     bool isEmpty() { return empty; }
@@ -73,6 +75,7 @@ struct BluePrint {
         addedItem = item;
         addedAmount = amount;
         addedStation = station;
+        addedItems.push_back({item, amount, station});
     }
 };
 
@@ -97,6 +100,7 @@ struct Ship {
     Item *removedCargoItem = nullptr;
     Array<Item *> equipment;
     Array<Item *> cargo;
+    bool nullCargo = false;
     ~Ship() { for (const EquipmentCall &call : equipmentCalls) delete call.item; }
     Ship *makeShip(int price) {
         Ship *copy = new Ship();
@@ -114,7 +118,7 @@ struct Ship {
     void removeCargo(int index) { removedAllCargoIndex = index; }
     void removeCargo(Item *item) { removedCargoItem = item; }
     Array<Item *> *getEquipment() { return &equipment; }
-    Array<Item *> *getCargo() { return &cargo; }
+    Array<Item *> *getCargo() { return nullCargo ? nullptr : &cargo; }
     Item *getCargo(int index) {
         requestedCargoIndex = index;
         for (Item *item : cargo.values)
@@ -165,6 +169,7 @@ struct Status {
     int field_7c = -1;
     int field_80 = -1;
     int field_10c = -1;
+    int field_178 = -1;
     unsigned char field_0x17c = 0;
     Array<bool> *systemVisibilities = nullptr;
     Array<BluePrint *> *bluePrints = nullptr;
@@ -190,14 +195,14 @@ struct Status {
 #include "status_campaign_opening_replacement_under_test.inc"
 
 int main() {
-    Item prototypes[182];
-    Item *catalog[182];
-    for (int i = 0; i != 182; ++i) {
+    Item prototypes[210];
+    Item *catalog[210];
+    for (int i = 0; i != 210; ++i) {
         prototypes[i].prototypeIndex = i;
         catalog[i] = &prototypes[i];
     }
     Array<Item *> items;
-    items.values.assign(catalog, catalog + 182);
+    items.values.assign(catalog, catalog + 210);
     Globals::items = &items;
 
     Ship shipPrototypes[42];
@@ -707,6 +712,16 @@ int main() {
     visibilities[28] = false;
     status.nextCampaignMission(true);
     assert(status.currentCampaignMission == 88);
+    assert(ship.removedCargoIndex == -1 && ship.removedCargoAmount == -1);
+    assert(!visibilities[27] && !visibilities[28]);
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 0 && missions[0]->station == 10);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 88;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 89);
     assert(ship.removedCargoIndex == 104 && ship.removedCargoAmount == 10);
     assert(visibilities[27] && visibilities[28]);
     assert(missions[0] != nullptr && !missions[0]->campaign);
@@ -714,20 +729,527 @@ int main() {
     delete missions[0];
     missions[0] = nullptr;
 
-    status.currentCampaignMission = 88;
+    status.currentCampaignMission = 89;
     status.stationsVisited = 17;
     galaxy.visited[109] = 1;
     status.nextCampaignMission(true);
-    assert(status.currentCampaignMission == 89 && status.stationsVisited == 16);
+    assert(status.currentCampaignMission == 90 && status.stationsVisited == 16);
     assert(galaxy.visited[109] == 0);
     assert(missions[0] != nullptr && !missions[0]->campaign);
     assert(missions[0]->type == 11 && missions[0]->param == 0 && missions[0]->station == 10);
     delete missions[0];
     missions[0] = nullptr;
+
+    status.currentCampaignMission = 90;
+    visibilities[27] = false;
+    visibilities[28] = false;
+    status.field_178 = 99;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 91);
+    assert(visibilities[27] && visibilities[28]);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 184 && missions[0]->param == 0 && missions[0]->station == 110);
+    assert(missions[0]->productionGoodsA == 0 && missions[0]->productionGoodsB == 10);
+    assert(missions[0]->statusValue == 10 && status.field_178 == 0);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 91;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 92);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 184 && missions[0]->param == 0 && missions[0]->station == 113);
+    assert(missions[0]->productionGoodsA == 0 && missions[0]->productionGoodsB == 10);
+    assert(missions[0]->statusValue == 10);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 92;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 93);
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 0 && missions[0]->station == 114);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    prototypes[205].price = 77;
+    status.currentCampaignMission = 93;
+    status.field_178 = 99;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 94);
+    assert(ship.addedCargo.size() == 1 && ship.addedCargo[0]->prototypeIndex == 205);
+    assert(ship.addedCargo[0]->amount == 1 && ship.addedCargo[0]->price == 77);
+    delete ship.addedCargo[0];
+    ship.addedCargo.clear();
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 184 && missions[0]->param == 0 && missions[0]->station == 111);
+    assert(missions[0]->productionGoodsA == 0 && missions[0]->productionGoodsB == 83);
+    assert(missions[0]->statusValue == 83 && status.field_178 == 0);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 94;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 95);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 170 && missions[0]->param == 0 && missions[0]->station == 10);
+    assert(missions[0]->statusValue == 0);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 95;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 96);
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 0 && missions[0]->station == 98);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 96;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 97);
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 4 && missions[0]->param == 0 && missions[0]->station == 85);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 97;
+    visibilities[29] = false;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 98);
+    assert(visibilities[29]);
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 0 && missions[0]->station == 120);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 98;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 99);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 170 && missions[0]->param == 0 && missions[0]->station == 10);
+    assert(missions[0]->statusValue == 0);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 99;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 100);
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 4 && missions[0]->param == 0 && missions[0]->station == 98);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 100;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 101);
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 0 && missions[0]->station == 98);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    prototypes[207].price = 88;
+    status.currentCampaignMission = 101;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 102);
+    assert(ship.addedCargo.size() == 1 && ship.addedCargo[0]->prototypeIndex == 207);
+    assert(ship.addedCargo[0]->amount == 1 && ship.addedCargo[0]->price == 88);
+    delete ship.addedCargo[0];
+    ship.addedCargo.clear();
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 184 && missions[0]->param == 0 && missions[0]->station == 113);
+    assert(missions[0]->productionGoodsA == 0 && missions[0]->productionGoodsB == 1700);
+    assert(missions[0]->statusValue == 1700);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 102;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 103);
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 0 && missions[0]->station == 10);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    BluePrint bp206;
+    bp206.index = 206;
+    blueprints.values.push_back(&bp206);
+    prototypes[163].price = 66;
+    status.currentCampaignMission = 103;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 104);
+    assert(bp206.unlocked && bp206.addedItem != nullptr && bp206.addedItem->prototypeIndex == 163);
+    assert(bp206.addedItem->price == 66 && bp206.addedAmount == 10 && bp206.addedStation == 10);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 166 && missions[0]->param == 0 && missions[0]->station == 10);
+    assert(missions[0]->productionGoodsA == 206 && missions[0]->productionGoodsB == 1);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    for (int step = 104; step <= 105; ++step) {
+        status.currentCampaignMission = step;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == step + 1);
+        assert(missions[0] != nullptr && !missions[0]->campaign);
+        assert(missions[0]->type == 4 && missions[0]->param == 0 && missions[0]->station == (step == 104 ? 109 : 111));
+        delete missions[0];
+        missions[0] = nullptr;
+    }
+
+    status.currentCampaignMission = 106;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 107 && missions[0] == nullptr);
+
+    status.currentCampaignMission = 107;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 108);
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 0 && missions[0]->station == 10);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 108;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 109);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 170 && missions[0]->param == 0 && missions[0]->station == 114);
+    assert(missions[0]->statusValue == 0);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    for (int step = 109; step <= 110; ++step) {
+        status.currentCampaignMission = step;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == step + 1);
+        assert(missions[0] != nullptr && !missions[0]->campaign);
+        assert(missions[0]->type == 171 && missions[0]->param == 0 && missions[0]->station == (step == 109 ? 10 : 38));
+        delete missions[0];
+        missions[0] = nullptr;
+    }
+
+    status.currentCampaignMission = 111;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 112);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 172 && missions[0]->param == 0 && missions[0]->station == 38);
+    assert(missions[0]->productionGoodsA == 146 && missions[0]->productionGoodsB == 1);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 112;
+    ship.removedCargoIndex = -1;
+    ship.removedCargoAmount = -1;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 113);
+    assert(ship.removedCargoIndex == 146 && ship.removedCargoAmount == 1);
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 171 && missions[0]->param == 0 && missions[0]->station == 82);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    for (int step = 113; step <= 114; ++step) {
+        status.currentCampaignMission = step;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == step + 1);
+        assert(missions[0] != nullptr && !missions[0]->campaign);
+        assert(missions[0]->type == (step == 113 ? 4 : 171) && missions[0]->param == 0);
+        assert(missions[0]->station == (step == 113 ? 83 : 82));
+        delete missions[0];
+        missions[0] = nullptr;
+    }
+
+    status.currentCampaignMission = 115;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 116);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 171 && missions[0]->param == 0 && missions[0]->station == 93);
+    assert(missions[0]->statusValue == 0);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 116;
+    visibilities[30] = false;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 117 && visibilities[30]);
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 0 && missions[0]->station == 126);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 117;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 118);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 8 && missions[0]->param == 0 && missions[0]->station == 126);
+    assert(missions[0]->productionGoodsA == 209 && missions[0]->productionGoodsB == 1);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    Item cargo209;
+    cargo209.prototypeIndex = 209;
+    for (int mode = 0; mode < 3; ++mode) {
+        ship.nullCargo = (mode == 0);
+        cargo209.unsaleable = false;
+        if (mode == 2) ship.cargo.values.push_back(&cargo209);
+        status.currentCampaignMission = 118;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == 119);
+        assert(cargo209.unsaleable == (mode == 2));
+        assert(missions[0] != nullptr && missions[0]->campaign);
+        assert(missions[0]->type == 170 && missions[0]->param == 0 && missions[0]->station == 10);
+        assert(missions[0]->statusValue == 0);
+        delete missions[0];
+        missions[0] = nullptr;
+        if (mode == 2) ship.cargo.values.pop_back();
+    }
+    ship.nullCargo = false;
+
+    status.currentCampaignMission = 119;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 120);
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 4 && missions[0]->param == 0 && missions[0]->station == 40);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 120;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 121);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 8 && missions[0]->param == 0 && missions[0]->station == 93);
+    assert(missions[0]->productionGoodsA == 209 && missions[0]->productionGoodsB == 1);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    for (int mode = 0; mode < 3; ++mode) {
+        ship.nullCargo = (mode == 0);
+        cargo209.unsaleable = true;
+        ship.removedCargoIndex = -1;
+        ship.removedCargoAmount = -1;
+        if (mode == 2) ship.cargo.values.push_back(&cargo209);
+        status.currentCampaignMission = 121;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == 122);
+        assert(cargo209.unsaleable == (mode != 2));
+        assert(ship.removedCargoIndex == 209 && ship.removedCargoAmount == 1);
+        assert(missions[0] != nullptr && !missions[0]->campaign);
+        assert(missions[0]->type == 11 && missions[0]->param == 0 && missions[0]->station == 10);
+        delete missions[0];
+        missions[0] = nullptr;
+        if (mode == 2) ship.cargo.values.pop_back();
+    }
+    ship.nullCargo = false;
+
+    for (int step = 122; step <= 124; ++step) {
+        status.currentCampaignMission = step;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == step + 1);
+        assert(missions[0] != nullptr && !missions[0]->campaign);
+        assert(missions[0]->type == (step == 123 ? 11 : 4) && missions[0]->param == 0);
+        assert(missions[0]->station == (step == 124 ? 55 : 121));
+        delete missions[0];
+        missions[0] = nullptr;
+    }
+
+    status.currentCampaignMission = 125;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 126);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 170 && missions[0]->param == 0 && missions[0]->station == 120);
+    assert(missions[0]->statusValue == 0);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 126;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 127);
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 0 && missions[0]->station == 98);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 127;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 128);
+    assert(missions[0] != nullptr && missions[0]->campaign && !missions[0]->visible);
+    assert(missions[0]->type == 0 && missions[0]->param == 0 && missions[0]->station == 0);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    g_ncmAchTable[0] = 129;
+    g_ncmAchTable[1] = 130;
+    status.field_0x17c = 0;
+    status.currentCampaignMission = 128;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 130 && status.field_0x17c == 1);
+    assert(missions[0] != nullptr && missions[0]->campaign && !missions[0]->visible);
+    assert(missions[0]->type == 0 && missions[0]->param == 0 && missions[0]->station == 0);
+    delete missions[0];
+    missions[0] = nullptr;
+    g_ncmAchTable[0] = 0;
+    g_ncmAchTable[1] = 0;
+
+    status.currentCampaignMission = 129;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 130);
+    assert(missions[0] != nullptr && missions[0]->campaign && !missions[0]->visible);
+    assert(missions[0]->type == 0 && missions[0]->param == 0 && missions[0]->station == 0);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    for (int step = 130; step <= 131; ++step) {
+        status.currentCampaignMission = step;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == step + 1);
+        assert(missions[0] != nullptr && !missions[0]->campaign);
+        assert(missions[0]->type == (step == 130 ? 4 : 11) && missions[0]->param == 0);
+        assert(missions[0]->station == 112);
+        delete missions[0];
+        missions[0] = nullptr;
+    }
+
+    for (int step = 132; step <= 133; ++step) {
+        status.currentCampaignMission = step;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == step + 1);
+        assert(missions[0] != nullptr && missions[0]->campaign);
+        assert(missions[0]->type == (step == 132 ? 170 : 11) && missions[0]->param == 0);
+        assert(missions[0]->station == (step == 132 ? 120 : 22) && missions[0]->statusValue == 0);
+        delete missions[0];
+        missions[0] = nullptr;
+    }
+
+    status.currentCampaignMission = 134;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 135);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 174 && missions[0]->param == 0 && missions[0]->station == 103);
+    assert(missions[0]->productionGoodsA == 155 && missions[0]->productionGoodsB == 140);
+    assert(missions[0]->statusValue == 0);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    for (int step = 135; step <= 137; ++step) {
+        status.currentCampaignMission = step;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == step + 1);
+        assert(missions[0] != nullptr && !missions[0]->campaign);
+        assert(missions[0]->type == (step == 136 ? 4 : 11) && missions[0]->param == 0);
+        assert(missions[0]->station == (step == 135 ? 112 : 58));
+        delete missions[0];
+        missions[0] = nullptr;
+    }
+
+    status.currentCampaignMission = 138;
+    visibilities[31] = false;
+    status.field_178 = 99;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 139 && visibilities[31]);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 168 && missions[0]->param == 0 && missions[0]->station == 131);
+    assert(missions[0]->statusValue == 10 && status.field_178 == 0);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 139;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 140);
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 0 && missions[0]->station == 112);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    BluePrint bp210;
+    bp210.index = 210;
+    blueprints.values.push_back(&bp210);
+    status.currentCampaignMission = 140;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 141 && bp210.unlocked);
+    assert(bp210.addedItems.size() == 4);
+    const int bp210Ids[4] = {201, 202, 203, 204};
+    const int bp210Qty[4] = {847, 834, 861, 892};
+    for (int idx = 0; idx < 4; ++idx) {
+        assert(bp210.addedItems[idx].item->prototypeIndex == bp210Ids[idx]);
+        assert(bp210.addedItems[idx].amount == bp210Qty[idx]);
+        assert(bp210.addedItems[idx].station == 112);
+        delete bp210.addedItems[idx].item;
+    }
+    bp210.addedItems.clear();
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 11 && missions[0]->param == 0 && missions[0]->station == 78);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 141;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 142);
+    assert(ship.addedCargo.size() == 3);
+    const int s141Ids[3] = {197, 196, 198};
+    const int s141Qty[3] = {15, 1, 1};
+    for (int idx = 0; idx < 3; ++idx) {
+        assert(ship.addedCargo[idx]->prototypeIndex == s141Ids[idx]);
+        assert(ship.addedCargo[idx]->amount == s141Qty[idx]);
+        delete ship.addedCargo[idx];
+    }
+    ship.addedCargo.clear();
+    assert(missions[0] != nullptr && !missions[0]->campaign);
+    assert(missions[0]->type == 4 && missions[0]->param == 0 && missions[0]->station == 79);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 142;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 143);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 8 && missions[0]->param == 0 && missions[0]->station == 112);
+    assert(missions[0]->productionGoodsA == 210 && missions[0]->productionGoodsB == 1);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    status.currentCampaignMission = 143;
+    ship.removedCargoIndex = -1;
+    ship.removedCargoAmount = -1;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 144);
+    assert(ship.removedCargoIndex == 210 && ship.removedCargoAmount == 1);
+    assert(missions[0] != nullptr && missions[0]->campaign);
+    assert(missions[0]->type == 170 && missions[0]->param == 0 && missions[0]->station == 112);
+    assert(missions[0]->statusValue == 0);
+    delete missions[0];
+    missions[0] = nullptr;
+
+    const int tailType[18] = {
+        4, 11, 4, 171, 171, 171, 171, 165, 11,
+        4, 164, 11, 4, 4, 11, 170, 170, 0
+    };
+    const int tailStation[18] = {
+        112, 112, -1, 96, 96, 96, 96, -1, 98,
+        -1, 0, 99, 112, 111, 10, 10, 93, 0
+    };
+    for (int step = 144; step <= 161; ++step) {
+        status.currentCampaignMission = step;
+        status.nextCampaignMission(true);
+        assert(status.currentCampaignMission == step + 1);
+        assert(missions[0] != nullptr);
+        const bool isCamp = (step >= 160);
+        assert(missions[0]->campaign == isCamp);
+        assert(missions[0]->type == tailType[step - 144]);
+        assert(missions[0]->param == 0);
+        assert(missions[0]->station == tailStation[step - 144]);
+        if (step == 160) assert(missions[0]->statusValue == 0);
+        if (step == 161) assert(!missions[0]->visible);
+        delete missions[0];
+        missions[0] = nullptr;
+    }
+
+    status.currentCampaignMission = 162;
+    status.nextCampaignMission(true);
+    assert(status.currentCampaignMission == 163 && missions[0] == nullptr);
     delete status.field_90;
 
     status.ship = nullptr;
     assert(ship.raceSetCount == 1);
     delete ship.added;
     delete targetBlueprint.addedItem;
+    delete bp206.addedItem;
 }

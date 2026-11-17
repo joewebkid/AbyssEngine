@@ -1108,8 +1108,32 @@ static const Step kSteps[] = {
     /*0x4c*/ {0xb, 0, 0x65, 0}, /*0x4d*/ {0x4, 0, 0x65, 0}, /*0x4e*/ {0xa5, 0, -1, 0},
     /*0x4f*/ {0x1, 0, 100, 0}, /*0x50*/ {0x4, 0, -1, 0}, /*0x51*/ {0xb, 0, 100, 0},
     /*0x52*/ {0xb, 0, 100, 0}, /*0x53*/ {0, 0, 0, 0}, /*0x54*/ {0xa4, 0, 0, 0},
-    /*0x55*/ {0xb, 0, 100, 0}, /*0x56*/ {0x4, 0, 10, 0}, /*0x57*/ {0x4, 0, 0x6d, 0},
-    /*0x58*/ {0xb, 0, 10, 0},
+    /*0x55*/ {0xb, 0, 100, 0}, /*0x56*/ {0x4, 0, 10, 0}, /*0x57*/ {0xb, 0, 10, 0},
+    /*0x58*/ {0x4, 0, 0x6d, 0}, /*0x59*/ {0xb, 0, 10, 0},
+    /*0x5a*/ {0xb8, 0, 0x6e, 1}, /*0x5b*/ {0xb8, 0, 0x71, 1}, /*0x5c*/ {0xb, 0, 0x72, 0},
+    /*0x5d*/ {0xb8, 0, 0x6f, 1}, /*0x5e*/ {0xaa, 0, 10, 1}, /*0x5f*/ {0xb, 0, 0x62, 0},
+    /*0x60*/ {0x4, 0, 0x55, 0}, /*0x61*/ {0xb, 0, 0x78, 0}, /*0x62*/ {0xaa, 0, 10, 1},
+    /*0x63*/ {0x4, 0, 0x62, 0}, /*0x64*/ {0xb, 0, 0x62, 0}, /*0x65*/ {0xb8, 0, 0x71, 1},
+    /*0x66*/ {0xb, 0, 10, 0}, /*0x67*/ {0xa6, 0, 10, 1}, /*0x68*/ {0x4, 0, 0x6d, 0},
+    /*0x69*/ {0x4, 0, 0x6f, 0}, /*0x6a*/ {0, 0, 0, 0}, /*0x6b*/ {0xb, 0, 10, 0},
+    /*0x6c*/ {0xaa, 0, 0x72, 1}, /*0x6d*/ {0xab, 0, 10, 0}, /*0x6e*/ {0xab, 0, 0x26, 0},
+    /*0x6f*/ {0xac, 0, 0x26, 1}, /*0x70*/ {0xab, 0, 0x52, 0}, /*0x71*/ {0x4, 0, 0x53, 0},
+    /*0x72*/ {0xab, 0, 0x52, 0}, /*0x73*/ {0xab, 0, 0x5d, 1}, /*0x74*/ {0xb, 0, 0x7e, 0},
+    /*0x75*/ {0x8, 0, 0x7e, 1}, /*0x76*/ {0xaa, 0, 10, 1}, /*0x77*/ {0x4, 0, 0x28, 0},
+    /*0x78*/ {0x8, 0, 0x5d, 1}, /*0x79*/ {0xb, 0, 10, 0}, /*0x7a*/ {0x4, 0, 0x79, 0},
+    /*0x7b*/ {0xb, 0, 0x79, 0}, /*0x7c*/ {0x4, 0, 0x37, 0}, /*0x7d*/ {0xaa, 0, 0x78, 1},
+    /*0x7e*/ {0xb, 0, 0x62, 0}, /*0x7f*/ {0, 0, 0, 1}, /*0x80*/ {0, 0, 0, 0},
+    /*0x81*/ {0, 0, 0, 1}, /*0x82*/ {0x4, 0, 0x70, 0}, /*0x83*/ {0xb, 0, 0x70, 0},
+    /*0x84*/ {0xaa, 0, 0x78, 1}, /*0x85*/ {0xb, 0, 0x16, 1}, /*0x86*/ {0xae, 0, 0x67, 1},
+    /*0x87*/ {0xb, 0, 0x70, 0}, /*0x88*/ {0x4, 0, 0x3a, 0}, /*0x89*/ {0xb, 0, 0x3a, 0},
+    /*0x8a*/ {0xa8, 0, 0x83, 1}, /*0x8b*/ {0xb, 0, 0x70, 0}, /*0x8c*/ {0xb, 0, 0x4e, 0},
+    /*0x8d*/ {0x4, 0, 0x4f, 0}, /*0x8e*/ {0x8, 0, 0x70, 1}, /*0x8f*/ {0xaa, 0, 0x70, 1},
+    /*0x90*/ {0x4, 0, 0x70, 0}, /*0x91*/ {0xb, 0, 0x70, 0}, /*0x92*/ {0x4, 0, -1, 0},
+    /*0x93*/ {0xab, 0, 0x60, 0}, /*0x94*/ {0xab, 0, 0x60, 0}, /*0x95*/ {0xab, 0, 0x60, 0},
+    /*0x96*/ {0xab, 0, 0x60, 0}, /*0x97*/ {0xa5, 0, -1, 0}, /*0x98*/ {0xb, 0, 0x62, 0},
+    /*0x99*/ {0x4, 0, -1, 0}, /*0x9a*/ {0xa4, 0, 0, 0}, /*0x9b*/ {0xb, 0, 0x63, 0},
+    /*0x9c*/ {0x4, 0, 0x70, 0}, /*0x9d*/ {0x4, 0, 0x6f, 0}, /*0x9e*/ {0xb, 0, 10, 0},
+    /*0x9f*/ {0xaa, 0, 10, 0}, /*0xa0*/ {0xaa, 0, 0x5d, 1}, /*0xa1*/ {0, 0, 0, 1},
 };
 
 void Status::nextCampaignMission(bool advance) {
@@ -1125,7 +1149,7 @@ void Status::nextCampaignMission(bool advance) {
             if (next == g_ncmAchTable[k])
                 this->field_0x17c = 1;
         }
-        if (step != 52)
+        if (step != 52 && step != 128)
             break;
         step = next;
     } while (true);
@@ -1310,13 +1334,83 @@ void Status::nextCampaignMission(bool advance) {
         }
         Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
         currentShip->addCargo((*items)[85]->makeItem(1));
-    } else if (step == 87) {
+    } else if (step == 88) {
         Globals::status->ship->removeCargo(104, 10);
         (*Globals::status->systemVisibilities)[27] = true;
         (*Globals::status->systemVisibilities)[28] = true;
-    } else if (step == 88) {
+    } else if (step == 89) {
         --Globals::status->stationsVisited;
         static_cast<Galaxy *>(Globals::galaxy)->getVisited()[109] = 0;
+    } else if (step == 90) {
+        (*this->systemVisibilities)[27] = true;
+        (*this->systemVisibilities)[28] = true;
+    } else if (step == 93) {
+        Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
+        Globals::status->ship->addCargo((*items)[205]->makeItem(1));
+    } else if (step == 97) {
+        (*Globals::status->systemVisibilities)[29] = true;
+    } else if (step == 101) {
+        Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
+        Globals::status->ship->addCargo((*items)[207]->makeItem(1));
+    } else if (step == 103) {
+        for (unsigned i = 0; i < this->bluePrints->size(); ++i) {
+            BluePrint *bp = (*this->bluePrints)[i];
+            if (bp->getIndex() == 206) {
+                bp->unlock();
+                Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
+                bp->addItem((*items)[163]->makeItem(), 10, 10);
+                break;
+            }
+        }
+    } else if (step == 106) {
+        return;
+    } else if (step == 112) {
+        Globals::status->ship->removeCargo(146, 1);
+    } else if (step == 116) {
+        (*this->systemVisibilities)[30] = true;
+    } else if (step == 118) {
+        Array<Item *> *cargo = this->ship->getCargo();
+        if (cargo != 0)
+            for (unsigned i = 0; i < cargo->size(); ++i) {
+                Item *item = (*cargo)[i];
+                if (item->getIndex() == 209) {
+                    item->setUnsaleable(true);
+                    break;
+                }
+            }
+    } else if (step == 121) {
+        Array<Item *> *cargo = this->ship->getCargo();
+        if (cargo != 0)
+            for (unsigned i = 0; i < cargo->size(); ++i) {
+                Item *item = (*cargo)[i];
+                if (item->getIndex() == 209) {
+                    item->setUnsaleable(false);
+                    break;
+                }
+            }
+        Globals::status->ship->removeCargo(209, 1);
+    } else if (step == 138) {
+        (*this->systemVisibilities)[31] = true;
+    } else if (step == 140) {
+        for (unsigned i = 0; i < this->bluePrints->size(); ++i) {
+            BluePrint *bp = (*this->bluePrints)[i];
+            if (bp->getIndex() == 210) {
+                bp->unlock();
+                Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
+                (*this->bluePrints)[i]->addItem((*items)[201]->makeItem(), 847, 112);
+                (*this->bluePrints)[i]->addItem((*items)[202]->makeItem(), 834, 112);
+                (*this->bluePrints)[i]->addItem((*items)[203]->makeItem(), 861, 112);
+                (*this->bluePrints)[i]->addItem((*items)[204]->makeItem(), 892, 112);
+                break;
+            }
+        }
+    } else if (step == 141) {
+        Array<Item *> *items = static_cast<Array<Item *> *>(Globals::items);
+        Globals::status->ship->addCargo((*items)[197]->makeItem(15));
+        Globals::status->ship->addCargo((*items)[196]->makeItem(1));
+        Globals::status->ship->addCargo((*items)[198]->makeItem(1));
+    } else if (step == 143) {
+        Globals::status->ship->removeCargo(210, 1);
     }
 
     Mission *tailMission;
@@ -1341,7 +1435,7 @@ void Status::nextCampaignMission(bool advance) {
                 m->setStatusValue(6);
             else if (step == 32)
                 m->setProductionGoods(164, 50);
-            else if (step == 36 || step == 51)
+            else if (step == 36 || step == 51 || step == 127 || step == 129 || step == 161)
                 (*missions)[0]->setVisible(false);
             else if (step == 44) {
                 (*missions)[0]->setVisible(false);
@@ -1376,12 +1470,43 @@ void Status::nextCampaignMission(bool advance) {
                 (*missions)[0]->setProductionGoods(175, 1);
             } else if (step == 71) {
                 this->field_10c = 0;
+            } else if (step == 90) {
+                (*missions)[0]->setProductionGoods(0, 10);
+                (*missions)[0]->setStatusValue(10);
+                this->field_178 = 0;
+            } else if (step == 91) {
+                (*missions)[0]->setProductionGoods(0, 10);
+                (*missions)[0]->setStatusValue(10);
+            } else if (step == 93) {
+                (*missions)[0]->setProductionGoods(0, 83);
+                (*missions)[0]->setStatusValue(83);
+                this->field_178 = 0;
+            } else if (step == 94 || step == 98 || step == 108 || step == 115 || step == 118 ||
+                       step == 125 || step == 132 || step == 133 || step == 143 || step == 160) {
+                (*missions)[0]->setStatusValue(0);
+            } else if (step == 101) {
+                (*missions)[0]->setProductionGoods(0, 1700);
+                (*missions)[0]->setStatusValue(1700);
+            } else if (step == 103) {
+                (*missions)[0]->setProductionGoods(206, 1);
+            } else if (step == 111) {
+                (*missions)[0]->setProductionGoods(146, 1);
+            } else if (step == 117 || step == 120) {
+                (*missions)[0]->setProductionGoods(209, 1);
+            } else if (step == 134) {
+                (*missions)[0]->setProductionGoods(155, 140);
+                (*missions)[0]->setStatusValue(0);
+            } else if (step == 138) {
+                (*missions)[0]->setStatusValue(10);
+                this->field_178 = 0;
+            } else if (step == 142) {
+                (*missions)[0]->setProductionGoods(210, 1);
             }
             return;
         }
         tailMission = m;
     } else {
-        tailMission = new Mission(0xb, 0, 100);
+        return;
     }
 
     for (unsigned i = 0; i < missions->size(); i = i + 1) {
