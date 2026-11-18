@@ -1582,11 +1582,6 @@ Globals::Globals() {
     self->soundResources = 0;
 }
 
-struct PolymorphicSingleton {
-    virtual ~PolymorphicSingleton() {
-    }
-};
-
 Globals::~Globals() {
     if (Globals::recordHandler != nullptr) {
         static_cast<RecordHandler *>(Globals::recordHandler)->saveOptions();
@@ -1620,7 +1615,7 @@ Globals::~Globals() {
     }
     Globals::recordHandler = nullptr;
     if (Globals::instantActionPlayerName != nullptr) {
-        delete static_cast<PolymorphicSingleton *>(Globals::instantActionPlayerName);
+        delete static_cast<String *>(Globals::instantActionPlayerName);
     }
     Globals::instantActionPlayerName = nullptr;
     if (Globals::sound != nullptr) {

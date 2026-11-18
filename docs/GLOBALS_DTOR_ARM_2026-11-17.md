@@ -44,3 +44,19 @@ removes the eight `*_dtor` declarations.
 - Focused `Globals::~Globals()` (`D1Ev`/`D2Ev`): source-shape **0.1% ->
   97.8%**, strict fuzzy **0.0% -> 54.8%**, control-flow/call-count/size
   match **100.0%** (**166/166** instructions).
+
+## Typed player-name deletion review (2026-11-18)
+
+`RecordHandler::loadOptions()` assigns `new String(name)` to
+`Globals::instantActionPlayerName`. The teardown now deletes it through
+`String *`, whose destructor is virtual, replacing the unrelated
+`PolymorphicSingleton *` cast and removing that unused surrogate type.
+The pointer reset and teardown order are preserved.
+
+Independent validation: Windows native `gof2` builds successfully, and
+ARMv7 NDK r18b compiles 211/211 translation units with zero failures.
+The focused D1/D2 report retains 54.8% strict fuzzy, 97.8% source-shape,
+and 166 generated instructions for each symbol, matching the preceding
+`level_psm_full_20261117.json` baseline. Report:
+`_work/globals_string_delete_review_20261118.json`.
+Runtime teardown was not exercised.
